@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { CalendarDays, CheckSquare, MessageSquare, Plus, Tag, Trash2, User, X } from 'lucide-react'
+import { CalendarDays, CheckSquare, MessageSquare, Paperclip, Plus, Tag, Trash2, Upload, User, X } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/shared/components/ui/sheet'
 import { Button } from '@/shared/components/ui/button'
 import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar'
@@ -25,8 +25,18 @@ interface TagItem {
 interface Comment {
   id: string
   author_id: string
+  author_name: string
+  author_avatar_url: string | null
   body: string
   body_text: string | null
+  created_at: string
+}
+
+interface Attachment {
+  id: string
+  filename: string
+  mime_type: string
+  size_bytes: number
   created_at: string
 }
 
@@ -121,6 +131,29 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
         : api.post(`/projects/${projectId}/tasks/${task!.id}/tags/${tagId}`),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['task-tags', task!.id] }),
   })
+
+  const { data: attachments = [] } = useQuery<Attachment[]>({
+    queryKey: ['attachments', task?.id],
+    queryFn: () =>
+      api.get(`/projects/${projectId}/tasks/${task!.id}/attachments`).then((r) => r.data),
+    enabled: !!task,
+  })
+
+  const deleteAttachment = useMutation({
+    mutationFn: (attachmentId: string) =>
+      api.delete(`/projects/${projectId}/tasks/${task!.id}/attachments/${attachmentId}`),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['attachments', task!.id] }),
+  })
+
+  async function uploadAttachment(file: File) {
+    if (!task) return
+    const form = new FormData()
+    form.append('file', file)
+    await api.post(`/projects/${projectId}/tasks/${task.id}/attachments`, form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    qc.invalidateQueries({ queryKey: ['attachments', task.id] })
+  }
 
   async function submitComment() {
     if (!newComment.trim() || !task) return
@@ -280,6 +313,55 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
                 </div>
               )}
 
+              {/* Attachments */}
+              <div className="px-6 py-4 border-b border-border">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs font-medium text-neutral-500">
+                    <Paperclip className="h-3.5 w-3.5 inline mr-1" />
+                    Attachments {attachments.length > 0 && `(${attachments.length})`}
+                  </p>
+                  <label className="cursor-pointer text-xs text-primary hover:text-primary/80 flex items-center gap-1">
+                    <Upload className="h-3 w-3" />
+                    Upload
+                    <input
+                      type="file"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) uploadAttachment(file)
+                        e.target.value = ''
+                      }}
+                    />
+                  </label>
+                </div>
+                {attachments.length > 0 && (
+                  <div className="space-y-1">
+                    {attachments.map((a) => (
+                      <div key={a.id} className="flex items-center gap-2 py-1 group">
+                        <Paperclip className="h-3 w-3 text-neutral-400 flex-shrink-0" />
+                        <a
+                          href={`${import.meta.env.VITE_API_URL ?? 'http://localhost:8000/api/v1'}/projects/${projectId}/tasks/${task!.id}/attachments/${a.id}/download`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 text-xs text-primary hover:underline truncate"
+                        >
+                          {a.filename}
+                        </a>
+                        <span className="text-xs text-neutral-400 flex-shrink-0">
+                          {(a.size_bytes / 1024).toFixed(0)}KB
+                        </span>
+                        <button
+                          onClick={() => deleteAttachment.mutate(a.id)}
+                          className="opacity-0 group-hover:opacity-100 text-neutral-300 hover:text-red-500 transition-all"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               {/* Subtasks */}
               <div className="px-6 py-4 border-b border-border">
                 <p className="text-xs font-medium text-neutral-500 mb-2">
@@ -326,11 +408,16 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
                   {comments.map((c) => (
                     <div key={c.id} className="flex gap-2 group">
                       <Avatar className="h-6 w-6 flex-shrink-0">
-                        <AvatarFallback className="text-xs">U</AvatarFallback>
+                        <AvatarFallback className="text-xs bg-primary/10 text-primary">
+                          {c.author_name ? c.author_name.slice(0, 2).toUpperCase() : 'U'}
+                        </AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
+                        <div className="flex items-baseline gap-1.5 mb-0.5">
+                          <span className="text-xs font-medium text-neutral-700">{c.author_name}</span>
+                          <span className="text-xs text-neutral-400">{formatRelativeTime(c.created_at)}</span>
+                        </div>
                         <p className="text-sm text-neutral-800">{c.body_text ?? c.body}</p>
-                        <span className="text-xs text-neutral-400">{formatRelativeTime(c.created_at)}</span>
                       </div>
                       <button
                         onClick={() => deleteComment.mutate(c.id)}

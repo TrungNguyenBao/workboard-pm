@@ -1,21 +1,27 @@
 import { Bell } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '@/shared/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/shared/components/ui/dropdown-menu'
 import { formatRelativeTime } from '@/shared/lib/utils'
 import api from '@/shared/lib/api'
+import { useWorkspaceStore } from '@/stores/workspace.store'
 
 interface Notification {
   id: string
   type: string
   title: string
   body: string | null
+  resource_type: string | null
+  resource_id: string | null
   is_read: boolean
   created_at: string
 }
 
 export function NotificationBell() {
   const qc = useQueryClient()
+  const navigate = useNavigate()
+  const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId)
 
   const { data: notifications = [] } = useQuery<Notification[]>({
     queryKey: ['notifications'],
@@ -66,8 +72,13 @@ export function NotificationBell() {
         {notifications.slice(0, 8).map((n) => (
           <DropdownMenuItem
             key={n.id}
-            className="flex flex-col items-start gap-0.5 py-2.5"
-            onClick={() => !n.is_read && markRead.mutate(n.id)}
+            className="flex flex-col items-start gap-0.5 py-2.5 cursor-pointer"
+            onClick={() => {
+              if (!n.is_read) markRead.mutate(n.id)
+              if (n.resource_type === 'task' && activeWorkspaceId) {
+                navigate(`/workspaces/${activeWorkspaceId}/my-tasks`)
+              }
+            }}
           >
             <div className="flex items-start gap-2 w-full">
               {!n.is_read && <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />}

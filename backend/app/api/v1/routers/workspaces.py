@@ -7,6 +7,7 @@ from app.core.database import get_db
 from app.dependencies.auth import get_current_user
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
+from app.schemas.task import TaskResponse
 from app.schemas.workspace import (
     InviteMemberRequest,
     MemberWithUserResponse,
@@ -16,6 +17,7 @@ from app.schemas.workspace import (
 )
 from app.services.workspace import (
     create_workspace,
+    get_my_tasks,
     get_user_workspaces,
     get_workspace,
     get_workspace_members,
@@ -70,6 +72,15 @@ async def update(
     db: AsyncSession = Depends(get_db),
 ):
     return await update_workspace(db, workspace_id, data)
+
+
+@router.get("/{workspace_id}/tasks/my", response_model=list[TaskResponse])
+async def my_tasks(
+    workspace_id: uuid.UUID,
+    current_user: User = Depends(require_workspace_role("guest")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await get_my_tasks(db, workspace_id, current_user.id)
 
 
 @router.get("/{workspace_id}/members", response_model=list[MemberWithUserResponse])

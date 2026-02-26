@@ -9,7 +9,6 @@ class AttachmentResponse(BaseModel):
     task_id: uuid.UUID
     uploaded_by_id: uuid.UUID
     filename: str
-    storage_path: str
     mime_type: str
     size_bytes: int
     created_at: datetime

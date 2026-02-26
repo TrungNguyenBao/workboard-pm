@@ -5,9 +5,11 @@ from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from sqlalchemy.orm import selectinload
+
 from app.models.comment import Comment
 from app.models.user import User
-from app.schemas.comment import CommentCreate, CommentUpdate
+from app.schemas.comment import CommentCreate, CommentResponse, CommentUpdate
 
 
 async def create_comment(
@@ -20,13 +22,28 @@ async def create_comment(
     return comment
 
 
-async def list_comments(db: AsyncSession, task_id: uuid.UUID) -> list[Comment]:
+async def list_comments(db: AsyncSession, task_id: uuid.UUID) -> list[CommentResponse]:
     result = await db.scalars(
         select(Comment)
         .where(Comment.task_id == task_id, Comment.deleted_at.is_(None))
+        .options(selectinload(Comment.author))
         .order_by(Comment.created_at)
     )
-    return list(result.all())
+    comments = result.all()
+    return [
+        CommentResponse(
+            id=c.id,
+            task_id=c.task_id,
+            author_id=c.author_id,
+            author_name=c.author.name,
+            author_avatar_url=c.author.avatar_url,
+            body=c.body,
+            body_text=c.body_text,
+            created_at=c.created_at,
+            updated_at=c.updated_at,
+        )
+        for c in comments
+    ]
 
 
 async def update_comment(

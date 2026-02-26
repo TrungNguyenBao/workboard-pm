@@ -51,6 +51,10 @@ async def list_attachments(db: AsyncSession, task_id: uuid.UUID) -> list[Attachm
     return list(result.all())
 
 
+async def get_attachment(db: AsyncSession, attachment_id: uuid.UUID) -> Attachment | None:
+    return await db.get(Attachment, attachment_id)
+
+
 async def delete_attachment(
     db: AsyncSession, attachment_id: uuid.UUID, user: User
 ) -> None:

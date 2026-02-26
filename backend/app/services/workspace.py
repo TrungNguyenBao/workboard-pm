@@ -105,6 +105,27 @@ async def update_workspace(
     return ws
 
 
+async def get_my_tasks(
+    db: AsyncSession, workspace_id: uuid.UUID, user_id: uuid.UUID
+) -> list:
+    from app.models.project import Project
+    from app.models.task import Task as TaskModel
+
+    result = await db.scalars(
+        select(TaskModel)
+        .join(Project, Project.id == TaskModel.project_id)
+        .where(
+            Project.workspace_id == workspace_id,
+            TaskModel.assignee_id == user_id,
+            TaskModel.status == "incomplete",
+            TaskModel.deleted_at.is_(None),
+            TaskModel.parent_id.is_(None),
+        )
+        .order_by(TaskModel.due_date.asc().nulls_last(), TaskModel.created_at)
+    )
+    return list(result.all())
+
+
 async def setup_demo_workspace(db: AsyncSession, owner: User) -> Workspace:
     import uuid
     from datetime import datetime, timedelta, timezone

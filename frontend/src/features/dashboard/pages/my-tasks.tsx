@@ -5,28 +5,16 @@ import { Badge } from '@/shared/components/ui/badge'
 import { cn, formatDate } from '@/shared/lib/utils'
 import api from '@/shared/lib/api'
 import { useWorkspaceStore } from '@/stores/workspace.store'
-import { useAuthStore } from '@/stores/auth.store'
 import type { Task } from '@/features/projects/hooks/use-project-tasks'
 
 // My tasks = all incomplete tasks assigned to the current user across the workspace
 function useMyTasks() {
   const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId)
-  const user = useAuthStore((s) => s.user)
   return useQuery<Task[]>({
-    queryKey: ['my-tasks', activeWorkspaceId, user?.id],
-    queryFn: async () => {
-      if (!activeWorkspaceId || !user) return []
-      const projects = await api.get(`/workspaces/${activeWorkspaceId}/projects`).then((r) => r.data)
-      const allTasks = await Promise.all(
-        projects.map((p: { id: string }) =>
-          api.get(`/projects/${p.id}/tasks`).then((r) => r.data as Task[]),
-        ),
-      )
-      return allTasks
-        .flat()
-        .filter((t) => t.status === 'incomplete' && t.assignee_id === user.id)
-    },
-    enabled: !!activeWorkspaceId && !!user,
+    queryKey: ['my-tasks', activeWorkspaceId],
+    queryFn: () =>
+      api.get(`/workspaces/${activeWorkspaceId}/tasks/my`).then((r) => r.data),
+    enabled: !!activeWorkspaceId,
   })
 }
 
