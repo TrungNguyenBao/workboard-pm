@@ -28,6 +28,11 @@ export function NotificationBell() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['notifications'] }),
   })
 
+  const markAllRead = useMutation({
+    mutationFn: () => api.post('/notifications/read-all'),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['notifications'] }),
+  })
+
   const unread = notifications.filter((n) => !n.is_read)
 
   return (
@@ -43,7 +48,17 @@ export function NotificationBell() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-72">
-        <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+        <div className="flex items-center justify-between px-2 py-1.5">
+          <DropdownMenuLabel className="p-0">Notifications</DropdownMenuLabel>
+          {unread.length > 0 && (
+            <button
+              onClick={() => markAllRead.mutate()}
+              className="text-xs text-primary hover:underline"
+            >
+              Mark all read
+            </button>
+          )}
+        </div>
         <DropdownMenuSeparator />
         {notifications.length === 0 && (
           <div className="px-3 py-4 text-center text-sm text-neutral-400">No notifications</div>

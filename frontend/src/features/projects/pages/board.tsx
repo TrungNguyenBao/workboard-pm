@@ -145,6 +145,9 @@ function KanbanColumn({ section, tasks, projectId, onOpenTask }: { section: Sect
       </div>
       <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
         <div className="min-h-[60px] space-y-2 rounded-md bg-neutral-50 p-2">
+          {tasks.length === 0 && (
+            <p className="py-4 text-center text-xs text-neutral-400">No tasks</p>
+          )}
           {tasks.map((task) => (
             <TaskCard key={task.id} task={task} onOpen={onOpenTask} />
           ))}

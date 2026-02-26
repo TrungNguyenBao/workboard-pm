@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { CalendarDays, CheckSquare, MessageSquare, Plus, Tag, Trash2, User } from 'lucide-react'
+import { CalendarDays, CheckSquare, MessageSquare, Plus, Tag, Trash2, User, X } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/shared/components/ui/sheet'
 import { Button } from '@/shared/components/ui/button'
 import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar'
@@ -106,6 +106,12 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
       qc.invalidateQueries({ queryKey: ['subtasks', task!.id] })
       setNewSubtask('')
     },
+  })
+
+  const deleteComment = useMutation({
+    mutationFn: (commentId: string) =>
+      api.delete(`/projects/${projectId}/tasks/${task!.id}/comments/${commentId}`),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['comments', task!.id] }),
   })
 
   const toggleTag = useMutation({
@@ -318,7 +324,7 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
                 </p>
                 <div className="space-y-3 mb-4">
                   {comments.map((c) => (
-                    <div key={c.id} className="flex gap-2">
+                    <div key={c.id} className="flex gap-2 group">
                       <Avatar className="h-6 w-6 flex-shrink-0">
                         <AvatarFallback className="text-xs">U</AvatarFallback>
                       </Avatar>
@@ -326,6 +332,13 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
                         <p className="text-sm text-neutral-800">{c.body_text ?? c.body}</p>
                         <span className="text-xs text-neutral-400">{formatRelativeTime(c.created_at)}</span>
                       </div>
+                      <button
+                        onClick={() => deleteComment.mutate(c.id)}
+                        className="opacity-0 group-hover:opacity-100 flex-shrink-0 text-neutral-300 hover:text-red-500 transition-all"
+                        title="Delete comment"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
                     </div>
                   ))}
                 </div>

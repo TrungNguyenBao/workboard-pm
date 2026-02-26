@@ -101,6 +101,9 @@ function SectionGroup({ section, tasks, projectId, onOpenTask, filterPriority, f
       </button>
       {!collapsed && (
         <>
+          {sectionTasks.length === 0 && (
+            <p className="px-4 py-3 text-xs text-neutral-400">No tasks</p>
+          )}
           {sectionTasks.map((task) => (
             <TaskRow key={task.id} task={task} projectId={projectId} onOpen={onOpenTask} />
           ))}

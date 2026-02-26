@@ -89,3 +89,15 @@ async def mark_read(db: AsyncSession, notification_id: uuid.UUID, user_id: uuid.
     if notif and notif.user_id == user_id:
         notif.is_read = True
         await db.commit()
+
+
+async def mark_all_read(db: AsyncSession, user_id: uuid.UUID) -> None:
+    result = await db.scalars(
+        select(Notification).where(
+            Notification.user_id == user_id,
+            Notification.is_read.is_(False),
+        )
+    )
+    for notif in result.all():
+        notif.is_read = True
+    await db.commit()
