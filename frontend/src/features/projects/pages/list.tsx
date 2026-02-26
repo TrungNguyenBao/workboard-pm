@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { CheckSquare, Circle, ChevronRight } from 'lucide-react'
+import { CheckSquare, Circle, ChevronRight, ArrowUpDown } from 'lucide-react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Badge } from '@/shared/components/ui/badge'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/components/ui/dropdown-menu'
+import { Button } from '@/shared/components/ui/button'
 import { cn, formatDate } from '@/shared/lib/utils'
 import { useSections, useTasks, type Task, type Section } from '../hooks/use-project-tasks'
 import { InlineTaskInput } from '../components/inline-task-input'
@@ -10,6 +12,10 @@ import { TaskDetailDrawer } from '@/features/tasks/components/task-detail-drawer
 import { ProjectHeader } from '../components/project-header'
 import { FilterBar, type PriorityFilter, type StatusFilter } from '../components/filter-bar'
 import api from '@/shared/lib/api'
+
+type SortBy = 'position' | 'priority' | 'due_date'
+
+const PRIORITY_RANK: Record<string, number> = { high: 3, medium: 2, low: 1, none: 0 }
 
 const PRIORITY_BADGE: Record<string, string | undefined> = {
   high: 'danger',
@@ -65,23 +71,42 @@ function TaskRow({ task, projectId, onOpen }: { task: Task; projectId: string; o
   )
 }
 
-function SectionGroup({ section, tasks, projectId, onOpenTask, filterPriority, filterStatus }: { section: Section; tasks: Task[]; projectId: string; onOpenTask: (t: Task) => void; filterPriority: PriorityFilter; filterStatus: StatusFilter }) {
+function SectionGroup({ section, tasks, projectId, onOpenTask, filterPriority, filterStatus, sortBy }: { section: Section; tasks: Task[]; projectId: string; onOpenTask: (t: Task) => void; filterPriority: PriorityFilter; filterStatus: StatusFilter; sortBy: SortBy }) {
+  const [collapsed, setCollapsed] = useState(false)
+
   const sectionTasks = tasks
     .filter((t) => t.section_id === section.id && !t.parent_id)
     .filter((t) => filterPriority === 'all' || t.priority === filterPriority)
     .filter((t) => filterStatus === 'all' || t.status === filterStatus)
-    .sort((a, b) => a.position - b.position)
+    .sort((a, b) => {
+      if (sortBy === 'priority') return PRIORITY_RANK[b.priority] - PRIORITY_RANK[a.priority]
+      if (sortBy === 'due_date') {
+        if (!a.due_date && !b.due_date) return 0
+        if (!a.due_date) return 1
+        if (!b.due_date) return -1
+        return new Date(a.due_date).getTime() - new Date(b.due_date).getTime()
+      }
+      return a.position - b.position
+    })
+
   return (
     <div>
-      <div className="flex items-center gap-2 px-4 py-2 bg-neutral-50 border-b border-border">
-        <ChevronRight className="h-3.5 w-3.5 text-neutral-400" />
+      <button
+        className="flex w-full items-center gap-2 px-4 py-2 bg-neutral-50 border-b border-border hover:bg-neutral-100 transition-colors"
+        onClick={() => setCollapsed((v) => !v)}
+      >
+        <ChevronRight className={cn('h-3.5 w-3.5 text-neutral-400 transition-transform', !collapsed && 'rotate-90')} />
         <span className="text-sm font-medium text-neutral-700">{section.name}</span>
         <span className="text-xs text-neutral-400">{sectionTasks.length}</span>
-      </div>
-      {sectionTasks.map((task) => (
-        <TaskRow key={task.id} task={task} projectId={projectId} onOpen={onOpenTask} />
-      ))}
-      <InlineTaskInput projectId={projectId} sectionId={section.id} variant="row" />
+      </button>
+      {!collapsed && (
+        <>
+          {sectionTasks.map((task) => (
+            <TaskRow key={task.id} task={task} projectId={projectId} onOpen={onOpenTask} />
+          ))}
+          <InlineTaskInput projectId={projectId} sectionId={section.id} variant="row" />
+        </>
+      )}
     </div>
   )
 }
@@ -93,6 +118,7 @@ export default function ListPage() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [filterPriority, setFilterPriority] = useState<PriorityFilter>('all')
   const [filterStatus, setFilterStatus] = useState<StatusFilter>('all')
+  const [sortBy, setSortBy] = useState<SortBy>('position')
 
   const { data: project } = useQuery<{ workspace_id: string }>({
     queryKey: ['project', projectId],
@@ -118,6 +144,20 @@ export default function ListPage() {
             <span className="flex-1">Task</span>
             <span className="w-20 text-right">Priority</span>
             <span className="w-20 text-right">Due</span>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon-sm" className="ml-1 text-neutral-400 hover:text-neutral-700" title="Sort by">
+                  <ArrowUpDown className="h-3.5 w-3.5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {([['position', 'Manual order'], ['priority', 'Priority'], ['due_date', 'Due date']] as [SortBy, string][]).map(([val, label]) => (
+                  <DropdownMenuItem key={val} onClick={() => setSortBy(val)} className={cn(sortBy === val && 'font-medium text-primary')}>
+                    {label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           {sortedSections.map((section) => (
             <SectionGroup
@@ -128,6 +168,7 @@ export default function ListPage() {
               onOpenTask={setSelectedTask}
               filterPriority={filterPriority}
               filterStatus={filterStatus}
+              sortBy={sortBy}
             />
           ))}
         </div>
