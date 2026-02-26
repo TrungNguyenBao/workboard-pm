@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { ChevronDown, Home, LogOut, Plus } from 'lucide-react'
+import { ChevronDown, Home, LogOut, Plus, UserPlus } from 'lucide-react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '@/stores/auth.store'
 import { useWorkspaceStore } from '@/stores/workspace.store'
@@ -9,6 +9,7 @@ import { Button } from '@/shared/components/ui/button'
 import { cn, generateInitials } from '@/shared/lib/utils'
 import { CreateWorkspaceDialog } from '@/features/workspaces/components/create-workspace-dialog'
 import { CreateProjectDialog } from '@/features/projects/components/create-project-dialog'
+import { InviteMembersDialog } from '@/features/workspaces/components/invite-members-dialog'
 import api from '@/shared/lib/api'
 
 interface Workspace { id: string; name: string; slug: string }
@@ -25,6 +26,7 @@ export function Sidebar() {
 
   const [wsDialogOpen, setWsDialogOpen] = useState(false)
   const [projDialogOpen, setProjDialogOpen] = useState(false)
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
   const [wsPickerOpen, setWsPickerOpen] = useState(false)
 
   // Fetch all workspaces for the switcher
@@ -142,6 +144,15 @@ export function Sidebar() {
                 <Plus className="h-3.5 w-3.5 mr-1.5" />
                 New Project
               </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full justify-start text-neutral-400 hover:text-neutral-700"
+                onClick={() => setInviteDialogOpen(true)}
+              >
+                <UserPlus className="h-3.5 w-3.5 mr-1.5" />
+                Invite members
+              </Button>
             </>
           )}
         </nav>
@@ -172,6 +183,13 @@ export function Sidebar() {
         <CreateProjectDialog
           open={projDialogOpen}
           onOpenChange={setProjDialogOpen}
+          workspaceId={activeWorkspaceId}
+        />
+      )}
+      {activeWorkspaceId && (
+        <InviteMembersDialog
+          open={inviteDialogOpen}
+          onOpenChange={setInviteDialogOpen}
           workspaceId={activeWorkspaceId}
         />
       )}

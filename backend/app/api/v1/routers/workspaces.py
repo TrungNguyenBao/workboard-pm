@@ -7,15 +7,33 @@ from app.core.database import get_db
 from app.dependencies.auth import get_current_user
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
-from app.schemas.workspace import WorkspaceCreate, WorkspaceResponse, WorkspaceUpdate
+from app.schemas.workspace import (
+    InviteMemberRequest,
+    MemberWithUserResponse,
+    WorkspaceCreate,
+    WorkspaceResponse,
+    WorkspaceUpdate,
+)
 from app.services.workspace import (
     create_workspace,
     get_user_workspaces,
     get_workspace,
+    get_workspace_members,
+    invite_member,
+    setup_demo_workspace,
     update_workspace,
 )
 
 router = APIRouter(prefix="/workspaces", tags=["workspaces"])
+
+
+@router.post("/setup-demo", response_model=WorkspaceResponse, status_code=status.HTTP_201_CREATED)
+async def setup_demo(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Seed a demo workspace for a new user"""
+    return await setup_demo_workspace(db, current_user)
 
 
 @router.post("", response_model=WorkspaceResponse, status_code=status.HTTP_201_CREATED)
@@ -52,3 +70,26 @@ async def update(
     db: AsyncSession = Depends(get_db),
 ):
     return await update_workspace(db, workspace_id, data)
+
+
+@router.get("/{workspace_id}/members", response_model=list[MemberWithUserResponse])
+async def list_members(
+    workspace_id: uuid.UUID,
+    current_user: User = Depends(require_workspace_role("guest")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await get_workspace_members(db, workspace_id)
+
+
+@router.post(
+    "/{workspace_id}/members",
+    response_model=MemberWithUserResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def add_member(
+    workspace_id: uuid.UUID,
+    data: InviteMemberRequest,
+    current_user: User = Depends(require_workspace_role("admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await invite_member(db, workspace_id, data.email, data.role)

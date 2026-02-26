@@ -28,3 +28,20 @@ class MemberResponse(BaseModel):
     workspace_id: uuid.UUID
 
     model_config = {"from_attributes": True}
+
+
+class MemberWithUserResponse(BaseModel):
+    id: uuid.UUID
+    user_id: uuid.UUID
+    role: str
+    workspace_id: uuid.UUID
+    user_email: str
+    user_name: str
+    user_avatar_url: str | None
+
+    model_config = {"from_attributes": False}
+
+
+class InviteMemberRequest(BaseModel):
+    email: str
+    role: str = "member"

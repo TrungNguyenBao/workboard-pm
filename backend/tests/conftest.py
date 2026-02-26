@@ -1,16 +1,14 @@
 """Shared fixtures for all backend tests."""
-import asyncio
 import uuid
 from typing import AsyncGenerator
 
-import pytest
 import pytest_asyncio
-from httpx import AsyncClient, ASGITransport
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.core.database import Base, get_db
 from app.main import app
-from app.models import *  # ensure all models are registered
+from app.models import *  # noqa: F401, F403 — ensure all models are registered with Base
 
 # Use an in-memory SQLite database for tests
 TEST_DB_URL = "sqlite+aiosqlite:///:memory:"

@@ -52,6 +52,15 @@ export function useCreateTask(projectId: string) {
   })
 }
 
+export function useCreateSection(projectId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: { name: string; position?: number }) =>
+      api.post(`/projects/${projectId}/sections`, data).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['sections', projectId] }),
+  })
+}
+
 export function useMoveTask(projectId: string) {
   const qc = useQueryClient()
   return useMutation({

@@ -16,12 +16,14 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Plus, MoreHorizontal } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/shared/components/ui/button'
 import { Badge } from '@/shared/components/ui/badge'
-import { useSections, useTasks, useMoveTask, type Task, type Section } from '../hooks/use-project-tasks'
+import { useSections, useTasks, useMoveTask, useCreateSection, type Task, type Section } from '../hooks/use-project-tasks'
 import { InlineTaskInput } from '../components/inline-task-input'
 import { TaskDetailDrawer } from '@/features/tasks/components/task-detail-drawer'
 import { ProjectHeader } from '../components/project-header'
+import api from '@/shared/lib/api'
 
 type BadgeVariant = 'danger' | 'warning' | 'secondary'
 const PRIORITY_COLORS: Record<string, BadgeVariant> = {
@@ -97,11 +99,69 @@ function KanbanColumn({ section, tasks, projectId, onOpenTask }: { section: Sect
   )
 }
 
+function AddSectionInput({ projectId, sections }: { projectId: string; sections: Section[] }) {
+  const [open, setOpen] = useState(false)
+  const [name, setName] = useState('')
+  const create = useCreateSection(projectId)
+
+  function handleSubmit() {
+    if (!name.trim() || create.isPending) return
+    const lastPos = sections[sections.length - 1]?.position ?? 0
+    create.mutate(
+      { name: name.trim(), position: lastPos + 65536 },
+      { onSuccess: () => { setName(''); setOpen(false) } },
+    )
+  }
+
+  if (!open) {
+    return (
+      <Button
+        variant="ghost"
+        className="h-8 flex-shrink-0 self-start text-neutral-400"
+        onClick={() => setOpen(true)}
+      >
+        <Plus className="h-4 w-4 mr-1" />
+        Add section
+      </Button>
+    )
+  }
+
+  return (
+    <div className="w-64 flex-shrink-0">
+      <input
+        autoFocus
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') handleSubmit()
+          if (e.key === 'Escape') { setOpen(false); setName('') }
+        }}
+        placeholder="Section name"
+        className="w-full rounded-md border border-border px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-primary/40 bg-white"
+      />
+      <div className="flex gap-1 mt-1.5">
+        <Button size="sm" onClick={handleSubmit} disabled={!name.trim() || create.isPending}>
+          {create.isPending ? '…' : 'Add'}
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => { setOpen(false); setName('') }}>
+          Cancel
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 export default function BoardPage() {
   const { projectId } = useParams<{ projectId: string }>()
   const { data: sections = [] } = useSections(projectId!)
   const { data: tasks = [] } = useTasks(projectId!)
   const moveTask = useMoveTask(projectId!)
+
+  const { data: project } = useQuery<{ workspace_id: string }>({
+    queryKey: ['project', projectId],
+    queryFn: () => api.get(`/projects/${projectId}`).then((r) => r.data),
+    enabled: !!projectId,
+  })
 
   const [activeTask, setActiveTask] = useState<Task | null>(null)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
@@ -155,10 +215,7 @@ export default function BoardPage() {
                   onOpenTask={setSelectedTask}
                 />
               ))}
-              <Button variant="ghost" className="h-8 flex-shrink-0 self-start text-neutral-400">
-                <Plus className="h-4 w-4 mr-1" />
-                Add section
-              </Button>
+              <AddSectionInput projectId={projectId!} sections={sortedSections} />
             </div>
             <DragOverlay>
               {activeTask && <TaskCard task={activeTask} isDragging />}
@@ -169,6 +226,7 @@ export default function BoardPage() {
       <TaskDetailDrawer
         task={selectedTask}
         projectId={projectId!}
+        workspaceId={project?.workspace_id}
         onClose={() => setSelectedTask(null)}
       />
     </>

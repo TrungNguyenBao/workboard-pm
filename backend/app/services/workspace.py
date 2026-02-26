@@ -9,6 +9,57 @@ from app.models.workspace import Workspace, WorkspaceMembership
 from app.schemas.workspace import WorkspaceCreate, WorkspaceUpdate
 
 
+async def get_workspace_members(db: AsyncSession, workspace_id: uuid.UUID) -> list[dict]:
+    result = await db.execute(
+        select(WorkspaceMembership, User)
+        .join(User, User.id == WorkspaceMembership.user_id)
+        .where(WorkspaceMembership.workspace_id == workspace_id)
+    )
+    return [
+        {
+            "id": m.id,
+            "user_id": m.user_id,
+            "role": m.role,
+            "workspace_id": m.workspace_id,
+            "user_email": u.email,
+            "user_name": u.name,
+            "user_avatar_url": u.avatar_url,
+        }
+        for m, u in result.all()
+    ]
+
+
+async def invite_member(
+    db: AsyncSession, workspace_id: uuid.UUID, email: str, role: str
+) -> dict:
+    user = await db.scalar(select(User).where(User.email == email))
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No user with that email")
+
+    existing = await db.scalar(
+        select(WorkspaceMembership).where(
+            WorkspaceMembership.workspace_id == workspace_id,
+            WorkspaceMembership.user_id == user.id,
+        )
+    )
+    if existing:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User is already a member")
+
+    membership = WorkspaceMembership(workspace_id=workspace_id, user_id=user.id, role=role)
+    db.add(membership)
+    await db.commit()
+    await db.refresh(membership)
+    return {
+        "id": membership.id,
+        "user_id": membership.user_id,
+        "role": membership.role,
+        "workspace_id": membership.workspace_id,
+        "user_email": user.email,
+        "user_name": user.name,
+        "user_avatar_url": user.avatar_url,
+    }
+
+
 async def create_workspace(db: AsyncSession, data: WorkspaceCreate, owner: User) -> Workspace:
     existing = await db.scalar(select(Workspace).where(Workspace.slug == data.slug))
     if existing:
@@ -52,3 +103,111 @@ async def update_workspace(
     await db.commit()
     await db.refresh(ws)
     return ws
+
+
+async def setup_demo_workspace(db: AsyncSession, owner: User) -> Workspace:
+    import uuid
+    from datetime import datetime, timedelta, timezone
+
+    from app.models.project import Project, ProjectMembership, Section
+    from app.models.tag import Tag
+    from app.models.task import Task, TaskTag
+    from app.models.team import Team, TeamMembership
+    from app.models.workspace import Workspace, WorkspaceMembership
+
+    # 1. Workspace
+    slug = f"demo-{uuid.uuid4().hex[:8]}"
+    workspace = Workspace(name="Demo Workspace", slug=slug, owner_id=owner.id)
+    db.add(workspace)
+    await db.flush()
+
+    db.add(WorkspaceMembership(workspace_id=workspace.id, user_id=owner.id, role="admin"))
+
+    # 2. Team
+    team = Team(workspace_id=workspace.id, name="General", description="Default team")
+    db.add(team)
+    await db.flush()
+    db.add(TeamMembership(team_id=team.id, user_id=owner.id, role="admin"))
+
+    # 3. Project
+    project = Project(
+        workspace_id=workspace.id,
+        team_id=team.id,
+        owner_id=owner.id,
+        name="Welcome Project",
+        description="A sample project to get you started.",
+        color="#F28C38",
+    )
+    db.add(project)
+    await db.flush()
+    db.add(ProjectMembership(project_id=project.id, user_id=owner.id, role="admin"))
+
+    # 4. Sections
+    sec_todo = Section(project_id=project.id, name="To Do", position=1000)
+    sec_prog = Section(project_id=project.id, name="In Progress", position=2000)
+    sec_done = Section(project_id=project.id, name="Done", position=3000)
+    db.add_all([sec_todo, sec_prog, sec_done])
+    await db.flush()
+
+    # 5. Tags
+    tag_bug = Tag(workspace_id=workspace.id, name="Bug", color="#EF4444")
+    tag_feat = Tag(workspace_id=workspace.id, name="Feature", color="#38BDF8")
+    db.add_all([tag_bug, tag_feat])
+    await db.flush()
+
+    # 6. Tasks
+    now = datetime.now(timezone.utc)
+    t1 = Task(
+        project_id=project.id,
+        section_id=sec_todo.id,
+        created_by_id=owner.id,
+        assignee_id=owner.id,
+        title="Welcome to WorkBoard! 🎉",
+        description="<p>This is a rich-text description. You can <strong>bold</strong> things, add lists, and mentions.</p>",
+        status="incomplete",
+        priority="high",
+        position=1000,
+        due_date=now + timedelta(days=1),
+    )
+    t2 = Task(
+        project_id=project.id,
+        section_id=sec_todo.id,
+        created_by_id=owner.id,
+        assignee_id=None,
+        title="Check out the calendar view",
+        status="incomplete",
+        priority="medium",
+        position=2000,
+    )
+    t3 = Task(
+        project_id=project.id,
+        section_id=sec_prog.id,
+        created_by_id=owner.id,
+        assignee_id=owner.id,
+        title="Drag and drop tasks",
+        status="incomplete",
+        priority="low",
+        position=1000,
+        due_date=now,
+    )
+    t4 = Task(
+        project_id=project.id,
+        section_id=sec_done.id,
+        created_by_id=owner.id,
+        assignee_id=owner.id,
+        title="Register an account",
+        status="completed",
+        priority="none",
+        position=1000,
+        completed_at=now,
+    )
+    db.add_all([t1, t2, t3, t4])
+    await db.flush()
+
+    # Bind tags
+    db.add(TaskTag(task_id=t1.id, tag_id=tag_feat.id))
+    db.add(TaskTag(task_id=t2.id, tag_id=tag_bug.id))
+
+    await db.commit()
+    await db.refresh(workspace)
+    return workspace

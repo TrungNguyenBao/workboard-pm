@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { CalendarDays, CheckSquare, MessageSquare, Tag } from 'lucide-react'
+import { CalendarDays, CheckSquare, MessageSquare, Tag, User } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/shared/components/ui/sheet'
 import { Button } from '@/shared/components/ui/button'
 import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar'
@@ -8,6 +8,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { cn, formatRelativeTime } from '@/shared/lib/utils'
 import api from '@/shared/lib/api'
 import type { Task } from '@/features/projects/hooks/use-project-tasks'
+
+interface Member {
+  id: string
+  user_id: string
+  user_name: string
+  user_email: string
+}
 
 interface Comment {
   id: string
@@ -20,13 +27,20 @@ interface Comment {
 interface Props {
   task: Task | null
   projectId: string
+  workspaceId?: string
   onClose: () => void
 }
 
-export function TaskDetailDrawer({ task, projectId, onClose }: Props) {
+export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Props) {
   const qc = useQueryClient()
   const [newComment, setNewComment] = useState('')
   const [commentLoading, setCommentLoading] = useState(false)
+
+  const { data: members = [] } = useQuery<Member[]>({
+    queryKey: ['workspace-members', workspaceId],
+    queryFn: () => api.get(`/workspaces/${workspaceId}/members`).then((r) => r.data),
+    enabled: !!workspaceId && !!task,
+  })
 
   const { data: comments = [] } = useQuery<Comment[]>({
     queryKey: ['comments', task?.id],
@@ -117,6 +131,30 @@ export function TaskDetailDrawer({ task, projectId, onClose }: Props) {
                     </SelectContent>
                   </Select>
                 </MetaRow>
+
+                {/* Assignee */}
+                {members.length > 0 && (
+                  <MetaRow icon={<User className="h-4 w-4" />} label="Assignee">
+                    <Select
+                      value={task.assignee_id ?? 'none'}
+                      onValueChange={(v) =>
+                        updateTask.mutate({ assignee_id: v === 'none' ? null : v })
+                      }
+                    >
+                      <SelectTrigger className="h-7 w-36 text-xs border-0 bg-neutral-100 hover:bg-neutral-200">
+                        <SelectValue placeholder="Unassigned" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">Unassigned</SelectItem>
+                        {members.map((m) => (
+                          <SelectItem key={m.user_id} value={m.user_id}>
+                            {m.user_name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </MetaRow>
+                )}
 
                 {/* Due date */}
                 <MetaRow icon={<CalendarDays className="h-4 w-4" />} label="Due date">

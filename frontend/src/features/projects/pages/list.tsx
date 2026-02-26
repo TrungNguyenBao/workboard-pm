@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { CheckSquare, Circle, ChevronRight } from 'lucide-react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Badge } from '@/shared/components/ui/badge'
 import { cn, formatDate } from '@/shared/lib/utils'
 import { useSections, useTasks, type Task, type Section } from '../hooks/use-project-tasks'
@@ -80,6 +80,12 @@ export default function ListPage() {
   const { data: tasks = [] } = useTasks(projectId!)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
 
+  const { data: project } = useQuery<{ workspace_id: string }>({
+    queryKey: ['project', projectId],
+    queryFn: () => api.get(`/projects/${projectId}`).then((r) => r.data),
+    enabled: !!projectId,
+  })
+
   const sortedSections = [...sections].sort((a, b) => a.position - b.position)
 
   return (
@@ -101,6 +107,7 @@ export default function ListPage() {
       <TaskDetailDrawer
         task={selectedTask}
         projectId={projectId!}
+        workspaceId={project?.workspace_id}
         onClose={() => setSelectedTask(null)}
       />
     </>
