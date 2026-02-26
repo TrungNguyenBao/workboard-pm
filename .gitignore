@@ -41,3 +41,12 @@ test-results/
 
 # Alembic
 alembic/versions/__pycache__/
+
+# AI tooling
+.claude/
+.opencode/
+AGENTS.md
+.repomixignore
+release-manifest.json
+plans/reports/
+plans/templates/
