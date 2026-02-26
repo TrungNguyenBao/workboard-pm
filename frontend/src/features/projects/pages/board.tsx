@@ -20,6 +20,7 @@ import { Header } from '@/features/auth/components/header'
 import { Button } from '@/shared/components/ui/button'
 import { Badge } from '@/shared/components/ui/badge'
 import { useSections, useTasks, useMoveTask, type Task, type Section } from '../hooks/use-project-tasks'
+import { InlineTaskInput } from '../components/inline-task-input'
 
 type BadgeVariant = 'danger' | 'warning' | 'secondary'
 const PRIORITY_COLORS: Record<string, BadgeVariant> = {
@@ -62,7 +63,7 @@ function TaskCard({ task, isDragging }: { task: Task; isDragging?: boolean }) {
   )
 }
 
-function KanbanColumn({ section, tasks }: { section: Section; tasks: Task[] }) {
+function KanbanColumn({ section, tasks, projectId }: { section: Section; tasks: Task[]; projectId: string }) {
   const taskIds = tasks.map((t) => t.id)
   return (
     <div className="flex w-64 flex-shrink-0 flex-col gap-2">
@@ -85,10 +86,7 @@ function KanbanColumn({ section, tasks }: { section: Section; tasks: Task[] }) {
           ))}
         </div>
       </SortableContext>
-      <Button variant="ghost" size="sm" className="w-full justify-start text-neutral-400">
-        <Plus className="h-3.5 w-3.5 mr-1" />
-        Add task
-      </Button>
+      <InlineTaskInput projectId={projectId} sectionId={section.id} variant="card" />
     </div>
   )
 }
@@ -145,6 +143,7 @@ export default function BoardPage() {
                 key={section.id}
                 section={section}
                 tasks={tasksForSection(section.id)}
+                projectId={projectId!}
               />
             ))}
             <Button variant="ghost" className="h-8 flex-shrink-0 self-start text-neutral-400">

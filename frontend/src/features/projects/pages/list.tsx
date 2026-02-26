@@ -5,6 +5,7 @@ import { Header } from '@/features/auth/components/header'
 import { Badge } from '@/shared/components/ui/badge'
 import { cn, formatDate } from '@/shared/lib/utils'
 import { useSections, useTasks, type Task, type Section } from '../hooks/use-project-tasks'
+import { InlineTaskInput } from '../components/inline-task-input'
 import api from '@/shared/lib/api'
 
 const PRIORITY_BADGE: Record<string, string | undefined> = {
@@ -63,6 +64,7 @@ function SectionGroup({ section, tasks, projectId }: { section: Section; tasks: 
       {sectionTasks.map((task) => (
         <TaskRow key={task.id} task={task} projectId={projectId} />
       ))}
+      <InlineTaskInput projectId={projectId} sectionId={section.id} variant="row" />
     </div>
   )
 }
