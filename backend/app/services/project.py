@@ -131,78 +131,80 @@ async def get_project_stats(db: AsyncSession, project_id: uuid.UUID) -> dict:
 
     now = datetime.now(timezone.utc)
 
-    # Per-section stats
-    sec_rows = await db.execute(
-        select(
-            Section.name,
-            func.count(Task.id).label("total"),
-            func.sum(case((Task.status == "completed", 1), else_=0)).label("completed"),
+    # Use consistent snapshot — all queries share a single transaction
+    async with db.begin_nested():
+        # Per-section stats
+        sec_rows = await db.execute(
+            select(
+                Section.name,
+                func.count(Task.id).label("total"),
+                func.sum(case((Task.status == "completed", 1), else_=0)).label("completed"),
+            )
+            .outerjoin(
+                Task,
+                (Task.section_id == Section.id)
+                & Task.deleted_at.is_(None)
+                & Task.parent_id.is_(None),
+            )
+            .where(Section.project_id == project_id)
+            .group_by(Section.id, Section.name, Section.position)
+            .order_by(Section.position)
         )
-        .outerjoin(
-            Task,
-            (Task.section_id == Section.id)
-            & Task.deleted_at.is_(None)
-            & Task.parent_id.is_(None),
-        )
-        .where(Section.project_id == project_id)
-        .group_by(Section.id, Section.name, Section.position)
-        .order_by(Section.position)
-    )
-    by_section = [
-        {"section_name": r.name, "total": r.total or 0, "completed": int(r.completed or 0)}
-        for r in sec_rows
-    ]
+        by_section = [
+            {"section_name": r.name, "total": r.total or 0, "completed": int(r.completed or 0)}
+            for r in sec_rows
+        ]
 
-    # Totals + overdue
-    totals = await db.execute(
-        select(
-            func.count(Task.id).label("total"),
-            func.sum(case((Task.status == "completed", 1), else_=0)).label("completed"),
-            func.sum(
-                case(((Task.due_date < now) & (Task.status != "completed"), 1), else_=0)
-            ).label("overdue"),
-        ).where(
-            Task.project_id == project_id,
-            Task.deleted_at.is_(None),
-            Task.parent_id.is_(None),
+        # Totals + overdue
+        totals = await db.execute(
+            select(
+                func.count(Task.id).label("total"),
+                func.sum(case((Task.status == "completed", 1), else_=0)).label("completed"),
+                func.sum(
+                    case(((Task.due_date < now) & (Task.status != "completed"), 1), else_=0)
+                ).label("overdue"),
+            ).where(
+                Task.project_id == project_id,
+                Task.deleted_at.is_(None),
+                Task.parent_id.is_(None),
+            )
         )
-    )
-    t = totals.one()
+        t = totals.one()
 
-    # By assignee
-    asgn_rows = await db.execute(
-        select(
-            User.name,
-            func.count(Task.id).label("total"),
-            func.sum(case((Task.status == "completed", 1), else_=0)).label("completed"),
+        # By assignee
+        asgn_rows = await db.execute(
+            select(
+                User.name,
+                func.count(Task.id).label("total"),
+                func.sum(case((Task.status == "completed", 1), else_=0)).label("completed"),
+            )
+            .join(User, User.id == Task.assignee_id)
+            .where(
+                Task.project_id == project_id,
+                Task.deleted_at.is_(None),
+                Task.parent_id.is_(None),
+                Task.assignee_id.is_not(None),
+            )
+            .group_by(User.id, User.name)
+            .order_by(func.count(Task.id).desc())
+            .limit(10)
         )
-        .join(User, User.id == Task.assignee_id)
-        .where(
-            Task.project_id == project_id,
-            Task.deleted_at.is_(None),
-            Task.parent_id.is_(None),
-            Task.assignee_id.is_not(None),
-        )
-        .group_by(User.id, User.name)
-        .order_by(func.count(Task.id).desc())
-        .limit(10)
-    )
-    by_assignee = [
-        {"assignee_name": r.name, "total": r.total, "completed": int(r.completed or 0)}
-        for r in asgn_rows
-    ]
+        by_assignee = [
+            {"assignee_name": r.name, "total": r.total, "completed": int(r.completed or 0)}
+            for r in asgn_rows
+        ]
 
-    # By priority
-    prio_rows = await db.execute(
-        select(Task.priority, func.count(Task.id).label("cnt"))
-        .where(
-            Task.project_id == project_id,
-            Task.deleted_at.is_(None),
-            Task.parent_id.is_(None),
+        # By priority — map NULL to "none" for frontend compatibility
+        prio_rows = await db.execute(
+            select(Task.priority, func.count(Task.id).label("cnt"))
+            .where(
+                Task.project_id == project_id,
+                Task.deleted_at.is_(None),
+                Task.parent_id.is_(None),
+            )
+            .group_by(Task.priority)
         )
-        .group_by(Task.priority)
-    )
-    by_priority = {r.priority: r.cnt for r in prio_rows}
+        by_priority = {(r.priority or "none"): r.cnt for r in prio_rows}
 
     total = t.total or 0
     completed = int(t.completed or 0)

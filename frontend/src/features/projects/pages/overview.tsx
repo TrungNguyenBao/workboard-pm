@@ -61,7 +61,7 @@ function ProgressBar({ value, max }: { value: number; max: number }) {
 export default function OverviewPage() {
   const { projectId } = useParams<{ projectId: string }>()
 
-  const { data: stats, isLoading } = useQuery<Stats>({
+  const { data: stats, isLoading, isError } = useQuery<Stats>({
     queryKey: ['project-stats', projectId],
     queryFn: () => api.get(`/projects/${projectId}/stats`).then((r) => r.data),
     enabled: !!projectId,
@@ -79,6 +79,10 @@ export default function OverviewPage() {
         <div className="max-w-3xl mx-auto w-full pt-6 px-6 pb-12 space-y-6">
           {isLoading && (
             <p className="text-sm text-neutral-400 text-center py-16">Loading stats…</p>
+          )}
+
+          {isError && (
+            <p className="text-sm text-red-500 text-center py-16">Failed to load project stats.</p>
           )}
 
           {stats && (
