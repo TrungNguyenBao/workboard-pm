@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import { Sidebar } from './sidebar'
+import { KeyboardShortcutsDialog } from './keyboard-shortcuts-dialog'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import { useSSE } from '@/features/notifications/hooks/use-sse'
 import api from '@/shared/lib/api'
@@ -53,6 +54,18 @@ function SSEMount() {
 }
 
 export function AppShell() {
+  const [shortcutsOpen, setShortcutsOpen] = useState(false)
+
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      const tag = (e.target as HTMLElement).tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement).isContentEditable) return
+      if (e.key === '?') setShortcutsOpen(true)
+    }
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [])
+
   return (
     <WorkspaceBootstrapper>
       <SSEMount />
@@ -64,6 +77,7 @@ export function AppShell() {
           </main>
         </div>
       </div>
+      <KeyboardShortcutsDialog open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
     </WorkspaceBootstrapper>
   )
 }

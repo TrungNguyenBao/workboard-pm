@@ -1,7 +1,8 @@
 import uuid
 from datetime import datetime
+from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class TaskCreate(BaseModel):
@@ -49,8 +50,46 @@ class TaskResponse(BaseModel):
     completed_at: datetime | None
     created_at: datetime
     updated_at: datetime
+    # Enriched fields (populated when relationships are eager-loaded)
+    assignee_name: str | None = None
+    assignee_avatar_url: str | None = None
+    subtask_count: int = 0
+    completed_subtask_count: int = 0
 
     model_config = {"from_attributes": True}
+
+    @model_validator(mode="before")
+    @classmethod
+    def extract_from_orm(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            return data
+        # Read from already-loaded __dict__ to avoid triggering lazy loads
+        d = data.__dict__
+        assignee = d.get("assignee")
+        subtasks = d.get("subtasks") or []
+        return {
+            "id": data.id,
+            "project_id": data.project_id,
+            "section_id": data.section_id,
+            "assignee_id": data.assignee_id,
+            "created_by_id": data.created_by_id,
+            "parent_id": data.parent_id,
+            "title": data.title,
+            "description": data.description,
+            "status": data.status,
+            "priority": data.priority,
+            "position": data.position,
+            "due_date": data.due_date,
+            "completed_at": data.completed_at,
+            "created_at": data.created_at,
+            "updated_at": data.updated_at,
+            "assignee_name": assignee.name if assignee else None,
+            "assignee_avatar_url": assignee.avatar_url if assignee else None,
+            "subtask_count": len(subtasks),
+            "completed_subtask_count": sum(
+                1 for s in subtasks if s.status == "completed"
+            ),
+        }
 
 
 class TaskDetailResponse(TaskResponse):

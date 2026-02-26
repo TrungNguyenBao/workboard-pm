@@ -25,6 +25,11 @@ export interface Task {
   completed_at: string | null
   created_at: string
   updated_at: string
+  // Enriched fields
+  assignee_name: string | null
+  assignee_avatar_url: string | null
+  subtask_count: number
+  completed_subtask_count: number
 }
 
 export function useSections(projectId: string) {

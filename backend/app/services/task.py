@@ -55,7 +55,14 @@ async def list_tasks(
     section_id: uuid.UUID | None = None,
     include_subtasks: bool = False,
 ) -> list[Task]:
-    q = select(Task).where(Task.project_id == project_id, Task.deleted_at.is_(None))
+    q = (
+        select(Task)
+        .where(Task.project_id == project_id, Task.deleted_at.is_(None))
+        .options(
+            selectinload(Task.assignee),
+            selectinload(Task.subtasks),
+        )
+    )
     if section_id is not None:
         q = q.where(Task.section_id == section_id)
     if not include_subtasks:

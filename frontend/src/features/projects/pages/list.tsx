@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { CheckSquare, Circle, ChevronRight, ArrowUpDown, Search, X } from 'lucide-react'
+import { CheckSquare, Circle, ChevronRight, ArrowUpDown, Search, X, CheckCircle2 } from 'lucide-react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Badge } from '@/shared/components/ui/badge'
+import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/components/ui/dropdown-menu'
 import { Button } from '@/shared/components/ui/button'
 import { cn, formatDate } from '@/shared/lib/utils'
@@ -53,6 +54,12 @@ function TaskRow({ task, projectId, onOpen }: { task: Task; projectId: string; o
       </button>
       <span className={cn('flex-1 text-sm text-neutral-900', task.status === 'completed' && 'line-through')}>{task.title}</span>
       <div className="flex items-center gap-2 ml-auto">
+        {task.subtask_count > 0 && (
+          <span className="text-xs text-neutral-400 flex items-center gap-0.5">
+            <CheckCircle2 className="h-3 w-3" />
+            {task.completed_subtask_count}/{task.subtask_count}
+          </span>
+        )}
         {PRIORITY_BADGE[task.priority] && (
           <Badge variant={PRIORITY_BADGE[task.priority]} className="text-xs capitalize">{task.priority}</Badge>
         )}
@@ -65,6 +72,14 @@ function TaskRow({ task, projectId, onOpen }: { task: Task; projectId: string; o
           )}>
             {formatDate(task.due_date)}
           </span>
+        )}
+        {task.assignee_name && (
+          <Avatar className="h-5 w-5 flex-shrink-0" title={task.assignee_name}>
+            <AvatarImage src={task.assignee_avatar_url ?? undefined} />
+            <AvatarFallback className="text-[9px] bg-primary/10 text-primary">
+              {task.assignee_name.slice(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
         )}
       </div>
     </div>
