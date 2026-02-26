@@ -21,6 +21,7 @@ import { Button } from '@/shared/components/ui/button'
 import { Badge } from '@/shared/components/ui/badge'
 import { useSections, useTasks, useMoveTask, type Task, type Section } from '../hooks/use-project-tasks'
 import { InlineTaskInput } from '../components/inline-task-input'
+import { TaskDetailDrawer } from '@/features/tasks/components/task-detail-drawer'
 
 type BadgeVariant = 'danger' | 'warning' | 'secondary'
 const PRIORITY_COLORS: Record<string, BadgeVariant> = {
@@ -30,7 +31,7 @@ const PRIORITY_COLORS: Record<string, BadgeVariant> = {
   none: 'secondary',
 }
 
-function TaskCard({ task, isDragging }: { task: Task; isDragging?: boolean }) {
+function TaskCard({ task, isDragging, onOpen }: { task: Task; isDragging?: boolean; onOpen?: (t: Task) => void }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: task.id })
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -46,7 +47,12 @@ function TaskCard({ task, isDragging }: { task: Task; isDragging?: boolean }) {
       {...listeners}
       className="group bg-white rounded-md border border-border p-3 shadow-card cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow"
     >
-      <p className="text-sm text-neutral-900 leading-snug">{task.title}</p>
+      <p
+        className="text-sm text-neutral-900 leading-snug hover:text-primary cursor-pointer"
+        onClick={(e) => { e.stopPropagation(); onOpen?.(task) }}
+      >
+        {task.title}
+      </p>
       <div className="flex items-center gap-2 mt-2">
         {task.priority !== 'none' && (
           <Badge variant={PRIORITY_COLORS[task.priority]} className="text-xs">
@@ -63,7 +69,7 @@ function TaskCard({ task, isDragging }: { task: Task; isDragging?: boolean }) {
   )
 }
 
-function KanbanColumn({ section, tasks, projectId }: { section: Section; tasks: Task[]; projectId: string }) {
+function KanbanColumn({ section, tasks, projectId, onOpenTask }: { section: Section; tasks: Task[]; projectId: string; onOpenTask: (t: Task) => void }) {
   const taskIds = tasks.map((t) => t.id)
   return (
     <div className="flex w-64 flex-shrink-0 flex-col gap-2">
@@ -82,7 +88,7 @@ function KanbanColumn({ section, tasks, projectId }: { section: Section; tasks: 
       <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
         <div className="min-h-[60px] space-y-2 rounded-md bg-neutral-50 p-2">
           {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} />
+            <TaskCard key={task.id} task={task} onOpen={onOpenTask} />
           ))}
         </div>
       </SortableContext>
@@ -98,6 +104,7 @@ export default function BoardPage() {
   const moveTask = useMoveTask(projectId!)
 
   const [activeTask, setActiveTask] = useState<Task | null>(null)
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
 
@@ -133,29 +140,37 @@ export default function BoardPage() {
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <Header title="Board" />
-      <div className="flex-1 overflow-x-auto p-6">
-        <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-          <div className="flex gap-4 h-full">
-            {sortedSections.map((section) => (
-              <KanbanColumn
-                key={section.id}
-                section={section}
-                tasks={tasksForSection(section.id)}
-                projectId={projectId!}
-              />
-            ))}
-            <Button variant="ghost" className="h-8 flex-shrink-0 self-start text-neutral-400">
-              <Plus className="h-4 w-4 mr-1" />
-              Add section
-            </Button>
-          </div>
-          <DragOverlay>
-            {activeTask && <TaskCard task={activeTask} isDragging />}
-          </DragOverlay>
-        </DndContext>
+    <>
+      <div className="flex flex-col h-full">
+        <Header title="Board" />
+        <div className="flex-1 overflow-x-auto p-6">
+          <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+            <div className="flex gap-4 h-full">
+              {sortedSections.map((section) => (
+                <KanbanColumn
+                  key={section.id}
+                  section={section}
+                  tasks={tasksForSection(section.id)}
+                  projectId={projectId!}
+                  onOpenTask={setSelectedTask}
+                />
+              ))}
+              <Button variant="ghost" className="h-8 flex-shrink-0 self-start text-neutral-400">
+                <Plus className="h-4 w-4 mr-1" />
+                Add section
+              </Button>
+            </div>
+            <DragOverlay>
+              {activeTask && <TaskCard task={activeTask} isDragging />}
+            </DragOverlay>
+          </DndContext>
+        </div>
       </div>
-    </div>
+      <TaskDetailDrawer
+        task={selectedTask}
+        projectId={projectId!}
+        onClose={() => setSelectedTask(null)}
+      />
+    </>
   )
 }
