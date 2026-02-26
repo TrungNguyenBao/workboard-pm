@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { CheckSquare, Circle, ChevronRight, ArrowUpDown } from 'lucide-react'
+import { CheckSquare, Circle, ChevronRight, ArrowUpDown, Search, X } from 'lucide-react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Badge } from '@/shared/components/ui/badge'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/components/ui/dropdown-menu'
@@ -71,13 +71,14 @@ function TaskRow({ task, projectId, onOpen }: { task: Task; projectId: string; o
   )
 }
 
-function SectionGroup({ section, tasks, projectId, onOpenTask, filterPriority, filterStatus, sortBy }: { section: Section; tasks: Task[]; projectId: string; onOpenTask: (t: Task) => void; filterPriority: PriorityFilter; filterStatus: StatusFilter; sortBy: SortBy }) {
+function SectionGroup({ section, tasks, projectId, onOpenTask, filterPriority, filterStatus, sortBy, searchText }: { section: Section; tasks: Task[]; projectId: string; onOpenTask: (t: Task) => void; filterPriority: PriorityFilter; filterStatus: StatusFilter; sortBy: SortBy; searchText: string }) {
   const [collapsed, setCollapsed] = useState(false)
 
   const sectionTasks = tasks
     .filter((t) => t.section_id === section.id && !t.parent_id)
     .filter((t) => filterPriority === 'all' || t.priority === filterPriority)
     .filter((t) => filterStatus === 'all' || t.status === filterStatus)
+    .filter((t) => !searchText || t.title.toLowerCase().includes(searchText.toLowerCase()))
     .sort((a, b) => {
       if (sortBy === 'priority') return PRIORITY_RANK[b.priority] - PRIORITY_RANK[a.priority]
       if (sortBy === 'due_date') {
@@ -122,6 +123,7 @@ export default function ListPage() {
   const [filterPriority, setFilterPriority] = useState<PriorityFilter>('all')
   const [filterStatus, setFilterStatus] = useState<StatusFilter>('all')
   const [sortBy, setSortBy] = useState<SortBy>('position')
+  const [searchText, setSearchText] = useState('')
 
   const { data: project } = useQuery<{ workspace_id: string }>({
     queryKey: ['project', projectId],
@@ -145,6 +147,20 @@ export default function ListPage() {
           <div className="flex items-center gap-3 px-4 py-2 border-b border-border bg-neutral-50 text-xs font-medium text-neutral-500 uppercase tracking-wide">
             <span className="w-4" />
             <span className="flex-1">Task</span>
+            <div className="relative flex items-center">
+              <Search className="absolute left-2 h-3 w-3 text-neutral-400 pointer-events-none" />
+              <input
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                placeholder="Search tasks…"
+                className="pl-6 pr-6 py-0.5 text-xs rounded border border-transparent hover:border-border focus:border-border focus:ring-1 focus:ring-primary/40 outline-none bg-transparent normal-case font-normal text-neutral-700 placeholder:text-neutral-400 w-32 focus:w-44 transition-all"
+              />
+              {searchText && (
+                <button onClick={() => setSearchText('')} className="absolute right-1 text-neutral-400 hover:text-neutral-700">
+                  <X className="h-3 w-3" />
+                </button>
+              )}
+            </div>
             <span className="w-20 text-right">Priority</span>
             <span className="w-20 text-right">Due</span>
             <DropdownMenu>
@@ -172,6 +188,7 @@ export default function ListPage() {
               filterPriority={filterPriority}
               filterStatus={filterStatus}
               sortBy={sortBy}
+              searchText={searchText}
             />
           ))}
         </div>

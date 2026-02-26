@@ -10,11 +10,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { cn, generateInitials } from '@/shared/lib/utils'
 import { CreateWorkspaceDialog } from '@/features/workspaces/components/create-workspace-dialog'
 import { CreateProjectDialog } from '@/features/projects/components/create-project-dialog'
+import { ProjectSettingsDialog } from '@/features/projects/components/project-settings-dialog'
 import { InviteMembersDialog } from '@/features/workspaces/components/invite-members-dialog'
 import api from '@/shared/lib/api'
 
 interface Workspace { id: string; name: string; slug: string }
-interface Project { id: string; name: string; color: string }
+interface Project { id: string; name: string; color: string; description: string | null; is_archived: boolean }
 
 export function Sidebar() {
   const user = useAuthStore((s) => s.user)
@@ -29,6 +30,8 @@ export function Sidebar() {
   const [projDialogOpen, setProjDialogOpen] = useState(false)
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
   const [wsPickerOpen, setWsPickerOpen] = useState(false)
+  const [wsRenaming, setWsRenaming] = useState(false)
+  const [wsRenameInput, setWsRenameInput] = useState('')
 
   // Fetch all workspaces for the switcher
   const { data: workspaces = [] } = useQuery<Workspace[]>({
@@ -80,23 +83,37 @@ export function Sidebar() {
           {wsPickerOpen && (
             <div className="absolute left-0 right-0 top-full z-50 bg-white border border-border rounded-b-md shadow-popover">
               {workspaces.map((ws) => (
-                <button
-                  key={ws.id}
-                  className={cn(
-                    'flex w-full items-center gap-2 px-4 py-2 text-sm hover:bg-neutral-50 transition-colors',
-                    ws.id === activeWorkspaceId && 'text-primary font-medium',
+                <div key={ws.id} className="flex items-center group">
+                  <button
+                    className={cn(
+                      'flex flex-1 items-center gap-2 px-4 py-2 text-sm hover:bg-neutral-50 transition-colors',
+                      ws.id === activeWorkspaceId && 'text-primary font-medium',
+                    )}
+                    onClick={() => {
+                      setActiveWorkspace(ws.id)
+                      qc.invalidateQueries({ queryKey: ['projects'] })
+                      setWsPickerOpen(false)
+                    }}
+                  >
+                    <div className="h-5 w-5 rounded bg-primary/80 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                      {ws.name[0].toUpperCase()}
+                    </div>
+                    <span className="truncate">{ws.name}</span>
+                  </button>
+                  {ws.id === activeWorkspaceId && (
+                    <button
+                      className="pr-3 opacity-0 group-hover:opacity-100 text-neutral-400 hover:text-neutral-700 transition-all"
+                      title="Rename workspace"
+                      onClick={() => {
+                        setWsRenameInput(ws.name)
+                        setWsRenaming(true)
+                        setWsPickerOpen(false)
+                      }}
+                    >
+                      <Pencil className="h-3 w-3" />
+                    </button>
                   )}
-                  onClick={() => {
-                    setActiveWorkspace(ws.id)
-                    qc.invalidateQueries({ queryKey: ['projects'] })
-                    setWsPickerOpen(false)
-                  }}
-                >
-                  <div className="h-5 w-5 rounded bg-primary/80 flex items-center justify-center text-white text-xs font-bold">
-                    {ws.name[0].toUpperCase()}
-                  </div>
-                  {ws.name}
-                </button>
+                </div>
               ))}
               <button
                 className="flex w-full items-center gap-2 px-4 py-2 text-sm text-neutral-500 hover:bg-neutral-50 border-t border-border transition-colors"
@@ -105,6 +122,40 @@ export function Sidebar() {
                 <Plus className="h-3.5 w-3.5" />
                 New workspace
               </button>
+            </div>
+          )}
+          {wsRenaming && (
+            <div className="absolute left-0 right-0 top-full z-50 bg-white border border-border rounded-b-md shadow-popover p-3">
+              <p className="text-xs font-medium text-neutral-500 mb-2">Rename workspace</p>
+              <input
+                autoFocus
+                value={wsRenameInput}
+                onChange={(e) => setWsRenameInput(e.target.value)}
+                onKeyDown={async (e) => {
+                  if (e.key === 'Enter' && wsRenameInput.trim() && activeWorkspaceId) {
+                    await api.patch(`/workspaces/${activeWorkspaceId}`, { name: wsRenameInput.trim() })
+                    qc.invalidateQueries({ queryKey: ['workspaces'] })
+                    setWsRenaming(false)
+                  }
+                  if (e.key === 'Escape') setWsRenaming(false)
+                }}
+                className="w-full rounded border border-border px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-primary/40 mb-2"
+              />
+              <div className="flex gap-2 justify-end">
+                <button className="text-xs text-neutral-400 hover:text-neutral-700" onClick={() => setWsRenaming(false)}>Cancel</button>
+                <button
+                  className="text-xs text-primary hover:text-primary/80 font-medium"
+                  onClick={async () => {
+                    if (wsRenameInput.trim() && activeWorkspaceId) {
+                      await api.patch(`/workspaces/${activeWorkspaceId}`, { name: wsRenameInput.trim() })
+                      qc.invalidateQueries({ queryKey: ['workspaces'] })
+                      setWsRenaming(false)
+                    }
+                  }}
+                >
+                  Save
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -127,7 +178,7 @@ export function Sidebar() {
                 <span className="text-xs font-semibold text-neutral-400 uppercase tracking-wide">Projects</span>
               </div>
 
-              {projects.map((p) => (
+              {projects.filter((p) => !p.is_archived).map((p) => (
                 <ProjectNavItem
                   key={p.id}
                   project={p}
@@ -211,11 +262,12 @@ export function Sidebar() {
   )
 }
 
-function ProjectNavItem({ project, active, workspaceId }: { project: { id: string; name: string; color: string }; active: boolean; workspaceId: string }) {
+function ProjectNavItem({ project, active, workspaceId }: { project: Project; active: boolean; workspaceId: string }) {
   const navigate = useNavigate()
   const qc = useQueryClient()
   const [renaming, setRenaming] = useState(false)
   const [nameInput, setNameInput] = useState(project.name)
+  const [settingsOpen, setSettingsOpen] = useState(false)
 
   const rename = useMutation({
     mutationFn: (name: string) => api.patch(`/projects/${project.id}`, { name }).then((r) => r.data),
@@ -279,6 +331,10 @@ function ProjectNavItem({ project, active, workspaceId }: { project: { id: strin
             <Pencil className="h-3.5 w-3.5 mr-2" />
             Rename
           </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
+            <Settings className="h-3.5 w-3.5 mr-2" />
+            Settings
+          </DropdownMenuItem>
           <DropdownMenuItem
             className="text-red-600 focus:text-red-600"
             onClick={() => {
@@ -290,6 +346,12 @@ function ProjectNavItem({ project, active, workspaceId }: { project: { id: strin
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      <ProjectSettingsDialog
+        project={project}
+        workspaceId={workspaceId}
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+      />
     </div>
   )
 }
