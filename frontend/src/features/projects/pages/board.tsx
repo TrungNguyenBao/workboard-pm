@@ -15,9 +15,9 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { Plus, MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
+import { CheckCircle2, Circle, Plus, MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/components/ui/dropdown-menu'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/shared/components/ui/button'
 import { Badge } from '@/shared/components/ui/badge'
 import { cn } from '@/shared/lib/utils'
@@ -36,7 +36,8 @@ const PRIORITY_COLORS: Record<string, BadgeVariant> = {
   none: 'secondary',
 }
 
-function TaskCard({ task, isDragging, onOpen }: { task: Task; isDragging?: boolean; onOpen?: (t: Task) => void }) {
+function TaskCard({ task, isDragging, onOpen, projectId }: { task: Task; isDragging?: boolean; onOpen?: (t: Task) => void; projectId: string }) {
+  const qc = useQueryClient()
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: task.id })
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -44,21 +45,67 @@ function TaskCard({ task, isDragging, onOpen }: { task: Task; isDragging?: boole
     opacity: isDragging ? 0 : 1,
   }
 
+  const toggleComplete = useMutation({
+    mutationFn: () =>
+      api.patch(`/projects/${projectId}/tasks/${task.id}`, {
+        status: task.status === 'completed' ? 'incomplete' : 'completed',
+      }).then((r) => r.data),
+    onMutate: async () => {
+      await qc.cancelQueries({ queryKey: ['tasks', projectId] })
+      const prev = qc.getQueryData<Task[]>(['tasks', projectId])
+      qc.setQueryData<Task[]>(['tasks', projectId], (old) =>
+        old?.map((t) =>
+          t.id === task.id
+            ? { ...t, status: task.status === 'completed' ? 'incomplete' : 'completed' }
+            : t
+        ) ?? []
+      )
+      return { prev }
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.prev) qc.setQueryData(['tasks', projectId], ctx.prev)
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: ['tasks', projectId] }),
+  })
+
+  const isCompleted = task.status === 'completed'
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
-      className="group bg-white rounded-md border border-border p-3 shadow-card cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow"
+      className={cn(
+        'group bg-white rounded-md border p-3 shadow-card cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow',
+        isCompleted ? 'border-border opacity-60' : 'border-border',
+      )}
     >
-      <p
-        className="text-sm text-neutral-900 leading-snug hover:text-primary cursor-pointer"
-        onClick={(e) => { e.stopPropagation(); onOpen?.(task) }}
-      >
-        {task.title}
-      </p>
-      <div className="flex items-center gap-2 mt-2">
+      <div className="flex items-start gap-2">
+        <button
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => { e.stopPropagation(); toggleComplete.mutate() }}
+          className="mt-0.5 flex-shrink-0 text-neutral-300 hover:text-primary transition-colors"
+          title={isCompleted ? 'Mark incomplete' : 'Mark complete'}
+        >
+          {isCompleted
+            ? <CheckCircle2 className="h-4 w-4 text-primary" />
+            : <Circle className="h-4 w-4" />
+          }
+        </button>
+        <p
+          className={cn(
+            'text-sm leading-snug cursor-pointer flex-1',
+            isCompleted
+              ? 'line-through text-neutral-400'
+              : 'text-neutral-900 hover:text-primary',
+          )}
+          onClick={(e) => { e.stopPropagation(); onOpen?.(task) }}
+        >
+          {task.title}
+        </p>
+      </div>
+      <div className="flex items-center gap-2 mt-2 ml-6">
         {task.priority !== 'none' && (
           <Badge variant={PRIORITY_COLORS[task.priority]} className="text-xs">
             {task.priority}
@@ -67,7 +114,7 @@ function TaskCard({ task, isDragging, onOpen }: { task: Task; isDragging?: boole
         {task.due_date && (
           <span className={cn(
             'text-xs',
-            new Date(task.due_date) < new Date() && task.status !== 'completed'
+            new Date(task.due_date) < new Date() && !isCompleted
               ? 'text-red-500 font-medium'
               : 'text-neutral-400',
           )}>
@@ -149,7 +196,7 @@ function KanbanColumn({ section, tasks, projectId, onOpenTask }: { section: Sect
             <p className="py-4 text-center text-xs text-neutral-400">No tasks</p>
           )}
           {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} onOpen={onOpenTask} />
+            <TaskCard key={task.id} task={task} onOpen={onOpenTask} projectId={projectId} />
           ))}
         </div>
       </SortableContext>
@@ -289,7 +336,7 @@ export default function BoardPage() {
               <AddSectionInput projectId={projectId!} sections={sortedSections} />
             </div>
             <DragOverlay>
-              {activeTask && <TaskCard task={activeTask} isDragging />}
+              {activeTask && <TaskCard task={activeTask} isDragging projectId={projectId!} />}
             </DragOverlay>
           </DndContext>
         </div>

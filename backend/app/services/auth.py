@@ -104,6 +104,23 @@ async def refresh_tokens(
     return user, access_token, raw_refresh
 
 
+async def update_user(db: AsyncSession, user: User, data) -> User:
+    """Update user profile. `data` is a UserUpdateRequest instance."""
+    if data.new_password:
+        if not data.current_password:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Current password required")
+        if not verify_password(data.current_password, user.hashed_password):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Current password incorrect")
+        user.hashed_password = hash_password(data.new_password)
+    if data.name is not None:
+        user.name = data.name
+    if data.avatar_url is not None:
+        user.avatar_url = data.avatar_url
+    await db.commit()
+    await db.refresh(user)
+    return user
+
+
 async def logout_user(db: AsyncSession, raw_refresh_token: str) -> None:
     token_hash = hashlib.sha256(raw_refresh_token.encode()).hexdigest()
     rt = await db.scalar(

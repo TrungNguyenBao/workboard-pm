@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { CheckSquare, Circle } from 'lucide-react'
+import { CheckCircle2, CheckSquare, Circle } from 'lucide-react'
 import { Header } from '@/features/auth/components/header'
 import { Badge } from '@/shared/components/ui/badge'
 import { cn, formatDate } from '@/shared/lib/utils'
@@ -18,23 +19,43 @@ function useMyTasks() {
   })
 }
 
-function TaskRow({ task }: { task: Task }) {
+function TaskRow({ task, workspaceId }: { task: Task; workspaceId: string }) {
   const qc = useQueryClient()
+  const [completing, setCompleting] = useState(false)
+
   const toggle = useMutation({
     mutationFn: () =>
       api
         .patch(`/projects/${task.project_id}/tasks/${task.id}`, { status: 'completed' })
         .then((r) => r.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['my-tasks'] }),
+    onMutate: () => {
+      setCompleting(true)
+    },
+    onSuccess: () => {
+      // Brief delay so the checkmark is visible before disappearing
+      setTimeout(() => {
+        qc.setQueryData<Task[]>(['my-tasks', workspaceId], (old) =>
+          old?.filter((t) => t.id !== task.id) ?? []
+        )
+        qc.invalidateQueries({ queryKey: ['my-tasks'] })
+      }, 600)
+    },
+    onError: () => setCompleting(false),
   })
 
   return (
-    <div className="flex items-center gap-3 px-4 py-2.5 border-b border-border hover:bg-neutral-50 group">
+    <div className={cn(
+      'flex items-center gap-3 px-4 py-2.5 border-b border-border hover:bg-neutral-50 transition-opacity',
+      completing && 'opacity-50',
+    )}>
       <button
-        onClick={() => toggle.mutate()}
+        onClick={() => !completing && toggle.mutate()}
         className="flex-shrink-0 text-neutral-300 hover:text-primary transition-colors"
       >
-        <Circle className="h-4 w-4" />
+        {completing
+          ? <CheckCircle2 className="h-4 w-4 text-primary animate-pulse" />
+          : <Circle className="h-4 w-4" />
+        }
       </button>
       <span className="flex-1 text-sm text-neutral-900">{task.title}</span>
       <div className="flex items-center gap-2">
@@ -60,6 +81,7 @@ function TaskRow({ task }: { task: Task }) {
 }
 
 export default function MyTasksPage() {
+  const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId)
   const { data: tasks = [], isLoading } = useMyTasks()
 
   const overdue = tasks.filter((t) => t.due_date && new Date(t.due_date) < new Date())
@@ -86,7 +108,7 @@ export default function MyTasksPage() {
               <span className="text-xs font-semibold text-red-600 uppercase tracking-wide">Overdue</span>
               <Badge variant="danger">{overdue.length}</Badge>
             </div>
-            {overdue.map((t) => <TaskRow key={t.id} task={t} />)}
+            {overdue.map((t) => <TaskRow key={t.id} task={t} workspaceId={activeWorkspaceId!} />)}
           </section>
         )}
 
@@ -96,7 +118,7 @@ export default function MyTasksPage() {
               <span className="text-xs font-semibold text-neutral-500 uppercase tracking-wide">Upcoming</span>
               <Badge variant="secondary">{upcoming.length}</Badge>
             </div>
-            {upcoming.map((t) => <TaskRow key={t.id} task={t} />)}
+            {upcoming.map((t) => <TaskRow key={t.id} task={t} workspaceId={activeWorkspaceId!} />)}
           </section>
         )}
       </div>

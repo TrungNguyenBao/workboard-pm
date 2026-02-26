@@ -47,10 +47,11 @@ async def send_due_reminders(ctx: dict) -> int:
 class WorkerSettings:
     redis_settings = None  # set dynamically
     functions = [send_due_reminders]
-    cron_jobs = []
 
     @classmethod
     def from_config(cls):
         import arq
+        from arq import cron
         cls.redis_settings = arq.connections.RedisSettings.from_dsn(settings.REDIS_URL)
+        cls.cron_jobs = [cron(send_due_reminders, hour=8, minute=0)]
         return cls

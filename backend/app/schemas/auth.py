@@ -27,3 +27,10 @@ class UserResponse(BaseModel):
     is_active: bool
 
     model_config = {"from_attributes": True}
+
+
+class UserUpdateRequest(BaseModel):
+    name: str | None = Field(default=None, min_length=1, max_length=255)
+    avatar_url: str | None = None
+    current_password: str | None = None
+    new_password: str | None = Field(default=None, min_length=8, max_length=128)

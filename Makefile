@@ -56,6 +56,9 @@ docker-down:
 docker-logs:
 	docker-compose logs -f
 
+run-worker:
+	cd backend && uv run arq app.worker.tasks.WorkerSettings
+
 # Install dependencies
 install:
 	cd backend && uv sync && cd ../frontend && npm install && cd ../e2e && npm install

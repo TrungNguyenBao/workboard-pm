@@ -16,6 +16,7 @@ interface AuthState {
   register: (email: string, name: string, password: string) => Promise<void>
   logout: () => Promise<void>
   fetchMe: () => Promise<void>
+  setUser: (user: AuthUser) => void
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -40,6 +41,10 @@ export const useAuthStore = create<AuthState>((set) => ({
     await api.post('/auth/logout').catch(() => {})
     setAccessToken(null)
     set({ user: null })
+  },
+
+  setUser(user: AuthUser) {
+    set({ user })
   },
 
   async fetchMe() {

@@ -10,6 +10,8 @@ const MyTasksPage = lazy(() => import('@/features/dashboard/pages/my-tasks'))
 const BoardPage = lazy(() => import('@/features/projects/pages/board'))
 const ListPage = lazy(() => import('@/features/projects/pages/list'))
 const CalendarPage = lazy(() => import('@/features/projects/pages/calendar'))
+const SettingsPage = lazy(() => import('@/features/settings/pages/settings'))
+const MembersPage = lazy(() => import('@/features/workspaces/pages/members'))
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const user = useAuthStore((s) => s.user)
@@ -34,6 +36,8 @@ export function AppRouter() {
           <Route element={<RequireAuth><AppShell /></RequireAuth>}>
             <Route index element={<Navigate to="/my-tasks" replace />} />
             <Route path="/my-tasks" element={<MyTasksPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/members" element={<MembersPage />} />
             <Route path="/projects/:projectId/board" element={<BoardPage />} />
             <Route path="/projects/:projectId/list" element={<ListPage />} />
             <Route path="/projects/:projectId/calendar" element={<CalendarPage />} />

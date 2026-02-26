@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { ChevronDown, Home, LogOut, MoreHorizontal, Pencil, Plus, Trash2, UserPlus } from 'lucide-react'
+import { ChevronDown, Home, LogOut, MoreHorizontal, Pencil, Plus, Settings, Trash2, Users, UserPlus } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '@/stores/auth.store'
 import { useWorkspaceStore } from '@/stores/workspace.store'
@@ -121,6 +121,7 @@ export function Sidebar() {
           ) : (
             <>
               <NavItem to="/my-tasks" icon={<Home className="h-4 w-4" />} label="My Tasks" active={isActive('/my-tasks')} />
+              <NavItem to="/members" icon={<Users className="h-4 w-4" />} label="Members" active={isActive('/members')} />
 
               <div className="pt-4 pb-1 px-2">
                 <span className="text-xs font-semibold text-neutral-400 uppercase tracking-wide">Projects</span>
@@ -159,11 +160,24 @@ export function Sidebar() {
 
         {/* User */}
         <div className="border-t border-border p-3 flex items-center gap-2">
-          <Avatar className="h-7 w-7 flex-shrink-0">
-            <AvatarImage src={user?.avatar_url ?? undefined} />
-            <AvatarFallback>{generateInitials(user?.name ?? 'U')}</AvatarFallback>
-          </Avatar>
-          <span className="text-sm text-neutral-700 flex-1 truncate">{user?.name}</span>
+          <button
+            onClick={() => navigate('/settings')}
+            className="flex items-center gap-2 flex-1 min-w-0 hover:opacity-80 transition-opacity"
+            title="Profile settings"
+          >
+            <Avatar className="h-7 w-7 flex-shrink-0">
+              <AvatarImage src={user?.avatar_url ?? undefined} />
+              <AvatarFallback>{generateInitials(user?.name ?? 'U')}</AvatarFallback>
+            </Avatar>
+            <span className="text-sm text-neutral-700 flex-1 truncate text-left">{user?.name}</span>
+          </button>
+          <button
+            onClick={() => navigate('/settings')}
+            className="p-1 text-neutral-400 hover:text-neutral-700 rounded"
+            title="Settings"
+          >
+            <Settings className="h-3.5 w-3.5" />
+          </button>
           <button
             onClick={async () => { await logout(); navigate('/login') }}
             className="p-1 text-neutral-400 hover:text-neutral-700 rounded"
