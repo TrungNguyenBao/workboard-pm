@@ -1,10 +1,9 @@
 import uuid as _uuid
 
-from fastapi import Depends, HTTPException, Request, status
+import jwt
+from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
-
-import jwt
 
 from app.core.database import get_db
 from app.core.security import decode_access_token

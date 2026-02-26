@@ -1,4 +1,4 @@
-import { Bell, Search } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/shared/components/ui/button'
 import { NotificationBell } from '@/features/notifications/components/notification-bell'

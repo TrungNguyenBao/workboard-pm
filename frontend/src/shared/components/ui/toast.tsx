@@ -18,6 +18,7 @@ interface ToastStore {
   remove: (id: string) => void
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useToastStore = create<ToastStore>((set) => ({
   toasts: [],
   add: (t) =>
@@ -27,6 +28,7 @@ export const useToastStore = create<ToastStore>((set) => ({
   remove: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
 }))
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function toast(t: Omit<ToastItem, 'id'>) {
   useToastStore.getState().add(t)
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Command } from 'cmdk'
-import { Search, CheckSquare, FolderOpen } from 'lucide-react'
+import { Search, CheckSquare } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { Dialog, DialogContent } from '@/shared/components/ui/dialog'

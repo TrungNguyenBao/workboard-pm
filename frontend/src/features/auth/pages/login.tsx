@@ -32,8 +32,9 @@ export default function LoginPage() {
     try {
       await login(data.email, data.password)
       navigate('/')
-    } catch (err: any) {
-      toast({ title: 'Login failed', description: err?.response?.data?.detail ?? 'Please try again', variant: 'error' })
+    } catch (err) {
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      toast({ title: 'Login failed', description: detail ?? 'Please try again', variant: 'error' })
     } finally {
       setLoading(false)
     }

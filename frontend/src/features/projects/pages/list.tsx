@@ -7,7 +7,7 @@ import { cn, formatDate } from '@/shared/lib/utils'
 import { useSections, useTasks, type Task, type Section } from '../hooks/use-project-tasks'
 import api from '@/shared/lib/api'
 
-const PRIORITY_BADGE: Record<string, any> = {
+const PRIORITY_BADGE: Record<string, string | undefined> = {
   high: 'danger',
   medium: 'warning',
   low: 'secondary',

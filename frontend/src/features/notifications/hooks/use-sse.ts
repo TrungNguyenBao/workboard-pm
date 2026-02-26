@@ -28,7 +28,9 @@ export function useSSE() {
         if (data.type === 'task_updated' || data.type === 'task_created') {
           qc.invalidateQueries({ queryKey: ['tasks'] })
         }
-      } catch {}
+      } catch {
+        // ignore JSON parse errors from malformed SSE data
+      }
     }
 
     es.onerror = () => {

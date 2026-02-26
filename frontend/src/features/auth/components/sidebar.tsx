@@ -1,11 +1,8 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import {
-  CheckSquare,
-  FolderOpen,
   Home,
   LogOut,
   Plus,
-  Settings,
 } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { useAuthStore } from '@/stores/auth.store'

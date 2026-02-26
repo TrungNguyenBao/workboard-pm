@@ -4,17 +4,13 @@ from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.dependencies.auth import get_current_user
 from app.dependencies.rbac import require_project_role
 from app.models.user import User
 from app.schemas.task import (
-    TagCreate,
     TaskCreate,
-    TaskDetailResponse,
     TaskMoveRequest,
     TaskResponse,
     TaskUpdate,
-    TagResponse,
 )
 from app.services.task import (
     add_follower,
@@ -29,7 +25,6 @@ from app.services.task import (
     search_tasks,
     update_task,
 )
-from app.models.tag import Tag
 
 router = APIRouter(prefix="/projects/{project_id}/tasks", tags=["tasks"])
 

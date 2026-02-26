@@ -33,8 +33,9 @@ export default function RegisterPage() {
     try {
       await register_(data.email, data.name, data.password)
       navigate('/')
-    } catch (err: any) {
-      toast({ title: 'Registration failed', description: err?.response?.data?.detail ?? 'Please try again', variant: 'error' })
+    } catch (err) {
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      toast({ title: 'Registration failed', description: detail ?? 'Please try again', variant: 'error' })
     } finally {
       setLoading(false)
     }

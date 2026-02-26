@@ -1,9 +1,7 @@
-import { useState } from 'react'
 import { Bell } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/shared/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/shared/components/ui/dropdown-menu'
-import { Badge } from '@/shared/components/ui/badge'
 import { formatRelativeTime } from '@/shared/lib/utils'
 import api from '@/shared/lib/api'
 

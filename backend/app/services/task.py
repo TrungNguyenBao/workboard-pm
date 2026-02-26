@@ -2,12 +2,11 @@ import uuid
 from datetime import datetime, timezone
 
 from fastapi import HTTPException, status
-from sqlalchemy import func, select, text
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.models.tag import Tag
-from app.models.task import Task, TaskDependency, TaskFollower, TaskTag
+from app.models.task import Task, TaskFollower, TaskTag
 from app.models.user import User
 from app.schemas.task import TaskCreate, TaskUpdate
 

@@ -2,13 +2,11 @@ import asyncio
 import json
 import uuid
 from collections import defaultdict
-from typing import AsyncGenerator
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.notification import Notification
-from app.schemas.notification import NotificationResponse
 
 # In-process SSE broker: workspace_id → set of queues
 _broker: dict[str, set[asyncio.Queue]] = defaultdict(set)

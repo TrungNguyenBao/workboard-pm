@@ -4,7 +4,6 @@ import { MemoryRouter } from 'react-router-dom'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { QueryClient } from '@tanstack/react-query'
 import LoginPage from '../pages/login'
-import { useAuthStore } from '@/stores/auth.store'
 
 // Mock auth store
 const mockLogin = vi.fn()

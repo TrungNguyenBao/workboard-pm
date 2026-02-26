@@ -9,9 +9,12 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
 )
-from sqlalchemy import Text
 from sqlalchemy.dialects.postgresql import TSVECTOR as PG_TSVECTOR
-from sqlalchemy.types import TypeDecorator, UserDefinedType
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.types import TypeDecorator
+
+from app.core.database import Base
+from app.models.base import SoftDeleteMixin, TimestampMixin
 
 
 class TSVECTOR(TypeDecorator):
@@ -23,10 +26,6 @@ class TSVECTOR(TypeDecorator):
         if dialect.name == "postgresql":
             return dialect.type_descriptor(PG_TSVECTOR())
         return dialect.type_descriptor(Text())
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-from app.core.database import Base
-from app.models.base import SoftDeleteMixin, TimestampMixin
 
 
 class Task(Base, TimestampMixin, SoftDeleteMixin):

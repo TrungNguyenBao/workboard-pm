@@ -3,10 +3,9 @@ import uuid
 from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
-from app.models.workspace import Workspace, WorkspaceMembership
 from app.models.user import User
+from app.models.workspace import Workspace, WorkspaceMembership
 from app.schemas.workspace import WorkspaceCreate, WorkspaceUpdate
 
 

@@ -9,7 +9,7 @@ from app.core.database import get_db
 from app.dependencies.auth import get_current_user
 from app.models.project import Project, ProjectMembership
 from app.models.user import User
-from app.models.workspace import Workspace, WorkspaceMembership
+from app.models.workspace import WorkspaceMembership
 
 WORKSPACE_ROLE_RANK = {"admin": 3, "member": 2, "guest": 1}
 PROJECT_ROLE_RANK = {"owner": 4, "editor": 3, "commenter": 2, "viewer": 1}

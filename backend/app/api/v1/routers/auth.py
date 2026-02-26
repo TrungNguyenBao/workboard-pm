@@ -26,7 +26,7 @@ async def register(
     response: Response,
     db: AsyncSession = Depends(get_db),
 ):
-    user = await register_user(db, data)
+    await register_user(db, data)
     _, access_token, raw_refresh = await login_user(db, data.email, data.password)
     response.set_cookie(COOKIE_NAME, raw_refresh, **COOKIE_OPTS)
     return TokenResponse(access_token=access_token)

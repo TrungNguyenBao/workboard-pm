@@ -1,19 +1,15 @@
 """ARQ background job definitions."""
 from __future__ import annotations
 
-import uuid
-from typing import Any
-
-from arq import ArqRedis
-
 from app.core.config import settings
 
 
 async def send_due_reminders(ctx: dict) -> int:
     """Job: notify users of tasks due within 24 hours."""
     from datetime import datetime, timedelta, timezone
-    from sqlalchemy import select, and_
-    from sqlalchemy.ext.asyncio import AsyncSession
+
+    from sqlalchemy import select
+
     from app.core.database import AsyncSessionLocal
     from app.models.task import Task, TaskFollower
     from app.services.notifications import create_notification

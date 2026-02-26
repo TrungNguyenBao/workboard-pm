@@ -19,10 +19,10 @@ import { Plus, MoreHorizontal } from 'lucide-react'
 import { Header } from '@/features/auth/components/header'
 import { Button } from '@/shared/components/ui/button'
 import { Badge } from '@/shared/components/ui/badge'
-import { cn } from '@/shared/lib/utils'
 import { useSections, useTasks, useMoveTask, type Task, type Section } from '../hooks/use-project-tasks'
 
-const PRIORITY_COLORS: Record<string, string> = {
+type BadgeVariant = 'danger' | 'warning' | 'secondary'
+const PRIORITY_COLORS: Record<string, BadgeVariant> = {
   high: 'danger',
   medium: 'warning',
   low: 'secondary',
@@ -48,7 +48,7 @@ function TaskCard({ task, isDragging }: { task: Task; isDragging?: boolean }) {
       <p className="text-sm text-neutral-900 leading-snug">{task.title}</p>
       <div className="flex items-center gap-2 mt-2">
         {task.priority !== 'none' && (
-          <Badge variant={PRIORITY_COLORS[task.priority] as any} className="text-xs">
+          <Badge variant={PRIORITY_COLORS[task.priority]} className="text-xs">
             {task.priority}
           </Badge>
         )}

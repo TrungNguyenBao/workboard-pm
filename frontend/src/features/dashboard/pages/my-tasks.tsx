@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { CheckSquare, Circle } from 'lucide-react'
 import { Header } from '@/features/auth/components/header'
 import { Badge } from '@/shared/components/ui/badge'
-import { cn, formatDate } from '@/shared/lib/utils'
+import { formatDate } from '@/shared/lib/utils'
 import api from '@/shared/lib/api'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import type { Task } from '@/features/projects/hooks/use-project-tasks'
@@ -16,7 +16,7 @@ function useMyTasks() {
       if (!activeWorkspaceId) return []
       const projects = await api.get(`/workspaces/${activeWorkspaceId}/projects`).then((r) => r.data)
       const allTasks = await Promise.all(
-        projects.map((p: any) =>
+        projects.map((p: { id: string }) =>
           api.get(`/projects/${p.id}/tasks`).then((r) => r.data as Task[]),
         ),
       )
