@@ -2,12 +2,12 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { CheckSquare, Circle, ChevronRight } from 'lucide-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Header } from '@/features/auth/components/header'
 import { Badge } from '@/shared/components/ui/badge'
 import { cn, formatDate } from '@/shared/lib/utils'
 import { useSections, useTasks, type Task, type Section } from '../hooks/use-project-tasks'
 import { InlineTaskInput } from '../components/inline-task-input'
 import { TaskDetailDrawer } from '@/features/tasks/components/task-detail-drawer'
+import { ProjectHeader } from '../components/project-header'
 import api from '@/shared/lib/api'
 
 const PRIORITY_BADGE: Record<string, string | undefined> = {
@@ -85,7 +85,7 @@ export default function ListPage() {
   return (
     <>
       <div className="flex flex-col h-full">
-        <Header title="List" />
+        <ProjectHeader activeView="list" />
         <div className="flex-1 overflow-y-auto">
           <div className="flex items-center gap-3 px-4 py-2 border-b border-border bg-neutral-50 text-xs font-medium text-neutral-500 uppercase tracking-wide">
             <span className="w-4" />

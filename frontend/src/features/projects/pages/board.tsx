@@ -16,12 +16,12 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Plus, MoreHorizontal } from 'lucide-react'
-import { Header } from '@/features/auth/components/header'
 import { Button } from '@/shared/components/ui/button'
 import { Badge } from '@/shared/components/ui/badge'
 import { useSections, useTasks, useMoveTask, type Task, type Section } from '../hooks/use-project-tasks'
 import { InlineTaskInput } from '../components/inline-task-input'
 import { TaskDetailDrawer } from '@/features/tasks/components/task-detail-drawer'
+import { ProjectHeader } from '../components/project-header'
 
 type BadgeVariant = 'danger' | 'warning' | 'secondary'
 const PRIORITY_COLORS: Record<string, BadgeVariant> = {
@@ -142,7 +142,7 @@ export default function BoardPage() {
   return (
     <>
       <div className="flex flex-col h-full">
-        <Header title="Board" />
+        <ProjectHeader activeView="board" />
         <div className="flex-1 overflow-x-auto p-6">
           <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
             <div className="flex gap-4 h-full">

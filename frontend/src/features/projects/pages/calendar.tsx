@@ -2,10 +2,10 @@ import { useParams } from 'react-router-dom'
 import { useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { addMonths, eachDayOfInterval, endOfMonth, format, isSameDay, isSameMonth, startOfMonth, startOfWeek, endOfWeek } from 'date-fns'
-import { Header } from '@/features/auth/components/header'
 import { Button } from '@/shared/components/ui/button'
 import { cn } from '@/shared/lib/utils'
 import { useTasks, type Task } from '../hooks/use-project-tasks'
+import { ProjectHeader } from '../components/project-header'
 
 function CalendarDay({ date, tasks, currentMonth }: { date: Date; tasks: Task[]; currentMonth: Date }) {
   const isToday = isSameDay(date, new Date())
@@ -58,10 +58,11 @@ export default function CalendarPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <Header
-        title={format(month, 'MMMM yyyy')}
+      <ProjectHeader
+        activeView="calendar"
         actions={
           <div className="flex items-center gap-1">
+            <span className="text-xs font-medium text-neutral-600 mr-1">{format(month, 'MMMM yyyy')}</span>
             <Button variant="ghost" size="icon-sm" onClick={() => setMonth(addMonths(month, -1))}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
