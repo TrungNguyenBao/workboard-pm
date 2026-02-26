@@ -119,3 +119,99 @@ async def delete_section(db: AsyncSession, section_id: uuid.UUID) -> None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Section not found")
     await db.delete(section)
     await db.commit()
+
+
+async def get_project_stats(db: AsyncSession, project_id: uuid.UUID) -> dict:
+    from datetime import datetime, timezone
+
+    from sqlalchemy import case, func
+
+    from app.models.task import Task
+    from app.models.user import User
+
+    now = datetime.now(timezone.utc)
+
+    # Per-section stats
+    sec_rows = await db.execute(
+        select(
+            Section.name,
+            func.count(Task.id).label("total"),
+            func.sum(case((Task.status == "completed", 1), else_=0)).label("completed"),
+        )
+        .outerjoin(
+            Task,
+            (Task.section_id == Section.id)
+            & Task.deleted_at.is_(None)
+            & Task.parent_id.is_(None),
+        )
+        .where(Section.project_id == project_id)
+        .group_by(Section.id, Section.name, Section.position)
+        .order_by(Section.position)
+    )
+    by_section = [
+        {"section_name": r.name, "total": r.total or 0, "completed": int(r.completed or 0)}
+        for r in sec_rows
+    ]
+
+    # Totals + overdue
+    totals = await db.execute(
+        select(
+            func.count(Task.id).label("total"),
+            func.sum(case((Task.status == "completed", 1), else_=0)).label("completed"),
+            func.sum(
+                case(((Task.due_date < now) & (Task.status != "completed"), 1), else_=0)
+            ).label("overdue"),
+        ).where(
+            Task.project_id == project_id,
+            Task.deleted_at.is_(None),
+            Task.parent_id.is_(None),
+        )
+    )
+    t = totals.one()
+
+    # By assignee
+    asgn_rows = await db.execute(
+        select(
+            User.name,
+            func.count(Task.id).label("total"),
+            func.sum(case((Task.status == "completed", 1), else_=0)).label("completed"),
+        )
+        .join(User, User.id == Task.assignee_id)
+        .where(
+            Task.project_id == project_id,
+            Task.deleted_at.is_(None),
+            Task.parent_id.is_(None),
+            Task.assignee_id.is_not(None),
+        )
+        .group_by(User.id, User.name)
+        .order_by(func.count(Task.id).desc())
+        .limit(10)
+    )
+    by_assignee = [
+        {"assignee_name": r.name, "total": r.total, "completed": int(r.completed or 0)}
+        for r in asgn_rows
+    ]
+
+    # By priority
+    prio_rows = await db.execute(
+        select(Task.priority, func.count(Task.id).label("cnt"))
+        .where(
+            Task.project_id == project_id,
+            Task.deleted_at.is_(None),
+            Task.parent_id.is_(None),
+        )
+        .group_by(Task.priority)
+    )
+    by_priority = {r.priority: r.cnt for r in prio_rows}
+
+    total = t.total or 0
+    completed = int(t.completed or 0)
+    return {
+        "total_tasks": total,
+        "completed": completed,
+        "incomplete": total - completed,
+        "overdue": int(t.overdue or 0),
+        "by_section": by_section,
+        "by_assignee": by_assignee,
+        "by_priority": by_priority,
+    }

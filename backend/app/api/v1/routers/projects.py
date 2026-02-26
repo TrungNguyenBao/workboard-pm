@@ -6,11 +6,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.dependencies.rbac import require_project_role, require_workspace_role
 from app.models.user import User
-from app.schemas.project import ProjectCreate, ProjectResponse, ProjectUpdate
+from app.schemas.project import ProjectCreate, ProjectResponse, ProjectStatsResponse, ProjectUpdate
 from app.services.project import (
     create_project,
     delete_project,
     get_project,
+    get_project_stats,
     list_projects,
     update_project,
 )
@@ -67,3 +68,12 @@ async def delete(
     db: AsyncSession = Depends(get_db),
 ):
     await delete_project(db, project_id)
+
+
+@router.get("/projects/{project_id}/stats", response_model=ProjectStatsResponse)
+async def stats(
+    project_id: uuid.UUID,
+    current_user: User = Depends(require_project_role("viewer")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await get_project_stats(db, project_id)

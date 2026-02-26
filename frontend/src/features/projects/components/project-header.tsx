@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { LayoutGrid, List, Calendar, Search } from 'lucide-react'
+import { LayoutGrid, List, Calendar, Search, BarChart2 } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/shared/components/ui/button'
 import { NotificationBell } from '@/features/notifications/components/notification-bell'
@@ -14,6 +14,7 @@ const VIEWS = [
   { key: 'board', label: 'Board', icon: LayoutGrid },
   { key: 'list', label: 'List', icon: List },
   { key: 'calendar', label: 'Calendar', icon: Calendar },
+  { key: 'overview', label: 'Overview', icon: BarChart2 },
 ] as const
 
 type View = typeof VIEWS[number]['key']

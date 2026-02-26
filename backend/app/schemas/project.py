@@ -56,3 +56,25 @@ class SectionResponse(BaseModel):
     position: float
 
     model_config = {"from_attributes": True}
+
+
+class SectionStat(BaseModel):
+    section_name: str
+    total: int
+    completed: int
+
+
+class AssigneeStat(BaseModel):
+    assignee_name: str
+    total: int
+    completed: int
+
+
+class ProjectStatsResponse(BaseModel):
+    total_tasks: int
+    completed: int
+    incomplete: int
+    overdue: int
+    by_section: list[SectionStat]
+    by_assignee: list[AssigneeStat]
+    by_priority: dict[str, int]

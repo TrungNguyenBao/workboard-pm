@@ -10,6 +10,7 @@ const MyTasksPage = lazy(() => import('@/features/dashboard/pages/my-tasks'))
 const BoardPage = lazy(() => import('@/features/projects/pages/board'))
 const ListPage = lazy(() => import('@/features/projects/pages/list'))
 const CalendarPage = lazy(() => import('@/features/projects/pages/calendar'))
+const OverviewPage = lazy(() => import('@/features/projects/pages/overview'))
 const SettingsPage = lazy(() => import('@/features/settings/pages/settings'))
 const MembersPage = lazy(() => import('@/features/workspaces/pages/members'))
 
@@ -41,6 +42,7 @@ export function AppRouter() {
             <Route path="/projects/:projectId/board" element={<BoardPage />} />
             <Route path="/projects/:projectId/list" element={<ListPage />} />
             <Route path="/projects/:projectId/calendar" element={<CalendarPage />} />
+            <Route path="/projects/:projectId/overview" element={<OverviewPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
