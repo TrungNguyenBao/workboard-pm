@@ -26,6 +26,6 @@ test.describe('Authentication', () => {
     await page.getByLabel(/password/i).fill('password123')
     await page.getByRole('button', { name: /create account/i }).click()
     await expect(page).toHaveURL(/\/my-tasks/, { timeout: 10000 })
-    await expect(page.getByText('My Tasks')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'My Tasks' })).toBeVisible()
   })
 })

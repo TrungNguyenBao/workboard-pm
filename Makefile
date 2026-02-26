@@ -37,7 +37,7 @@ test-frontend:
 	cd frontend && npm run test:run
 
 test-e2e:
-	cd frontend && npm run test:e2e
+	cd e2e && npm test
 
 # Code quality
 lint:
@@ -58,4 +58,4 @@ docker-logs:
 
 # Install dependencies
 install:
-	cd backend && uv sync && cd ../frontend && npm install
+	cd backend && uv sync && cd ../frontend && npm install && cd ../e2e && npm install
