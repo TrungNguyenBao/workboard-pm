@@ -7,7 +7,7 @@ from app.core.database import get_db
 from app.dependencies.rbac import require_project_role
 from app.models.user import User
 from app.schemas.project import SectionCreate, SectionResponse, SectionUpdate
-from app.services.project import create_section, list_sections, update_section
+from app.services.project import create_section, delete_section, list_sections, update_section
 
 router = APIRouter(prefix="/projects/{project_id}/sections", tags=["sections"])
 
@@ -40,3 +40,13 @@ async def update(
     db: AsyncSession = Depends(get_db),
 ):
     return await update_section(db, section_id, data)
+
+
+@router.delete("/{section_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete(
+    project_id: uuid.UUID,
+    section_id: uuid.UUID,
+    current_user: User = Depends(require_project_role("editor")),
+    db: AsyncSession = Depends(get_db),
+):
+    await delete_section(db, section_id)

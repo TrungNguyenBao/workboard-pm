@@ -111,3 +111,11 @@ async def update_section(
     await db.commit()
     await db.refresh(section)
     return section
+
+
+async def delete_section(db: AsyncSession, section_id: uuid.UUID) -> None:
+    section = await db.get(Section, section_id)
+    if not section:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Section not found")
+    await db.delete(section)
+    await db.commit()

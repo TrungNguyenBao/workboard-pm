@@ -50,7 +50,14 @@ function TaskRow({ task, projectId, onOpen }: { task: Task; projectId: string; o
           <Badge variant={PRIORITY_BADGE[task.priority]} className="text-xs capitalize">{task.priority}</Badge>
         )}
         {task.due_date && (
-          <span className="text-xs text-neutral-400">{formatDate(task.due_date)}</span>
+          <span className={cn(
+            'text-xs',
+            new Date(task.due_date) < new Date() && task.status !== 'completed'
+              ? 'text-red-500 font-medium'
+              : 'text-neutral-400',
+          )}>
+            {formatDate(task.due_date)}
+          </span>
         )}
       </div>
     </div>

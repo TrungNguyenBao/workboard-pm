@@ -15,11 +15,13 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { Plus, MoreHorizontal } from 'lucide-react'
+import { Plus, MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/components/ui/dropdown-menu'
 import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/shared/components/ui/button'
 import { Badge } from '@/shared/components/ui/badge'
-import { useSections, useTasks, useMoveTask, useCreateSection, type Task, type Section } from '../hooks/use-project-tasks'
+import { cn } from '@/shared/lib/utils'
+import { useSections, useTasks, useMoveTask, useCreateSection, useUpdateSection, useDeleteSection, type Task, type Section } from '../hooks/use-project-tasks'
 import { InlineTaskInput } from '../components/inline-task-input'
 import { TaskDetailDrawer } from '@/features/tasks/components/task-detail-drawer'
 import { ProjectHeader } from '../components/project-header'
@@ -62,7 +64,12 @@ function TaskCard({ task, isDragging, onOpen }: { task: Task; isDragging?: boole
           </Badge>
         )}
         {task.due_date && (
-          <span className="text-xs text-neutral-400">
+          <span className={cn(
+            'text-xs',
+            new Date(task.due_date) < new Date() && task.status !== 'completed'
+              ? 'text-red-500 font-medium'
+              : 'text-neutral-400',
+          )}>
             {new Date(task.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
           </span>
         )}
@@ -73,19 +80,67 @@ function TaskCard({ task, isDragging, onOpen }: { task: Task; isDragging?: boole
 
 function KanbanColumn({ section, tasks, projectId, onOpenTask }: { section: Section; tasks: Task[]; projectId: string; onOpenTask: (t: Task) => void }) {
   const taskIds = tasks.map((t) => t.id)
+  const [renaming, setRenaming] = useState(false)
+  const [nameInput, setNameInput] = useState(section.name)
+  const updateSection = useUpdateSection(projectId)
+  const deleteSection = useDeleteSection(projectId)
+
+  function commitRename() {
+    const trimmed = nameInput.trim()
+    if (trimmed && trimmed !== section.name) {
+      updateSection.mutate({ sectionId: section.id, name: trimmed })
+    }
+    setRenaming(false)
+  }
+
   return (
     <div className="flex w-64 flex-shrink-0 flex-col gap-2">
       <div className="flex items-center justify-between px-1">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
           {section.color && (
-            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: section.color }} />
+            <span className="h-2 w-2 rounded-full flex-shrink-0" style={{ backgroundColor: section.color }} />
           )}
-          <span className="text-sm font-medium text-neutral-700">{section.name}</span>
-          <span className="text-xs text-neutral-400">{tasks.length}</span>
+          {renaming ? (
+            <input
+              autoFocus
+              value={nameInput}
+              onChange={(e) => setNameInput(e.target.value)}
+              onBlur={commitRename}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') commitRename()
+                if (e.key === 'Escape') { setRenaming(false); setNameInput(section.name) }
+              }}
+              className="text-sm font-medium text-neutral-700 bg-white border border-primary rounded px-1 outline-none w-full"
+            />
+          ) : (
+            <span className="text-sm font-medium text-neutral-700 truncate">{section.name}</span>
+          )}
+          <span className="text-xs text-neutral-400 flex-shrink-0">{tasks.length}</span>
         </div>
-        <Button variant="ghost" size="icon-sm">
-          <MoreHorizontal className="h-3.5 w-3.5" />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon-sm">
+              <MoreHorizontal className="h-3.5 w-3.5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => { setNameInput(section.name); setRenaming(true) }}>
+              <Pencil className="h-3.5 w-3.5 mr-2" />
+              Rename
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="text-red-600 focus:text-red-600"
+              onClick={() => {
+                if (window.confirm(`Delete "${section.name}" and all its tasks?`)) {
+                  deleteSection.mutate(section.id)
+                }
+              }}
+            >
+              <Trash2 className="h-3.5 w-3.5 mr-2" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
         <div className="min-h-[60px] space-y-2 rounded-md bg-neutral-50 p-2">

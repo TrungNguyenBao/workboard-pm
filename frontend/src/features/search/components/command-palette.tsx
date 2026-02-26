@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Command } from 'cmdk'
 import { Search, CheckSquare } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
@@ -13,11 +13,14 @@ interface Props {
 }
 
 interface Project { id: string; name: string; color: string }
+interface TaskResult { id: string; title: string; project_id: string; status: string }
 
 export function CommandPalette({ open, onOpenChange }: Props) {
   const navigate = useNavigate()
   const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId)
   const [query, setQuery] = useState('')
+  const [taskResults, setTaskResults] = useState<(TaskResult & { projectName: string })[]>([])
+  const [searching, setSearching] = useState(false)
 
   // Global keyboard shortcut
   useEffect(() => {
@@ -37,9 +40,34 @@ export function CommandPalette({ open, onOpenChange }: Props) {
     enabled: !!activeWorkspaceId,
   })
 
+  const searchTasks = useCallback(async (q: string) => {
+    if (q.length < 2 || !projects.length) { setTaskResults([]); return }
+    setSearching(true)
+    try {
+      const results = await Promise.all(
+        projects.map((p) =>
+          api
+            .get(`/projects/${p.id}/tasks/search`, { params: { q, limit: 5 } })
+            .then((r) => (r.data as TaskResult[]).map((t) => ({ ...t, projectName: p.name }))),
+        ),
+      )
+      setTaskResults(results.flat().slice(0, 10))
+    } catch {
+      setTaskResults([])
+    } finally {
+      setSearching(false)
+    }
+  }, [projects])
+
+  useEffect(() => {
+    const timer = setTimeout(() => searchTasks(query), 300)
+    return () => clearTimeout(timer)
+  }, [query, searchTasks])
+
   function select(cb: () => void) {
     onOpenChange(false)
     setQuery('')
+    setTaskResults([])
     cb()
   }
 
@@ -56,10 +84,27 @@ export function CommandPalette({ open, onOpenChange }: Props) {
               className="flex-1 bg-transparent text-sm outline-none placeholder:text-neutral-400"
             />
           </div>
-          <Command.List className="max-h-72 overflow-y-auto p-1">
+          <Command.List className="max-h-80 overflow-y-auto p-1">
             <Command.Empty className="py-6 text-center text-sm text-neutral-400">
-              No results found
+              {searching ? 'Searching…' : 'No results found'}
             </Command.Empty>
+
+            {taskResults.length > 0 && (
+              <Command.Group heading="Tasks">
+                {taskResults.map((t) => (
+                  <Command.Item
+                    key={t.id}
+                    value={t.title}
+                    onSelect={() => select(() => navigate(`/projects/${t.project_id}/board`))}
+                    className="flex items-center gap-2 px-2 py-1.5 rounded-xs text-sm text-neutral-700 cursor-pointer aria-selected:bg-neutral-100"
+                  >
+                    <CheckSquare className={`h-3.5 w-3.5 flex-shrink-0 ${t.status === 'completed' ? 'text-primary' : 'text-neutral-300'}`} />
+                    <span className="flex-1 truncate">{t.title}</span>
+                    <span className="text-xs text-neutral-400 flex-shrink-0">{t.projectName}</span>
+                  </Command.Item>
+                ))}
+              </Command.Group>
+            )}
 
             {projects.length > 0 && (
               <Command.Group heading="Projects">

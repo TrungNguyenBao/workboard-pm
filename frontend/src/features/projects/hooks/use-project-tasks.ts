@@ -61,6 +61,27 @@ export function useCreateSection(projectId: string) {
   })
 }
 
+export function useUpdateSection(projectId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ sectionId, name }: { sectionId: string; name: string }) =>
+      api.patch(`/projects/${projectId}/sections/${sectionId}`, { name }).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['sections', projectId] }),
+  })
+}
+
+export function useDeleteSection(projectId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (sectionId: string) =>
+      api.delete(`/projects/${projectId}/sections/${sectionId}`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['sections', projectId] })
+      qc.invalidateQueries({ queryKey: ['tasks', projectId] })
+    },
+  })
+}
+
 export function useMoveTask(projectId: string) {
   const qc = useQueryClient()
   return useMutation({

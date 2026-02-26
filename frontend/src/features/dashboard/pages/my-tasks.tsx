@@ -2,27 +2,31 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { CheckSquare, Circle } from 'lucide-react'
 import { Header } from '@/features/auth/components/header'
 import { Badge } from '@/shared/components/ui/badge'
-import { formatDate } from '@/shared/lib/utils'
+import { cn, formatDate } from '@/shared/lib/utils'
 import api from '@/shared/lib/api'
 import { useWorkspaceStore } from '@/stores/workspace.store'
+import { useAuthStore } from '@/stores/auth.store'
 import type { Task } from '@/features/projects/hooks/use-project-tasks'
 
-// My tasks = all incomplete tasks assigned to me across workspace
+// My tasks = all incomplete tasks assigned to the current user across the workspace
 function useMyTasks() {
   const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId)
+  const user = useAuthStore((s) => s.user)
   return useQuery<Task[]>({
-    queryKey: ['my-tasks', activeWorkspaceId],
+    queryKey: ['my-tasks', activeWorkspaceId, user?.id],
     queryFn: async () => {
-      if (!activeWorkspaceId) return []
+      if (!activeWorkspaceId || !user) return []
       const projects = await api.get(`/workspaces/${activeWorkspaceId}/projects`).then((r) => r.data)
       const allTasks = await Promise.all(
         projects.map((p: { id: string }) =>
           api.get(`/projects/${p.id}/tasks`).then((r) => r.data as Task[]),
         ),
       )
-      return allTasks.flat().filter((t) => t.status === 'incomplete')
+      return allTasks
+        .flat()
+        .filter((t) => t.status === 'incomplete' && t.assignee_id === user.id)
     },
-    enabled: !!activeWorkspaceId,
+    enabled: !!activeWorkspaceId && !!user,
   })
 }
 
@@ -55,7 +59,12 @@ function TaskRow({ task }: { task: Task }) {
           </Badge>
         )}
         {task.due_date && (
-          <span className="text-xs text-neutral-400">{formatDate(task.due_date)}</span>
+          <span className={cn(
+            'text-xs',
+            new Date(task.due_date) < new Date() ? 'text-red-500 font-medium' : 'text-neutral-400',
+          )}>
+            {formatDate(task.due_date)}
+          </span>
         )}
       </div>
     </div>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { CalendarDays, CheckSquare, MessageSquare, Tag, User } from 'lucide-react'
+import { CalendarDays, CheckSquare, MessageSquare, Tag, Trash2, User } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/shared/components/ui/sheet'
 import { Button } from '@/shared/components/ui/button'
 import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar'
@@ -66,6 +66,14 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
     },
   })
 
+  const deleteTask = useMutation({
+    mutationFn: () => api.delete(`/projects/${projectId}/tasks/${task!.id}`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['tasks', projectId] })
+      onClose()
+    },
+  })
+
   async function submitComment() {
     if (!newComment.trim() || !task) return
     setCommentLoading(true)
@@ -109,6 +117,15 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
                 >
                   {task.title}
                 </SheetTitle>
+                <button
+                  onClick={() => {
+                    if (window.confirm('Delete this task?')) deleteTask.mutate()
+                  }}
+                  className="mt-0.5 flex-shrink-0 text-neutral-300 hover:text-red-500 transition-colors"
+                  title="Delete task"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
               </div>
             </SheetHeader>
 
@@ -164,7 +181,12 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
                     onChange={(e) =>
                       updateTask.mutate({ due_date: e.target.value ? new Date(e.target.value).toISOString() : undefined })
                     }
-                    className="text-xs text-neutral-700 bg-neutral-100 rounded px-2 py-1 border-0 outline-none"
+                    className={cn(
+                      'text-xs bg-neutral-100 rounded px-2 py-1 border-0 outline-none',
+                      task.due_date && new Date(task.due_date) < new Date() && task.status !== 'completed'
+                        ? 'text-red-500 font-medium'
+                        : 'text-neutral-700',
+                    )}
                   />
                 </MetaRow>
               </div>
