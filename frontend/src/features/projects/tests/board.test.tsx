@@ -18,6 +18,8 @@ vi.mock('../hooks/use-project-tasks', () => ({
     ],
   }),
   useMoveTask: () => ({ mutate: vi.fn() }),
+  useCreateTask: () => ({ mutate: vi.fn(), isPending: false }),
+  useCreateSection: () => ({ mutate: vi.fn(), isPending: false }),
 }))
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } })
