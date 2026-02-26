@@ -3,12 +3,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { CheckCircle2, CheckSquare, Circle } from 'lucide-react'
 import { Header } from '@/features/auth/components/header'
 import { Badge } from '@/shared/components/ui/badge'
+import { TaskDetailDrawer } from '@/features/tasks/components/task-detail-drawer'
 import { cn, formatDate } from '@/shared/lib/utils'
 import api from '@/shared/lib/api'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import type { Task } from '@/features/projects/hooks/use-project-tasks'
 
-// My tasks = all incomplete tasks assigned to the current user across the workspace
+interface Project { id: string; name: string }
+
 function useMyTasks() {
   const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId)
   return useQuery<Task[]>({
@@ -19,7 +21,50 @@ function useMyTasks() {
   })
 }
 
-function TaskRow({ task, workspaceId }: { task: Task; workspaceId: string }) {
+function useWorkspaceProjects() {
+  const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId)
+  return useQuery<Project[]>({
+    queryKey: ['projects', activeWorkspaceId],
+    queryFn: () =>
+      api.get(`/workspaces/${activeWorkspaceId}/projects`).then((r) => r.data),
+    enabled: !!activeWorkspaceId,
+    staleTime: 60_000,
+  })
+}
+
+function bucketTasks(tasks: Task[]) {
+  const now = new Date()
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const todayEnd = new Date(todayStart.getTime() + 86_400_000)
+  const weekEnd = new Date(todayStart.getTime() + 7 * 86_400_000)
+
+  const overdue: Task[] = []
+  const today: Task[] = []
+  const upcoming: Task[] = []
+  const later: Task[] = []
+
+  for (const t of tasks) {
+    if (!t.due_date) { later.push(t); continue }
+    const d = new Date(t.due_date)
+    if (d < todayStart) overdue.push(t)
+    else if (d < todayEnd) today.push(t)
+    else if (d < weekEnd) upcoming.push(t)
+    else later.push(t)
+  }
+  return { overdue, today, upcoming, later }
+}
+
+function TaskRow({
+  task,
+  workspaceId,
+  projectName,
+  onOpen,
+}: {
+  task: Task
+  workspaceId: string
+  projectName: string | undefined
+  onOpen: (t: Task) => void
+}) {
   const qc = useQueryClient()
   const [completing, setCompleting] = useState(false)
 
@@ -28,11 +73,8 @@ function TaskRow({ task, workspaceId }: { task: Task; workspaceId: string }) {
       api
         .patch(`/projects/${task.project_id}/tasks/${task.id}`, { status: 'completed' })
         .then((r) => r.data),
-    onMutate: () => {
-      setCompleting(true)
-    },
+    onMutate: () => { setCompleting(true) },
     onSuccess: () => {
-      // Brief delay so the checkmark is visible before disappearing
       setTimeout(() => {
         qc.setQueryData<Task[]>(['my-tasks', workspaceId], (old) =>
           old?.filter((t) => t.id !== task.id) ?? []
@@ -44,12 +86,15 @@ function TaskRow({ task, workspaceId }: { task: Task; workspaceId: string }) {
   })
 
   return (
-    <div className={cn(
-      'flex items-center gap-3 px-4 py-2.5 border-b border-border hover:bg-neutral-50 transition-opacity',
-      completing && 'opacity-50',
-    )}>
+    <div
+      className={cn(
+        'flex items-center gap-3 px-4 py-2.5 border-b border-border hover:bg-neutral-50 transition-opacity cursor-pointer',
+        completing && 'opacity-50',
+      )}
+      onClick={() => onOpen(task)}
+    >
       <button
-        onClick={() => !completing && toggle.mutate()}
+        onClick={(e) => { e.stopPropagation(); !completing && toggle.mutate() }}
         className="flex-shrink-0 text-neutral-300 hover:text-primary transition-colors"
       >
         {completing
@@ -57,8 +102,13 @@ function TaskRow({ task, workspaceId }: { task: Task; workspaceId: string }) {
           : <Circle className="h-4 w-4" />
         }
       </button>
-      <span className="flex-1 text-sm text-neutral-900">{task.title}</span>
-      <div className="flex items-center gap-2">
+      <span className="flex-1 text-sm text-neutral-900 truncate">{task.title}</span>
+      <div className="flex items-center gap-2 flex-shrink-0">
+        {projectName && (
+          <span className="text-xs text-neutral-400 bg-neutral-100 rounded px-1.5 py-0.5 truncate max-w-[120px]">
+            {projectName}
+          </span>
+        )}
         {task.priority !== 'none' && (
           <Badge
             variant={task.priority === 'high' ? 'danger' : task.priority === 'medium' ? 'warning' : 'secondary'}
@@ -80,48 +130,90 @@ function TaskRow({ task, workspaceId }: { task: Task; workspaceId: string }) {
   )
 }
 
+function BucketSection({
+  label,
+  tasks,
+  workspaceId,
+  projectMap,
+  onOpen,
+  accent,
+}: {
+  label: string
+  tasks: Task[]
+  workspaceId: string
+  projectMap: Map<string, string>
+  onOpen: (t: Task) => void
+  accent?: 'red' | 'amber' | 'neutral'
+}) {
+  if (tasks.length === 0) return null
+  const headerCls = accent === 'red'
+    ? 'bg-red-50 border-red-100'
+    : accent === 'amber'
+    ? 'bg-amber-50 border-amber-100'
+    : 'bg-neutral-50 border-border'
+  const labelCls = accent === 'red'
+    ? 'text-red-600'
+    : accent === 'amber'
+    ? 'text-amber-600'
+    : 'text-neutral-500'
+  const badgeVariant = accent === 'red' ? 'danger' : accent === 'amber' ? 'warning' : 'secondary'
+
+  return (
+    <section className="mb-6">
+      <div className={cn('flex items-center gap-2 px-4 py-2 border-b', headerCls)}>
+        <span className={cn('text-xs font-semibold uppercase tracking-wide', labelCls)}>{label}</span>
+        <Badge variant={badgeVariant}>{tasks.length}</Badge>
+      </div>
+      {tasks.map((t) => (
+        <TaskRow
+          key={t.id}
+          task={t}
+          workspaceId={workspaceId}
+          projectName={projectMap.get(t.project_id)}
+          onOpen={onOpen}
+        />
+      ))}
+    </section>
+  )
+}
+
 export default function MyTasksPage() {
   const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId)
   const { data: tasks = [], isLoading } = useMyTasks()
+  const { data: projects = [] } = useWorkspaceProjects()
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
 
-  const overdue = tasks.filter((t) => t.due_date && new Date(t.due_date) < new Date())
-  const upcoming = tasks.filter((t) => !t.due_date || new Date(t.due_date) >= new Date())
+  const projectMap = new Map(projects.map((p) => [p.id, p.name]))
+  const { overdue, today, upcoming, later } = bucketTasks(tasks)
 
   return (
-    <div className="flex flex-col h-full">
-      <Header title="My Tasks" />
-      <div className="flex-1 overflow-y-auto max-w-3xl w-full mx-auto pt-6">
-        {isLoading && (
-          <div className="flex items-center justify-center py-16 text-sm text-neutral-400">Loading…</div>
-        )}
+    <>
+      <div className="flex flex-col h-full">
+        <Header title="My Tasks" />
+        <div className="flex-1 overflow-y-auto max-w-3xl w-full mx-auto pt-6">
+          {isLoading && (
+            <div className="flex items-center justify-center py-16 text-sm text-neutral-400">Loading…</div>
+          )}
 
-        {!isLoading && tasks.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-20 text-neutral-400">
-            <CheckSquare className="h-10 w-10 mb-3 opacity-30" />
-            <p className="text-sm">All caught up!</p>
-          </div>
-        )}
-
-        {overdue.length > 0 && (
-          <section className="mb-6">
-            <div className="flex items-center gap-2 px-4 py-2 bg-red-50 border-b border-red-100">
-              <span className="text-xs font-semibold text-red-600 uppercase tracking-wide">Overdue</span>
-              <Badge variant="danger">{overdue.length}</Badge>
+          {!isLoading && tasks.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-20 text-neutral-400">
+              <CheckSquare className="h-10 w-10 mb-3 opacity-30" />
+              <p className="text-sm">All caught up!</p>
             </div>
-            {overdue.map((t) => <TaskRow key={t.id} task={t} workspaceId={activeWorkspaceId!} />)}
-          </section>
-        )}
+          )}
 
-        {upcoming.length > 0 && (
-          <section>
-            <div className="flex items-center gap-2 px-4 py-2 bg-neutral-50 border-b border-border">
-              <span className="text-xs font-semibold text-neutral-500 uppercase tracking-wide">Upcoming</span>
-              <Badge variant="secondary">{upcoming.length}</Badge>
-            </div>
-            {upcoming.map((t) => <TaskRow key={t.id} task={t} workspaceId={activeWorkspaceId!} />)}
-          </section>
-        )}
+          <BucketSection label="Overdue" tasks={overdue} workspaceId={activeWorkspaceId!} projectMap={projectMap} onOpen={setSelectedTask} accent="red" />
+          <BucketSection label="Today" tasks={today} workspaceId={activeWorkspaceId!} projectMap={projectMap} onOpen={setSelectedTask} accent="amber" />
+          <BucketSection label="Upcoming" tasks={upcoming} workspaceId={activeWorkspaceId!} projectMap={projectMap} onOpen={setSelectedTask} />
+          <BucketSection label="Later" tasks={later} workspaceId={activeWorkspaceId!} projectMap={projectMap} onOpen={setSelectedTask} />
+        </div>
       </div>
-    </div>
+      <TaskDetailDrawer
+        task={selectedTask}
+        projectId={selectedTask?.project_id ?? ''}
+        workspaceId={activeWorkspaceId ?? undefined}
+        onClose={() => setSelectedTask(null)}
+      />
+    </>
   )
 }

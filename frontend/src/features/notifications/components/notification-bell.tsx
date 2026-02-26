@@ -5,7 +5,6 @@ import { Button } from '@/shared/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/shared/components/ui/dropdown-menu'
 import { formatRelativeTime } from '@/shared/lib/utils'
 import api from '@/shared/lib/api'
-import { useWorkspaceStore } from '@/stores/workspace.store'
 
 interface Notification {
   id: string
@@ -21,7 +20,6 @@ interface Notification {
 export function NotificationBell() {
   const qc = useQueryClient()
   const navigate = useNavigate()
-  const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId)
 
   const { data: notifications = [] } = useQuery<Notification[]>({
     queryKey: ['notifications'],
@@ -75,8 +73,8 @@ export function NotificationBell() {
             className="flex flex-col items-start gap-0.5 py-2.5 cursor-pointer"
             onClick={() => {
               if (!n.is_read) markRead.mutate(n.id)
-              if (n.resource_type === 'task' && activeWorkspaceId) {
-                navigate(`/workspaces/${activeWorkspaceId}/my-tasks`)
+              if (n.resource_type === 'task') {
+                navigate('/my-tasks')
               }
             }}
           >
