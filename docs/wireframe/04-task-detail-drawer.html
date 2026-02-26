@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WorkBoard — Task Detail Drawer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #5E6AD2;
+      --primary-hover: #4F55C4;
+      --accent: #F28C38;
+      --success: #22C55E;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --info: #38BDF8;
+      --neutral-50: #FAFAFA;
+      --neutral-100: #F4F4F5;
+      --neutral-200: #E4E4E7;
+      --neutral-400: #A1A1AA;
+      --neutral-600: #52525B;
+      --neutral-800: #27272A;
+      --neutral-900: #18181B;
+      --bg-surface: #F9F9FB;
+      --font: 'DM Sans', system-ui, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      font-size: 14px;
+      color: var(--neutral-900);
+      background: var(--bg-surface);
+      margin: 0;
+      overflow: hidden;
+      height: 100vh;
+      position: relative;
+    }
+
+    svg { display: block; }
+
+    /* ═══ BACKGROUND BOARD (dimmed) ═══ */
+    .bg-board {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .bg-sidebar {
+      width: 240px;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--neutral-200);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .bg-topbar {
+      position: fixed;
+      left: 240px;
+      right: 0;
+      top: 0;
+      height: 48px;
+      background: #fff;
+      border-bottom: 1px solid var(--neutral-200);
+    }
+
+    .bg-content {
+      position: fixed;
+      left: 240px;
+      right: 480px;
+      top: 48px;
+      bottom: 0;
+      background: var(--neutral-50);
+      padding: 20px;
+      display: flex;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    /* Background cards (dimmed look) */
+    .bg-col {
+      width: 220px;
+      flex-shrink: 0;
+    }
+
+    .bg-col-hd {
+      height: 40px;
+      border-radius: 8px 8px 0 0;
+      background: #fff;
+      border: 1px solid var(--neutral-200);
+      margin-bottom: 4px;
+    }
+
+    .bg-card {
+      height: 80px;
+      background: #fff;
+      border: 1px solid var(--neutral-200);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    /* Scrim overlay */
+    .scrim {
+      position: fixed;
+      inset: 0;
+      background: rgba(15,15,18,0.32);
+      z-index: 40;
+    }
+
+    /* ═══ DRAWER ═══ */
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 480px;
+      height: 100vh;
+      background: #fff;
+      border-left: 1px solid var(--neutral-200);
+      box-shadow: -4px 0 40px rgba(0,0,0,0.14);
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Drawer header */
+    .drawer-header {
+      padding: 0 16px;
+      height: 48px;
+      border-bottom: 1px solid var(--neutral-200);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .drawer-breadcrumb {
+      flex: 1;
+      font-size: 12px;
+      color: var(--neutral-400);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      overflow: hidden;
+    }
+
+    .drawer-breadcrumb a {
+      color: var(--neutral-500, #71717A);
+      text-decoration: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .drawer-breadcrumb a:hover { color: var(--neutral-900); }
+
+    .drawer-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .hd-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--neutral-400);
+      transition: background 120ms, color 120ms;
+    }
+
+    .hd-btn:hover { background: var(--neutral-100); color: var(--neutral-800); }
+
+    /* Drawer body */
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .drawer-body::-webkit-scrollbar { width: 4px; }
+    .drawer-body::-webkit-scrollbar-thumb { background: var(--neutral-200); border-radius: 2px; }
+
+    /* Status + priority row */
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 20px 0;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background 120ms;
+    }
+
+    .status-pill:hover { filter: brightness(0.94); }
+
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+    .priority-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--neutral-200);
+      background: #fff;
+      color: var(--neutral-600);
+      transition: background 120ms;
+    }
+
+    .priority-pill:hover { background: var(--neutral-50); }
+
+    .pill-caret {
+      color: var(--neutral-400);
+    }
+
+    /* Task title */
+    .task-title {
+      padding: 12px 20px 4px;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--neutral-900);
+      line-height: 1.35;
+      letter-spacing: -0.3px;
+      outline: none;
+      cursor: text;
+      border-radius: 6px;
+      transition: background 120ms;
+    }
+
+    .task-title:focus { background: var(--neutral-50); }
+
+    /* Meta row */
+    .meta-section {
+      padding: 12px 20px;
+    }
+
+    .meta-row {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 0;
+      min-height: 34px;
+    }
+
+    .meta-label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: var(--neutral-400);
+      font-weight: 500;
+    }
+
+    .meta-value {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--neutral-800);
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: background 120ms;
+    }
+
+    .meta-value:hover { background: var(--neutral-100); }
+
+    .meta-avatar {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .meta-value.placeholder { color: var(--neutral-400); }
+
+    /* Divider */
+    .drawer-divider {
+      height: 1px;
+      background: var(--neutral-200);
+      margin: 4px 20px;
+    }
+
+    /* Description */
+    .desc-section {
+      padding: 8px 20px 12px;
+    }
+
+    .desc-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--neutral-400);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .desc-editor {
+      min-height: 80px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--neutral-200);
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--neutral-700, #3F3F46);
+      cursor: text;
+      transition: border-color 150ms;
+    }
+
+    .desc-editor:focus-within { border-color: var(--primary); }
+
+    .desc-placeholder { color: var(--neutral-400); font-style: italic; }
+
+    /* Accordion sections */
+    .accordion-section {
+      border-top: 1px solid var(--neutral-200);
+    }
+
+    .accordion-hd {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: background 120ms;
+    }
+
+    .accordion-hd:hover { background: var(--neutral-50); }
+
+    .accordion-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--neutral-800);
+      flex: 1;
+    }
+
+    .accordion-count {
+      font-size: 11px;
+      color: var(--neutral-400);
+    }
+
+    .accordion-chevron {
+      color: var(--neutral-400);
+      transition: transform 150ms;
+    }
+
+    .accordion-chevron.open { transform: rotate(90deg); }
+
+    .accordion-body { padding: 0 20px 12px; }
+
+    /* Subtasks */
+    .subtask-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 120ms;
+    }
+
+    .subtask-row:hover { background: var(--neutral-50); }
+
+    .subtask-cb {
+      width: 15px;
+      height: 15px;
+      border: 1.5px solid var(--neutral-300, #D4D4D8);
+      border-radius: 3px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .subtask-cb.checked {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .subtask-name {
+      font-size: 13px;
+      color: var(--neutral-700, #3F3F46);
+      flex: 1;
+    }
+
+    .subtask-name.done {
+      text-decoration: line-through;
+      color: var(--neutral-400);
+    }
+
+    .subtask-assignee {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 7px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .add-subtask {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--neutral-400);
+      transition: background 120ms, color 120ms;
+      margin-top: 4px;
+    }
+
+    .add-subtask:hover { background: var(--neutral-50); color: var(--primary); }
+
+    /* Attachments */
+    .attachments-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .attachment-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border: 1px solid var(--neutral-200);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 120ms, border-color 120ms;
+      background: #fff;
+    }
+
+    .attachment-chip:hover { background: var(--neutral-50); border-color: var(--neutral-400); }
+
+    .att-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .att-info { }
+    .att-name { font-size: 12px; font-weight: 500; color: var(--neutral-800); }
+    .att-meta { font-size: 10px; color: var(--neutral-400); }
+
+    .add-attachment {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border: 1px dashed var(--neutral-200);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--neutral-400);
+      transition: background 120ms, border-color 120ms;
+    }
+
+    .add-attachment:hover { background: rgba(94,106,210,0.04); border-color: rgba(94,106,210,0.30); color: var(--primary); }
+
+    /* Activity feed */
+    .activity-feed {
+      padding: 0 20px 80px;
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 0;
+      position: relative;
+    }
+
+    .activity-item::before {
+      content: '';
+      position: absolute;
+      left: 12px;
+      top: 32px;
+      bottom: -8px;
+      width: 1px;
+      background: var(--neutral-200);
+    }
+
+    .activity-item:last-child::before { display: none; }
+
+    .act-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .act-icon-bubble {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--neutral-100);
+      border: 1px solid var(--neutral-200);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .act-content { flex: 1; }
+
+    .act-meta {
+      font-size: 12px;
+      color: var(--neutral-600);
+      line-height: 1.4;
+      margin-bottom: 4px;
+    }
+
+    .act-meta strong { color: var(--neutral-800); font-weight: 500; }
+    .act-time { font-size: 10px; color: var(--neutral-400); }
+
+    .act-comment-bubble {
+      background: var(--neutral-50);
+      border: 1px solid var(--neutral-200);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--neutral-700, #3F3F46);
+      margin-top: 6px;
+    }
+
+    .act-comment-bubble.primary-comment {
+      background: rgba(94,106,210,0.05);
+      border-color: rgba(94,106,210,0.15);
+    }
+
+    /* Drawer footer — comment input */
+    .drawer-footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border-top: 1px solid var(--neutral-200);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .comment-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .comment-input {
+      flex: 1;
+      height: 36px;
+      padding: 0 12px;
+      border: 1px solid var(--neutral-200);
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: var(--font);
+      color: var(--neutral-900);
+      outline: none;
+      background: var(--neutral-50);
+      transition: border-color 150ms, background 150ms;
+    }
+
+    .comment-input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(94,106,210,0.10); }
+    .comment-input::placeholder { color: var(--neutral-400); }
+
+    .comment-send {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: var(--primary);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      transition: background 150ms;
+      flex-shrink: 0;
+    }
+
+    .comment-send:hover { background: var(--primary-hover); }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════════════════
+       BACKGROUND (dimmed board)
+  ══════════════════════════════ -->
+  <div class="bg-board" aria-hidden="true">
+
+    <!-- Sidebar chrome -->
+    <div class="bg-sidebar">
+      <div style="height:48px;border-bottom:1px solid var(--neutral-200);display:flex;align-items:center;padding:0 16px;gap:10px;">
+        <div style="width:28px;height:28px;background:var(--primary);border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:13px;">W</div>
+        <span style="font-size:15px;font-weight:600;color:var(--neutral-900);">WorkBoard</span>
+      </div>
+      <div style="padding:8px;">
+        <div style="height:34px;background:var(--neutral-100);border-radius:8px;margin-bottom:6px;"></div>
+        <div style="height:30px;background:rgba(94,106,210,0.10);border-radius:6px;margin-bottom:2px;"></div>
+        <div style="height:30px;border-radius:6px;margin-bottom:2px;"></div>
+        <div style="height:30px;border-radius:6px;margin-bottom:8px;"></div>
+        <div style="height:1px;background:var(--neutral-200);margin-bottom:8px;"></div>
+        <div style="height:20px;background:var(--neutral-100);border-radius:4px;width:60%;margin-bottom:6px;"></div>
+        <div style="height:28px;border-radius:6px;margin-bottom:2px;"></div>
+        <div style="height:28px;border-radius:6px;margin-bottom:2px;"></div>
+        <div style="height:28px;border-radius:6px;margin-bottom:2px;"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Top bar background -->
+  <div class="bg-topbar" aria-hidden="true">
+    <div style="display:flex;align-items:center;height:100%;padding:0 20px;gap:12px;">
+      <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--neutral-400);">
+        <span>Projects</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        <span style="font-weight:600;color:var(--neutral-800);">Website Redesign</span>
+      </div>
+      <div style="flex:1;max-width:420px;margin:0 auto;height:34px;background:var(--neutral-50);border:1px solid var(--neutral-200);border-radius:8px;"></div>
+      <div style="display:flex;gap:4px;">
+        <div style="width:34px;height:34px;border-radius:8px;background:var(--neutral-100);"></div>
+        <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#5E6AD2,#8B5CF6);"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Board content background -->
+  <div class="bg-content" aria-hidden="true">
+    <div class="bg-col">
+      <div class="bg-col-hd" style="border-left:3px solid #A1A1AA;"></div>
+      <div class="bg-card"></div>
+      <div class="bg-card" style="height:60px;"></div>
+    </div>
+    <div class="bg-col">
+      <div class="bg-col-hd" style="border-left:3px solid var(--primary);"></div>
+      <div class="bg-card" style="height:100px;border-left:3px solid #EF4444;"></div>
+      <div class="bg-card" style="height:70px;"></div>
+    </div>
+    <div class="bg-col">
+      <div class="bg-col-hd" style="border-left:3px solid var(--accent);"></div>
+      <div class="bg-card" style="height:90px;"></div>
+    </div>
+  </div>
+
+  <!-- Scrim -->
+  <div class="scrim"></div>
+
+  <!-- ══════════════════════════════
+       TASK DETAIL DRAWER
+  ══════════════════════════════ -->
+  <aside class="drawer" role="complementary" aria-label="Task detail">
+
+    <!-- Header -->
+    <div class="drawer-header">
+      <nav class="drawer-breadcrumb">
+        <a href="#">Website Redesign</a>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        <a href="#">In Progress</a>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        <span>Task</span>
+      </nav>
+      <div class="drawer-header-actions">
+        <button class="hd-btn" title="Expand to full page">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+        </button>
+        <button class="hd-btn" title="Copy link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        </button>
+        <button class="hd-btn" title="More options">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+        </button>
+        <button class="hd-btn" title="Close drawer" style="margin-left:2px;border-left:1px solid var(--neutral-200);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Scrollable body -->
+    <div class="drawer-body">
+
+      <!-- Status + Priority -->
+      <div class="status-row">
+        <div class="status-pill" style="background:rgba(94,106,210,0.12);color:#5E6AD2;border-color:rgba(94,106,210,0.20);">
+          <div class="status-dot" style="background:#5E6AD2;"></div>
+          In Progress
+          <svg class="pill-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="priority-pill">
+          <div style="width:8px;height:8px;border-radius:50%;background:#EF4444;flex-shrink:0;"></div>
+          High Priority
+          <svg class="pill-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+
+      <!-- Task title -->
+      <div class="task-title" contenteditable="true" role="textbox" aria-label="Task title" aria-multiline="false">
+        Redesign homepage hero section with new brand identity
+      </div>
+
+      <!-- Meta rows -->
+      <div class="meta-section">
+
+        <div class="meta-row">
+          <div class="meta-label">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Assignee
+          </div>
+          <div class="meta-value">
+            <div class="meta-avatar" style="background:#22C55E;">ML</div>
+            Maria Liu
+          </div>
+        </div>
+
+        <div class="meta-row">
+          <div class="meta-label">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Due date
+          </div>
+          <div class="meta-value" style="color:#F28C38;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Feb 26, 2026
+          </div>
+        </div>
+
+        <div class="meta-row">
+          <div class="meta-label">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Start date
+          </div>
+          <div class="meta-value">
+            Feb 18, 2026
+          </div>
+        </div>
+
+        <div class="meta-row">
+          <div class="meta-label">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            Project
+          </div>
+          <div class="meta-value">
+            <div style="width:10px;height:10px;border-radius:50%;background:var(--primary);flex-shrink:0;"></div>
+            Website Redesign
+          </div>
+        </div>
+
+        <div class="meta-row">
+          <div class="meta-label">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>
+            Tags
+          </div>
+          <div class="meta-value" style="gap:4px;">
+            <span style="font-size:11px;padding:2px 8px;border-radius:9999px;background:rgba(94,106,210,0.10);color:#5E6AD2;font-weight:500;">Design</span>
+            <span style="font-size:11px;padding:2px 8px;border-radius:9999px;background:rgba(245,158,11,0.10);color:#D97706;font-weight:500;">Brand</span>
+            <span style="font-size:11px;padding:2px 8px;border-radius:9999px;background:var(--neutral-100);color:var(--neutral-400);font-weight:500;cursor:pointer;">+ Add</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="drawer-divider"></div>
+
+      <!-- Description -->
+      <div class="desc-section">
+        <div class="desc-label">Description</div>
+        <div class="desc-editor">
+          <p style="margin-bottom:8px;">Redesign the homepage hero section to reflect the updated brand identity. The new design should:</p>
+          <ul style="padding-left:20px;margin-bottom:8px;">
+            <li style="margin-bottom:4px;">Use the new <strong>indigo-violet primary</strong> color palette</li>
+            <li style="margin-bottom:4px;">Include a bold headline with a clear value proposition</li>
+            <li style="margin-bottom:4px;">Feature a CTA button pair (primary + secondary)</li>
+            <li>Be responsive across desktop, tablet, and mobile</li>
+          </ul>
+          <p style="color:var(--neutral-600);">Reference the <span style="color:var(--primary);text-decoration:underline;cursor:pointer;">brand guidelines Figma file</span> for approved typography and color usage.</p>
+        </div>
+      </div>
+
+      <!-- Subtasks accordion -->
+      <div class="accordion-section">
+        <div class="accordion-hd">
+          <svg class="accordion-chevron open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <span class="accordion-title">Subtasks</span>
+          <span class="accordion-count">2 of 4</span>
+          <button class="hd-btn" style="margin-left:auto;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+        <div class="accordion-body">
+
+          <div class="subtask-row">
+            <div class="subtask-cb checked">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <span class="subtask-name done">Research competitor homepage patterns</span>
+            <div class="subtask-assignee" style="background:#5E6AD2;">AJ</div>
+          </div>
+
+          <div class="subtask-row">
+            <div class="subtask-cb checked">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <span class="subtask-name done">Create low-fidelity wireframe sketches</span>
+            <div class="subtask-assignee" style="background:#22C55E;">ML</div>
+          </div>
+
+          <div class="subtask-row">
+            <div class="subtask-cb"></div>
+            <span class="subtask-name">Design high-fidelity Figma mockup</span>
+            <div class="subtask-assignee" style="background:#22C55E;">ML</div>
+          </div>
+
+          <div class="subtask-row">
+            <div class="subtask-cb"></div>
+            <span class="subtask-name">Get stakeholder approval on final design</span>
+            <div class="subtask-assignee" style="background:#F28C38;">JK</div>
+          </div>
+
+          <div class="add-subtask">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add subtask
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Attachments accordion -->
+      <div class="accordion-section">
+        <div class="accordion-hd">
+          <svg class="accordion-chevron open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <span class="accordion-title">Attachments</span>
+          <span class="accordion-count">2 files</span>
+          <button class="hd-btn" style="margin-left:auto;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+        <div class="accordion-body">
+          <div class="attachments-grid">
+            <div class="attachment-chip">
+              <div class="att-icon" style="background:#5E6AD2;">Fig</div>
+              <div class="att-info">
+                <div class="att-name">hero-wireframe-v3.fig</div>
+                <div class="att-meta">2.4 MB · Added by ML · Feb 24</div>
+              </div>
+            </div>
+            <div class="attachment-chip">
+              <div class="att-icon" style="background:#EF4444;">PDF</div>
+              <div class="att-info">
+                <div class="att-name">brand-guidelines-2026.pdf</div>
+                <div class="att-meta">540 KB · Added by AJ · Feb 18</div>
+              </div>
+            </div>
+            <div class="add-attachment">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+              Add attachment
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity feed -->
+      <div class="accordion-section">
+        <div class="accordion-hd">
+          <svg class="accordion-chevron open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <span class="accordion-title">Activity</span>
+        </div>
+      </div>
+
+      <div class="activity-feed">
+
+        <!-- System event -->
+        <div class="activity-item">
+          <div class="act-icon-bubble">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#A1A1AA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </div>
+          <div class="act-content">
+            <div class="act-meta"><strong>Alex Johnson</strong> created this task and assigned it to <strong>Maria Liu</strong></div>
+            <div class="act-time">Feb 18, 2026 · 9:14 AM</div>
+          </div>
+        </div>
+
+        <!-- System event: status change -->
+        <div class="activity-item">
+          <div class="act-icon-bubble">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--primary);"></div>
+          </div>
+          <div class="act-content">
+            <div class="act-meta">Status changed from <span style="background:var(--neutral-100);padding:1px 6px;border-radius:4px;font-size:11px;">Backlog</span> to <span style="background:rgba(94,106,210,0.10);color:#5E6AD2;padding:1px 6px;border-radius:4px;font-size:11px;">In Progress</span></div>
+            <div class="act-time">Feb 20, 2026 · 2:30 PM</div>
+          </div>
+        </div>
+
+        <!-- Comment with avatar -->
+        <div class="activity-item">
+          <div class="act-avatar" style="background:#22C55E;">ML</div>
+          <div class="act-content">
+            <div class="act-meta"><strong>Maria Liu</strong> <span style="color:var(--neutral-400);">commented</span></div>
+            <div class="act-time">Feb 22, 2026 · 11:05 AM</div>
+            <div class="act-comment-bubble primary-comment">
+              I've uploaded the first Figma draft (v3). The hero uses the indigo gradient and DM Sans headings at 48px. Ready for review — can everyone take a look before Friday?
+            </div>
+          </div>
+        </div>
+
+        <!-- Comment with avatar -->
+        <div class="activity-item">
+          <div class="act-avatar" style="background:#F28C38;">JK</div>
+          <div class="act-content">
+            <div class="act-meta"><strong>James Kim</strong> <span style="color:var(--neutral-400);">commented</span></div>
+            <div class="act-time">Feb 23, 2026 · 8:48 AM</div>
+            <div class="act-comment-bubble">
+              Looks great! One suggestion — the CTA button could use a slightly larger font size at 15px to improve accessibility. WCAG AA requires 4.5:1 contrast on the amber bg.
+            </div>
+          </div>
+        </div>
+
+        <!-- Attachment event -->
+        <div class="activity-item">
+          <div class="act-avatar" style="background:#22C55E;">ML</div>
+          <div class="act-content">
+            <div class="act-meta"><strong>Maria Liu</strong> attached <strong>hero-wireframe-v3.fig</strong></div>
+            <div class="act-time">Feb 24, 2026 · 3:15 PM</div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /drawer-body -->
+
+    <!-- Sticky comment footer -->
+    <div class="drawer-footer">
+      <div class="comment-avatar" style="background:linear-gradient(135deg,#5E6AD2,#8B5CF6);">AJ</div>
+      <input class="comment-input" type="text" placeholder="Add a comment…">
+      <button class="comment-send" title="Send comment">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+
+  </aside>
+
+</body>
+</html>

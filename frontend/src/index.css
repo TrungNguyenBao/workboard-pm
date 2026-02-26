@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 5% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 5% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 5% 10%;
+    --primary: 234 58% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 240 5% 10%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 46%;
+    --accent: 33 89% 58%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 234 58% 60%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 240 10% 7%;
+    --foreground: 0 0% 98%;
+    --card: 240 9% 11%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 8% 18%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 232 55% 68%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 4% 16%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 28 88% 65%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 4% 22%;
+    --input: 240 4% 22%;
+    --ring: 232 55% 68%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-neutral-300 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-neutral-400; }
+}
+
+@layer components {
+  .priority-dot { @apply w-2 h-2 rounded-full flex-shrink-0; }
+  .priority-high { @apply bg-danger; }
+  .priority-medium { @apply bg-warning; }
+  .priority-low { @apply bg-info; }
+  .priority-none { @apply bg-neutral-300; }
+  .notification-badge { @apply absolute -top-0.5 -right-0.5 w-2 h-2 bg-danger rounded-full; }
+  .mention { @apply text-primary font-medium bg-primary-light rounded px-0.5; }
+  .task-row-actions { @apply opacity-0 transition-opacity duration-150; }
+  .task-row:hover .task-row-actions { @apply opacity-100; }
+}

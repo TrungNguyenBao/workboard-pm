@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WorkBoard — Project List View</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #5E6AD2;
+      --primary-hover: #4F55C4;
+      --accent: #F28C38;
+      --success: #22C55E;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --info: #38BDF8;
+      --neutral-50: #FAFAFA;
+      --neutral-100: #F4F4F5;
+      --neutral-200: #E4E4E7;
+      --neutral-400: #A1A1AA;
+      --neutral-600: #52525B;
+      --neutral-800: #27272A;
+      --neutral-900: #18181B;
+      --bg-surface: #F9F9FB;
+      --font: 'DM Sans', system-ui, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      font-size: 14px;
+      color: var(--neutral-900);
+      background: #fff;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    svg { display: block; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 240px; flex-shrink: 0;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--neutral-200);
+      display: flex; flex-direction: column; height: 100vh;
+    }
+
+    .sidebar-logo {
+      height: 48px; display: flex; align-items: center;
+      padding: 0 16px; border-bottom: 1px solid var(--neutral-200); gap: 10px; flex-shrink: 0;
+    }
+
+    .logo-mark { width:28px; height:28px; background:var(--primary); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:13px; }
+    .logo-text { font-size:15px; font-weight:600; color:var(--neutral-900); letter-spacing:-0.3px; }
+
+    .sidebar-body { flex:1; overflow-y:auto; padding:8px; }
+
+    .ws-btn { display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:8px; border:1px solid var(--neutral-200); background:#fff; cursor:pointer; margin-bottom:6px; }
+    .ws-icon { width:22px; height:22px; border-radius:6px; background:linear-gradient(135deg,#5E6AD2,#8B5CF6); display:flex; align-items:center; justify-content:center; color:white; font-size:10px; font-weight:700; }
+    .ws-name { font-size:13px; font-weight:500; color:var(--neutral-800); flex:1; }
+
+    .nav-item { display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:500; color:var(--neutral-600); text-decoration:none; transition:background 120ms; margin-bottom:1px; }
+    .nav-item:hover { background:var(--neutral-100); color:var(--neutral-900); }
+    .nav-item.active { background:rgba(94,106,210,0.10); color:var(--primary); }
+    .nav-icon { width:16px; height:16px; display:flex; align-items:center; justify-content:center; flex-shrink:0; opacity:0.65; }
+    .nav-item.active .nav-icon { opacity:1; }
+    .nav-badge { margin-left:auto; background:var(--primary); color:white; font-size:10px; font-weight:600; border-radius:9999px; padding:1px 6px; }
+
+    .divider { height:1px; background:var(--neutral-200); margin:8px 2px; }
+    .section-label { font-size:11px; font-weight:600; color:var(--neutral-400); text-transform:uppercase; letter-spacing:0.06em; padding:6px 10px 4px; }
+
+    .project-row { display:flex; align-items:center; gap:8px; padding:5px 10px; border-radius:6px; cursor:pointer; font-size:13px; color:var(--neutral-600); transition:background 120ms; }
+    .project-row:hover { background:var(--neutral-100); }
+    .project-row.active-project { background:rgba(94,106,210,0.08); color:var(--primary); font-weight:500; }
+    .proj-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+    .sidebar-footer { margin-top:auto; padding:8px; border-top:1px solid var(--neutral-200); }
+    .user-row { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:8px; cursor:pointer; }
+    .u-avatar { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:white; flex-shrink:0; }
+    .u-name { font-size:13px; font-weight:500; color:var(--neutral-800); }
+    .u-role { font-size:11px; color:var(--neutral-400); }
+
+    /* ── MAIN ── */
+    .main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+
+    .topbar { height:48px; border-bottom:1px solid var(--neutral-200); display:flex; align-items:center; padding:0 20px; gap:12px; flex-shrink:0; background:#fff; }
+    .breadcrumb { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--neutral-400); }
+    .breadcrumb a { color:var(--neutral-600); text-decoration:none; font-weight:500; }
+    .breadcrumb-current { color:var(--neutral-800); font-weight:600; }
+
+    .search-wrap { flex:1; max-width:420px; margin:0 auto; position:relative; }
+    .search-input { width:100%; height:34px; background:var(--neutral-50); border:1px solid var(--neutral-200); border-radius:8px; padding:0 40px 0 34px; font-size:13px; font-family:var(--font); outline:none; color:var(--neutral-900); }
+    .search-input::placeholder { color:var(--neutral-400); }
+    .search-icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--neutral-400); pointer-events:none; }
+
+    .topbar-right { display:flex; align-items:center; gap:4px; }
+    .icon-btn { width:34px; height:34px; border-radius:8px; border:none; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--neutral-600); position:relative; transition:background 120ms; }
+    .icon-btn:hover { background:var(--neutral-100); }
+    .notif-dot { position:absolute; top:7px; right:7px; width:7px; height:7px; background:var(--danger); border-radius:50%; border:1.5px solid #fff; }
+
+    /* Project sub-header */
+    .project-subheader { border-bottom:1px solid var(--neutral-200); background:#fff; flex-shrink:0; }
+
+    .project-title-bar { display:flex; align-items:center; gap:12px; padding:12px 24px 0; }
+    .project-emoji { font-size:20px; }
+    .project-name { font-size:18px; font-weight:600; color:var(--neutral-900); letter-spacing:-0.3px; }
+    .project-meta { display:flex; align-items:center; gap:8px; margin-left:auto; }
+
+    .btn { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:6px; border:none; font-size:13px; font-weight:500; font-family:var(--font); cursor:pointer; transition:background 150ms; }
+    .btn-primary { background:var(--primary); color:white; }
+    .btn-primary:hover { background:var(--primary-hover); }
+    .btn-outline { background:transparent; color:var(--neutral-600); border:1px solid var(--neutral-200); }
+    .btn-outline:hover { background:var(--neutral-50); }
+
+    .view-tabs { display:flex; align-items:center; padding:0 24px; margin-top:4px; }
+    .view-tab { display:flex; align-items:center; gap:6px; padding:8px 14px; font-size:13px; font-weight:500; color:var(--neutral-400); cursor:pointer; border-bottom:2px solid transparent; text-decoration:none; transition:color 120ms, border-color 120ms; }
+    .view-tab:hover { color:var(--neutral-700, #3F3F46); }
+    .view-tab.active { color:var(--primary); border-bottom-color:var(--primary); }
+
+    .filter-bar { display:flex; align-items:center; gap:8px; padding:8px 24px; }
+    .filter-btn { display:flex; align-items:center; gap:6px; padding:5px 10px; border-radius:6px; border:1px solid var(--neutral-200); background:#fff; font-size:12px; font-weight:500; color:var(--neutral-600); font-family:var(--font); cursor:pointer; transition:background 120ms; }
+    .filter-btn:hover { background:var(--neutral-50); }
+
+    .av-stack { display:flex; }
+    .av-stack .av { width:26px; height:26px; border-radius:50%; border:2px solid #fff; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; color:white; margin-left:-6px; cursor:pointer; }
+    .av-stack .av:first-child { margin-left:0; }
+
+    /* ── LIST TABLE ── */
+    .list-wrap {
+      flex: 1;
+      overflow: auto;
+    }
+
+    .list-wrap::-webkit-scrollbar { width: 6px; height: 6px; }
+    .list-wrap::-webkit-scrollbar-thumb { background: var(--neutral-200); border-radius: 3px; }
+
+    /* Column header row */
+    .col-header-row {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #fff;
+      border-bottom: 1px solid var(--neutral-200);
+      display: grid;
+      grid-template-columns: 32px 24px 1fr 140px 110px 180px 120px 40px;
+      align-items: center;
+      padding: 0 24px;
+      height: 36px;
+      gap: 0;
+    }
+
+    .col-hd {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--neutral-400);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0 8px;
+      height: 100%;
+      cursor: pointer;
+      transition: color 120ms;
+      white-space: nowrap;
+    }
+
+    .col-hd:first-child { padding-left: 0; }
+    .col-hd:hover { color: var(--neutral-600); }
+    .col-hd.sorted { color: var(--neutral-800); }
+
+    /* Section header */
+    .section-header {
+      display: grid;
+      grid-template-columns: 32px 24px 1fr 140px 110px 180px 120px 40px;
+      align-items: center;
+      padding: 0 24px;
+      height: 38px;
+      background: var(--neutral-50);
+      border-bottom: 1px solid var(--neutral-200);
+      cursor: pointer;
+      transition: background 120ms;
+      gap: 0;
+    }
+
+    .section-header:hover { background: var(--neutral-100); }
+
+    .section-header-content {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-collapse-btn {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--neutral-400);
+      flex-shrink: 0;
+    }
+
+    .section-collapse-btn:hover { background: var(--neutral-200); }
+
+    .chevron { transition: transform 150ms; }
+    .chevron.collapsed { transform: rotate(-90deg); }
+
+    .section-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--neutral-800);
+    }
+
+    .section-task-count {
+      font-size: 11px;
+      color: var(--neutral-400);
+      font-weight: 500;
+    }
+
+    .section-progress {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-right: 8px;
+    }
+
+    .progress-bar {
+      width: 60px;
+      height: 4px;
+      background: var(--neutral-200);
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--success);
+      border-radius: 9999px;
+    }
+
+    .progress-label {
+      font-size: 11px;
+      color: var(--neutral-400);
+    }
+
+    /* Task row */
+    .task-row {
+      display: grid;
+      grid-template-columns: 32px 24px 1fr 140px 110px 180px 120px 40px;
+      align-items: center;
+      padding: 0 24px;
+      height: 36px;
+      border-bottom: 1px solid var(--neutral-100);
+      cursor: pointer;
+      transition: background 120ms;
+      gap: 0;
+      position: relative;
+    }
+
+    .task-row:hover { background: var(--neutral-50); }
+    .task-row:hover .row-actions { opacity: 1; }
+    .task-row:hover .task-name-text { color: var(--primary); }
+
+    /* Checkbox cell */
+    .task-cb {
+      width: 16px; height: 16px;
+      border: 1.5px solid var(--neutral-300, #D4D4D8);
+      border-radius: 4px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 120ms; flex-shrink: 0;
+    }
+
+    .task-cb:hover { border-color: var(--primary); }
+    .task-cb.checked { background: var(--success); border-color: var(--success); }
+
+    /* Priority cell */
+    .priority-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin: 0 auto;
+    }
+
+    /* Task name cell */
+    .task-name-cell {
+      display: flex; align-items: center; gap: 6px; padding: 0 8px; min-width: 0;
+    }
+
+    .task-name-text {
+      font-size: 13px; color: var(--neutral-800); font-weight: 400;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      transition: color 120ms;
+    }
+
+    .task-name-text.done { text-decoration: line-through; color: var(--neutral-400); }
+
+    /* Assignee cell */
+    .assignee-cell {
+      display: flex; align-items: center; gap: 7px; padding: 0 8px;
+    }
+
+    .task-av {
+      width: 22px; height: 22px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: 700; color: white; flex-shrink: 0;
+    }
+
+    .assignee-name { font-size: 12px; color: var(--neutral-600); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Due date cell */
+    .due-cell {
+      padding: 0 8px;
+      font-size: 12px; color: var(--neutral-400);
+      white-space: nowrap;
+    }
+
+    .due-cell.overdue { color: var(--danger); font-weight: 500; }
+    .due-cell.today { color: var(--primary); font-weight: 500; }
+    .due-cell.soon { color: var(--warning); font-weight: 500; }
+
+    /* Tags cell */
+    .tags-cell {
+      padding: 0 8px;
+      display: flex; align-items: center; gap: 4px; overflow: hidden;
+    }
+
+    .tag-chip {
+      font-size: 10px; font-weight: 500; padding: 2px 7px;
+      border-radius: 9999px; white-space: nowrap; flex-shrink: 0;
+    }
+
+    /* Status cell */
+    .status-cell {
+      padding: 0 8px;
+    }
+
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 8px; border-radius: 9999px;
+      font-size: 11px; font-weight: 500; white-space: nowrap;
+    }
+
+    .status-dot-sm { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+    /* Row actions (hover) */
+    .row-actions {
+      display: flex; align-items: center; gap: 2px;
+      opacity: 0; transition: opacity 120ms;
+    }
+
+    .row-act-btn {
+      width: 24px; height: 24px; border-radius: 4px; border: none;
+      background: transparent; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--neutral-400); transition: background 120ms, color 120ms;
+    }
+
+    .row-act-btn:hover { background: var(--neutral-200); color: var(--neutral-800); }
+
+    /* Add task row */
+    .add-task-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 0 24px 0 56px; height: 34px;
+      font-size: 12px; color: var(--neutral-400);
+      cursor: pointer; border-bottom: 1px solid var(--neutral-100);
+      transition: background 120ms, color 120ms;
+    }
+
+    .add-task-row:hover { background: var(--neutral-50); color: var(--primary); }
+
+    /* Add section */
+    .add-section-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 12px 24px;
+      font-size: 13px; color: var(--neutral-400);
+      cursor: pointer; transition: color 120ms;
+    }
+
+    .add-section-row:hover { color: var(--primary); }
+
+    /* Collapsed section state */
+    .section-collapsed .task-rows { display: none; }
+  </style>
+</head>
+<body>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">W</div>
+    <span class="logo-text">WorkBoard</span>
+  </div>
+  <div class="sidebar-body">
+    <div class="ws-btn">
+      <div class="ws-icon">AC</div>
+      <span class="ws-name">Acme Corp</span>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#A1A1AA" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+
+    <a class="nav-item" href="#">
+      <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+      Home
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+      My Tasks
+      <span class="nav-badge">12</span>
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></span>
+      Inbox
+    </a>
+
+    <div class="divider"></div>
+    <div class="section-label">Projects</div>
+    <div class="project-row active-project"><div class="proj-dot" style="background:#5E6AD2;"></div>Website Redesign</div>
+    <div class="project-row"><div class="proj-dot" style="background:#F28C38;"></div>Mobile App v2</div>
+    <div class="project-row"><div class="proj-dot" style="background:#22C55E;"></div>Q1 Marketing Campaign</div>
+    <div class="project-row"><div class="proj-dot" style="background:#8B5CF6;"></div>API Integration</div>
+    <div class="project-row"><div class="proj-dot" style="background:#F59E0B;"></div>Brand Refresh</div>
+  </div>
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="u-avatar" style="background:linear-gradient(135deg,#5E6AD2,#8B5CF6);">AJ</div>
+      <div><div class="u-name">Alex Johnson</div><div class="u-role">Product Manager</div></div>
+    </div>
+  </div>
+</aside>
+
+<!-- ── MAIN ── -->
+<div class="main">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <nav class="breadcrumb">
+      <a href="#">Projects</a>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      <span class="breadcrumb-current">Website Redesign</span>
+    </nav>
+    <div class="search-wrap">
+      <svg class="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" placeholder="Search…">
+    </div>
+    <div class="topbar-right">
+      <button class="icon-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="notif-dot"></span>
+      </button>
+      <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#5E6AD2,#8B5CF6);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;cursor:pointer;margin-left:4px;">AJ</div>
+    </div>
+  </header>
+
+  <!-- Project sub-header -->
+  <div class="project-subheader">
+    <div class="project-title-bar">
+      <span class="project-emoji">🖥️</span>
+      <h1 class="project-name">Website Redesign</h1>
+      <div class="project-meta">
+        <div class="av-stack">
+          <div class="av" style="background:#5E6AD2;margin-left:0;">AJ</div>
+          <div class="av" style="background:#22C55E;">ML</div>
+          <div class="av" style="background:#F28C38;">JK</div>
+          <div class="av" style="background:#8B5CF6;">TC</div>
+        </div>
+        <button class="btn btn-outline" style="height:32px;padding:5px 12px;font-size:12px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Invite
+        </button>
+        <button class="btn btn-primary" style="height:32px;padding:5px 14px;font-size:12px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add task
+        </button>
+        <button class="icon-btn" style="width:32px;height:32px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- View tabs — List active -->
+    <div class="view-tabs">
+      <a class="view-tab" href="#">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Board
+      </a>
+      <a class="view-tab active" href="#">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        List
+      </a>
+      <a class="view-tab" href="#">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Calendar
+      </a>
+      <a class="view-tab" href="#">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Timeline
+      </a>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <button class="filter-btn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+        Filter
+      </button>
+      <button class="filter-btn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><path d="M9 3v18"/></svg>
+        Sort by: Due date
+      </button>
+      <button class="filter-btn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Group by: Section
+      </button>
+      <button class="filter-btn" style="margin-left:auto;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+        Hide completed
+      </button>
+    </div>
+  </div>
+
+  <!-- ── LIST TABLE ── -->
+  <div class="list-wrap">
+
+    <!-- Column headers -->
+    <div class="col-header-row">
+      <div class="col-hd" style="padding-left:0;"></div><!-- checkbox -->
+      <div class="col-hd"></div><!-- priority -->
+      <div class="col-hd sorted">
+        Task name
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="col-hd">Assignee</div>
+      <div class="col-hd">Due date</div>
+      <div class="col-hd">Tags</div>
+      <div class="col-hd">Status</div>
+      <div class="col-hd"></div><!-- actions -->
+    </div>
+
+    <!-- ═══ SECTION: In Progress ═══ -->
+    <div class="section-header">
+      <div class="section-header-content">
+        <button class="section-collapse-btn">
+          <svg class="chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <div style="width:10px;height:10px;border-radius:50%;background:var(--primary);flex-shrink:0;"></div>
+        <span class="section-name">In Progress</span>
+        <span class="section-task-count">4 tasks</span>
+        <div class="section-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:25%;"></div>
+          </div>
+          <span class="progress-label">25%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task rows -->
+    <div class="task-row">
+      <div><div class="task-cb"></div></div>
+      <div style="display:flex;justify-content:center;"><div class="priority-dot" style="background:#EF4444;" title="High"></div></div>
+      <div class="task-name-cell">
+        <span class="task-name-text">Redesign homepage hero section with new brand identity</span>
+      </div>
+      <div class="assignee-cell">
+        <div class="task-av" style="background:#22C55E;">ML</div>
+        <span class="assignee-name">Maria Liu</span>
+      </div>
+      <div class="due-cell soon">Feb 26</div>
+      <div class="tags-cell">
+        <span class="tag-chip" style="background:rgba(94,106,210,0.10);color:#5E6AD2;">Design</span>
+        <span class="tag-chip" style="background:rgba(245,158,11,0.10);color:#D97706;">Brand</span>
+      </div>
+      <div class="status-cell">
+        <span class="status-badge" style="background:rgba(94,106,210,0.10);color:#5E6AD2;">
+          <div class="status-dot-sm" style="background:#5E6AD2;"></div>
+          In Progress
+        </span>
+      </div>
+      <div class="row-actions">
+        <button class="row-act-btn" title="Edit">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="row-act-btn" title="Move">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
+        </button>
+        <button class="row-act-btn" title="Delete" style="color:#EF4444;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="task-row">
+      <div><div class="task-cb"></div></div>
+      <div style="display:flex;justify-content:center;"><div class="priority-dot" style="background:#F59E0B;" title="Medium"></div></div>
+      <div class="task-name-cell">
+        <span class="task-name-text">Build responsive navigation component with mobile drawer</span>
+      </div>
+      <div class="assignee-cell">
+        <div class="task-av" style="background:#F28C38;">JK</div>
+        <span class="assignee-name">James Kim</span>
+      </div>
+      <div class="due-cell">Mar 1</div>
+      <div class="tags-cell">
+        <span class="tag-chip" style="background:rgba(139,92,246,0.10);color:#8B5CF6;">Frontend</span>
+        <span class="tag-chip" style="background:rgba(56,189,248,0.10);color:#0284C7;">React</span>
+      </div>
+      <div class="status-cell">
+        <span class="status-badge" style="background:rgba(94,106,210,0.10);color:#5E6AD2;">
+          <div class="status-dot-sm" style="background:#5E6AD2;"></div>
+          In Progress
+        </span>
+      </div>
+      <div class="row-actions">
+        <button class="row-act-btn" title="Edit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="row-act-btn" title="Move"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg></button>
+        <button class="row-act-btn" title="Delete" style="color:#EF4444;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+      </div>
+    </div>
+
+    <div class="task-row">
+      <div><div class="task-cb"></div></div>
+      <div style="display:flex;justify-content:center;"><div class="priority-dot" style="background:#38BDF8;" title="Low"></div></div>
+      <div class="task-name-cell">
+        <span class="task-name-text">Set up CMS content structure for blog and case studies</span>
+      </div>
+      <div class="assignee-cell">
+        <div class="task-av" style="background:#8B5CF6;">TC</div>
+        <span class="assignee-name">Tom Chen</span>
+      </div>
+      <div class="due-cell">Mar 3</div>
+      <div class="tags-cell">
+        <span class="tag-chip" style="background:rgba(34,197,94,0.10);color:#16A34A;">Content</span>
+      </div>
+      <div class="status-cell">
+        <span class="status-badge" style="background:rgba(94,106,210,0.10);color:#5E6AD2;">
+          <div class="status-dot-sm" style="background:#5E6AD2;"></div>
+          In Progress
+        </span>
+      </div>
+      <div class="row-actions">
+        <button class="row-act-btn" title="Edit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="row-act-btn" title="Delete" style="color:#EF4444;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+      </div>
+    </div>
+
+    <div class="add-task-row">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add task to In Progress
+    </div>
+
+    <!-- ═══ SECTION: In Review ═══ -->
+    <div class="section-header">
+      <div class="section-header-content">
+        <button class="section-collapse-btn">
+          <svg class="chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <div style="width:10px;height:10px;border-radius:50%;background:var(--accent);flex-shrink:0;"></div>
+        <span class="section-name">In Review</span>
+        <span class="section-task-count">2 tasks</span>
+        <div class="section-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:0%;"></div>
+          </div>
+          <span class="progress-label">0%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="task-row">
+      <div><div class="task-cb"></div></div>
+      <div style="display:flex;justify-content:center;"><div class="priority-dot" style="background:#EF4444;" title="High"></div></div>
+      <div class="task-name-cell">
+        <span class="task-name-text">Brand color system and typography documentation</span>
+      </div>
+      <div class="assignee-cell">
+        <div class="task-av" style="background:#5E6AD2;">AJ</div>
+        <span class="assignee-name">Alex Johnson</span>
+      </div>
+      <div class="due-cell overdue">Feb 20</div>
+      <div class="tags-cell">
+        <span class="tag-chip" style="background:rgba(245,158,11,0.10);color:#D97706;">Brand</span>
+        <span class="tag-chip" style="background:rgba(94,106,210,0.10);color:#5E6AD2;">Design</span>
+      </div>
+      <div class="status-cell">
+        <span class="status-badge" style="background:rgba(242,140,56,0.12);color:#D97706;">
+          <div class="status-dot-sm" style="background:#F28C38;"></div>
+          In Review
+        </span>
+      </div>
+      <div class="row-actions">
+        <button class="row-act-btn" title="Edit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="row-act-btn" title="Delete" style="color:#EF4444;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+      </div>
+    </div>
+
+    <div class="task-row">
+      <div><div class="task-cb"></div></div>
+      <div style="display:flex;justify-content:center;"><div class="priority-dot" style="background:#F59E0B;" title="Medium"></div></div>
+      <div class="task-name-cell">
+        <span class="task-name-text">Landing page A/B test variants — 3 design options</span>
+      </div>
+      <div class="assignee-cell">
+        <div class="task-av" style="background:#22C55E;">ML</div>
+        <span class="assignee-name">Maria Liu</span>
+      </div>
+      <div class="due-cell">Feb 28</div>
+      <div class="tags-cell">
+        <span class="tag-chip" style="background:rgba(94,106,210,0.10);color:#5E6AD2;">Design</span>
+      </div>
+      <div class="status-cell">
+        <span class="status-badge" style="background:rgba(242,140,56,0.12);color:#D97706;">
+          <div class="status-dot-sm" style="background:#F28C38;"></div>
+          In Review
+        </span>
+      </div>
+      <div class="row-actions">
+        <button class="row-act-btn" title="Edit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="row-act-btn" title="Delete" style="color:#EF4444;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+      </div>
+    </div>
+
+    <div class="add-task-row">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add task to In Review
+    </div>
+
+    <!-- ═══ SECTION: Done ═══ -->
+    <div class="section-header">
+      <div class="section-header-content">
+        <button class="section-collapse-btn">
+          <svg class="chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <div style="width:10px;height:10px;border-radius:50%;background:var(--success);flex-shrink:0;"></div>
+        <span class="section-name">Done</span>
+        <span class="section-task-count">7 tasks</span>
+        <div class="section-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:100%;"></div>
+          </div>
+          <span class="progress-label">100%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="task-row" style="opacity:0.65;">
+      <div><div class="task-cb checked"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+      <div style="display:flex;justify-content:center;"><div class="priority-dot" style="background:#A1A1AA;"></div></div>
+      <div class="task-name-cell">
+        <span class="task-name-text done">Project kickoff meeting and stakeholder alignment</span>
+      </div>
+      <div class="assignee-cell">
+        <div class="task-av" style="background:#5E6AD2;">AJ</div>
+        <span class="assignee-name">Alex Johnson</span>
+      </div>
+      <div class="due-cell" style="color:#22C55E;">Completed</div>
+      <div class="tags-cell">
+        <span class="tag-chip" style="background:var(--neutral-100);color:var(--neutral-400);">Planning</span>
+      </div>
+      <div class="status-cell">
+        <span class="status-badge" style="background:rgba(34,197,94,0.10);color:#16A34A;">
+          <div class="status-dot-sm" style="background:#22C55E;"></div>
+          Done
+        </span>
+      </div>
+      <div class="row-actions">
+        <button class="row-act-btn" title="Edit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="row-act-btn" title="Delete" style="color:#EF4444;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+      </div>
+    </div>
+
+    <div class="task-row" style="opacity:0.65;">
+      <div><div class="task-cb checked"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+      <div style="display:flex;justify-content:center;"><div class="priority-dot" style="background:#A1A1AA;"></div></div>
+      <div class="task-name-cell">
+        <span class="task-name-text done">Wireframes for all main site pages</span>
+      </div>
+      <div class="assignee-cell">
+        <div class="task-av" style="background:#22C55E;">ML</div>
+        <span class="assignee-name">Maria Liu</span>
+      </div>
+      <div class="due-cell" style="color:#22C55E;">Completed</div>
+      <div class="tags-cell">
+        <span class="tag-chip" style="background:rgba(94,106,210,0.10);color:#5E6AD2;">Design</span>
+        <span class="tag-chip" style="background:var(--neutral-100);color:var(--neutral-400);">UX</span>
+      </div>
+      <div class="status-cell">
+        <span class="status-badge" style="background:rgba(34,197,94,0.10);color:#16A34A;">
+          <div class="status-dot-sm" style="background:#22C55E;"></div>
+          Done
+        </span>
+      </div>
+      <div class="row-actions">
+        <button class="row-act-btn" title="Edit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="row-act-btn" title="Delete" style="color:#EF4444;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+      </div>
+    </div>
+
+    <div class="task-row" style="opacity:0.65;">
+      <div><div class="task-cb checked"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+      <div style="display:flex;justify-content:center;"><div class="priority-dot" style="background:#F59E0B;"></div></div>
+      <div class="task-name-cell">
+        <span class="task-name-text done">Tech stack decision: Next.js + shadcn/ui + TypeScript</span>
+      </div>
+      <div class="assignee-cell">
+        <div class="task-av" style="background:#F28C38;">JK</div>
+        <span class="assignee-name">James Kim</span>
+      </div>
+      <div class="due-cell" style="color:#22C55E;">Completed</div>
+      <div class="tags-cell">
+        <span class="tag-chip" style="background:rgba(139,92,246,0.10);color:#8B5CF6;">Frontend</span>
+      </div>
+      <div class="status-cell">
+        <span class="status-badge" style="background:rgba(34,197,94,0.10);color:#16A34A;">
+          <div class="status-dot-sm" style="background:#22C55E;"></div>
+          Done
+        </span>
+      </div>
+      <div class="row-actions">
+        <button class="row-act-btn" title="Edit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="row-act-btn" title="Delete" style="color:#EF4444;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+      </div>
+    </div>
+
+    <div class="add-task-row">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add task to Done
+    </div>
+
+    <!-- Add section -->
+    <div class="add-section-row">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add section
+    </div>
+
+  </div><!-- /list-wrap -->
+
+</div><!-- /main -->
+
+<script>
+  // Toggle section collapse on header click
+  document.querySelectorAll('.section-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const chevron = header.querySelector('.chevron');
+      const isCollapsed = chevron.classList.contains('collapsed');
+
+      // Find following task rows until next section header
+      let sibling = header.nextElementSibling;
+      while (sibling && !sibling.classList.contains('section-header')) {
+        sibling.style.display = isCollapsed ? '' : 'none';
+        sibling = sibling.nextElementSibling;
+      }
+
+      chevron.classList.toggle('collapsed', !isCollapsed);
+    });
+  });
+</script>
+
+</body>
+</html>

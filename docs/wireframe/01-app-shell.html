@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WorkBoard — App Shell</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #5E6AD2;
+      --primary-hover: #4F55C4;
+      --accent: #F28C38;
+      --success: #22C55E;
+      --danger: #EF4444;
+      --neutral-50: #FAFAFA;
+      --neutral-100: #F4F4F5;
+      --neutral-200: #E4E4E7;
+      --neutral-400: #A1A1AA;
+      --neutral-600: #52525B;
+      --neutral-800: #27272A;
+      --neutral-900: #18181B;
+      --bg-surface: #F9F9FB;
+      --font: 'DM Sans', system-ui, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      font-size: 14px;
+      color: var(--neutral-900);
+      background: #fff;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--neutral-200);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar-logo {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--neutral-200);
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .logo-mark {
+      width: 28px;
+      height: 28px;
+      background: var(--primary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-text {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--neutral-900);
+      letter-spacing: -0.3px;
+    }
+
+    .workspace-selector {
+      margin: 8px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--neutral-200);
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 150ms;
+    }
+
+    .workspace-selector:hover { background: var(--neutral-100); }
+
+    .ws-avatar {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #5E6AD2, #8B5CF6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .ws-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--neutral-800);
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ws-chevron {
+      color: var(--neutral-400);
+      font-size: 11px;
+    }
+
+    /* Nav sections */
+    .sidebar-section {
+      padding: 4px 8px 0;
+    }
+
+    .sidebar-section-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--neutral-400);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 8px 8px 4px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--neutral-600);
+      transition: background 120ms, color 120ms;
+      position: relative;
+      text-decoration: none;
+    }
+
+    .nav-item:hover {
+      background: var(--neutral-100);
+      color: var(--neutral-900);
+    }
+
+    .nav-item.active {
+      background: rgba(94,106,210,0.10);
+      color: var(--primary);
+    }
+
+    .nav-item.active .nav-icon { color: var(--primary); }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+
+    .nav-item.active .nav-icon { opacity: 1; }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--primary);
+      color: white;
+      font-size: 10px;
+      font-weight: 600;
+      border-radius: 9999px;
+      padding: 1px 6px;
+      min-width: 18px;
+      text-align: center;
+    }
+
+    .nav-badge.muted {
+      background: var(--neutral-200);
+      color: var(--neutral-600);
+    }
+
+    .sidebar-divider {
+      height: 1px;
+      background: var(--neutral-200);
+      margin: 8px 8px;
+    }
+
+    /* Projects list */
+    .project-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--neutral-600);
+      transition: background 120ms, color 120ms;
+    }
+
+    .project-item:hover {
+      background: var(--neutral-100);
+      color: var(--neutral-900);
+    }
+
+    .project-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* Team section */
+    .team-section {
+      padding: 0 8px;
+    }
+
+    .member-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--neutral-600);
+      transition: background 120ms;
+    }
+
+    .member-item:hover { background: var(--neutral-100); }
+
+    .avatar-circle {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--success);
+      border: 1.5px solid var(--bg-surface);
+      margin-left: auto;
+    }
+
+    /* Sidebar footer */
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 8px;
+      border-top: 1px solid var(--neutral-200);
+    }
+
+    .user-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 120ms;
+    }
+
+    .user-row:hover { background: var(--neutral-100); }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .user-info { flex: 1; overflow: hidden; }
+    .user-name { font-size: 13px; font-weight: 500; color: var(--neutral-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-role { font-size: 11px; color: var(--neutral-400); }
+
+    /* ─── MAIN LAYOUT ─── */
+    .main-layout {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* TOP BAR */
+    .topbar {
+      height: 48px;
+      border-bottom: 1px solid var(--neutral-200);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 12px;
+      flex-shrink: 0;
+      background: #fff;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--neutral-400);
+      flex-shrink: 0;
+    }
+
+    .breadcrumb a { color: var(--neutral-600); text-decoration: none; font-weight: 500; }
+    .breadcrumb a:hover { color: var(--neutral-900); }
+    .breadcrumb-current { color: var(--neutral-800); font-weight: 600; }
+    .breadcrumb-sep { color: var(--neutral-300); font-size: 16px; }
+
+    /* Search */
+    .search-wrap {
+      flex: 1;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 34px;
+      background: var(--neutral-50);
+      border: 1px solid var(--neutral-200);
+      border-radius: 8px;
+      padding: 0 12px 0 36px;
+      font-size: 13px;
+      font-family: var(--font);
+      color: var(--neutral-900);
+      outline: none;
+      transition: border-color 150ms, box-shadow 150ms;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(94,106,210,0.12);
+      background: #fff;
+    }
+
+    .search-input::placeholder { color: var(--neutral-400); }
+
+    .search-wrap-inner {
+      position: relative;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--neutral-400);
+      pointer-events: none;
+    }
+
+    .search-kbd {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 10px;
+      color: var(--neutral-400);
+      background: var(--neutral-100);
+      border: 1px solid var(--neutral-200);
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-family: var(--font);
+    }
+
+    /* Topbar actions */
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--neutral-600);
+      transition: background 120ms, color 120ms;
+      position: relative;
+    }
+
+    .icon-btn:hover {
+      background: var(--neutral-100);
+      color: var(--neutral-900);
+    }
+
+    .notif-dot {
+      position: absolute;
+      top: 7px;
+      right: 7px;
+      width: 7px;
+      height: 7px;
+      background: var(--danger);
+      border-radius: 50%;
+      border: 1.5px solid #fff;
+    }
+
+    .topbar-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      margin-left: 4px;
+    }
+
+    /* ─── CONTENT AREA ─── */
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px;
+      background: #fff;
+    }
+
+    /* Page placeholder */
+    .page-header {
+      margin-bottom: 24px;
+    }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--neutral-900);
+      letter-spacing: -0.3px;
+    }
+
+    .page-subtitle {
+      font-size: 13px;
+      color: var(--neutral-400);
+      margin-top: 4px;
+    }
+
+    .content-placeholder-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .placeholder-card {
+      background: var(--neutral-50);
+      border: 1px solid var(--neutral-200);
+      border-radius: 12px;
+      padding: 20px;
+      height: 90px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .placeholder-card-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--neutral-400);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .placeholder-card-value {
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--neutral-900);
+      line-height: 1;
+    }
+
+    .content-placeholder-block {
+      background: var(--neutral-50);
+      border: 1px solid var(--neutral-200);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+
+    .placeholder-row {
+      height: 36px;
+      background: var(--neutral-100);
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+
+    .placeholder-row:last-child { margin-bottom: 0; }
+    .placeholder-row.w-full { width: 100%; }
+    .placeholder-row.w-3q { width: 75%; }
+    .placeholder-row.w-half { width: 50%; }
+    .placeholder-row.short { height: 20px; }
+
+    /* ─── DRAWER ─── */
+    .drawer-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.28);
+      z-index: 40;
+    }
+
+    .drawer-overlay.open { display: block; }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: -480px;
+      width: 480px;
+      height: 100vh;
+      background: #fff;
+      border-left: 1px solid var(--neutral-200);
+      box-shadow: 0 0 40px rgba(0,0,0,0.14);
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      transition: right 220ms cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .drawer.open { right: 0; }
+
+    .drawer-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--neutral-200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .drawer-breadcrumb {
+      font-size: 12px;
+      color: var(--neutral-400);
+    }
+
+    .drawer-breadcrumb span { color: var(--neutral-600); }
+
+    .drawer-close {
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--neutral-400);
+    }
+
+    .drawer-close:hover { background: var(--neutral-100); color: var(--neutral-800); }
+
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .drawer-placeholder {
+      height: 24px;
+      background: var(--neutral-100);
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+
+    /* ─── SVG ICONS (inline) ─── */
+    svg { display: block; }
+
+    /* Annotation labels */
+    .annotation {
+      font-size: 10px;
+      color: #A1A1AA;
+      border: 1px dashed #E4E4E7;
+      border-radius: 4px;
+      padding: 2px 6px;
+      display: inline-block;
+      margin-top: 4px;
+    }
+
+    /* Scrollable sidebar body */
+    .sidebar-body {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .sidebar-body::-webkit-scrollbar { width: 4px; }
+    .sidebar-body::-webkit-scrollbar-thumb { background: var(--neutral-200); border-radius: 2px; }
+
+    /* Toggle drawer button (demo) */
+    .demo-toggle {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 60;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(94,106,210,0.40);
+      transition: background 150ms;
+    }
+
+    .demo-toggle:hover { background: var(--primary-hover); }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════
+       SIDEBAR
+  ════════════════════════════════════════════ -->
+  <aside class="sidebar">
+
+    <!-- Logo -->
+    <div class="sidebar-logo">
+      <div class="logo-mark">W</div>
+      <span class="logo-text">WorkBoard</span>
+    </div>
+
+    <div class="sidebar-body">
+
+      <!-- Workspace selector -->
+      <div class="workspace-selector">
+        <div class="ws-avatar">AC</div>
+        <span class="ws-name">Acme Corp</span>
+        <span class="ws-chevron">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </span>
+      </div>
+
+      <!-- Primary nav -->
+      <div class="sidebar-section" style="margin-top:4px;">
+        <a class="nav-item" href="#">
+          <span class="nav-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </span>
+          Home
+        </a>
+        <a class="nav-item active" href="#">
+          <span class="nav-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+          </span>
+          My Tasks
+          <span class="nav-badge">12</span>
+        </a>
+        <a class="nav-item" href="#">
+          <span class="nav-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+            </svg>
+          </span>
+          Inbox
+          <span class="nav-badge" style="background:#EF4444;">3</span>
+        </a>
+      </div>
+
+      <div class="sidebar-divider"></div>
+
+      <!-- Projects -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Projects</div>
+        <div class="project-item">
+          <div class="project-dot" style="background:#5E6AD2;"></div>
+          <span>Website Redesign</span>
+        </div>
+        <div class="project-item">
+          <div class="project-dot" style="background:#F28C38;"></div>
+          <span>Mobile App v2</span>
+        </div>
+        <div class="project-item">
+          <div class="project-dot" style="background:#22C55E;"></div>
+          <span>Q1 Marketing Campaign</span>
+        </div>
+        <div class="project-item">
+          <div class="project-dot" style="background:#8B5CF6;"></div>
+          <span>API Integration</span>
+        </div>
+        <div class="project-item">
+          <div class="project-dot" style="background:#F59E0B;"></div>
+          <span>Brand Refresh</span>
+        </div>
+        <div class="project-item" style="color: var(--neutral-400);">
+          <span style="font-size:14px; margin-left:2px; margin-right:2px;">+</span>
+          <span>New project</span>
+        </div>
+      </div>
+
+      <div class="sidebar-divider"></div>
+
+      <!-- Team -->
+      <div class="team-section">
+        <div class="sidebar-section-label" style="padding: 8px 8px 4px;">Team</div>
+        <div class="member-item">
+          <div class="avatar-circle" style="background:#5E6AD2;">SR</div>
+          <span>Sarah R.</span>
+          <div class="status-dot"></div>
+        </div>
+        <div class="member-item">
+          <div class="avatar-circle" style="background:#F28C38;">JK</div>
+          <span>James K.</span>
+          <div class="status-dot" style="background:var(--neutral-400);"></div>
+        </div>
+        <div class="member-item">
+          <div class="avatar-circle" style="background:#22C55E;">ML</div>
+          <span>Maria L.</span>
+          <div class="status-dot"></div>
+        </div>
+        <div class="member-item">
+          <div class="avatar-circle" style="background:#8B5CF6;">TC</div>
+          <span>Tom C.</span>
+          <div class="status-dot" style="background:var(--neutral-400);"></div>
+        </div>
+      </div>
+
+    </div><!-- /sidebar-body -->
+
+    <!-- User footer -->
+    <div class="sidebar-footer">
+      <div class="user-row">
+        <div class="user-avatar" style="background:linear-gradient(135deg,#5E6AD2,#8B5CF6);">AJ</div>
+        <div class="user-info">
+          <div class="user-name">Alex Johnson</div>
+          <div class="user-role">Product Manager</div>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A1A1AA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ═══════════════════════════════════════════
+       MAIN LAYOUT
+  ════════════════════════════════════════════ -->
+  <div class="main-layout">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb">
+        <a href="#">Acme Corp</a>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-current">My Tasks</span>
+      </nav>
+
+      <!-- Search -->
+      <div class="search-wrap">
+        <div class="search-wrap-inner">
+          <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input class="search-input" type="text" placeholder="Search tasks, projects, people…">
+          <span class="search-kbd">⌘K</span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="topbar-actions">
+        <button class="icon-btn" title="Help">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </button>
+        <button class="icon-btn" title="Notifications" onclick="toggleDrawer()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <span class="notif-dot"></span>
+        </button>
+        <div class="user-avatar topbar-avatar" style="background:linear-gradient(135deg,#5E6AD2,#8B5CF6); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:white; cursor:pointer;">AJ</div>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="content-area">
+      <div class="page-header">
+        <h1 class="page-title">My Tasks</h1>
+        <p class="page-subtitle">Your tasks across all projects — 12 tasks due this week</p>
+      </div>
+
+      <!-- Metric cards placeholder -->
+      <div class="content-placeholder-grid">
+        <div class="placeholder-card">
+          <span class="placeholder-card-label">Due Today</span>
+          <span class="placeholder-card-value" style="color:#EF4444;">4</span>
+        </div>
+        <div class="placeholder-card">
+          <span class="placeholder-card-label">Overdue</span>
+          <span class="placeholder-card-value" style="color:#F28C38;">2</span>
+        </div>
+        <div class="placeholder-card">
+          <span class="placeholder-card-label">Done This Week</span>
+          <span class="placeholder-card-value" style="color:#22C55E;">9</span>
+        </div>
+        <div class="placeholder-card">
+          <span class="placeholder-card-label">Active Projects</span>
+          <span class="placeholder-card-value" style="color:#5E6AD2;">5</span>
+        </div>
+      </div>
+
+      <!-- Task sections placeholder -->
+      <div class="content-placeholder-block">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#EF4444;"></div>
+          <span style="font-size:13px;font-weight:600;color:var(--neutral-800);">Overdue</span>
+          <span style="font-size:11px;background:rgba(239,68,68,0.10);color:#DC2626;padding:1px 8px;border-radius:9999px;font-weight:500;">2</span>
+        </div>
+        <div class="placeholder-row w-full"></div>
+        <div class="placeholder-row w-3q"></div>
+      </div>
+
+      <div class="content-placeholder-block">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#5E6AD2;"></div>
+          <span style="font-size:13px;font-weight:600;color:var(--neutral-800);">Today</span>
+          <span style="font-size:11px;background:rgba(94,106,210,0.10);color:#5E6AD2;padding:1px 8px;border-radius:9999px;font-weight:500;">4</span>
+        </div>
+        <div class="placeholder-row w-full"></div>
+        <div class="placeholder-row w-full"></div>
+        <div class="placeholder-row w-3q"></div>
+        <div class="placeholder-row w-full"></div>
+      </div>
+
+      <div class="content-placeholder-block">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#A1A1AA;"></div>
+          <span style="font-size:13px;font-weight:600;color:var(--neutral-800);">Upcoming</span>
+          <span style="font-size:11px;background:var(--neutral-100);color:var(--neutral-600);padding:1px 8px;border-radius:9999px;font-weight:500;">6</span>
+        </div>
+        <div class="placeholder-row w-full"></div>
+        <div class="placeholder-row w-half"></div>
+        <div class="placeholder-row w-3q"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       TASK DRAWER (closed by default)
+  ════════════════════════════════════════════ -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
+  <aside class="drawer" id="taskDrawer">
+    <div class="drawer-header">
+      <div class="drawer-breadcrumb">
+        <span>Website Redesign</span> / <span>In Progress</span>
+      </div>
+      <button class="drawer-close" onclick="toggleDrawer()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="drawer-body">
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <div style="padding:4px 12px;border-radius:9999px;background:rgba(94,106,210,0.12);color:#5E6AD2;font-size:12px;font-weight:500;cursor:pointer;">In Progress</div>
+        <div style="padding:4px 12px;border-radius:9999px;background:rgba(239,68,68,0.10);color:#DC2626;font-size:12px;font-weight:500;cursor:pointer;">High Priority</div>
+      </div>
+      <div style="font-size:20px;font-weight:600;color:var(--neutral-900);margin-bottom:20px;line-height:1.3;">Redesign homepage hero section with new brand</div>
+      <div class="drawer-placeholder" style="width:40%;"></div>
+      <div class="drawer-placeholder" style="width:80%;margin-top:16px;height:80px;"></div>
+      <div class="drawer-placeholder" style="width:100%;margin-top:16px;height:60px;"></div>
+      <div class="drawer-placeholder" style="width:60%;margin-top:16px;"></div>
+      <div class="drawer-placeholder" style="width:100%;margin-top:16px;height:120px;"></div>
+    </div>
+  </aside>
+
+  <!-- Demo toggle button -->
+  <button class="demo-toggle" onclick="toggleDrawer()">Toggle Drawer</button>
+
+  <script>
+    function toggleDrawer() {
+      const drawer = document.getElementById('taskDrawer');
+      const overlay = document.getElementById('drawerOverlay');
+      const isOpen = drawer.classList.contains('open');
+      drawer.classList.toggle('open', !isOpen);
+      overlay.classList.toggle('open', !isOpen);
+    }
+  </script>
+</body>
+</html>

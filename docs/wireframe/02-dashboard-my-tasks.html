@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WorkBoard — My Tasks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #5E6AD2;
+      --primary-hover: #4F55C4;
+      --accent: #F28C38;
+      --success: #22C55E;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --info: #38BDF8;
+      --neutral-50: #FAFAFA;
+      --neutral-100: #F4F4F5;
+      --neutral-200: #E4E4E7;
+      --neutral-400: #A1A1AA;
+      --neutral-600: #52525B;
+      --neutral-800: #27272A;
+      --neutral-900: #18181B;
+      --bg-surface: #F9F9FB;
+      --font: 'DM Sans', system-ui, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      font-size: 14px;
+      color: var(--neutral-900);
+      background: #fff;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ─── SIDEBAR (compact) ─── */
+    .sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--neutral-200);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .sidebar-logo {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--neutral-200);
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .logo-mark {
+      width: 28px; height: 28px;
+      background: var(--primary);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 700; font-size: 13px;
+    }
+
+    .logo-text { font-size: 15px; font-weight: 600; color: var(--neutral-900); letter-spacing: -0.3px; }
+
+    .sidebar-body { flex: 1; overflow-y: auto; padding: 8px; }
+
+    .ws-btn {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 10px; border-radius: 8px; border: 1px solid var(--neutral-200);
+      background: #fff; cursor: pointer; margin-bottom: 6px;
+    }
+
+    .ws-icon { width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg,#5E6AD2,#8B5CF6); display:flex; align-items:center; justify-content:center; color:white; font-size:10px; font-weight:700; }
+    .ws-name { font-size:13px; font-weight:500; color:var(--neutral-800); flex:1; }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 10px; border-radius: 6px; cursor: pointer;
+      font-size: 13px; font-weight: 500; color: var(--neutral-600);
+      text-decoration: none; transition: background 120ms;
+      margin-bottom: 1px;
+    }
+
+    .nav-item:hover { background: var(--neutral-100); color: var(--neutral-900); }
+    .nav-item.active { background: rgba(94,106,210,0.10); color: var(--primary); }
+
+    .nav-icon { width: 16px; height: 16px; display:flex; align-items:center; justify-content:center; flex-shrink:0; opacity:0.65; }
+    .nav-item.active .nav-icon { opacity: 1; }
+
+    .nav-badge { margin-left:auto; background:var(--primary); color:white; font-size:10px; font-weight:600; border-radius:9999px; padding:1px 6px; }
+    .nav-badge.red { background: var(--danger); }
+
+    .divider { height:1px; background:var(--neutral-200); margin:8px 2px; }
+
+    .section-label { font-size:11px; font-weight:600; color:var(--neutral-400); text-transform:uppercase; letter-spacing:0.06em; padding:6px 10px 4px; }
+
+    .project-row {
+      display:flex; align-items:center; gap:8px;
+      padding:5px 10px; border-radius:6px; cursor:pointer;
+      font-size:13px; color:var(--neutral-600); transition:background 120ms;
+    }
+    .project-row:hover { background:var(--neutral-100); }
+    .proj-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+    .sidebar-footer {
+      margin-top:auto; padding:8px;
+      border-top:1px solid var(--neutral-200);
+    }
+
+    .user-row {
+      display:flex; align-items:center; gap:10px;
+      padding:8px 10px; border-radius:8px; cursor:pointer; transition:background 120ms;
+    }
+    .user-row:hover { background:var(--neutral-100); }
+    .u-avatar { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:white; flex-shrink:0; }
+    .u-name { font-size:13px; font-weight:500; color:var(--neutral-800); }
+    .u-role { font-size:11px; color:var(--neutral-400); }
+
+    /* ─── MAIN ─── */
+    .main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+
+    .topbar {
+      height:48px; border-bottom:1px solid var(--neutral-200);
+      display:flex; align-items:center; padding:0 20px; gap:12px;
+      flex-shrink:0; background:#fff;
+    }
+
+    .breadcrumb { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--neutral-400); }
+    .breadcrumb a { color:var(--neutral-600); text-decoration:none; font-weight:500; }
+    .breadcrumb-current { color:var(--neutral-800); font-weight:600; }
+
+    .search-wrap { flex:1; max-width:420px; margin:0 auto; position:relative; }
+    .search-input {
+      width:100%; height:34px; background:var(--neutral-50);
+      border:1px solid var(--neutral-200); border-radius:8px;
+      padding:0 40px 0 34px; font-size:13px; font-family:var(--font);
+      outline:none; color:var(--neutral-900);
+    }
+    .search-input::placeholder { color:var(--neutral-400); }
+    .search-icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--neutral-400); pointer-events:none; }
+    .kbd { position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:10px; color:var(--neutral-400); background:var(--neutral-100); border:1px solid var(--neutral-200); border-radius:4px; padding:1px 5px; }
+
+    .topbar-right { display:flex; align-items:center; gap:4px; }
+    .icon-btn { width:34px; height:34px; border-radius:8px; border:none; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--neutral-600); position:relative; transition:background 120ms; }
+    .icon-btn:hover { background:var(--neutral-100); }
+    .notif-dot { position:absolute; top:7px; right:7px; width:7px; height:7px; background:var(--danger); border-radius:50%; border:1.5px solid #fff; }
+
+    /* ─── CONTENT ─── */
+    .content-wrap {
+      flex:1; overflow-y:auto; display:flex;
+      padding:28px 28px 28px 32px; gap:24px;
+    }
+
+    .tasks-main { flex:1; min-width:0; }
+    .tasks-sidebar { width:260px; flex-shrink:0; }
+
+    /* Page header */
+    .page-hd {
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:20px;
+    }
+
+    .page-title { font-size:22px; font-weight:600; color:var(--neutral-900); letter-spacing:-0.3px; }
+
+    .view-toggle {
+      display:flex; background:var(--neutral-100); border-radius:8px; padding:3px;
+    }
+
+    .view-btn {
+      display:flex; align-items:center; gap:6px;
+      padding:5px 12px; border-radius:6px; border:none; background:transparent;
+      font-size:12px; font-weight:500; color:var(--neutral-600); cursor:pointer;
+      font-family:var(--font); transition:background 120ms;
+    }
+
+    .view-btn.active { background:#fff; color:var(--neutral-900); box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+
+    /* Metric cards */
+    .metrics-row {
+      display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:24px;
+    }
+
+    .metric-card {
+      background:#fff; border:1px solid var(--neutral-200); border-radius:12px;
+      padding:16px; display:flex; flex-direction:column; gap:8px;
+    }
+
+    .metric-top { display:flex; align-items:center; justify-content:space-between; }
+    .metric-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; }
+    .metric-val { font-size:28px; font-weight:700; line-height:1; }
+    .metric-label { font-size:11px; font-weight:500; color:var(--neutral-400); }
+
+    /* Task section */
+    .task-section { margin-bottom:16px; }
+
+    .section-hd {
+      display:flex; align-items:center; gap:8px;
+      padding:8px 0; cursor:pointer; margin-bottom:4px;
+    }
+
+    .section-chevron { color:var(--neutral-400); transition:transform 150ms; }
+    .section-chevron.open { transform:rotate(90deg); }
+    .section-title { font-size:13px; font-weight:600; color:var(--neutral-800); }
+
+    .section-badge {
+      font-size:10px; font-weight:600; border-radius:9999px; padding:1px 7px;
+    }
+
+    /* Task row */
+    .task-row {
+      display:flex; align-items:center; gap:10px;
+      padding:8px 10px; border-radius:8px;
+      border-bottom:1px solid var(--neutral-100);
+      cursor:pointer; transition:background 120ms;
+      position:relative;
+    }
+
+    .task-row:hover { background:var(--neutral-50); }
+    .task-row:hover .task-actions { opacity:1; }
+
+    .task-cb {
+      width:16px; height:16px; border:1.5px solid var(--neutral-300, #D4D4D8); border-radius:4px;
+      flex-shrink:0; cursor:pointer; display:flex; align-items:center; justify-content:center;
+      transition:border-color 120ms;
+    }
+    .task-cb:hover { border-color:var(--primary); }
+
+    .priority-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+    .task-name { flex:1; font-size:13px; color:var(--neutral-800); font-weight:400; }
+    .task-name.strikethrough { text-decoration:line-through; color:var(--neutral-400); }
+
+    .project-tag {
+      font-size:11px; font-weight:500; padding:2px 8px;
+      border-radius:9999px; white-space:nowrap; flex-shrink:0;
+    }
+
+    .assignee-av {
+      width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+      font-size:9px; font-weight:700; color:white; flex-shrink:0;
+    }
+
+    .due-date { font-size:11px; color:var(--neutral-400); white-space:nowrap; flex-shrink:0; }
+    .due-date.overdue { color:var(--danger); font-weight:500; }
+    .due-date.today { color:var(--primary); font-weight:500; }
+
+    .task-actions {
+      display:flex; gap:2px; opacity:0; transition:opacity 120ms;
+    }
+
+    .task-act-btn {
+      width:24px; height:24px; border-radius:4px; border:none; background:transparent;
+      cursor:pointer; display:flex; align-items:center; justify-content:center;
+      color:var(--neutral-400);
+    }
+
+    .task-act-btn:hover { background:var(--neutral-100); color:var(--neutral-800); }
+
+    .add-task-row {
+      display:flex; align-items:center; gap:8px;
+      padding:7px 10px; color:var(--neutral-400); font-size:13px;
+      cursor:pointer; border-radius:6px; transition:background 120ms;
+    }
+    .add-task-row:hover { background:var(--neutral-50); color:var(--primary); }
+
+    /* ─── RIGHT SIDEBAR ─── */
+    .sidebar-widget {
+      background:#fff; border:1px solid var(--neutral-200); border-radius:12px;
+      padding:16px; margin-bottom:16px;
+    }
+
+    .widget-title { font-size:13px; font-weight:600; color:var(--neutral-800); margin-bottom:12px; }
+
+    /* Mini calendar */
+    .mini-cal { }
+    .cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+    .cal-month { font-size:13px; font-weight:600; color:var(--neutral-800); }
+    .cal-nav { display:flex; gap:2px; }
+    .cal-nav-btn { width:24px; height:24px; border-radius:4px; border:none; background:transparent; cursor:pointer; color:var(--neutral-400); display:flex; align-items:center; justify-content:center; }
+    .cal-nav-btn:hover { background:var(--neutral-100); }
+
+    .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
+    .cal-dow { font-size:10px; font-weight:600; color:var(--neutral-400); text-align:center; padding:4px 0; }
+
+    .cal-day {
+      font-size:11px; text-align:center; padding:4px 2px; border-radius:6px;
+      cursor:pointer; color:var(--neutral-600); transition:background 120ms;
+    }
+    .cal-day:hover { background:var(--neutral-100); }
+    .cal-day.today { background:var(--primary); color:white; font-weight:600; }
+    .cal-day.has-task { font-weight:600; color:var(--neutral-900); }
+    .cal-day.has-task::after { content:''; display:block; width:4px; height:4px; background:var(--primary); border-radius:50%; margin:1px auto 0; }
+    .cal-day.other-month { color:var(--neutral-400); }
+    .cal-day.today.has-task::after { background:white; }
+
+    /* Activity feed */
+    .activity-item {
+      display:flex; align-items:flex-start; gap:10px;
+      padding:8px 0; border-bottom:1px solid var(--neutral-100);
+    }
+    .activity-item:last-child { border-bottom:none; }
+
+    .act-avatar { width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; color:white; flex-shrink:0; }
+
+    .act-dot { width:8px; height:8px; border-radius:50%; margin-top:6px; flex-shrink:0; }
+
+    .act-text { flex:1; font-size:12px; color:var(--neutral-600); line-height:1.5; }
+    .act-text strong { color:var(--neutral-800); font-weight:500; }
+    .act-time { font-size:10px; color:var(--neutral-400); margin-top:2px; }
+
+    /* SVG */
+    svg { display:block; }
+  </style>
+</head>
+<body>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">W</div>
+    <span class="logo-text">WorkBoard</span>
+  </div>
+  <div class="sidebar-body">
+    <div class="ws-btn">
+      <div class="ws-icon">AC</div>
+      <span class="ws-name">Acme Corp</span>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#A1A1AA" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+
+    <a class="nav-item" href="#">
+      <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+      Home
+    </a>
+    <a class="nav-item active" href="#">
+      <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+      My Tasks
+      <span class="nav-badge">12</span>
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></span>
+      Inbox
+      <span class="nav-badge red">3</span>
+    </a>
+
+    <div class="divider"></div>
+    <div class="section-label">Projects</div>
+    <div class="project-row"><div class="proj-dot" style="background:#5E6AD2;"></div>Website Redesign</div>
+    <div class="project-row"><div class="proj-dot" style="background:#F28C38;"></div>Mobile App v2</div>
+    <div class="project-row"><div class="proj-dot" style="background:#22C55E;"></div>Q1 Marketing Campaign</div>
+    <div class="project-row"><div class="proj-dot" style="background:#8B5CF6;"></div>API Integration</div>
+    <div class="project-row"><div class="proj-dot" style="background:#F59E0B;"></div>Brand Refresh</div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="u-avatar" style="background:linear-gradient(135deg,#5E6AD2,#8B5CF6);">AJ</div>
+      <div>
+        <div class="u-name">Alex Johnson</div>
+        <div class="u-role">Product Manager</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ── MAIN ── -->
+<div class="main">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <nav class="breadcrumb">
+      <a href="#">Acme Corp</a>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      <span class="breadcrumb-current">My Tasks</span>
+    </nav>
+    <div class="search-wrap">
+      <svg class="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" placeholder="Search…">
+      <span class="kbd">⌘K</span>
+    </div>
+    <div class="topbar-right">
+      <button class="icon-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="notif-dot"></span>
+      </button>
+      <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#5E6AD2,#8B5CF6);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;cursor:pointer;margin-left:4px;">AJ</div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <div class="content-wrap">
+
+    <!-- ── TASK MAIN ── -->
+    <div class="tasks-main">
+
+      <!-- Page header -->
+      <div class="page-hd">
+        <h1 class="page-title">My Tasks</h1>
+        <div class="view-toggle">
+          <button class="view-btn active">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            List
+          </button>
+          <button class="view-btn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Board
+          </button>
+        </div>
+      </div>
+
+      <!-- Metric cards -->
+      <div class="metrics-row">
+        <div class="metric-card">
+          <div class="metric-top">
+            <div class="metric-icon" style="background:rgba(239,68,68,0.10);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+          </div>
+          <div class="metric-val" style="color:#EF4444;">4</div>
+          <div class="metric-label">Due Today</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-top">
+            <div class="metric-icon" style="background:rgba(242,140,56,0.12);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F28C38" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+          </div>
+          <div class="metric-val" style="color:#F28C38;">2</div>
+          <div class="metric-label">Overdue</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-top">
+            <div class="metric-icon" style="background:rgba(34,197,94,0.10);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+          </div>
+          <div class="metric-val" style="color:#22C55E;">9</div>
+          <div class="metric-label">Completed This Week</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-top">
+            <div class="metric-icon" style="background:rgba(94,106,210,0.10);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E6AD2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            </div>
+          </div>
+          <div class="metric-val" style="color:#5E6AD2;">5</div>
+          <div class="metric-label">Projects Active</div>
+        </div>
+      </div>
+
+      <!-- Section: Overdue -->
+      <div class="task-section">
+        <div class="section-hd">
+          <svg class="section-chevron open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <span class="section-title">Overdue</span>
+          <span class="section-badge" style="background:rgba(239,68,68,0.10);color:#DC2626;">2</span>
+        </div>
+
+        <!-- Task row -->
+        <div class="task-row">
+          <div class="task-cb"></div>
+          <div class="priority-dot" style="background:#EF4444;" title="High priority"></div>
+          <span class="task-name">Finalize Q1 budget proposal and send to stakeholders</span>
+          <span class="project-tag" style="background:rgba(94,106,210,0.10);color:#5E6AD2;">Website Redesign</span>
+          <div class="assignee-av" style="background:#5E6AD2;" title="Alex Johnson">AJ</div>
+          <span class="due-date overdue">Feb 20</span>
+          <div class="task-actions">
+            <button class="task-act-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+            <button class="task-act-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>
+          </div>
+        </div>
+
+        <div class="task-row">
+          <div class="task-cb"></div>
+          <div class="priority-dot" style="background:#F59E0B;" title="Medium priority"></div>
+          <span class="task-name">Update API documentation for v2 endpoints</span>
+          <span class="project-tag" style="background:rgba(139,92,246,0.10);color:#8B5CF6;">API Integration</span>
+          <div class="assignee-av" style="background:#F28C38;" title="James Kim">JK</div>
+          <span class="due-date overdue">Feb 22</span>
+          <div class="task-actions">
+            <button class="task-act-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+            <button class="task-act-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Today -->
+      <div class="task-section">
+        <div class="section-hd">
+          <svg class="section-chevron open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <span class="section-title">Today</span>
+          <span class="section-badge" style="background:rgba(94,106,210,0.10);color:#5E6AD2;">4</span>
+        </div>
+
+        <div class="task-row">
+          <div class="task-cb"></div>
+          <div class="priority-dot" style="background:#EF4444;"></div>
+          <span class="task-name">Review and approve homepage hero designs from design team</span>
+          <span class="project-tag" style="background:rgba(94,106,210,0.10);color:#5E6AD2;">Website Redesign</span>
+          <div class="assignee-av" style="background:#22C55E;" title="Maria Liu">ML</div>
+          <span class="due-date today">Today</span>
+          <div class="task-actions">
+            <button class="task-act-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          </div>
+        </div>
+
+        <div class="task-row">
+          <div class="task-cb"></div>
+          <div class="priority-dot" style="background:#F59E0B;"></div>
+          <span class="task-name">Set up CI/CD pipeline for mobile app staging environment</span>
+          <span class="project-tag" style="background:rgba(242,140,56,0.12);color:#D97706;">Mobile App v2</span>
+          <div class="assignee-av" style="background:#F28C38;" title="James Kim">JK</div>
+          <span class="due-date today">Today</span>
+          <div class="task-actions">
+            <button class="task-act-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          </div>
+        </div>
+
+        <div class="task-row">
+          <div class="task-cb"></div>
+          <div class="priority-dot" style="background:#38BDF8;"></div>
+          <span class="task-name">Write release notes for v1.4.2 patch</span>
+          <span class="project-tag" style="background:rgba(242,140,56,0.12);color:#D97706;">Mobile App v2</span>
+          <div class="assignee-av" style="background:#5E6AD2;" title="Alex Johnson">AJ</div>
+          <span class="due-date today">Today</span>
+          <div class="task-actions">
+            <button class="task-act-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          </div>
+        </div>
+
+        <div class="add-task-row">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add task
+        </div>
+      </div>
+
+      <!-- Section: Upcoming -->
+      <div class="task-section">
+        <div class="section-hd">
+          <svg class="section-chevron open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <span class="section-title">Upcoming</span>
+          <span class="section-badge" style="background:var(--neutral-100);color:var(--neutral-600);">4</span>
+        </div>
+
+        <div class="task-row">
+          <div class="task-cb"></div>
+          <div class="priority-dot" style="background:#F59E0B;"></div>
+          <span class="task-name">Conduct user interviews for Q2 roadmap research</span>
+          <span class="project-tag" style="background:rgba(34,197,94,0.10);color:#16A34A;">Q1 Marketing</span>
+          <div class="assignee-av" style="background:#22C55E;" title="Maria Liu">ML</div>
+          <span class="due-date">Feb 28</span>
+          <div class="task-actions">
+            <button class="task-act-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          </div>
+        </div>
+
+        <div class="task-row">
+          <div class="task-cb"></div>
+          <div class="priority-dot" style="background:#38BDF8;"></div>
+          <span class="task-name">Create social media templates for brand launch</span>
+          <span class="project-tag" style="background:rgba(245,158,11,0.10);color:#D97706;">Brand Refresh</span>
+          <div class="assignee-av" style="background:#8B5CF6;" title="Tom Chen">TC</div>
+          <span class="due-date">Mar 2</span>
+          <div class="task-actions">
+            <button class="task-act-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          </div>
+        </div>
+
+        <div class="task-row">
+          <div class="task-cb"></div>
+          <div class="priority-dot" style="background:#A1A1AA;"></div>
+          <span class="task-name">Migrate legacy auth service to OAuth 2.0</span>
+          <span class="project-tag" style="background:rgba(139,92,246,0.10);color:#8B5CF6;">API Integration</span>
+          <div class="assignee-av" style="background:#F28C38;" title="James Kim">JK</div>
+          <span class="due-date">Mar 5</span>
+          <div class="task-actions">
+            <button class="task-act-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          </div>
+        </div>
+        <div class="add-task-row">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add task
+        </div>
+      </div>
+
+      <!-- Section: Later -->
+      <div class="task-section">
+        <div class="section-hd">
+          <svg class="section-chevron open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <span class="section-title">Later</span>
+          <span class="section-badge" style="background:var(--neutral-100);color:var(--neutral-600);">2</span>
+        </div>
+
+        <div class="task-row">
+          <div class="task-cb" style="border-color:#22C55E;"></div>
+          <div class="priority-dot" style="background:#A1A1AA;"></div>
+          <span class="task-name strikethrough">Set up analytics dashboard in Metabase</span>
+          <span class="project-tag" style="background:rgba(34,197,94,0.10);color:#16A34A;">Q1 Marketing</span>
+          <div class="assignee-av" style="background:#22C55E;" title="Maria Liu">ML</div>
+          <span class="due-date" style="color:#22C55E;">Done</span>
+        </div>
+      </div>
+
+    </div><!-- /tasks-main -->
+
+    <!-- ── RIGHT SIDEBAR ── -->
+    <div class="tasks-sidebar">
+
+      <!-- Mini calendar -->
+      <div class="sidebar-widget">
+        <div class="cal-header">
+          <span class="cal-month">February 2026</span>
+          <div class="cal-nav">
+            <button class="cal-nav-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <button class="cal-nav-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="cal-grid">
+          <div class="cal-dow">S</div><div class="cal-dow">M</div><div class="cal-dow">T</div>
+          <div class="cal-dow">W</div><div class="cal-dow">T</div><div class="cal-dow">F</div><div class="cal-dow">S</div>
+
+          <div class="cal-day other-month">26</div>
+          <div class="cal-day other-month">27</div>
+          <div class="cal-day other-month">28</div>
+          <div class="cal-day other-month">29</div>
+          <div class="cal-day other-month">30</div>
+          <div class="cal-day other-month">31</div>
+          <div class="cal-day">1</div>
+
+          <div class="cal-day">2</div>
+          <div class="cal-day">3</div>
+          <div class="cal-day">4</div>
+          <div class="cal-day">5</div>
+          <div class="cal-day">6</div>
+          <div class="cal-day has-task">7</div>
+          <div class="cal-day">8</div>
+
+          <div class="cal-day">9</div>
+          <div class="cal-day has-task">10</div>
+          <div class="cal-day">11</div>
+          <div class="cal-day">12</div>
+          <div class="cal-day has-task">13</div>
+          <div class="cal-day">14</div>
+          <div class="cal-day">15</div>
+
+          <div class="cal-day">16</div>
+          <div class="cal-day">17</div>
+          <div class="cal-day">18</div>
+          <div class="cal-day">19</div>
+          <div class="cal-day has-task">20</div>
+          <div class="cal-day">21</div>
+          <div class="cal-day has-task">22</div>
+
+          <div class="cal-day">23</div>
+          <div class="cal-day">24</div>
+          <div class="cal-day today has-task">25</div>
+          <div class="cal-day">26</div>
+          <div class="cal-day">27</div>
+          <div class="cal-day has-task">28</div>
+          <div class="cal-day other-month">1</div>
+        </div>
+      </div>
+
+      <!-- Activity feed -->
+      <div class="sidebar-widget">
+        <div class="widget-title">Recent Activity</div>
+
+        <div class="activity-item">
+          <div class="act-avatar" style="background:#22C55E;">ML</div>
+          <div style="flex:1;">
+            <div class="act-text"><strong>Maria Liu</strong> completed <strong>Homepage wireframes</strong></div>
+            <div class="act-time">10 minutes ago</div>
+          </div>
+        </div>
+
+        <div class="activity-item">
+          <div class="act-dot" style="background:#5E6AD2;margin-top:5px;width:8px;height:8px;border-radius:50%;flex-shrink:0;"></div>
+          <div style="flex:1;">
+            <div class="act-text">Status changed to <strong>In Review</strong> on <strong>API auth module</strong></div>
+            <div class="act-time">42 minutes ago</div>
+          </div>
+        </div>
+
+        <div class="activity-item">
+          <div class="act-avatar" style="background:#F28C38;">JK</div>
+          <div style="flex:1;">
+            <div class="act-text"><strong>James Kim</strong> commented on <strong>CI/CD setup</strong></div>
+            <div class="act-time">1 hour ago</div>
+          </div>
+        </div>
+
+        <div class="activity-item">
+          <div class="act-avatar" style="background:#8B5CF6;">TC</div>
+          <div style="flex:1;">
+            <div class="act-text"><strong>Tom Chen</strong> added 3 attachments to <strong>Brand guidelines</strong></div>
+            <div class="act-time">3 hours ago</div>
+          </div>
+        </div>
+
+        <div class="activity-item">
+          <div class="act-dot" style="background:#F59E0B;margin-top:5px;width:8px;height:8px;border-radius:50%;flex-shrink:0;"></div>
+          <div style="flex:1;">
+            <div class="act-text">Due date set to <strong>Mar 5</strong> on <strong>OAuth migration</strong></div>
+            <div class="act-time">5 hours ago</div>
+          </div>
+        </div>
+
+        <div class="activity-item">
+          <div class="act-avatar" style="background:#5E6AD2;">AJ</div>
+          <div style="flex:1;">
+            <div class="act-text"><strong>Alex Johnson</strong> created <strong>Q1 budget proposal</strong></div>
+            <div class="act-time">Yesterday</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tasks-sidebar -->
+
+  </div><!-- /content-wrap -->
+</div><!-- /main -->
+
+</body>
+</html>

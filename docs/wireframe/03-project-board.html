@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WorkBoard — Project Kanban Board</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #5E6AD2;
+      --primary-hover: #4F55C4;
+      --accent: #F28C38;
+      --success: #22C55E;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --info: #38BDF8;
+      --neutral-50: #FAFAFA;
+      --neutral-100: #F4F4F5;
+      --neutral-200: #E4E4E7;
+      --neutral-400: #A1A1AA;
+      --neutral-600: #52525B;
+      --neutral-800: #27272A;
+      --neutral-900: #18181B;
+      --bg-surface: #F9F9FB;
+      --font: 'DM Sans', system-ui, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      font-size: 14px;
+      color: var(--neutral-900);
+      background: #fff;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 240px; flex-shrink: 0;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--neutral-200);
+      display: flex; flex-direction: column; height: 100vh;
+    }
+
+    .sidebar-logo {
+      height: 48px; display: flex; align-items: center;
+      padding: 0 16px; border-bottom: 1px solid var(--neutral-200); gap: 10px; flex-shrink: 0;
+    }
+
+    .logo-mark { width:28px; height:28px; background:var(--primary); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:13px; }
+    .logo-text { font-size:15px; font-weight:600; color:var(--neutral-900); letter-spacing:-0.3px; }
+
+    .sidebar-body { flex:1; overflow-y:auto; padding:8px; }
+
+    .ws-btn { display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:8px; border:1px solid var(--neutral-200); background:#fff; cursor:pointer; margin-bottom:6px; }
+    .ws-icon { width:22px; height:22px; border-radius:6px; background:linear-gradient(135deg,#5E6AD2,#8B5CF6); display:flex; align-items:center; justify-content:center; color:white; font-size:10px; font-weight:700; }
+    .ws-name { font-size:13px; font-weight:500; color:var(--neutral-800); flex:1; }
+
+    .nav-item { display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:500; color:var(--neutral-600); text-decoration:none; transition:background 120ms; margin-bottom:1px; }
+    .nav-item:hover { background:var(--neutral-100); color:var(--neutral-900); }
+    .nav-item.active { background:rgba(94,106,210,0.10); color:var(--primary); }
+    .nav-icon { width:16px; height:16px; display:flex; align-items:center; justify-content:center; flex-shrink:0; opacity:0.65; }
+    .nav-item.active .nav-icon { opacity:1; }
+    .nav-badge { margin-left:auto; background:var(--primary); color:white; font-size:10px; font-weight:600; border-radius:9999px; padding:1px 6px; }
+
+    .divider { height:1px; background:var(--neutral-200); margin:8px 2px; }
+    .section-label { font-size:11px; font-weight:600; color:var(--neutral-400); text-transform:uppercase; letter-spacing:0.06em; padding:6px 10px 4px; }
+
+    .project-row { display:flex; align-items:center; gap:8px; padding:5px 10px; border-radius:6px; cursor:pointer; font-size:13px; color:var(--neutral-600); transition:background 120ms; }
+    .project-row:hover { background:var(--neutral-100); }
+    .project-row.active-project { background:rgba(94,106,210,0.08); color:var(--primary); font-weight:500; }
+    .proj-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+    .sidebar-footer { margin-top:auto; padding:8px; border-top:1px solid var(--neutral-200); }
+    .user-row { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:8px; cursor:pointer; }
+    .u-avatar { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:white; flex-shrink:0; }
+    .u-name { font-size:13px; font-weight:500; color:var(--neutral-800); }
+    .u-role { font-size:11px; color:var(--neutral-400); }
+
+    /* ── MAIN ── */
+    .main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+
+    .topbar { height:48px; border-bottom:1px solid var(--neutral-200); display:flex; align-items:center; padding:0 20px; gap:12px; flex-shrink:0; background:#fff; }
+    .breadcrumb { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--neutral-400); }
+    .breadcrumb a { color:var(--neutral-600); text-decoration:none; font-weight:500; }
+    .breadcrumb-current { color:var(--neutral-800); font-weight:600; }
+
+    .search-wrap { flex:1; max-width:420px; margin:0 auto; position:relative; }
+    .search-input { width:100%; height:34px; background:var(--neutral-50); border:1px solid var(--neutral-200); border-radius:8px; padding:0 40px 0 34px; font-size:13px; font-family:var(--font); outline:none; color:var(--neutral-900); }
+    .search-input::placeholder { color:var(--neutral-400); }
+    .search-icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--neutral-400); pointer-events:none; }
+
+    .topbar-right { display:flex; align-items:center; gap:4px; }
+    .icon-btn { width:34px; height:34px; border-radius:8px; border:none; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--neutral-600); position:relative; transition:background 120ms; }
+    .icon-btn:hover { background:var(--neutral-100); }
+    .notif-dot { position:absolute; top:7px; right:7px; width:7px; height:7px; background:var(--danger); border-radius:50%; border:1.5px solid #fff; }
+
+    /* ── PROJECT SUB-HEADER ── */
+    .project-subheader {
+      border-bottom: 1px solid var(--neutral-200);
+      background: #fff;
+      flex-shrink: 0;
+    }
+
+    .project-title-bar {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 24px 0;
+    }
+
+    .project-emoji { font-size: 20px; }
+    .project-name { font-size: 18px; font-weight: 600; color: var(--neutral-900); letter-spacing: -0.3px; }
+
+    .project-meta { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: 6px; border: none;
+      font-size: 13px; font-weight: 500; font-family: var(--font);
+      cursor: pointer; transition: background 150ms;
+    }
+
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline { background: transparent; color: var(--neutral-600); border: 1px solid var(--neutral-200); }
+    .btn-outline:hover { background: var(--neutral-50); }
+    .btn-ghost { background: transparent; color: var(--neutral-600); border: none; }
+    .btn-ghost:hover { background: var(--neutral-100); }
+
+    /* View tabs */
+    .view-tabs {
+      display: flex; align-items: center; gap: 0;
+      padding: 0 24px; margin-top: 4px;
+    }
+
+    .view-tab {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 14px; font-size: 13px; font-weight: 500;
+      color: var(--neutral-400); cursor: pointer; border-bottom: 2px solid transparent;
+      text-decoration: none; transition: color 120ms, border-color 120ms;
+    }
+
+    .view-tab:hover { color: var(--neutral-700, #3F3F46); }
+    .view-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    /* Filter bar */
+    .filter-bar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 24px;
+    }
+
+    .filter-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 10px; border-radius: 6px; border: 1px solid var(--neutral-200);
+      background: #fff; font-size: 12px; font-weight: 500; color: var(--neutral-600);
+      font-family: var(--font); cursor: pointer; transition: background 120ms;
+    }
+    .filter-btn:hover { background: var(--neutral-50); }
+    .filter-btn.active { background: rgba(94,106,210,0.08); border-color: rgba(94,106,210,0.30); color: var(--primary); }
+
+    .filter-sep { width: 1px; height: 20px; background: var(--neutral-200); margin: 0 4px; }
+
+    .assignee-filter { display:flex; }
+    .assignee-filter .av { width:26px; height:26px; border-radius:50%; border:2px solid #fff; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; color:white; margin-left:-6px; cursor:pointer; }
+    .assignee-filter .av:first-child { margin-left:0; }
+
+    /* ── KANBAN BOARD ── */
+    .board-wrap {
+      flex: 1; overflow-x: auto; overflow-y: hidden;
+      padding: 20px 24px;
+      display: flex; gap: 16px; align-items: flex-start;
+      background: var(--neutral-50);
+    }
+
+    .board-wrap::-webkit-scrollbar { height: 6px; }
+    .board-wrap::-webkit-scrollbar-thumb { background: var(--neutral-200); border-radius: 3px; }
+
+    /* Column */
+    .kanban-col {
+      width: 260px; flex-shrink: 0;
+      display: flex; flex-direction: column;
+      max-height: calc(100vh - 220px);
+    }
+
+    .col-header {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 12px;
+      background: #fff;
+      border: 1px solid var(--neutral-200);
+      border-radius: 10px 10px 0 0;
+      border-left-width: 3px;
+      flex-shrink: 0;
+    }
+
+    .col-title { font-size: 13px; font-weight: 600; color: var(--neutral-800); flex: 1; }
+    .col-count { font-size: 11px; font-weight: 600; border-radius: 9999px; padding: 1px 7px; }
+
+    .col-body {
+      flex: 1; overflow-y: auto; padding: 4px 0;
+      background: rgba(250,250,250,0.80);
+      border: 1px solid var(--neutral-200); border-top: none;
+      border-radius: 0 0 10px 10px;
+    }
+
+    .col-body::-webkit-scrollbar { width: 3px; }
+    .col-body::-webkit-scrollbar-thumb { background: var(--neutral-200); border-radius: 2px; }
+
+    /* Task card */
+    .task-card {
+      margin: 6px 8px;
+      background: #fff;
+      border: 1px solid var(--neutral-200);
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      transition: box-shadow 150ms, border-color 150ms, transform 150ms;
+      position: relative;
+    }
+
+    .task-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+      border-color: #C4C4CB;
+      transform: translateY(-1px);
+    }
+
+    .card-top {
+      display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px;
+    }
+
+    .card-priority { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+
+    .card-title {
+      font-size: 13px; font-weight: 500; color: var(--neutral-800);
+      line-height: 1.45; flex: 1;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    .card-more { width: 22px; height: 22px; border-radius: 4px; border: none; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--neutral-400); opacity: 0; transition: opacity 120ms; }
+    .task-card:hover .card-more { opacity: 1; }
+    .card-more:hover { background: var(--neutral-100); }
+
+    /* Tags */
+    .card-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+    .tag-chip { font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 9999px; white-space: nowrap; }
+
+    /* Card footer */
+    .card-footer { display: flex; align-items: center; gap: 6px; }
+    .card-assignee { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 700; color: white; flex-shrink: 0; }
+    .card-due { font-size: 11px; color: var(--neutral-400); margin-left: auto; display: flex; align-items: center; gap: 4px; }
+    .card-due.overdue { color: var(--danger); }
+    .card-due.soon { color: var(--warning); }
+
+    .card-attachment-badge { display: flex; align-items: center; gap: 3px; font-size: 10px; color: var(--neutral-400); }
+    .card-comment-badge { display: flex; align-items: center; gap: 3px; font-size: 10px; color: var(--neutral-400); }
+
+    /* Add task ghost */
+    .add-card-ghost {
+      margin: 4px 8px 8px;
+      padding: 9px 12px;
+      border: 1px dashed var(--neutral-300, #D4D4D8);
+      border-radius: 8px;
+      font-size: 12px; color: var(--neutral-400);
+      cursor: pointer; display: flex; align-items: center; gap: 6px;
+      transition: background 120ms, border-color 120ms;
+    }
+
+    .add-card-ghost:hover { background: rgba(94,106,210,0.04); border-color: rgba(94,106,210,0.30); color: var(--primary); }
+
+    /* Add section ghost column */
+    .add-section-col {
+      width: 220px; flex-shrink: 0;
+      border: 2px dashed var(--neutral-200);
+      border-radius: 10px;
+      padding: 20px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 8px; cursor: pointer;
+      color: var(--neutral-400); font-size: 13px; font-weight: 500;
+      transition: background 120ms, border-color 120ms;
+      min-height: 120px;
+    }
+
+    .add-section-col:hover { background: rgba(94,106,210,0.04); border-color: rgba(94,106,210,0.30); color: var(--primary); }
+
+    svg { display: block; }
+  </style>
+</head>
+<body>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">W</div>
+    <span class="logo-text">WorkBoard</span>
+  </div>
+  <div class="sidebar-body">
+    <div class="ws-btn">
+      <div class="ws-icon">AC</div>
+      <span class="ws-name">Acme Corp</span>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#A1A1AA" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+
+    <a class="nav-item" href="#">
+      <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+      Home
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+      My Tasks
+      <span class="nav-badge">12</span>
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></span>
+      Inbox
+    </a>
+
+    <div class="divider"></div>
+    <div class="section-label">Projects</div>
+    <div class="project-row active-project"><div class="proj-dot" style="background:#5E6AD2;"></div>Website Redesign</div>
+    <div class="project-row"><div class="proj-dot" style="background:#F28C38;"></div>Mobile App v2</div>
+    <div class="project-row"><div class="proj-dot" style="background:#22C55E;"></div>Q1 Marketing Campaign</div>
+    <div class="project-row"><div class="proj-dot" style="background:#8B5CF6;"></div>API Integration</div>
+    <div class="project-row"><div class="proj-dot" style="background:#F59E0B;"></div>Brand Refresh</div>
+  </div>
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="u-avatar" style="background:linear-gradient(135deg,#5E6AD2,#8B5CF6);">AJ</div>
+      <div><div class="u-name">Alex Johnson</div><div class="u-role">Product Manager</div></div>
+    </div>
+  </div>
+</aside>
+
+<!-- ── MAIN ── -->
+<div class="main">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <nav class="breadcrumb">
+      <a href="#">Projects</a>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      <span class="breadcrumb-current">Website Redesign</span>
+    </nav>
+    <div class="search-wrap">
+      <svg class="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" placeholder="Search…">
+    </div>
+    <div class="topbar-right">
+      <button class="icon-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="notif-dot"></span>
+      </button>
+      <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#5E6AD2,#8B5CF6);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;cursor:pointer;margin-left:4px;">AJ</div>
+    </div>
+  </header>
+
+  <!-- Project sub-header -->
+  <div class="project-subheader">
+    <div class="project-title-bar">
+      <span class="project-emoji">🖥️</span>
+      <h1 class="project-name">Website Redesign</h1>
+      <div class="project-meta">
+        <!-- Member avatars -->
+        <div class="assignee-filter">
+          <div class="av" style="background:#5E6AD2; margin-left:0;">AJ</div>
+          <div class="av" style="background:#22C55E;">ML</div>
+          <div class="av" style="background:#F28C38;">JK</div>
+          <div class="av" style="background:#8B5CF6;">TC</div>
+        </div>
+        <button class="btn btn-outline" style="height:32px;padding:5px 12px;font-size:12px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Invite
+        </button>
+        <button class="btn btn-primary" style="height:32px;padding:5px 14px;font-size:12px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add task
+        </button>
+        <button class="icon-btn" style="width:32px;height:32px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- View tabs -->
+    <div class="view-tabs">
+      <a class="view-tab active" href="#">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Board
+      </a>
+      <a class="view-tab" href="#">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        List
+      </a>
+      <a class="view-tab" href="#">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Calendar
+      </a>
+      <a class="view-tab" href="#">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Timeline
+      </a>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <button class="filter-btn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+        Filter
+      </button>
+      <button class="filter-btn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18v18H3z" opacity="0"/><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Group by: Status
+      </button>
+      <button class="filter-btn active">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        Due this week
+      </button>
+      <div class="filter-sep"></div>
+      <button class="filter-btn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><path d="M9 3v18"/></svg>
+        Sort
+      </button>
+      <button class="filter-btn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Search tasks
+      </button>
+    </div>
+  </div>
+
+  <!-- ── KANBAN BOARD ── -->
+  <div class="board-wrap">
+
+    <!-- Column: Backlog -->
+    <div class="kanban-col">
+      <div class="col-header" style="border-left-color:#A1A1AA;">
+        <div class="col-title">Backlog</div>
+        <span class="col-count" style="background:var(--neutral-100);color:var(--neutral-600);">5</span>
+        <button class="icon-btn" style="width:24px;height:24px;margin-left:auto;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+      </div>
+      <div class="col-body">
+
+        <div class="task-card">
+          <div class="card-top">
+            <div class="card-priority" style="background:#A1A1AA;"></div>
+            <div class="card-title">Competitor analysis report for homepage strategy</div>
+            <button class="card-more"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+          </div>
+          <div class="card-tags">
+            <span class="tag-chip" style="background:rgba(94,106,210,0.10);color:#5E6AD2;">Research</span>
+            <span class="tag-chip" style="background:rgba(245,158,11,0.10);color:#D97706;">Strategy</span>
+          </div>
+          <div class="card-footer">
+            <div class="card-assignee" style="background:#22C55E;">ML</div>
+            <div class="card-comment-badge">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              3
+            </div>
+            <div class="card-due">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Mar 10
+            </div>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <div class="card-top">
+            <div class="card-priority" style="background:#F59E0B;"></div>
+            <div class="card-title">Define information architecture for new site structure</div>
+            <button class="card-more"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+          </div>
+          <div class="card-tags">
+            <span class="tag-chip" style="background:rgba(94,106,210,0.10);color:#5E6AD2;">UX</span>
+          </div>
+          <div class="card-footer">
+            <div class="card-assignee" style="background:#5E6AD2;">AJ</div>
+            <div class="card-due">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Mar 15
+            </div>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <div class="card-top">
+            <div class="card-priority" style="background:#38BDF8;"></div>
+            <div class="card-title">SEO audit and keyword research</div>
+            <button class="card-more"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+          </div>
+          <div class="card-tags">
+            <span class="tag-chip" style="background:rgba(34,197,94,0.10);color:#16A34A;">SEO</span>
+            <span class="tag-chip" style="background:rgba(94,106,210,0.10);color:#5E6AD2;">Research</span>
+          </div>
+          <div class="card-footer">
+            <div class="card-assignee" style="background:#8B5CF6;">TC</div>
+            <div class="card-due">Mar 18</div>
+          </div>
+        </div>
+
+        <div class="add-card-ghost">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add task
+        </div>
+      </div>
+    </div>
+
+    <!-- Column: In Progress -->
+    <div class="kanban-col">
+      <div class="col-header" style="border-left-color:#5E6AD2;">
+        <div class="col-title">In Progress</div>
+        <span class="col-count" style="background:rgba(94,106,210,0.12);color:#5E6AD2;">4</span>
+        <button class="icon-btn" style="width:24px;height:24px;margin-left:auto;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+      </div>
+      <div class="col-body">
+
+        <div class="task-card">
+          <div class="card-top">
+            <div class="card-priority" style="background:#EF4444;"></div>
+            <div class="card-title">Redesign homepage hero section with new brand identity</div>
+            <button class="card-more"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+          </div>
+          <div class="card-tags">
+            <span class="tag-chip" style="background:rgba(94,106,210,0.10);color:#5E6AD2;">Design</span>
+            <span class="tag-chip" style="background:rgba(245,158,11,0.10);color:#D97706;">Brand</span>
+          </div>
+          <div class="card-footer">
+            <div class="card-assignee" style="background:#22C55E;">ML</div>
+            <div class="card-comment-badge">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              5
+            </div>
+            <div class="card-due soon">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Feb 26
+            </div>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <div class="card-top">
+            <div class="card-priority" style="background:#F59E0B;"></div>
+            <div class="card-title">Build responsive navigation component with mobile drawer</div>
+            <button class="card-more"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+          </div>
+          <div class="card-tags">
+            <span class="tag-chip" style="background:rgba(139,92,246,0.10);color:#8B5CF6;">Frontend</span>
+            <span class="tag-chip" style="background:rgba(56,189,248,0.10);color:#0284C7;">React</span>
+          </div>
+          <div class="card-footer">
+            <div class="card-assignee" style="background:#F28C38;">JK</div>
+            <div class="card-attachment-badge">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+              2
+            </div>
+            <div class="card-due">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Mar 1
+            </div>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <div class="card-top">
+            <div class="card-priority" style="background:#38BDF8;"></div>
+            <div class="card-title">Set up CMS content structure for blog and case studies</div>
+            <button class="card-more"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+          </div>
+          <div class="card-tags">
+            <span class="tag-chip" style="background:rgba(34,197,94,0.10);color:#16A34A;">Content</span>
+          </div>
+          <div class="card-footer">
+            <div class="card-assignee" style="background:#8B5CF6;">TC</div>
+            <div class="card-due">Mar 3</div>
+          </div>
+        </div>
+
+        <div class="add-card-ghost">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add task
+        </div>
+      </div>
+    </div>
+
+    <!-- Column: In Review -->
+    <div class="kanban-col">
+      <div class="col-header" style="border-left-color:#F28C38;">
+        <div class="col-title">In Review</div>
+        <span class="col-count" style="background:rgba(242,140,56,0.12);color:#D97706;">3</span>
+        <button class="icon-btn" style="width:24px;height:24px;margin-left:auto;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+      </div>
+      <div class="col-body">
+
+        <div class="task-card">
+          <div class="card-top">
+            <div class="card-priority" style="background:#EF4444;"></div>
+            <div class="card-title">Brand color system and typography documentation</div>
+            <button class="card-more"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+          </div>
+          <div class="card-tags">
+            <span class="tag-chip" style="background:rgba(245,158,11,0.10);color:#D97706;">Brand</span>
+            <span class="tag-chip" style="background:rgba(94,106,210,0.10);color:#5E6AD2;">Design</span>
+          </div>
+          <div class="card-footer">
+            <div class="card-assignee" style="background:#5E6AD2;">AJ</div>
+            <div class="card-comment-badge">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              8
+            </div>
+            <div class="card-due overdue">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Feb 20
+            </div>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <div class="card-top">
+            <div class="card-priority" style="background:#F59E0B;"></div>
+            <div class="card-title">Landing page A/B test variants — 3 options</div>
+            <button class="card-more"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+          </div>
+          <div class="card-tags">
+            <span class="tag-chip" style="background:rgba(94,106,210,0.10);color:#5E6AD2;">Design</span>
+          </div>
+          <div class="card-footer">
+            <div class="card-assignee" style="background:#22C55E;">ML</div>
+            <div class="card-attachment-badge">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+              3
+            </div>
+            <div class="card-due">Feb 28</div>
+          </div>
+        </div>
+
+        <div class="add-card-ghost">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add task
+        </div>
+      </div>
+    </div>
+
+    <!-- Column: Done -->
+    <div class="kanban-col">
+      <div class="col-header" style="border-left-color:#22C55E;">
+        <div class="col-title">Done</div>
+        <span class="col-count" style="background:rgba(34,197,94,0.12);color:#16A34A;">7</span>
+        <button class="icon-btn" style="width:24px;height:24px;margin-left:auto;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+      </div>
+      <div class="col-body">
+
+        <div class="task-card" style="opacity:0.75;">
+          <div class="card-top">
+            <div style="width:14px;height:14px;border-radius:50%;background:rgba(34,197,94,0.15);border:1.5px solid #22C55E;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="card-title" style="text-decoration:line-through;color:var(--neutral-400);">Project kickoff meeting and stakeholder alignment</div>
+          </div>
+          <div class="card-footer">
+            <div class="card-assignee" style="background:#5E6AD2;">AJ</div>
+            <div class="card-due" style="color:#22C55E;">Completed</div>
+          </div>
+        </div>
+
+        <div class="task-card" style="opacity:0.75;">
+          <div class="card-top">
+            <div style="width:14px;height:14px;border-radius:50%;background:rgba(34,197,94,0.15);border:1.5px solid #22C55E;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="card-title" style="text-decoration:line-through;color:var(--neutral-400);">Wireframes for all main site pages</div>
+          </div>
+          <div class="card-footer">
+            <div class="card-assignee" style="background:#22C55E;">ML</div>
+            <div class="card-due" style="color:#22C55E;">Completed</div>
+          </div>
+        </div>
+
+        <div class="task-card" style="opacity:0.75;">
+          <div class="card-top">
+            <div style="width:14px;height:14px;border-radius:50%;background:rgba(34,197,94,0.15);border:1.5px solid #22C55E;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="card-title" style="text-decoration:line-through;color:var(--neutral-400);">Tech stack decision: Next.js + shadcn/ui</div>
+          </div>
+          <div class="card-footer">
+            <div class="card-assignee" style="background:#F28C38;">JK</div>
+            <div class="card-due" style="color:#22C55E;">Completed</div>
+          </div>
+        </div>
+
+        <div class="add-card-ghost">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add task
+        </div>
+      </div>
+    </div>
+
+    <!-- Add section ghost -->
+    <div class="add-section-col">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add section
+    </div>
+
+  </div><!-- /board-wrap -->
+
+</div><!-- /main -->
+
+</body>
+</html>
