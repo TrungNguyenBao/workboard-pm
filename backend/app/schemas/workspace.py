@@ -45,3 +45,7 @@ class MemberWithUserResponse(BaseModel):
 class InviteMemberRequest(BaseModel):
     email: str
     role: str = "member"
+
+
+class MemberRoleUpdate(BaseModel):
+    role: str = Field(..., pattern=r"^(admin|member|guest)$")

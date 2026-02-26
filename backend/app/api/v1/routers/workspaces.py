@@ -10,6 +10,7 @@ from app.models.user import User
 from app.schemas.task import TaskResponse
 from app.schemas.workspace import (
     InviteMemberRequest,
+    MemberRoleUpdate,
     MemberWithUserResponse,
     WorkspaceCreate,
     WorkspaceResponse,
@@ -22,7 +23,9 @@ from app.services.workspace import (
     get_workspace,
     get_workspace_members,
     invite_member,
+    remove_member,
     setup_demo_workspace,
+    update_member_role,
     update_workspace,
 )
 
@@ -104,3 +107,24 @@ async def add_member(
     db: AsyncSession = Depends(get_db),
 ):
     return await invite_member(db, workspace_id, data.email, data.role)
+
+
+@router.patch("/{workspace_id}/members/{membership_id}", response_model=MemberWithUserResponse)
+async def update_member(
+    workspace_id: uuid.UUID,
+    membership_id: uuid.UUID,
+    data: MemberRoleUpdate,
+    current_user: User = Depends(require_workspace_role("admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await update_member_role(db, workspace_id, membership_id, data.role)
+
+
+@router.delete("/{workspace_id}/members/{membership_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_member(
+    workspace_id: uuid.UUID,
+    membership_id: uuid.UUID,
+    current_user: User = Depends(require_workspace_role("admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    await remove_member(db, workspace_id, membership_id, current_user.id)

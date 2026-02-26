@@ -1,7 +1,7 @@
 import uuid
 
 from fastapi import HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
@@ -58,6 +58,52 @@ async def invite_member(
         "user_name": user.name,
         "user_avatar_url": user.avatar_url,
     }
+
+
+async def update_member_role(
+    db: AsyncSession, workspace_id: uuid.UUID, membership_id: uuid.UUID, role: str
+) -> dict:
+    m = await db.get(WorkspaceMembership, membership_id)
+    if not m or m.workspace_id != workspace_id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Membership not found")
+    m.role = role
+    await db.commit()
+    await db.refresh(m)
+    user = await db.get(User, m.user_id)
+    return {
+        "id": m.id,
+        "user_id": m.user_id,
+        "role": m.role,
+        "workspace_id": m.workspace_id,
+        "user_email": user.email,
+        "user_name": user.name,
+        "user_avatar_url": user.avatar_url,
+    }
+
+
+async def remove_member(
+    db: AsyncSession,
+    workspace_id: uuid.UUID,
+    membership_id: uuid.UUID,
+    requesting_user_id: uuid.UUID,
+) -> None:
+    m = await db.get(WorkspaceMembership, membership_id)
+    if not m or m.workspace_id != workspace_id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Membership not found")
+    ws = await get_workspace(db, workspace_id)
+    if m.user_id == ws.owner_id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Cannot remove the workspace owner")
+    if m.role == "admin":
+        admin_count = await db.scalar(
+            select(func.count(WorkspaceMembership.id)).where(
+                WorkspaceMembership.workspace_id == workspace_id,
+                WorkspaceMembership.role == "admin",
+            )
+        )
+        if admin_count <= 1:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot remove the last admin")
+    await db.delete(m)
+    await db.commit()
 
 
 async def create_workspace(db: AsyncSession, data: WorkspaceCreate, owner: User) -> Workspace:

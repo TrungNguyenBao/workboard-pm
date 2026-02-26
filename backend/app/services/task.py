@@ -83,6 +83,8 @@ async def update_task(db: AsyncSession, task_id: uuid.UUID, data: TaskUpdate) ->
     task = await get_task(db, task_id)
     updates = data.model_dump(exclude_none=True)
 
+    old_assignee_id = task.assignee_id
+
     if "status" in updates and updates["status"] == "completed" and not task.completed_at:
         task.completed_at = datetime.now(timezone.utc)
     elif "status" in updates and updates["status"] == "incomplete":
@@ -93,6 +95,27 @@ async def update_task(db: AsyncSession, task_id: uuid.UUID, data: TaskUpdate) ->
 
     await db.commit()
     await db.refresh(task)
+
+    # Notify new assignee if changed
+    new_assignee_id = updates.get("assignee_id")
+    if new_assignee_id and new_assignee_id != old_assignee_id:
+        from app.models.project import Project
+        from app.services.notifications import create_notification
+        ws_row = await db.execute(
+            select(Project.workspace_id).where(Project.id == task.project_id)
+        )
+        workspace_id = ws_row.scalar_one_or_none()
+        await create_notification(
+            db,
+            user_id=new_assignee_id,
+            actor_id=None,
+            type="assigned",
+            title=f"You were assigned to: {task.title}",
+            resource_type="task",
+            resource_id=task_id,
+            workspace_id=workspace_id,
+        )
+
     return task
 
 

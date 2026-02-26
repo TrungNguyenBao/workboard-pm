@@ -8,8 +8,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.models.comment import Comment
+from app.models.project import Project
+from app.models.task import Task, TaskFollower
 from app.models.user import User
 from app.schemas.comment import CommentCreate, CommentResponse, CommentUpdate
+from app.services.notifications import create_notification
 
 
 async def create_comment(
@@ -19,6 +22,32 @@ async def create_comment(
     db.add(comment)
     await db.commit()
     await db.refresh(comment)
+
+    # Notify task followers (excluding the author)
+    task_row = await db.execute(select(Task.project_id).where(Task.id == task_id))
+    project_id = task_row.scalar_one_or_none()
+    if project_id:
+        ws_row = await db.execute(select(Project.workspace_id).where(Project.id == project_id))
+        workspace_id = ws_row.scalar_one_or_none()
+        followers = await db.scalars(
+            select(TaskFollower).where(
+                TaskFollower.task_id == task_id,
+                TaskFollower.user_id != author.id,
+            )
+        )
+        for f in followers.all():
+            await create_notification(
+                db,
+                user_id=f.user_id,
+                actor_id=author.id,
+                type="comment",
+                title=f"{author.name} commented on a task",
+                body=data.body_text[:200] if data.body_text else None,
+                resource_type="task",
+                resource_id=task_id,
+                workspace_id=workspace_id,
+            )
+
     return comment
 
 
