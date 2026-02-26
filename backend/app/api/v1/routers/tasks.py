@@ -7,6 +7,7 @@ from app.core.database import get_db
 from app.dependencies.rbac import require_project_role
 from app.models.user import User
 from app.schemas.task import (
+    TagResponse,
     TaskCreate,
     TaskMoveRequest,
     TaskResponse,
@@ -101,6 +102,17 @@ async def move(
     db: AsyncSession = Depends(get_db),
 ):
     return await move_task(db, task_id, data.section_id, data.position)
+
+
+@router.get("/{task_id}/tags", response_model=list[TagResponse])
+async def list_tags(
+    project_id: uuid.UUID,
+    task_id: uuid.UUID,
+    current_user: User = Depends(require_project_role("viewer")),
+    db: AsyncSession = Depends(get_db),
+):
+    task = await get_task(db, task_id)
+    return [tt.tag for tt in task.tags]
 
 
 @router.post("/{task_id}/tags/{tag_id}", status_code=status.HTTP_204_NO_CONTENT)

@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { CalendarDays, CheckSquare, MessageSquare, Tag, Trash2, User } from 'lucide-react'
+import { CalendarDays, CheckSquare, MessageSquare, Plus, Tag, Trash2, User } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/shared/components/ui/sheet'
 import { Button } from '@/shared/components/ui/button'
 import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar'
@@ -14,6 +14,12 @@ interface Member {
   user_id: string
   user_name: string
   user_email: string
+}
+
+interface TagItem {
+  id: string
+  name: string
+  color: string
 }
 
 interface Comment {
@@ -35,6 +41,8 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
   const qc = useQueryClient()
   const [newComment, setNewComment] = useState('')
   const [commentLoading, setCommentLoading] = useState(false)
+  const [newSubtask, setNewSubtask] = useState('')
+  const subtaskRef = useRef<HTMLInputElement>(null)
 
   const { data: members = [] } = useQuery<Member[]>({
     queryKey: ['workspace-members', workspaceId],
@@ -58,6 +66,18 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
     enabled: !!task,
   })
 
+  const { data: workspaceTags = [] } = useQuery<TagItem[]>({
+    queryKey: ['workspace-tags', workspaceId],
+    queryFn: () => api.get(`/workspaces/${workspaceId}/tags`).then((r) => r.data),
+    enabled: !!workspaceId && !!task,
+  })
+
+  const { data: taskTags = [] } = useQuery<TagItem[]>({
+    queryKey: ['task-tags', task?.id],
+    queryFn: () => api.get(`/projects/${projectId}/tasks/${task!.id}/tags`).then((r) => r.data),
+    enabled: !!task,
+  })
+
   const updateTask = useMutation({
     mutationFn: (data: Partial<Task>) =>
       api.patch(`/projects/${projectId}/tasks/${task!.id}`, data).then((r) => r.data),
@@ -72,6 +92,28 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
       qc.invalidateQueries({ queryKey: ['tasks', projectId] })
       onClose()
     },
+  })
+
+  const createSubtask = useMutation({
+    mutationFn: (title: string) =>
+      api.post(`/projects/${projectId}/tasks`, {
+        title,
+        parent_id: task!.id,
+        section_id: task!.section_id,
+        priority: 'none',
+      }).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['subtasks', task!.id] })
+      setNewSubtask('')
+    },
+  })
+
+  const toggleTag = useMutation({
+    mutationFn: ({ tagId, active }: { tagId: string; active: boolean }) =>
+      active
+        ? api.delete(`/projects/${projectId}/tasks/${task!.id}/tags/${tagId}`)
+        : api.post(`/projects/${projectId}/tasks/${task!.id}/tags/${tagId}`),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['task-tags', task!.id] }),
   })
 
   async function submitComment() {
@@ -207,20 +249,66 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
                 </div>
               </div>
 
-              {/* Subtasks */}
-              {subtasks.length > 0 && (
+              {/* Tags */}
+              {workspaceTags.length > 0 && (
                 <div className="px-6 py-4 border-b border-border">
-                  <p className="text-xs font-medium text-neutral-500 mb-2">Subtasks ({subtasks.length})</p>
-                  <div className="space-y-1">
-                    {subtasks.map((sub) => (
-                      <div key={sub.id} className="flex items-center gap-2">
-                        <CheckSquare className={cn('h-3.5 w-3.5 flex-shrink-0', sub.status === 'completed' ? 'text-primary' : 'text-neutral-300')} />
-                        <span className={cn('text-sm', sub.status === 'completed' && 'line-through text-neutral-400')}>{sub.title}</span>
-                      </div>
-                    ))}
+                  <p className="text-xs font-medium text-neutral-500 mb-2">Tags</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {workspaceTags.map((tag) => {
+                      const active = taskTags.some((t) => t.id === tag.id)
+                      return (
+                        <button
+                          key={tag.id}
+                          onClick={() => toggleTag.mutate({ tagId: tag.id, active })}
+                          className={cn(
+                            'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium transition-opacity',
+                            active ? 'opacity-100 ring-2 ring-offset-1' : 'opacity-40 hover:opacity-70',
+                          )}
+                          style={{ backgroundColor: tag.color + '22', color: tag.color, ringColor: tag.color }}
+                        >
+                          {tag.name}
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
               )}
+
+              {/* Subtasks */}
+              <div className="px-6 py-4 border-b border-border">
+                <p className="text-xs font-medium text-neutral-500 mb-2">
+                  Subtasks {subtasks.length > 0 && `(${subtasks.length})`}
+                </p>
+                <div className="space-y-1 mb-2">
+                  {subtasks.map((sub) => (
+                    <div key={sub.id} className="flex items-center gap-2">
+                      <CheckSquare className={cn('h-3.5 w-3.5 flex-shrink-0', sub.status === 'completed' ? 'text-primary' : 'text-neutral-300')} />
+                      <span className={cn('text-sm', sub.status === 'completed' && 'line-through text-neutral-400')}>{sub.title}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    ref={subtaskRef}
+                    value={newSubtask}
+                    onChange={(e) => setNewSubtask(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && newSubtask.trim()) createSubtask.mutate(newSubtask.trim())
+                      if (e.key === 'Escape') setNewSubtask('')
+                    }}
+                    placeholder="Add subtask…"
+                    className="flex-1 text-sm bg-neutral-50 border border-border rounded px-2 py-1 outline-none focus:ring-2 focus:ring-primary/40"
+                  />
+                  {newSubtask.trim() && (
+                    <button
+                      onClick={() => createSubtask.mutate(newSubtask.trim())}
+                      className="p-1 text-primary hover:text-primary/80"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
 
               {/* Comments */}
               <div className="px-6 py-4">

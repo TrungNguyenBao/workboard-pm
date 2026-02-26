@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { ChevronDown, Home, LogOut, Plus, UserPlus } from 'lucide-react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { ChevronDown, Home, LogOut, MoreHorizontal, Pencil, Plus, Trash2, UserPlus } from 'lucide-react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '@/stores/auth.store'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar'
 import { Button } from '@/shared/components/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/components/ui/dropdown-menu'
 import { cn, generateInitials } from '@/shared/lib/utils'
 import { CreateWorkspaceDialog } from '@/features/workspaces/components/create-workspace-dialog'
 import { CreateProjectDialog } from '@/features/projects/components/create-project-dialog'
@@ -126,12 +127,11 @@ export function Sidebar() {
               </div>
 
               {projects.map((p) => (
-                <NavItem
+                <ProjectNavItem
                   key={p.id}
-                  to={`/projects/${p.id}/board`}
-                  icon={<span className="h-2 w-2 rounded-full flex-shrink-0" style={{ backgroundColor: p.color }} />}
-                  label={p.name}
+                  project={p}
                   active={isActive(`/projects/${p.id}`)}
+                  workspaceId={activeWorkspaceId!}
                 />
               ))}
 
@@ -194,6 +194,89 @@ export function Sidebar() {
         />
       )}
     </>
+  )
+}
+
+function ProjectNavItem({ project, active, workspaceId }: { project: { id: string; name: string; color: string }; active: boolean; workspaceId: string }) {
+  const navigate = useNavigate()
+  const qc = useQueryClient()
+  const [renaming, setRenaming] = useState(false)
+  const [nameInput, setNameInput] = useState(project.name)
+
+  const rename = useMutation({
+    mutationFn: (name: string) => api.patch(`/projects/${project.id}`, { name }).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['projects', workspaceId] }),
+  })
+
+  const remove = useMutation({
+    mutationFn: () => api.delete(`/projects/${project.id}`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['projects', workspaceId] })
+      navigate('/my-tasks')
+    },
+  })
+
+  function commitRename() {
+    const trimmed = nameInput.trim()
+    if (trimmed && trimmed !== project.name) rename.mutate(trimmed)
+    setRenaming(false)
+  }
+
+  if (renaming) {
+    return (
+      <div className="px-2 py-1">
+        <input
+          autoFocus
+          value={nameInput}
+          onChange={(e) => setNameInput(e.target.value)}
+          onBlur={commitRename}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') commitRename()
+            if (e.key === 'Escape') { setRenaming(false); setNameInput(project.name) }
+          }}
+          className="w-full text-sm rounded border border-primary px-2 py-0.5 outline-none"
+        />
+      </div>
+    )
+  }
+
+  return (
+    <div className="group flex items-center gap-1">
+      <Link
+        to={`/projects/${project.id}/board`}
+        className={cn(
+          'flex flex-1 min-w-0 items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors',
+          active
+            ? 'bg-primary/10 text-primary font-medium'
+            : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900',
+        )}
+      >
+        <span className="h-2 w-2 rounded-full flex-shrink-0" style={{ backgroundColor: project.color }} />
+        <span className="truncate">{project.name}</span>
+      </Link>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="p-1 opacity-0 group-hover:opacity-100 text-neutral-400 hover:text-neutral-700 rounded transition-opacity">
+            <MoreHorizontal className="h-3.5 w-3.5" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => { setNameInput(project.name); setRenaming(true) }}>
+            <Pencil className="h-3.5 w-3.5 mr-2" />
+            Rename
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="text-red-600 focus:text-red-600"
+            onClick={() => {
+              if (window.confirm(`Delete "${project.name}"? This cannot be undone.`)) remove.mutate()
+            }}
+          >
+            <Trash2 className="h-3.5 w-3.5 mr-2" />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   )
 }
 

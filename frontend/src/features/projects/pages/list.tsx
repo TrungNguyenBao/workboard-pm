@@ -8,6 +8,7 @@ import { useSections, useTasks, type Task, type Section } from '../hooks/use-pro
 import { InlineTaskInput } from '../components/inline-task-input'
 import { TaskDetailDrawer } from '@/features/tasks/components/task-detail-drawer'
 import { ProjectHeader } from '../components/project-header'
+import { FilterBar, type PriorityFilter, type StatusFilter } from '../components/filter-bar'
 import api from '@/shared/lib/api'
 
 const PRIORITY_BADGE: Record<string, string | undefined> = {
@@ -64,8 +65,12 @@ function TaskRow({ task, projectId, onOpen }: { task: Task; projectId: string; o
   )
 }
 
-function SectionGroup({ section, tasks, projectId, onOpenTask }: { section: Section; tasks: Task[]; projectId: string; onOpenTask: (t: Task) => void }) {
-  const sectionTasks = tasks.filter((t) => t.section_id === section.id && !t.parent_id).sort((a, b) => a.position - b.position)
+function SectionGroup({ section, tasks, projectId, onOpenTask, filterPriority, filterStatus }: { section: Section; tasks: Task[]; projectId: string; onOpenTask: (t: Task) => void; filterPriority: PriorityFilter; filterStatus: StatusFilter }) {
+  const sectionTasks = tasks
+    .filter((t) => t.section_id === section.id && !t.parent_id)
+    .filter((t) => filterPriority === 'all' || t.priority === filterPriority)
+    .filter((t) => filterStatus === 'all' || t.status === filterStatus)
+    .sort((a, b) => a.position - b.position)
   return (
     <div>
       <div className="flex items-center gap-2 px-4 py-2 bg-neutral-50 border-b border-border">
@@ -86,6 +91,8 @@ export default function ListPage() {
   const { data: sections = [] } = useSections(projectId!)
   const { data: tasks = [] } = useTasks(projectId!)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+  const [filterPriority, setFilterPriority] = useState<PriorityFilter>('all')
+  const [filterStatus, setFilterStatus] = useState<StatusFilter>('all')
 
   const { data: project } = useQuery<{ workspace_id: string }>({
     queryKey: ['project', projectId],
@@ -99,6 +106,12 @@ export default function ListPage() {
     <>
       <div className="flex flex-col h-full">
         <ProjectHeader activeView="list" />
+        <FilterBar
+          priority={filterPriority}
+          status={filterStatus}
+          onPriority={setFilterPriority}
+          onStatus={setFilterStatus}
+        />
         <div className="flex-1 overflow-y-auto">
           <div className="flex items-center gap-3 px-4 py-2 border-b border-border bg-neutral-50 text-xs font-medium text-neutral-500 uppercase tracking-wide">
             <span className="w-4" />
@@ -107,7 +120,15 @@ export default function ListPage() {
             <span className="w-20 text-right">Due</span>
           </div>
           {sortedSections.map((section) => (
-            <SectionGroup key={section.id} section={section} tasks={tasks} projectId={projectId!} onOpenTask={setSelectedTask} />
+            <SectionGroup
+              key={section.id}
+              section={section}
+              tasks={tasks}
+              projectId={projectId!}
+              onOpenTask={setSelectedTask}
+              filterPriority={filterPriority}
+              filterStatus={filterStatus}
+            />
           ))}
         </div>
       </div>

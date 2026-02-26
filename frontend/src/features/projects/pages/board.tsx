@@ -25,6 +25,7 @@ import { useSections, useTasks, useMoveTask, useCreateSection, useUpdateSection,
 import { InlineTaskInput } from '../components/inline-task-input'
 import { TaskDetailDrawer } from '@/features/tasks/components/task-detail-drawer'
 import { ProjectHeader } from '../components/project-header'
+import { FilterBar, type PriorityFilter, type StatusFilter } from '../components/filter-bar'
 import api from '@/shared/lib/api'
 
 type BadgeVariant = 'danger' | 'warning' | 'secondary'
@@ -220,13 +221,19 @@ export default function BoardPage() {
 
   const [activeTask, setActiveTask] = useState<Task | null>(null)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+  const [filterPriority, setFilterPriority] = useState<PriorityFilter>('all')
+  const [filterStatus, setFilterStatus] = useState<StatusFilter>('all')
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
 
   const sortedSections = [...sections].sort((a, b) => a.position - b.position)
 
   function tasksForSection(sectionId: string) {
-    return tasks.filter((t) => t.section_id === sectionId && !t.parent_id).sort((a, b) => a.position - b.position)
+    return tasks
+      .filter((t) => t.section_id === sectionId && !t.parent_id)
+      .filter((t) => filterPriority === 'all' || t.priority === filterPriority)
+      .filter((t) => filterStatus === 'all' || t.status === filterStatus)
+      .sort((a, b) => a.position - b.position)
   }
 
   function handleDragStart(e: DragStartEvent) {
@@ -258,6 +265,12 @@ export default function BoardPage() {
     <>
       <div className="flex flex-col h-full">
         <ProjectHeader activeView="board" />
+        <FilterBar
+          priority={filterPriority}
+          status={filterStatus}
+          onPriority={setFilterPriority}
+          onStatus={setFilterStatus}
+        />
         <div className="flex-1 overflow-x-auto p-6">
           <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
             <div className="flex gap-4 h-full">
