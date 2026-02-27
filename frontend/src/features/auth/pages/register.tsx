@@ -3,11 +3,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import { Button } from '@/shared/components/ui/button'
 import { Input } from '@/shared/components/ui/input'
 import { Label } from '@/shared/components/ui/label'
 import { useAuthStore } from '@/stores/auth.store'
 import { toast } from '@/shared/components/ui/toast'
+import { AuthLayout } from '../components/auth-layout'
 
 const schema = z.object({
   name: z.string().min(1, 'Name required').max(255),
@@ -21,6 +23,7 @@ export default function RegisterPage() {
   const register_ = useAuthStore((s) => s.register)
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const {
     register,
@@ -42,45 +45,72 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-surface px-4">
-      <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-white text-xl font-bold">W</div>
-          <h1 className="text-xl font-semibold text-neutral-900">Create your account</h1>
-          <p className="text-sm text-neutral-500 mt-1">Start managing your projects</p>
+    <AuthLayout>
+      {/* Mobile-only logo */}
+      <div className="mb-8 text-center lg:hidden">
+        <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-lg bg-primary text-white text-lg font-bold">
+          W
+        </div>
+      </div>
+
+      <h1 className="text-xl font-semibold text-foreground mb-1">Create your account</h1>
+      <p className="text-sm text-muted-foreground mb-6">Start managing your projects with WorkBoard</p>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div className="space-y-1.5">
+          <Label htmlFor="name">Full name</Label>
+          <Input id="name" autoComplete="name" placeholder="Jane Smith" {...register('name')} />
+          {errors.name && <p role="alert" className="text-xs text-destructive">{errors.name.message}</p>}
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-lg border border-border p-6 shadow-card space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="name">Full name</Label>
-            <Input id="name" placeholder="Jane Smith" {...register('name')} />
-            {errors.name && <p className="text-xs text-danger">{errors.name.message}</p>}
+        <div className="space-y-1.5">
+          <Label htmlFor="email">Email</Label>
+          <Input id="email" type="email" autoComplete="email" placeholder="you@example.com" {...register('email')} />
+          {errors.email && <p role="alert" className="text-xs text-destructive">{errors.email.message}</p>}
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="password">Password</Label>
+          <div className="relative">
+            <Input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              autoComplete="new-password"
+              placeholder="At least 8 characters"
+              className="pr-10"
+              {...register('password')}
+            />
+            <button
+              type="button"
+              
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
           </div>
+          {errors.password && <p role="alert" className="text-xs text-destructive">{errors.password.message}</p>}
+        </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="you@example.com" {...register('email')} />
-            {errors.email && <p className="text-xs text-danger">{errors.email.message}</p>}
-          </div>
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? (
+            <>
+              <Loader2 size={16} className="animate-spin" />
+              Creating account…
+            </>
+          ) : (
+            'Create account'
+          )}
+        </Button>
+      </form>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" placeholder="At least 8 characters" {...register('password')} />
-            {errors.password && <p className="text-xs text-danger">{errors.password.message}</p>}
-          </div>
-
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Creating account…' : 'Create account'}
-          </Button>
-        </form>
-
-        <p className="mt-4 text-center text-sm text-neutral-500">
-          Already have an account?{' '}
-          <Link to="/login" className="text-primary hover:underline">
-            Sign in
-          </Link>
-        </p>
-      </div>
-    </div>
+      <p className="mt-6 text-center text-sm text-muted-foreground">
+        Already have an account?{' '}
+        <Link to="/login" className="text-primary font-medium hover:underline">
+          Sign in
+        </Link>
+      </p>
+    </AuthLayout>
   )
 }
