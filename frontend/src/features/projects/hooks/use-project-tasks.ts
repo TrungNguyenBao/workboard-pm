@@ -21,6 +21,7 @@ export interface Task {
   status: string
   priority: string
   position: number
+  start_date: string | null
   due_date: string | null
   completed_at: string | null
   created_at: string
@@ -84,6 +85,15 @@ export function useDeleteSection(projectId: string) {
       qc.invalidateQueries({ queryKey: ['sections', projectId] })
       qc.invalidateQueries({ queryKey: ['tasks', projectId] })
     },
+  })
+}
+
+export function useUpdateTask(projectId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ taskId, ...data }: { taskId: string } & Record<string, unknown>) =>
+      api.patch(`/projects/${projectId}/tasks/${taskId}`, data).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['tasks', projectId] }),
   })
 }
 

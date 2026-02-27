@@ -49,6 +49,9 @@ class Task(Base, TimestampMixin, SoftDeleteMixin):
     status: Mapped[str] = mapped_column(String(20), default="incomplete", index=True)
     priority: Mapped[str] = mapped_column(String(20), default="none", index=True)
     position: Mapped[float] = mapped_column(default=65536.0)
+    start_date: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True, index=True
+    )
     due_date: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True, index=True
     )

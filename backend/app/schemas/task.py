@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import Any
+from typing import Any, Self
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -12,8 +12,15 @@ class TaskCreate(BaseModel):
     assignee_id: uuid.UUID | None = None
     parent_id: uuid.UUID | None = None
     priority: str = "none"
+    start_date: datetime | None = None
     due_date: datetime | None = None
     position: float | None = None
+
+    @model_validator(mode="after")
+    def validate_dates(self) -> Self:
+        if self.start_date and self.due_date and self.start_date > self.due_date:
+            raise ValueError("start_date must be before or equal to due_date")
+        return self
 
 
 class TaskUpdate(BaseModel):
@@ -23,8 +30,15 @@ class TaskUpdate(BaseModel):
     assignee_id: uuid.UUID | None = None
     priority: str | None = None
     status: str | None = None
+    start_date: datetime | None = None
     due_date: datetime | None = None
     position: float | None = None
+
+    @model_validator(mode="after")
+    def validate_dates(self) -> Self:
+        if self.start_date and self.due_date and self.start_date > self.due_date:
+            raise ValueError("start_date must be before or equal to due_date")
+        return self
 
 
 class TagResponse(BaseModel):
@@ -46,6 +60,7 @@ class TaskResponse(BaseModel):
     status: str
     priority: str
     position: float
+    start_date: datetime | None
     due_date: datetime | None
     completed_at: datetime | None
     created_at: datetime
@@ -79,6 +94,7 @@ class TaskResponse(BaseModel):
             "status": data.status,
             "priority": data.priority,
             "position": data.position,
+            "start_date": data.start_date,
             "due_date": data.due_date,
             "completed_at": data.completed_at,
             "created_at": data.created_at,

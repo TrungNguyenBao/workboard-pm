@@ -108,7 +108,7 @@ async def update_task(
     old_assignee_id = task.assignee_id
 
     # Track field changes for activity log
-    tracked_fields = {"status", "assignee_id", "priority", "due_date", "title"}
+    tracked_fields = {"status", "assignee_id", "priority", "start_date", "due_date", "title"}
     changes_list = []
     for field in tracked_fields:
         if field in updates:
