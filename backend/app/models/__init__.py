@@ -1,5 +1,6 @@
 """Import all models so Alembic can detect them via Base.metadata."""
 
+from app.models.activity_log import ActivityLog  # noqa: F401
 from app.models.attachment import Attachment  # noqa: F401
 from app.models.comment import Comment  # noqa: F401
 from app.models.notification import Notification  # noqa: F401

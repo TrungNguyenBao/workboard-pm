@@ -28,6 +28,9 @@ export function useSSE() {
         if (data.type === 'task_updated' || data.type === 'task_created') {
           qc.invalidateQueries({ queryKey: ['tasks'] })
         }
+        if (data.type === 'activity_created') {
+          qc.invalidateQueries({ queryKey: ['activity'] })
+        }
       } catch {
         // ignore JSON parse errors from malformed SSE data
       }

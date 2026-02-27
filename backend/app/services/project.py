@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.project import Project, ProjectMembership, Section
 from app.models.user import User
 from app.schemas.project import ProjectCreate, ProjectUpdate, SectionCreate, SectionUpdate
+from app.services.activity_log import create_activity
 
 
 async def create_project(
@@ -31,6 +32,17 @@ async def create_project(
 
     await db.commit()
     await db.refresh(project)
+
+    await create_activity(
+        db,
+        workspace_id=workspace_id,
+        project_id=project.id,
+        entity_type="project",
+        entity_id=project.id,
+        actor_id=owner.id,
+        action="created",
+    )
+
     return project
 
 

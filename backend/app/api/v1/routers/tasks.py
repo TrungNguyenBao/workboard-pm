@@ -80,7 +80,7 @@ async def update(
     current_user: User = Depends(require_project_role("editor")),
     db: AsyncSession = Depends(get_db),
 ):
-    return await update_task(db, task_id, data)
+    return await update_task(db, task_id, data, actor_id=current_user.id)
 
 
 @router.delete("/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -90,7 +90,7 @@ async def delete(
     current_user: User = Depends(require_project_role("editor")),
     db: AsyncSession = Depends(get_db),
 ):
-    await delete_task(db, task_id)
+    await delete_task(db, task_id, actor_id=current_user.id)
 
 
 @router.patch("/{task_id}/move", response_model=TaskResponse)

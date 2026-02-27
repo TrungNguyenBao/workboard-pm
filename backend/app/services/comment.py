@@ -12,6 +12,7 @@ from app.models.project import Project
 from app.models.task import Task, TaskFollower
 from app.models.user import User
 from app.schemas.comment import CommentCreate, CommentResponse, CommentUpdate
+from app.services.activity_log import create_activity
 from app.services.notifications import create_notification
 
 
@@ -46,6 +47,17 @@ async def create_comment(
                 resource_type="task",
                 resource_id=task_id,
                 workspace_id=workspace_id,
+            )
+
+        if workspace_id:
+            await create_activity(
+                db,
+                workspace_id=workspace_id,
+                project_id=project_id,
+                entity_type="task",
+                entity_id=task_id,
+                actor_id=author.id,
+                action="commented",
             )
 
     return comment

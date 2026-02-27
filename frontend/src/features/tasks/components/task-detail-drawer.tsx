@@ -1,11 +1,12 @@
 import { useState, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { CalendarDays, CheckSquare, MessageSquare, Paperclip, Plus, Tag, Trash2, Upload, User, X } from 'lucide-react'
+import { CalendarDays, CheckSquare, History, MessageSquare, Paperclip, Plus, Tag, Trash2, Upload, User, X } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/shared/components/ui/sheet'
 import { Button } from '@/shared/components/ui/button'
 import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { cn, formatRelativeTime } from '@/shared/lib/utils'
+import { TaskActivity } from './task-activity'
 import api from '@/shared/lib/api'
 import type { Task } from '@/features/projects/hooks/use-project-tasks'
 
@@ -396,6 +397,15 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
                     </button>
                   )}
                 </div>
+              </div>
+
+              {/* Activity log */}
+              <div className="px-6 py-4 border-b border-border">
+                <p className="text-xs font-medium text-neutral-500 mb-2">
+                  <History className="h-3.5 w-3.5 inline mr-1" />
+                  History
+                </p>
+                <TaskActivity taskId={task.id} projectId={projectId} />
               </div>
 
               {/* Comments */}

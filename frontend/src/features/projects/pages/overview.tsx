@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { ProjectHeader } from '../components/project-header'
+import { ActivityTimeline } from '../components/activity-timeline'
 import api from '@/shared/lib/api'
 
 interface SectionStat {
@@ -154,6 +155,12 @@ export default function OverviewPage() {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* Recent activity */}
+              <div className="rounded-lg border border-border bg-white p-4">
+                <p className="text-xs font-medium text-neutral-500 mb-3">Recent activity</p>
+                <ActivityTimeline projectId={projectId!} />
               </div>
 
               {/* Assignee table */}

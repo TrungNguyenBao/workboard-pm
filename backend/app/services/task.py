@@ -6,9 +6,11 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.models.project import Project
 from app.models.task import Task, TaskFollower, TaskTag
 from app.models.user import User
 from app.schemas.task import TaskCreate, TaskUpdate
+from app.services.activity_log import create_activity
 
 
 async def _next_position(db: AsyncSession, project_id: uuid.UUID, section_id: uuid.UUID | None) -> float:
@@ -25,6 +27,11 @@ async def _next_position(db: AsyncSession, project_id: uuid.UUID, section_id: uu
             )
         )
     return (result or 0.0) + 65536.0
+
+
+async def _get_workspace_id(db: AsyncSession, project_id: uuid.UUID) -> uuid.UUID | None:
+    row = await db.execute(select(Project.workspace_id).where(Project.id == project_id))
+    return row.scalar_one_or_none()
 
 
 async def create_task(
@@ -46,6 +53,19 @@ async def create_task(
     db.add(TaskFollower(task_id=task.id, user_id=creator.id))
     await db.commit()
     await db.refresh(task)
+
+    workspace_id = await _get_workspace_id(db, project_id)
+    if workspace_id:
+        await create_activity(
+            db,
+            workspace_id=workspace_id,
+            project_id=project_id,
+            entity_type="task",
+            entity_id=task.id,
+            actor_id=creator.id,
+            action="created",
+        )
+
     return task
 
 
@@ -79,11 +99,23 @@ async def get_task(db: AsyncSession, task_id: uuid.UUID) -> Task:
     return task
 
 
-async def update_task(db: AsyncSession, task_id: uuid.UUID, data: TaskUpdate) -> Task:
+async def update_task(
+    db: AsyncSession, task_id: uuid.UUID, data: TaskUpdate, actor_id: uuid.UUID | None = None
+) -> Task:
     task = await get_task(db, task_id)
     updates = data.model_dump(exclude_none=True)
 
     old_assignee_id = task.assignee_id
+
+    # Track field changes for activity log
+    tracked_fields = {"status", "assignee_id", "priority", "due_date", "title"}
+    changes_list = []
+    for field in tracked_fields:
+        if field in updates:
+            old_val = getattr(task, field)
+            new_val = updates[field]
+            if str(old_val) != str(new_val):
+                changes_list.append({"field": field, "old": str(old_val) if old_val else None, "new": str(new_val)})
 
     if "status" in updates and updates["status"] == "completed" and not task.completed_at:
         task.completed_at = datetime.now(timezone.utc)
@@ -98,13 +130,9 @@ async def update_task(db: AsyncSession, task_id: uuid.UUID, data: TaskUpdate) ->
 
     # Notify new assignee if changed
     new_assignee_id = updates.get("assignee_id")
+    workspace_id = await _get_workspace_id(db, task.project_id)
     if new_assignee_id and new_assignee_id != old_assignee_id:
-        from app.models.project import Project
         from app.services.notifications import create_notification
-        ws_row = await db.execute(
-            select(Project.workspace_id).where(Project.id == task.project_id)
-        )
-        workspace_id = ws_row.scalar_one_or_none()
         await create_notification(
             db,
             user_id=new_assignee_id,
@@ -116,13 +144,42 @@ async def update_task(db: AsyncSession, task_id: uuid.UUID, data: TaskUpdate) ->
             workspace_id=workspace_id,
         )
 
+    # Emit activity
+    if workspace_id and actor_id and changes_list:
+        action = "completed" if updates.get("status") == "completed" else "updated"
+        await create_activity(
+            db,
+            workspace_id=workspace_id,
+            project_id=task.project_id,
+            entity_type="task",
+            entity_id=task_id,
+            actor_id=actor_id,
+            action=action,
+            changes=changes_list[0] if len(changes_list) == 1 else {"fields": changes_list},
+        )
+
     return task
 
 
-async def delete_task(db: AsyncSession, task_id: uuid.UUID) -> None:
+async def delete_task(
+    db: AsyncSession, task_id: uuid.UUID, actor_id: uuid.UUID | None = None
+) -> None:
     task = await get_task(db, task_id)
     task.deleted_at = datetime.now(timezone.utc)
     await db.commit()
+
+    if actor_id:
+        workspace_id = await _get_workspace_id(db, task.project_id)
+        if workspace_id:
+            await create_activity(
+                db,
+                workspace_id=workspace_id,
+                project_id=task.project_id,
+                entity_type="task",
+                entity_id=task_id,
+                actor_id=actor_id,
+                action="deleted",
+            )
 
 
 async def move_task(
