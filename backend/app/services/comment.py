@@ -22,7 +22,13 @@ async def create_comment(
     comment = Comment(task_id=task_id, author_id=author.id, **data.model_dump())
     db.add(comment)
     await db.commit()
-    await db.refresh(comment)
+    # Reload with author relationship for response serialization
+    result = await db.scalars(
+        select(Comment)
+        .where(Comment.id == comment.id)
+        .options(selectinload(Comment.author))
+    )
+    comment = result.one()
 
     # Notify task followers (excluding the author)
     task_row = await db.execute(select(Task.project_id).where(Task.id == task_id))
