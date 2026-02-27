@@ -44,14 +44,26 @@ async def send_due_reminders(ctx: dict) -> int:
     return count
 
 
+async def spawn_recurring_tasks(ctx: dict) -> int:
+    """Job: spawn new occurrences for all due recurring template tasks."""
+    from app.core.database import AsyncSessionLocal
+    from app.services.recurring_tasks import spawn_all_due
+
+    async with AsyncSessionLocal() as db:
+        return await spawn_all_due(db)
+
+
 class WorkerSettings:
     redis_settings = None  # set dynamically
-    functions = [send_due_reminders]
+    functions = [send_due_reminders, spawn_recurring_tasks]
 
     @classmethod
     def from_config(cls):
         import arq
         from arq import cron
         cls.redis_settings = arq.connections.RedisSettings.from_dsn(settings.REDIS_URL)
-        cls.cron_jobs = [cron(send_due_reminders, hour=8, minute=0)]
+        cls.cron_jobs = [
+            cron(send_due_reminders, hour=8, minute=0),
+            cron(spawn_recurring_tasks, hour=2, minute=0),
+        ]
         return cls

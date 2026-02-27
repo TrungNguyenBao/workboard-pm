@@ -15,6 +15,10 @@ class TaskCreate(BaseModel):
     start_date: datetime | None = None
     due_date: datetime | None = None
     position: float | None = None
+    recurrence_rule: str | None = None  # daily/weekly/biweekly/monthly/custom_cron
+    recurrence_cron_expr: str | None = None
+    recurrence_end_date: datetime | None = None
+    custom_fields: dict[str, Any] | None = None
 
     @model_validator(mode="after")
     def validate_dates(self) -> Self:
@@ -33,6 +37,10 @@ class TaskUpdate(BaseModel):
     start_date: datetime | None = None
     due_date: datetime | None = None
     position: float | None = None
+    recurrence_rule: str | None = None
+    recurrence_cron_expr: str | None = None
+    recurrence_end_date: datetime | None = None
+    custom_fields: dict[str, Any] | None = None
 
     @model_validator(mode="after")
     def validate_dates(self) -> Self:
@@ -65,6 +73,13 @@ class TaskResponse(BaseModel):
     completed_at: datetime | None
     created_at: datetime
     updated_at: datetime
+    # Recurrence fields
+    recurrence_rule: str | None = None
+    recurrence_cron_expr: str | None = None
+    recurrence_end_date: datetime | None = None
+    parent_recurring_id: uuid.UUID | None = None
+    # Custom fields
+    custom_fields: dict | None = None
     # Enriched fields (populated when relationships are eager-loaded)
     assignee_name: str | None = None
     assignee_avatar_url: str | None = None
@@ -99,6 +114,11 @@ class TaskResponse(BaseModel):
             "completed_at": data.completed_at,
             "created_at": data.created_at,
             "updated_at": data.updated_at,
+            "recurrence_rule": data.recurrence_rule,
+            "recurrence_cron_expr": data.recurrence_cron_expr,
+            "recurrence_end_date": data.recurrence_end_date,
+            "parent_recurring_id": data.parent_recurring_id,
+            "custom_fields": data.custom_fields,
             "assignee_name": assignee.name if assignee else None,
             "assignee_avatar_url": assignee.avatar_url if assignee else None,
             "subtask_count": len(subtasks),

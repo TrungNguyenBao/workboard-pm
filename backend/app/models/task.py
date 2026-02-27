@@ -9,7 +9,7 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
 )
-from sqlalchemy.dialects.postgresql import TSVECTOR as PG_TSVECTOR
+from sqlalchemy.dialects.postgresql import JSONB, TSVECTOR as PG_TSVECTOR
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import TypeDecorator
 
@@ -59,10 +59,20 @@ class Task(Base, TimestampMixin, SoftDeleteMixin):
         DateTime(timezone=True), nullable=True
     )
 
-    # Full-text search vector (populated by trigger)
-    search_vector: Mapped[str | None] = mapped_column(
-        TSVECTOR, nullable=True
+    # Recurrence fields
+    recurrence_rule: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    recurrence_cron_expr: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    recurrence_end_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    parent_recurring_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("tasks.id", ondelete="CASCADE"), nullable=True, index=True
     )
+    last_generated_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    # Full-text search vector (populated by trigger)
+    search_vector: Mapped[str | None] = mapped_column(TSVECTOR, nullable=True)
+
+    # Custom fields (JSONB map of field_definition_id -> value)
+    custom_fields: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
 
     __table_args__ = (
         # GIN index only applies on PostgreSQL; sqlite silently ignores the kwarg
@@ -84,9 +94,12 @@ class Task(Base, TimestampMixin, SoftDeleteMixin):
         foreign_keys=[created_by_id]
     )
     parent: Mapped["Task | None"] = relationship(
-        back_populates="subtasks", remote_side="Task.id"
+        back_populates="subtasks", remote_side="Task.id", foreign_keys="Task.parent_id"
     )
-    subtasks: Mapped[list["Task"]] = relationship(back_populates="parent")
+    subtasks: Mapped[list["Task"]] = relationship(back_populates="parent", foreign_keys="Task.parent_id")
+    recurring_parent: Mapped["Task | None"] = relationship(
+        remote_side="Task.id", foreign_keys="Task.parent_recurring_id"
+    )
     comments: Mapped[list["Comment"]] = relationship(back_populates="task")  # noqa: F821
     attachments: Mapped[list["Attachment"]] = relationship(back_populates="task")  # noqa: F821
     tags: Mapped[list["TaskTag"]] = relationship(back_populates="task")  # noqa: F821

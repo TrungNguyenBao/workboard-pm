@@ -26,11 +26,18 @@ export interface Task {
   completed_at: string | null
   created_at: string
   updated_at: string
+  // Recurrence fields
+  recurrence_rule: string | null
+  recurrence_cron_expr: string | null
+  recurrence_end_date: string | null
+  parent_recurring_id: string | null
   // Enriched fields
   assignee_name: string | null
   assignee_avatar_url: string | null
   subtask_count: number
   completed_subtask_count: number
+  // Custom fields
+  custom_fields: Record<string, unknown> | null
 }
 
 export function useSections(projectId: string) {

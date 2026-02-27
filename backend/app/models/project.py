@@ -31,6 +31,9 @@ class Project(Base, TimestampMixin, SoftDeleteMixin):
     memberships: Mapped[list["ProjectMembership"]] = relationship(back_populates="project")
     sections: Mapped[list["Section"]] = relationship(back_populates="project")
     tasks: Mapped[list["Task"]] = relationship(back_populates="project")  # noqa: F821
+    custom_field_definitions: Mapped[list["CustomFieldDefinition"]] = relationship(  # noqa: F821
+        back_populates="project"
+    )
 
 
 class ProjectMembership(Base, TimestampMixin):

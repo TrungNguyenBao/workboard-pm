@@ -45,3 +45,11 @@ class NotificationType(str, enum.Enum):
     COMMENT_MENTIONED = "comment_mentioned"
     DUE_SOON = "due_soon"
     OVERDUE = "overdue"
+
+
+class GoalStatus(str, enum.Enum):
+    ON_TRACK = "on_track"
+    AT_RISK = "at_risk"
+    OFF_TRACK = "off_track"
+    ACHIEVED = "achieved"
+    DROPPED = "dropped"

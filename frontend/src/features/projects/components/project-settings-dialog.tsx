@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/compo
 import { Button } from '@/shared/components/ui/button'
 import { Label } from '@/shared/components/ui/label'
 import { toast } from '@/shared/components/ui/toast'
+import { FieldConfigPanel } from '@/features/custom-fields/components/field-config-panel'
 import api from '@/shared/lib/api'
 
 const COLORS = [
@@ -103,6 +104,11 @@ export function ProjectSettingsDialog({ project, workspaceId, open, onOpenChange
               placeholder="What is this project about?"
               className="w-full rounded border border-border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/40 resize-none"
             />
+          </div>
+
+          <div className="border-t border-border pt-4">
+            <p className="text-xs font-semibold text-neutral-400 uppercase mb-2">Custom Fields</p>
+            {project && <FieldConfigPanel projectId={project.id} />}
           </div>
 
           <div className="flex items-center gap-2 py-1 border-t border-border">

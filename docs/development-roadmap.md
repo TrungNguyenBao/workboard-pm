@@ -71,25 +71,25 @@ Core infrastructure, authentication, and data model.
 
 | Item | Status |
 |---|---|
-| Docker multi-stage production builds | In Progress |
-| Nginx reverse proxy config | Planned |
-| Environment-based config validation on startup | Planned |
-| Rate limiting per-route via slowapi | Planned |
-| Structured JSON logging (structlog) | Planned |
+| Docker multi-stage production builds | Done |
+| Nginx reverse proxy config | Done |
+| Environment-based config validation on startup | Done |
+| Rate limiting per-route via slowapi | Done |
+| Structured JSON logging (structlog) | Done |
 | E2E tests (Playwright) | Planned |
 | MinIO / S3 file storage for attachments | Planned |
 | Email delivery for notifications (ARQ background job) | Planned |
 
 ---
 
-## Phase 6 — Advanced Features (Backlog)
+## Phase 6 — Advanced Features (Complete)
 
 | Item | Status |
 |---|---|
-| Timeline / Gantt view | Backlog |
-| Recurring tasks | Backlog |
-| Custom fields | Backlog |
-| Portfolio / goals tracking | Backlog |
+| Timeline / Gantt view | Done |
+| Recurring tasks | Done |
+| Custom fields | Done |
+| Portfolio / goals tracking | Done |
 | PostgreSQL FTS → Meilisearch upgrade | Backlog |
 | SSE broker → Redis Pub/Sub for multi-instance | Backlog |
 | Webhooks for external integrations | Backlog |

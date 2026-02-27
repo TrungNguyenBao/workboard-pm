@@ -1,12 +1,14 @@
 import { useState, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { CalendarDays, CheckSquare, History, MessageSquare, Paperclip, Plus, Tag, Trash2, Upload, User, X } from 'lucide-react'
+import { CalendarDays, CheckSquare, History, MessageSquare, Paperclip, Plus, Repeat, Tag, Trash2, Upload, User, X } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/shared/components/ui/sheet'
 import { Button } from '@/shared/components/ui/button'
 import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { cn, formatRelativeTime } from '@/shared/lib/utils'
 import { TaskActivity } from './task-activity'
+import { RecurrencePicker } from './recurrence-picker'
+import { CustomFieldsSection } from '@/features/custom-fields/components/custom-fields-section'
 import api from '@/shared/lib/api'
 import type { Task } from '@/features/projects/hooks/use-project-tasks'
 
@@ -178,16 +180,18 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
           <>
             <SheetHeader className="px-6 pt-5 pb-4 border-b border-border">
               <div className="flex items-start gap-3">
-                <button
-                  onClick={() =>
-                    updateTask.mutate({
-                      status: task.status === 'completed' ? 'incomplete' : 'completed',
-                    })
-                  }
-                  className="mt-0.5 flex-shrink-0 text-neutral-300 hover:text-primary transition-colors"
-                >
-                  <CheckSquare className={cn('h-5 w-5', task.status === 'completed' && 'text-primary')} />
-                </button>
+                {!(task.recurrence_rule && !task.parent_recurring_id) && (
+                  <button
+                    onClick={() =>
+                      updateTask.mutate({
+                        status: task.status === 'completed' ? 'incomplete' : 'completed',
+                      })
+                    }
+                    className="mt-0.5 flex-shrink-0 text-neutral-300 hover:text-primary transition-colors"
+                  >
+                    <CheckSquare className={cn('h-5 w-5', task.status === 'completed' && 'text-primary')} />
+                  </button>
+                )}
                 <SheetTitle
                   contentEditable
                   suppressContentEditableWarning
@@ -271,6 +275,15 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
                     )}
                   />
                 </MetaRow>
+                {/* Recurrence */}
+                <MetaRow icon={<Repeat className="h-4 w-4" />} label="Repeat">
+                  <RecurrencePicker
+                    rule={task.recurrence_rule}
+                    cronExpr={task.recurrence_cron_expr}
+                    endDate={task.recurrence_end_date}
+                    onChange={(data) => updateTask.mutate(data)}
+                  />
+                </MetaRow>
               </div>
 
               {/* Description */}
@@ -313,6 +326,14 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
                   </div>
                 </div>
               )}
+
+              {/* Custom Fields */}
+              <CustomFieldsSection
+                projectId={projectId}
+                taskId={task.id}
+                customFields={task.custom_fields}
+                onUpdate={(fields) => updateTask.mutate({ custom_fields: fields })}
+              />
 
               {/* Attachments */}
               <div className="px-6 py-4 border-b border-border">

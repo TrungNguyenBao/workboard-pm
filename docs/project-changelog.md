@@ -8,6 +8,48 @@ Format: `## [version] — YYYY-MM-DD` with grouped entries.
 ## [Unreleased] — 2026-02-27
 
 ### Added
+- **Recurring Tasks** (`feat: recurring tasks with ARQ cron job`)
+  - New columns on `tasks`: `recurrence_rule`, `recurrence_cron_expr`, `recurrence_end_date`, `parent_recurring_id`, `last_generated_date`.
+  - Support for 5 recurrence patterns: `daily`, `weekly`, `biweekly`, `monthly`, `custom_cron`.
+  - ARQ nightly cron job `spawn_recurring_tasks` runs at 2 AM UTC daily to generate occurrences.
+  - Parent template tasks cannot be marked complete (template tasks never complete independently).
+  - Spawned occurrence tasks are independent and complete normally.
+  - `croniter` library used for custom CRON expression validation and date calculation.
+  - Frontend: Recurrence picker component in task detail drawer with rule/cron/end-date fields.
+  - Recurring badge displayed on task cards in board and list views.
+  - Occurrences list shows under parent template task in detail drawer.
+
+- **Custom Fields** (`feat: custom fields with 7 field types`)
+  - New JSONB `custom_fields` column on `tasks` for storing field values.
+  - New `custom_field_definitions` table (per-project) for storing field schemas.
+  - Support for 7 field types: `text`, `number`, `date`, `single_select`, `multi_select`, `checkbox`, `url`.
+  - Soft-delete on field definitions (task data preserved when definition deleted).
+  - Validation at service layer: type checking, required fields, select option validation.
+  - Select options stored as JSONB array: `[{"id": "opt_1", "label": "High", "color": "#FF6B6B"}]`.
+  - Frontend: Custom field config panel in project settings (CRUD + reorder).
+  - Custom field rendering in task detail drawer (type-specific inputs).
+  - Empty state shown when no fields configured.
+
+- **Goals / Portfolio Tracking** (`feat: goals with project/task linking and auto-progress`)
+  - New `goals` table at workspace level (not project-level).
+  - New join tables: `goal_project_links`, `goal_task_links` for linking.
+  - Status enum: `on_track`, `at_risk`, `off_track`, `achieved`, `dropped`.
+  - Progress calculation: `manual` (user-set) or `auto` (% of completed linked tasks).
+  - Goal colors customizable; owner is workspace member.
+  - Soft-delete on goals (links cascade-deleted with goal).
+  - Frontend: Goals list page with card grid layout (responsive 1-3 cols).
+  - Goal cards show title, status badge, progress bar, owner avatar, due date, link counts.
+  - Goal detail drawer: edit all fields inline, link/unlink projects and tasks.
+  - Link dialogs: checkbox list for projects; project selector + task list for tasks.
+  - Sidebar navigation: "Goals" item linking to goals page.
+  - Auto progress updates when linked tasks are completed.
+
+### Fixed
+- **Security**: Workspace-goal ownership verification; project-field ownership verification; task ownership checks.
+- **Frontend**: Recurrence value mismatch (custom → custom_cron normalization).
+- **Frontend**: Select field value rendering uses option ID instead of label.
+
+### Other
 - **Activity Log / Timeline** (`feat: add activity log with timeline UI for tasks and projects`)
   - New `activity_logs` table: `workspace_id`, `project_id`, `entity_type`, `entity_id`, `actor_id`, `action`, `changes` (JSONB). Indexes on `(entity_type, entity_id)` and `created_at`.
   - `ActivityLog` SQLAlchemy model (`backend/app/models/activity_log.py`).

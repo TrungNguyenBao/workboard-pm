@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { CheckSquare, Circle, ChevronRight, ArrowUpDown, Search, X, CheckCircle2 } from 'lucide-react'
+import { CheckSquare, Circle, ChevronRight, ArrowUpDown, Search, X, CheckCircle2, Repeat } from 'lucide-react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Badge } from '@/shared/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar'
@@ -52,7 +52,14 @@ function TaskRow({ task, projectId, onOpen }: { task: Task; projectId: string; o
           <Circle className="h-4 w-4" />
         )}
       </button>
-      <span className={cn('flex-1 text-sm text-neutral-900', task.status === 'completed' && 'line-through')}>{task.title}</span>
+      <span className={cn('flex-1 text-sm text-neutral-900 flex items-center gap-1', task.status === 'completed' && 'line-through')}>
+        {task.title}
+        {task.recurrence_rule && (
+          <span className="text-neutral-400 flex-shrink-0" title={`Repeats ${task.recurrence_rule}`}>
+            <Repeat className="h-3 w-3" />
+          </span>
+        )}
+      </span>
       <div className="flex items-center gap-2 ml-auto">
         {task.subtask_count > 0 && (
           <span className="text-xs text-neutral-400 flex items-center gap-0.5">

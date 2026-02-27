@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { ChevronDown, Home, LogOut, MoreHorizontal, Pencil, Plus, Settings, Trash2, Users, UserPlus } from 'lucide-react'
+import { ChevronDown, Home, LogOut, MoreHorizontal, Pencil, Plus, Settings, Target, Trash2, Users, UserPlus } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '@/stores/auth.store'
 import { useWorkspaceStore } from '@/stores/workspace.store'
@@ -172,6 +172,7 @@ export function Sidebar() {
           ) : (
             <>
               <NavItem to="/my-tasks" icon={<Home className="h-4 w-4" />} label="My Tasks" active={isActive('/my-tasks')} />
+              <NavItem to="/goals" icon={<Target className="h-4 w-4" />} label="Goals" active={isActive('/goals')} />
               <NavItem to="/members" icon={<Users className="h-4 w-4" />} label="Members" active={isActive('/members')} />
 
               <div className="pt-4 pb-1 px-2">

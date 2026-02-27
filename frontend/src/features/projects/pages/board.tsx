@@ -15,7 +15,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { CheckCircle2, Circle, Plus, MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
+import { CheckCircle2, Circle, Plus, MoreHorizontal, Pencil, Repeat, Trash2 } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -104,6 +104,11 @@ function TaskCard({ task, isDragging, onOpen, projectId }: { task: Task; isDragg
           onClick={(e) => { e.stopPropagation(); onOpen?.(task) }}
         >
           {task.title}
+          {task.recurrence_rule && (
+            <span className="inline-flex items-center ml-1 text-neutral-400" title={`Repeats ${task.recurrence_rule}`}>
+              <Repeat className="h-3 w-3" />
+            </span>
+          )}
         </p>
       </div>
       <div className="flex items-center justify-between mt-2 ml-6">

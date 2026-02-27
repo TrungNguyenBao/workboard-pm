@@ -5,6 +5,8 @@ from app.api.v1.routers import (
     attachments,
     auth,
     comments,
+    custom_fields,
+    goals,
     health,
     notifications,
     projects,
@@ -26,6 +28,8 @@ api_router.include_router(teams.router)
 api_router.include_router(projects.router)
 api_router.include_router(sections.router)
 api_router.include_router(tasks.router)
+api_router.include_router(custom_fields.router)
+api_router.include_router(goals.router)
 api_router.include_router(comments.router)
 api_router.include_router(attachments.router)
 api_router.include_router(tags.router)
