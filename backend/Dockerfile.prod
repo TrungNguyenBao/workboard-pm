@@ -1,0 +1,18 @@
+# Stage 1: install dependencies with uv
+FROM python:3.12-slim AS builder
+WORKDIR /app
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+COPY pyproject.toml uv.lock* ./
+RUN uv sync --no-dev --no-install-project
+
+# Stage 2: slim runtime image (no uv/pip)
+FROM python:3.12-slim
+WORKDIR /app
+COPY --from=builder /app/.venv /app/.venv
+ENV PATH="/app/.venv/bin:$PATH"
+COPY app/ ./app/
+COPY alembic/ ./alembic/
+COPY alembic.ini ./
+EXPOSE 8000
+# WEB_CONCURRENCY can be overridden via environment variable
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers ${WEB_CONCURRENCY:-4}"]

@@ -1,4 +1,4 @@
-.PHONY: dev dev-backend dev-frontend migrate seed test lint format docker-up docker-down install
+.PHONY: dev dev-backend dev-frontend migrate seed test lint format docker-up docker-down docker-prod-build docker-prod-up docker-prod-down install
 
 # Development
 dev:
@@ -55,6 +55,16 @@ docker-down:
 
 docker-logs:
 	docker-compose logs -f
+
+# Production Docker
+docker-prod-build:
+	docker-compose -f docker-compose.prod.yml build
+
+docker-prod-up:
+	docker-compose -f docker-compose.prod.yml up -d
+
+docker-prod-down:
+	docker-compose -f docker-compose.prod.yml down
 
 run-worker:
 	cd backend && uv run arq app.worker.tasks.WorkerSettings
