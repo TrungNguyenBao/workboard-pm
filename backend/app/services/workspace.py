@@ -154,8 +154,8 @@ async def update_workspace(
 async def get_my_tasks(
     db: AsyncSession, workspace_id: uuid.UUID, user_id: uuid.UUID
 ) -> list:
-    from app.models.project import Project
-    from app.models.task import Task as TaskModel
+    from app.modules.pms.models.project import Project
+    from app.modules.pms.models.task import Task as TaskModel
 
     result = await db.scalars(
         select(TaskModel)
@@ -176,11 +176,11 @@ async def setup_demo_workspace(db: AsyncSession, owner: User) -> Workspace:
     import uuid
     from datetime import datetime, timedelta, timezone
 
-    from app.models.project import Project, ProjectMembership, Section
-    from app.models.tag import Tag
-    from app.models.task import Task, TaskTag
     from app.models.team import Team, TeamMembership
     from app.models.workspace import Workspace, WorkspaceMembership
+    from app.modules.pms.models.project import Project, ProjectMembership, Section
+    from app.modules.pms.models.tag import Tag
+    from app.modules.pms.models.task import Task, TaskTag
 
     # 1. Workspace
     slug = f"demo-{uuid.uuid4().hex[:8]}"

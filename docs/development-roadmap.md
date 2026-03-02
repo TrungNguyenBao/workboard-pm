@@ -1,6 +1,6 @@
-# WorkBoard — Development Roadmap
+# A-ERP — Development Roadmap
 
-**Last updated:** 2026-02-27
+**Last updated:** 2026-03-02
 
 ---
 
@@ -29,6 +29,7 @@ Core infrastructure, authentication, and data model.
 | Sections with drag-and-drop fractional indexing | Done |
 | List view | Done |
 | Board (kanban) view | Done |
+| Board DnD: between-task insertion with fractional indexing | Done |
 | Calendar view | Done |
 | Task detail drawer (title, description, assignee, due date, priority) | Done |
 | Subtasks + task dependencies | Done |
@@ -94,3 +95,26 @@ Core infrastructure, authentication, and data model.
 | SSE broker → Redis Pub/Sub for multi-instance | Backlog |
 | Webhooks for external integrations | Backlog |
 | Public API with API key auth | Backlog |
+
+---
+
+## Phase 7 — A-ERP Restructure (Complete)
+
+Transformed WorkBoard into A-ERP (Agentic Enterprise Resource Platform) with modular architecture.
+
+| Item | Status |
+|---|---|
+| Backend: PMS module extraction (`modules/pms/`) | Done |
+| Backend: Scaffold WMS module (Warehouse, InventoryItem) | Done |
+| Backend: Scaffold HRM module (Department, Employee) | Done |
+| Backend: Scaffold CRM module (Contact, Deal) | Done |
+| Backend: Agent layer (BaseAgent, registry, orchestrator, domain stubs) | Done |
+| Backend: MCP protocol layer (envelope, bus, context, policy) | Done |
+| Backend: Alembic migration for WMS/HRM/CRM tables | Done |
+| Frontend: PMS module extraction (`modules/pms/features/`) | Done |
+| Frontend: Shell components (app-shell, sidebar, module-switcher) | Done |
+| Frontend: Module-prefixed routes (`/pms/*`, `/wms`, `/hrm`, `/crm`) | Done |
+| Frontend: API URL migration (`/projects/` → `/pms/projects/`) | Done |
+| Frontend: WMS/HRM/CRM placeholder pages | Done |
+| Config: pyproject.toml renamed to a-erp-backend | Done |
+| Docs: CLAUDE.md, system-architecture, roadmap, changelog updated | Done |

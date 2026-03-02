@@ -1,6 +1,6 @@
-# WorkBoard — System Architecture
+# A-ERP — System Architecture
 
-**Last updated:** 2026-02-27
+**Last updated:** 2026-03-02
 
 ---
 
@@ -12,9 +12,12 @@ Browser (React 18 + Vite)
         ▼
 FastAPI (Python 3.12)
         │
-        ├── PostgreSQL 15  (primary store, FTS, LISTEN/NOTIFY path available)
-        ├── Redis 7         (ARQ background jobs, session cache)
-        └── File storage    (local disk dev → MinIO/S3 prod)
+        ├── Module routers  (/pms, /wms, /hrm, /crm)
+        ├── Agent layer      (BaseAgent → domain stubs → orchestrator)
+        ├── MCP protocol     (envelope, bus, context, policy)
+        ├── PostgreSQL 15    (primary store, FTS, LISTEN/NOTIFY path available)
+        ├── Redis 7          (ARQ background jobs, session cache)
+        └── File storage     (local disk dev → MinIO/S3 prod)
 ```
 
 All components run via Docker Compose in development. The SSE broker is in-process (no PostgreSQL LISTEN/NOTIFY in use yet; Redis Pub/Sub is the planned upgrade path for multi-instance).
@@ -24,24 +27,71 @@ All components run via Docker Compose in development. The SSE broker is in-proce
 ## Directory Structure
 
 ```
-workboard-pm/
-  backend/
-    app/
-      api/v1/routers/   # thin HTTP layer — validate, auth, delegate to service
-      services/         # business logic, DB writes, SSE publish
-      models/           # SQLAlchemy 2.0 async ORM models
-      schemas/          # Pydantic v2 request/response types
-      dependencies/     # FastAPI Depends() — auth, RBAC, db session
-      core/             # config, database engine, security utilities
-      worker/           # ARQ background job definitions
-    alembic/            # migration versions
-  frontend/
-    src/
-      features/         # feature-based folders (auth, projects, tasks, …)
-      shared/           # lib utilities, shadcn component wrappers, Zustand stores
-      app/              # App.tsx, router.tsx
-  docker-compose.yml
-  Makefile
+backend/
+  app/
+    api/v1/
+      router.py          # aggregates shared + module routers
+      routers/           # shared: auth, health, workspaces, teams, notifications, sse, agents
+    models/              # shared only: user, workspace, team, token, base, enums
+    schemas/             # shared only: auth, workspace, team
+    services/            # shared: auth, workspace, notifications
+    dependencies/        # shared: auth, workspace RBAC, db session
+    core/                # config, database engine, security utilities
+    worker/              # ARQ background job definitions
+    modules/
+      pms/               # Project Management System
+        routers/         # projects, sections, tasks, comments, attachments, tags, custom_fields, goals, activity
+        services/        # task, project, comment, attachment, activity_log, recurring_tasks, custom_field, goal
+        models/          # project, task, comment, attachment, tag, notification, activity_log, custom_field, goal
+        schemas/         # project, task, comment, attachment, notification, activity_log, custom_field, goal
+        dependencies/    # project-level RBAC (require_project_role)
+        router.py        # aggregates PMS routers under /pms prefix
+      wms/               # Warehouse Management System
+        routers/         # warehouses, inventory
+        services/        # warehouse, inventory_item
+        models/          # warehouse, inventory_item
+        schemas/         # warehouse, inventory_item
+        router.py        # aggregates WMS routers under /wms prefix
+      hrm/               # Human Resource Management
+        routers/         # departments, employees
+        services/        # department, employee
+        models/          # department, employee
+        schemas/         # department, employee
+        router.py        # aggregates HRM routers under /hrm prefix
+      crm/               # Customer Relationship Management
+        routers/         # contacts, deals
+        services/        # contact, deal
+        models/          # contact, deal
+        schemas/         # contact, deal
+        router.py        # aggregates CRM routers under /crm prefix
+    agents/              # Agent orchestration layer
+      base.py            # abstract BaseAgent ABC
+      registry.py        # agent registration + lookup
+      orchestrator.py    # cross-module routing
+      {pms,wms,hrm,crm}_agent.py  # domain agent stubs
+    mcp/                 # Model Context Protocol layer
+      protocol.py        # MCPEnvelope Pydantic model
+      bus.py             # in-process pub/sub event bus
+      context.py         # shared context key-value store
+      policy.py          # governance rules + audit log
+  alembic/               # migration versions
+frontend/
+  src/
+    shared/
+      components/
+        shell/           # app-shell, sidebar, header, module-switcher, keyboard-shortcuts
+        ui/              # shadcn component wrappers
+      lib/               # api, query-client, utils
+    features/            # shared: auth, notifications, search, settings, workspaces
+    modules/
+      pms/features/      # dashboard, projects, tasks, goals, custom-fields
+      wms/features/      # warehouses, inventory (placeholder)
+      hrm/features/      # employees, departments (placeholder)
+      crm/features/      # contacts, deals (placeholder)
+    stores/              # Zustand: auth, workspace, module
+    app/                 # App.tsx, router.tsx
+docker-compose.yml
+Makefile
 ```
 
 ---
@@ -50,13 +100,18 @@ workboard-pm/
 
 | Layer | Location | Responsibility |
 |---|---|---|
-| Router | `api/v1/routers/` | Parse HTTP request, run auth/RBAC deps, call service, return response |
-| Service | `services/` | Business logic, DB mutations, SSE publish, notification creation |
-| Model | `models/` | SQLAlchemy table definitions, relationships |
-| Schema | `schemas/` | Pydantic request/response shapes, field validation |
-| Dependency | `dependencies/` | Reusable `Depends()` — current user, RBAC role check, DB session |
+| Router (shared) | `api/v1/routers/` | Shared HTTP endpoints: auth, health, workspaces, teams, notifications, SSE, agents |
+| Router (module) | `modules/{mod}/routers/` | Module-specific HTTP endpoints, prefixed with `/{mod}` |
+| Service (shared) | `services/` | Auth, workspace, SSE publish |
+| Service (module) | `modules/{mod}/services/` | Module-specific business logic, DB mutations |
+| Model (shared) | `models/` | Shared tables: user, workspace, team, token |
+| Model (module) | `modules/{mod}/models/` | Module-specific tables |
+| Schema | `schemas/` + `modules/{mod}/schemas/` | Pydantic request/response shapes |
+| Dependency | `dependencies/` + `modules/{mod}/dependencies/` | Reusable `Depends()` — auth, RBAC |
 | Core | `core/` | App config (`settings`), async DB engine, JWT/password helpers |
 | Worker | `worker/` | ARQ async tasks (email, scheduled jobs) |
+| Agent | `agents/` | Domain agent stubs with capabilities, orchestrator for cross-module routing |
+| MCP | `mcp/` | Inter-module communication protocol with audit |
 
 ---
 
@@ -83,6 +138,27 @@ workboard-pm/
 | `notifications` | `id`, `user_id`, `actor_id`, `type`, `title`, `is_read` | Typed enum |
 | `activity_logs` | `id`, `workspace_id`, `project_id`, `entity_type`, `entity_id`, `actor_id`, `action`, `changes` | JSONB change tracking; cursor-paginated |
 | `refresh_tokens` | `id`, `user_id`, `token_hash`, `expires_at` | HttpOnly cookie strategy |
+
+### WMS Tables
+
+| Table | Key Columns | Notes |
+|---|---|---|
+| `warehouses` | `id`, `name`, `location`, `workspace_id`, `is_active` | Workspace-scoped |
+| `inventory_items` | `id`, `sku`, `name`, `quantity`, `unit`, `warehouse_id`, `workspace_id` | FK to warehouse |
+
+### HRM Tables
+
+| Table | Key Columns | Notes |
+|---|---|---|
+| `departments` | `id`, `name`, `description`, `workspace_id` | Workspace-scoped |
+| `employees` | `id`, `user_id`, `name`, `email`, `department_id`, `position`, `hire_date`, `workspace_id` | Optional FK to user |
+
+### CRM Tables
+
+| Table | Key Columns | Notes |
+|---|---|---|
+| `contacts` | `id`, `name`, `email`, `phone`, `company`, `workspace_id` | Workspace-scoped |
+| `deals` | `id`, `title`, `value`, `stage`, `contact_id`, `workspace_id` | FK to contact |
 
 ### Key Indexes
 
@@ -197,21 +273,45 @@ Response shape (`ActivityLogResponse`):
 
 | Concern | Tool | Location |
 |---|---|---|
-| Server state (tasks, projects, users) | TanStack Query v5 | `features/*/hooks/` |
-| Global auth + active workspace | Zustand | `shared/stores/` |
+| Server state (tasks, projects, users) | TanStack Query v5 | `modules/*/features/*/hooks/` + `features/*/hooks/` |
+| Global auth + active workspace | Zustand | `stores/auth.store.ts`, `stores/workspace.store.ts` |
+| Active module tracking | Zustand | `stores/module.store.ts` |
 | Form state | React Hook Form + Zod | inline per form component |
+
+### UI & Interaction Libraries
+
+| Component | Library | Usage |
+|---|---|---|
+| Drag-and-drop | `@dnd-kit` (core, sortable, utilities) | Board view: reorder tasks between/within columns using fractional indexing |
+| Component library | shadcn/ui (Radix UI primitives) | Buttons, modals, dropdowns, tabs, toast, tooltips |
+| Icons | lucide-react | UI icon set |
+| CSS utilities | Tailwind CSS | Styling with `tailwindcss-animate` for transitions |
+
+**Board View Implementation:**
+- `board.tsx` orchestrates the kanban layout and drag handlers.
+- `board-task-card.tsx` — individual draggable task card with drag handle.
+- `board-kanban-column.tsx` — drop zone for each column; handles empty-column drops.
+- `board-add-section-input.tsx` — new section creation UI.
+- Collision detection: `closestCorners` strategy for better visual feedback.
+- Position calculation: fractional indexing (new position = (prev + next) / 2) prevents conflicts during concurrent moves.
+- Optimistic updates in `useMoveTask` hook (TanStack Query `onMutate`/`onError`/`onSettled`) for instant visual feedback.
 
 ### Feature Structure
 
-Each feature folder under `frontend/src/features/` follows:
+Shared features live under `frontend/src/features/`. Module-specific features live under `frontend/src/modules/{mod}/features/`:
 
 ```
-features/{name}/
+modules/pms/features/{name}/   # or features/{name}/ for shared
   components/   # presentational + container components
   hooks/        # TanStack Query hooks (useQuery, useMutation)
   pages/        # route-level page components
   tests/        # vitest unit + component tests
 ```
+
+### Route Structure
+
+Routes are module-prefixed: `/pms/my-tasks`, `/pms/projects/:id/board`, `/wms`, `/hrm`, `/crm`.
+A module switcher component in the shell allows navigation between modules.
 
 ### Real-time Integration
 

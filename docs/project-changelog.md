@@ -1,13 +1,43 @@
-# WorkBoard — Project Changelog
+# A-ERP — Project Changelog
 
 All significant changes, features, and fixes are recorded here.
 Format: `## [version] — YYYY-MM-DD` with grouped entries.
 
 ---
 
-## [Unreleased] — 2026-02-27
+## [2.0.0] — 2026-03-02
+
+### Added — A-ERP Restructure
+
+- **Modular Backend Architecture** — Reorganized into `modules/pms/`, `modules/wms/`, `modules/hrm/`, `modules/crm/` with isolated routers, services, models, schemas per module. PMS routes now prefixed with `/pms/`. Shared code (auth, workspaces, teams) remains in top-level dirs.
+- **WMS Module Scaffold** — Warehouse and InventoryItem models, CRUD services/routers/schemas. Tables: `warehouses`, `inventory_items`.
+- **HRM Module Scaffold** — Department and Employee models, CRUD services/routers/schemas. Tables: `departments`, `employees`.
+- **CRM Module Scaffold** — Contact and Deal models, CRUD services/routers/schemas. Tables: `contacts`, `deals`.
+- **Agent Layer** — Abstract `BaseAgent` with capabilities, `AgentRegistry` for registration/lookup, domain agent stubs (PMS, WMS, HRM, CRM), `AgentOrchestrator` for cross-module routing. REST endpoint: `POST /agents/{module}/invoke`.
+- **MCP Protocol Layer** — `MCPEnvelope` protocol model, in-process `EventBus` (pub/sub), `SharedContext` key-value store, `PolicyEngine` with governance rules and audit logging.
+- **Frontend Module Structure** — PMS features moved to `modules/pms/features/`. Shell components (app-shell, sidebar, header, module-switcher) moved to `shared/components/shell/`. Module switcher allows navigation between PMS, WMS, HRM, CRM.
+- **Frontend Module Routes** — All PMS routes prefixed: `/pms/my-tasks`, `/pms/projects/:id/board`, etc. WMS/HRM/CRM placeholder pages at `/wms`, `/hrm`, `/crm`.
+- **Alembic Migration 0007** — Creates 6 new tables for WMS (warehouses, inventory_items), HRM (departments, employees), CRM (contacts, deals).
+
+---
+
+## [Unreleased]
 
 ### Added
+- **Board View Drag-and-Drop Improvements** (`refactor: kanban DnD with between-task insertion`)
+  - Extracted draggable task card to `board-task-card.tsx` component.
+  - Extracted kanban column to `board-kanban-column.tsx` with `useDroppable` for empty column drops.
+  - Extracted section creation input to `board-add-section-input.tsx`.
+  - Board page refactored from 375→155 lines with improved separation of concerns.
+  - Implemented `closestCorners` collision detection (better for kanban layout).
+  - Added `calcDropPosition()` for fractional indexing between tasks (not just append).
+  - Proper `handleDragEnd` with between-task insertion logic.
+  - Split task data: `allTasksForSection` (position calc) vs `visibleTasksForSection` (rendering).
+  - Optimistic cache updates in `useMoveTask` hook (onMutate/onError/onSettled).
+  - Fixed DragOverlay opacity bug and improved ghost card visibility.
+  - Empty columns now properly receive dropped tasks via `useDroppable`.
+  - Tasks can be dropped between existing tasks, not just appended to end.
+
 - **Recurring Tasks** (`feat: recurring tasks with ARQ cron job`)
   - New columns on `tasks`: `recurrence_rule`, `recurrence_cron_expr`, `recurrence_end_date`, `parent_recurring_id`, `last_generated_date`.
   - Support for 5 recurrence patterns: `daily`, `weekly`, `biweekly`, `monthly`, `custom_cron`.

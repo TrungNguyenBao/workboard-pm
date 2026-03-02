@@ -36,7 +36,7 @@ export function CommandPalette({ open, onOpenChange }: Props) {
 
   const { data: projects = [] } = useQuery<Project[]>({
     queryKey: ['projects', activeWorkspaceId],
-    queryFn: () => api.get(`/workspaces/${activeWorkspaceId}/projects`).then((r) => r.data),
+    queryFn: () => api.get(`/pms/workspaces/${activeWorkspaceId}/projects`).then((r) => r.data),
     enabled: !!activeWorkspaceId,
   })
 
@@ -47,7 +47,7 @@ export function CommandPalette({ open, onOpenChange }: Props) {
       const results = await Promise.all(
         projects.map((p) =>
           api
-            .get(`/projects/${p.id}/tasks/search`, { params: { q, limit: 5 } })
+            .get(`/pms/projects/${p.id}/tasks/search`, { params: { q, limit: 5 } })
             .then((r) => (r.data as TaskResult[]).map((t) => ({ ...t, projectName: p.name }))),
         ),
       )
@@ -95,7 +95,7 @@ export function CommandPalette({ open, onOpenChange }: Props) {
                   <Command.Item
                     key={t.id}
                     value={t.title}
-                    onSelect={() => select(() => navigate(`/projects/${t.project_id}/board`))}
+                    onSelect={() => select(() => navigate(`/pms/projects/${t.project_id}/board`))}
                     className="flex items-center gap-2 px-2 py-1.5 rounded-xs text-sm text-neutral-700 cursor-pointer aria-selected:bg-neutral-100"
                   >
                     <CheckSquare className={`h-3.5 w-3.5 flex-shrink-0 ${t.status === 'completed' ? 'text-primary' : 'text-neutral-300'}`} />
@@ -114,7 +114,7 @@ export function CommandPalette({ open, onOpenChange }: Props) {
                     <Command.Item
                       key={p.id}
                       value={p.name}
-                      onSelect={() => select(() => navigate(`/projects/${p.id}/board`))}
+                      onSelect={() => select(() => navigate(`/pms/projects/${p.id}/board`))}
                       className="flex items-center gap-2 px-2 py-1.5 rounded-xs text-sm text-neutral-700 cursor-pointer aria-selected:bg-neutral-100"
                     >
                       <span className="h-2 w-2 rounded-full flex-shrink-0" style={{ backgroundColor: p.color }} />
@@ -126,7 +126,7 @@ export function CommandPalette({ open, onOpenChange }: Props) {
 
             <Command.Group heading="Navigation">
               {[
-                { label: 'My Tasks', path: '/my-tasks' },
+                { label: 'My Tasks', path: '/pms/my-tasks' },
               ]
                 .filter((n) => n.label.toLowerCase().includes(query.toLowerCase()))
                 .map((n) => (

@@ -1,37 +1,34 @@
 from fastapi import APIRouter
 
 from app.api.v1.routers import (
-    activity,
-    attachments,
+    agents,
     auth,
-    comments,
-    custom_fields,
-    goals,
     health,
     notifications,
-    projects,
-    sections,
     sse,
-    tags,
-    tasks,
     teams,
     workspaces,
 )
+from app.modules.crm.router import crm_router
+from app.modules.hrm.router import hrm_router
+from app.modules.pms.router import pms_router
+from app.modules.wms.router import wms_router
 
 api_router = APIRouter()
 
+# Shared routers
 api_router.include_router(health.router)
 api_router.include_router(auth.router)
-api_router.include_router(activity.router)
 api_router.include_router(workspaces.router)
 api_router.include_router(teams.router)
-api_router.include_router(projects.router)
-api_router.include_router(sections.router)
-api_router.include_router(tasks.router)
-api_router.include_router(custom_fields.router)
-api_router.include_router(goals.router)
-api_router.include_router(comments.router)
-api_router.include_router(attachments.router)
-api_router.include_router(tags.router)
 api_router.include_router(notifications.router)
 api_router.include_router(sse.router)
+
+# Agent router
+api_router.include_router(agents.router)
+
+# Module routers
+api_router.include_router(pms_router)
+api_router.include_router(wms_router)
+api_router.include_router(hrm_router)
+api_router.include_router(crm_router)

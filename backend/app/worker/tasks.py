@@ -11,7 +11,7 @@ async def send_due_reminders(ctx: dict) -> int:
     from sqlalchemy import select
 
     from app.core.database import AsyncSessionLocal
-    from app.models.task import Task, TaskFollower
+    from app.modules.pms.models.task import Task, TaskFollower
     from app.services.notifications import create_notification
 
     now = datetime.now(timezone.utc)
@@ -47,7 +47,7 @@ async def send_due_reminders(ctx: dict) -> int:
 async def spawn_recurring_tasks(ctx: dict) -> int:
     """Job: spawn new occurrences for all due recurring template tasks."""
     from app.core.database import AsyncSessionLocal
-    from app.services.recurring_tasks import spawn_all_due
+    from app.modules.pms.services.recurring_tasks import spawn_all_due
 
     async with AsyncSessionLocal() as db:
         return await spawn_all_due(db)

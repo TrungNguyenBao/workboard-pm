@@ -6,7 +6,7 @@ from collections import defaultdict
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.notification import Notification
+from app.modules.pms.models.notification import Notification
 
 # In-process SSE broker: workspace_id → set of queues
 _broker: dict[str, set[asyncio.Queue]] = defaultdict(set)

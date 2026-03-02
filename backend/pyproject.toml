@@ -1,7 +1,7 @@
 [project]
-name = "workboard-backend"
-version = "1.0.0"
-description = "WorkBoard API — FastAPI + PostgreSQL"
+name = "a-erp-backend"
+version = "2.0.0"
+description = "A-ERP API — Agentic Enterprise Resource Platform (FastAPI + PostgreSQL)"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi[standard]>=0.111.0",
