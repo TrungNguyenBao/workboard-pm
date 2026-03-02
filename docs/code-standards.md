@@ -194,9 +194,10 @@ queryKey: ["activity", "task", taskId]
 
 - Base path: `/api/v1/`
 - Resource URLs: plural nouns, kebab-case (`/activity-logs` if standalone, nested as `/projects/{id}/activity`).
+- Module routes: `/api/v1/{module}/{resource}` (e.g., `/api/v1/pms/projects`, `/api/v1/wms/products`).
 - Nested resources use parent scope in path: `/projects/{project_id}/tasks/{task_id}/activity`.
-- Pagination: cursor-based using `cursor` (UUID of last seen record) + `limit` query params.
-- Response lists: plain JSON array (no envelope wrapper for simple lists).
+- **WMS Pagination** (offset-based): `GET /api/v1/wms/products?limit=20&offset=0` → returns `PaginatedResponse[ProductResponse]`.
+- **PMS Pagination** (cursor-based): `GET /api/v1/pms/projects/{id}/activity?limit=50&cursor={uuid}` — uses UUID of last seen record.
 - HTTP methods: `GET` read, `POST` create, `PATCH` partial update, `DELETE` remove.
 - Auth errors: `401 Unauthorized`; permission errors: `403 Forbidden`; not found: `404 Not Found`.
 

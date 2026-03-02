@@ -105,16 +105,19 @@ Transformed WorkBoard into A-ERP (Agentic Enterprise Resource Platform) with mod
 | Item | Status |
 |---|---|
 | Backend: PMS module extraction (`modules/pms/`) | Done |
-| Backend: Scaffold WMS module (Warehouse, InventoryItem) | Done |
+| Backend: WMS full CRUD (Product, Device, Supplier, Warehouse, InventoryItem models + services + routers + schemas) | Done |
+| Backend: WMS paginated API endpoints with `PaginatedResponse` generic | Done |
+| Backend: WMS Alembic migration (wms_products, wms_devices, wms_suppliers tables) | Done |
 | Backend: Scaffold HRM module (Department, Employee) | Done |
 | Backend: Scaffold CRM module (Contact, Deal) | Done |
 | Backend: Agent layer (BaseAgent, registry, orchestrator, domain stubs) | Done |
 | Backend: MCP protocol layer (envelope, bus, context, policy) | Done |
-| Backend: Alembic migration for WMS/HRM/CRM tables | Done |
 | Frontend: PMS module extraction (`modules/pms/features/`) | Done |
+| Frontend: WMS full UI (5 list pages, 5 form dialogs, 5 TanStack Query hooks, 3 shared components) | Done |
+| Frontend: WMS data-table, page-header, pagination shared components | Done |
 | Frontend: Shell components (app-shell, sidebar, module-switcher) | Done |
-| Frontend: Module-prefixed routes (`/pms/*`, `/wms`, `/hrm`, `/crm`) | Done |
+| Frontend: Module-prefixed routes (`/pms/*`, `/wms/*`, `/hrm`, `/crm`) | Done |
 | Frontend: API URL migration (`/projects/` → `/pms/projects/`) | Done |
-| Frontend: WMS/HRM/CRM placeholder pages | Done |
+| Frontend: HRM/CRM placeholder pages | Done |
 | Config: pyproject.toml renamed to a-erp-backend | Done |
 | Docs: CLAUDE.md, system-architecture, roadmap, changelog updated | Done |

@@ -47,10 +47,10 @@ backend/
         dependencies/    # project-level RBAC (require_project_role)
         router.py        # aggregates PMS routers under /pms prefix
       wms/               # Warehouse Management System
-        routers/         # warehouses, inventory
-        services/        # warehouse, inventory_item
-        models/          # warehouse, inventory_item
-        schemas/         # warehouse, inventory_item
+        routers/         # warehouses, products, devices, suppliers, inventory_items
+        services/        # warehouse, product, device, supplier, inventory_item
+        models/          # warehouse, product, device, supplier, inventory_item
+        schemas/         # warehouse, product, device, supplier, inventory_item, pagination
         router.py        # aggregates WMS routers under /wms prefix
       hrm/               # Human Resource Management
         routers/         # departments, employees
@@ -85,7 +85,7 @@ frontend/
     features/            # shared: auth, notifications, search, settings, workspaces
     modules/
       pms/features/      # dashboard, projects, tasks, goals, custom-fields
-      wms/features/      # warehouses, inventory (placeholder)
+      wms/features/      # warehouses, products, devices, suppliers, inventory; shared components (data-table, page-header, pagination)
       hrm/features/      # employees, departments (placeholder)
       crm/features/      # contacts, deals (placeholder)
     stores/              # Zustand: auth, workspace, module
@@ -112,6 +112,21 @@ Makefile
 | Worker | `worker/` | ARQ async tasks (email, scheduled jobs) |
 | Agent | `agents/` | Domain agent stubs with capabilities, orchestrator for cross-module routing |
 | MCP | `mcp/` | Inter-module communication protocol with audit |
+
+### Pagination Pattern
+
+WMS endpoints use a **generic `PaginatedResponse`** schema for list operations:
+
+```python
+class PaginatedResponse(BaseModel, Generic[T]):
+    items: list[T]
+    total: int
+    limit: int
+    offset: int
+```
+
+Used in routers like `GET /wms/products?limit=20&offset=0` → returns `PaginatedResponse[ProductResponse]`.
+This pattern is reusable across all modules for consistent list APIs.
 
 ---
 
@@ -144,6 +159,9 @@ Makefile
 | Table | Key Columns | Notes |
 |---|---|---|
 | `warehouses` | `id`, `name`, `location`, `workspace_id`, `is_active` | Workspace-scoped |
+| `wms_products` | `id`, `sku`, `name`, `description`, `unit_price`, `workspace_id` | Workspace-scoped |
+| `wms_devices` | `id`, `device_id`, `device_type`, `location`, `status`, `workspace_id` | Workspace-scoped; track physical devices |
+| `wms_suppliers` | `id`, `name`, `email`, `phone`, `address`, `workspace_id` | Workspace-scoped supplier registry |
 | `inventory_items` | `id`, `sku`, `name`, `quantity`, `unit`, `warehouse_id`, `workspace_id` | FK to warehouse |
 
 ### HRM Tables

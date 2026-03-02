@@ -10,14 +10,15 @@ Format: `## [version] — YYYY-MM-DD` with grouped entries.
 ### Added — A-ERP Restructure
 
 - **Modular Backend Architecture** — Reorganized into `modules/pms/`, `modules/wms/`, `modules/hrm/`, `modules/crm/` with isolated routers, services, models, schemas per module. PMS routes now prefixed with `/pms/`. Shared code (auth, workspaces, teams) remains in top-level dirs.
-- **WMS Module Scaffold** — Warehouse and InventoryItem models, CRUD services/routers/schemas. Tables: `warehouses`, `inventory_items`.
+- **WMS Module — Full CRUD (5 entities)** — Complete implementation for Warehouse, Product, Device, Supplier, and InventoryItem. Models, CRUD services, paginated API routers, Pydantic schemas with `PaginatedResponse` generic. Tables: `warehouses`, `wms_products`, `wms_devices`, `wms_suppliers`, `inventory_items`. All routes prefixed with `/wms/`. Workspace-scoped with RBAC.
+- **WMS Frontend — Full UI** — 5 list pages (warehouses, products, devices, suppliers, inventory), 5 form dialogs (create/edit), 5 TanStack Query hooks, 3 shared WMS components (wms-data-table, wms-page-header, wms-pagination). Lazy-loaded routes under `modules/wms/features/`.
 - **HRM Module Scaffold** — Department and Employee models, CRUD services/routers/schemas. Tables: `departments`, `employees`.
 - **CRM Module Scaffold** — Contact and Deal models, CRUD services/routers/schemas. Tables: `contacts`, `deals`.
 - **Agent Layer** — Abstract `BaseAgent` with capabilities, `AgentRegistry` for registration/lookup, domain agent stubs (PMS, WMS, HRM, CRM), `AgentOrchestrator` for cross-module routing. REST endpoint: `POST /agents/{module}/invoke`.
 - **MCP Protocol Layer** — `MCPEnvelope` protocol model, in-process `EventBus` (pub/sub), `SharedContext` key-value store, `PolicyEngine` with governance rules and audit logging.
 - **Frontend Module Structure** — PMS features moved to `modules/pms/features/`. Shell components (app-shell, sidebar, header, module-switcher) moved to `shared/components/shell/`. Module switcher allows navigation between PMS, WMS, HRM, CRM.
-- **Frontend Module Routes** — All PMS routes prefixed: `/pms/my-tasks`, `/pms/projects/:id/board`, etc. WMS/HRM/CRM placeholder pages at `/wms`, `/hrm`, `/crm`.
-- **Alembic Migration 0007** — Creates 6 new tables for WMS (warehouses, inventory_items), HRM (departments, employees), CRM (contacts, deals).
+- **Frontend Module Routes** — All PMS routes prefixed: `/pms/my-tasks`, `/pms/projects/:id/board`, etc. WMS fully implemented. HRM/CRM placeholder pages at `/hrm`, `/crm`.
+- **Alembic Migrations** — Migration 0007 (initial WMS/HRM/CRM scaffold); Migration 0008 (wms_add_products_devices_suppliers) adds 3 new WMS tables with workspace scoping and foreign keys.
 
 ---
 
