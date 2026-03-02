@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { ChevronDown, Home, LogOut, MoreHorizontal, Pencil, Plus, Settings, Target, Trash2, Users, UserPlus } from 'lucide-react'
+import { Box, ChevronDown, Cpu, Home, LogOut, MoreHorizontal, Package, Pencil, Plus, Settings, Target, Trash2, Truck, Users, UserPlus, Warehouse as WarehouseIcon } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '@/stores/auth.store'
 import { useWorkspaceStore } from '@/stores/workspace.store'
+import { useModuleStore } from '@/stores/module.store'
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar'
 import { Button } from '@/shared/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/components/ui/dropdown-menu'
@@ -25,6 +26,7 @@ export function Sidebar() {
   const qc = useQueryClient()
   const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId)
   const setActiveWorkspace = useWorkspaceStore((s) => s.setActiveWorkspace)
+  const activeModule = useModuleStore((s) => s.activeModule)
 
   const [wsDialogOpen, setWsDialogOpen] = useState(false)
   const [projDialogOpen, setProjDialogOpen] = useState(false)
@@ -171,41 +173,54 @@ export function Sidebar() {
             </div>
           ) : (
             <>
-              <NavItem to="/pms/my-tasks" icon={<Home className="h-4 w-4" />} label="My Tasks" active={isActive('/pms/my-tasks')} />
-              <NavItem to="/pms/goals" icon={<Target className="h-4 w-4" />} label="Goals" active={isActive('/pms/goals')} />
-              <NavItem to="/members" icon={<Users className="h-4 w-4" />} label="Members" active={isActive('/members')} />
+              {activeModule === 'wms' ? (
+                <>
+                  <NavItem to="/wms/products" icon={<Package className="h-4 w-4" />} label="Products" active={isActive('/wms/products')} />
+                  <NavItem to="/wms/warehouses" icon={<WarehouseIcon className="h-4 w-4" />} label="Warehouses" active={isActive('/wms/warehouses')} />
+                  <NavItem to="/wms/devices" icon={<Cpu className="h-4 w-4" />} label="Devices" active={isActive('/wms/devices')} />
+                  <NavItem to="/wms/inventory" icon={<Box className="h-4 w-4" />} label="Inventory" active={isActive('/wms/inventory')} />
+                  <NavItem to="/wms/suppliers" icon={<Truck className="h-4 w-4" />} label="Suppliers" active={isActive('/wms/suppliers')} />
+                  <NavItem to="/members" icon={<Users className="h-4 w-4" />} label="Members" active={isActive('/members')} />
+                </>
+              ) : (
+                <>
+                  <NavItem to="/pms/my-tasks" icon={<Home className="h-4 w-4" />} label="My Tasks" active={isActive('/pms/my-tasks')} />
+                  <NavItem to="/pms/goals" icon={<Target className="h-4 w-4" />} label="Goals" active={isActive('/pms/goals')} />
+                  <NavItem to="/members" icon={<Users className="h-4 w-4" />} label="Members" active={isActive('/members')} />
 
-              <div className="pt-4 pb-1 px-2">
-                <span className="text-xs font-semibold text-neutral-400 uppercase tracking-wide">Projects</span>
-              </div>
+                  <div className="pt-4 pb-1 px-2">
+                    <span className="text-xs font-semibold text-neutral-400 uppercase tracking-wide">Projects</span>
+                  </div>
 
-              {projects.filter((p) => !p.is_archived).map((p) => (
-                <ProjectNavItem
-                  key={p.id}
-                  project={p}
-                  active={isActive(`/pms/projects/${p.id}`)}
-                  workspaceId={activeWorkspaceId!}
-                />
-              ))}
+                  {projects.filter((p) => !p.is_archived).map((p) => (
+                    <ProjectNavItem
+                      key={p.id}
+                      project={p}
+                      active={isActive(`/pms/projects/${p.id}`)}
+                      workspaceId={activeWorkspaceId!}
+                    />
+                  ))}
 
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full justify-start text-neutral-400 hover:text-neutral-700 mt-1"
-                onClick={() => setProjDialogOpen(true)}
-              >
-                <Plus className="h-3.5 w-3.5 mr-1.5" />
-                New Project
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full justify-start text-neutral-400 hover:text-neutral-700"
-                onClick={() => setInviteDialogOpen(true)}
-              >
-                <UserPlus className="h-3.5 w-3.5 mr-1.5" />
-                Invite members
-              </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start text-neutral-400 hover:text-neutral-700 mt-1"
+                    onClick={() => setProjDialogOpen(true)}
+                  >
+                    <Plus className="h-3.5 w-3.5 mr-1.5" />
+                    New Project
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start text-neutral-400 hover:text-neutral-700"
+                    onClick={() => setInviteDialogOpen(true)}
+                  >
+                    <UserPlus className="h-3.5 w-3.5 mr-1.5" />
+                    Invite members
+                  </Button>
+                </>
+              )}
             </>
           )}
         </nav>

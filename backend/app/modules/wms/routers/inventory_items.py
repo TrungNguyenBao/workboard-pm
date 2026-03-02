@@ -11,6 +11,7 @@ from app.modules.wms.schemas.inventory_item import (
     InventoryItemResponse,
     InventoryItemUpdate,
 )
+from app.modules.wms.schemas.pagination import PaginatedResponse
 from app.modules.wms.services.inventory_item import (
     create_inventory_item,
     delete_inventory_item,
@@ -19,7 +20,7 @@ from app.modules.wms.services.inventory_item import (
     update_inventory_item,
 )
 
-router = APIRouter(tags=["wms"])
+router = APIRouter(tags=["wms-inventory"])
 
 
 @router.post(
@@ -36,14 +37,21 @@ async def create(
     return await create_inventory_item(db, workspace_id, data)
 
 
-@router.get("/workspaces/{workspace_id}/inventory-items", response_model=list[InventoryItemResponse])
+@router.get(
+    "/workspaces/{workspace_id}/inventory-items",
+    response_model=PaginatedResponse[InventoryItemResponse],
+)
 async def list_(
     workspace_id: uuid.UUID,
     warehouse_id: uuid.UUID | None = Query(default=None),
+    product_id: uuid.UUID | None = Query(default=None),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=20, ge=1, le=100),
     current_user: User = Depends(require_workspace_role("guest")),
     db: AsyncSession = Depends(get_db),
 ):
-    return await list_inventory_items(db, workspace_id, warehouse_id)
+    items, total = await list_inventory_items(db, workspace_id, warehouse_id, product_id, page, page_size)
+    return PaginatedResponse(items=items, total=total, page=page, page_size=page_size)
 
 
 @router.get(

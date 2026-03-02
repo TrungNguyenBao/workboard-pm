@@ -7,84 +7,85 @@ from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
 from app.modules.wms.schemas.pagination import PaginatedResponse
-from app.modules.wms.schemas.warehouse import WarehouseCreate, WarehouseResponse, WarehouseUpdate
-from app.modules.wms.services.warehouse import (
-    create_warehouse,
-    delete_warehouse,
-    get_warehouse,
-    list_warehouses,
-    update_warehouse,
+from app.modules.wms.schemas.product import ProductCreate, ProductResponse, ProductUpdate
+from app.modules.wms.services.product import (
+    create_product,
+    delete_product,
+    get_product,
+    list_products,
+    update_product,
 )
 
-router = APIRouter(tags=["wms-warehouses"])
+router = APIRouter(tags=["wms-products"])
 
 
 @router.post(
-    "/workspaces/{workspace_id}/warehouses",
-    response_model=WarehouseResponse,
+    "/workspaces/{workspace_id}/products",
+    response_model=ProductResponse,
     status_code=status.HTTP_201_CREATED,
 )
 async def create(
     workspace_id: uuid.UUID,
-    data: WarehouseCreate,
+    data: ProductCreate,
     current_user: User = Depends(require_workspace_role("member")),
     db: AsyncSession = Depends(get_db),
 ):
-    return await create_warehouse(db, workspace_id, data)
+    return await create_product(db, workspace_id, data)
 
 
 @router.get(
-    "/workspaces/{workspace_id}/warehouses",
-    response_model=PaginatedResponse[WarehouseResponse],
+    "/workspaces/{workspace_id}/products",
+    response_model=PaginatedResponse[ProductResponse],
 )
 async def list_(
     workspace_id: uuid.UUID,
     search: str | None = Query(default=None),
+    category: str | None = Query(default=None),
     is_active: bool | None = Query(default=None),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, ge=1, le=100),
     current_user: User = Depends(require_workspace_role("guest")),
     db: AsyncSession = Depends(get_db),
 ):
-    items, total = await list_warehouses(db, workspace_id, search, is_active, page, page_size)
+    items, total = await list_products(db, workspace_id, search, category, is_active, page, page_size)
     return PaginatedResponse(items=items, total=total, page=page, page_size=page_size)
 
 
 @router.get(
-    "/workspaces/{workspace_id}/warehouses/{warehouse_id}",
-    response_model=WarehouseResponse,
+    "/workspaces/{workspace_id}/products/{product_id}",
+    response_model=ProductResponse,
 )
 async def get(
     workspace_id: uuid.UUID,
-    warehouse_id: uuid.UUID,
+    product_id: uuid.UUID,
     current_user: User = Depends(require_workspace_role("guest")),
     db: AsyncSession = Depends(get_db),
 ):
-    return await get_warehouse(db, warehouse_id)
+    return await get_product(db, product_id)
 
 
 @router.patch(
-    "/workspaces/{workspace_id}/warehouses/{warehouse_id}",
-    response_model=WarehouseResponse,
+    "/workspaces/{workspace_id}/products/{product_id}",
+    response_model=ProductResponse,
 )
 async def update(
     workspace_id: uuid.UUID,
-    warehouse_id: uuid.UUID,
-    data: WarehouseUpdate,
+    product_id: uuid.UUID,
+    data: ProductUpdate,
     current_user: User = Depends(require_workspace_role("member")),
     db: AsyncSession = Depends(get_db),
 ):
-    return await update_warehouse(db, warehouse_id, data)
+    return await update_product(db, product_id, data)
 
 
 @router.delete(
-    "/workspaces/{workspace_id}/warehouses/{warehouse_id}",
+    "/workspaces/{workspace_id}/products/{product_id}",
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete(
     workspace_id: uuid.UUID,
-    warehouse_id: uuid.UUID,
+    product_id: uuid.UUID,
     current_user: User = Depends(require_workspace_role("admin")),
     db: AsyncSession = Depends(get_db),
 ):
-    await delete_warehouse(db, warehouse_id)
+    await delete_product(db, product_id)

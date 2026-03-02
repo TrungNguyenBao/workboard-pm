@@ -7,17 +7,18 @@ from app.core.database import Base
 from app.models.base import TimestampMixin
 
 
-class Warehouse(Base, TimestampMixin):
-    __tablename__ = "warehouses"
+class Product(Base, TimestampMixin):
+    __tablename__ = "wms_products"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(255))
-    location: Mapped[str | None] = mapped_column(String(500), nullable=True)
-    address: Mapped[str | None] = mapped_column(String(1000), nullable=True)
-    manager_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    sku: Mapped[str] = mapped_column(String(100), index=True)
+    category: Mapped[str] = mapped_column(String(50), default="equipment")
     description: Mapped[str | None] = mapped_column(String(2000), nullable=True)
-    workspace_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("workspaces.id"), index=True)
+    unit: Mapped[str] = mapped_column(String(50), default="pcs")
+    is_serial_tracked: Mapped[bool] = mapped_column(Boolean, default=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    workspace_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("workspaces.id"), index=True)
 
     workspace: Mapped["Workspace"] = relationship()  # noqa: F821
-    inventory_items: Mapped[list["InventoryItem"]] = relationship(back_populates="warehouse")  # noqa: F821
+    devices: Mapped[list["Device"]] = relationship(back_populates="product")  # noqa: F821

@@ -33,4 +33,4 @@ from app.modules.pms.models import (  # noqa: F401
 )
 
 # WMS module models
-from app.modules.wms.models import InventoryItem, Warehouse  # noqa: F401
+from app.modules.wms.models import Device, InventoryItem, Product, Supplier, Warehouse  # noqa: F401

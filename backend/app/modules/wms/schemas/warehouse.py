@@ -6,12 +6,18 @@ from pydantic import BaseModel, Field
 class WarehouseCreate(BaseModel):
     name: str = Field(min_length=1, max_length=255)
     location: str | None = Field(default=None, max_length=500)
+    address: str | None = Field(default=None, max_length=1000)
+    manager_name: str | None = Field(default=None, max_length=255)
+    description: str | None = Field(default=None, max_length=2000)
     is_active: bool = True
 
 
 class WarehouseUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=255)
     location: str | None = None
+    address: str | None = None
+    manager_name: str | None = None
+    description: str | None = None
     is_active: bool | None = None
 
 
@@ -19,6 +25,9 @@ class WarehouseResponse(BaseModel):
     id: uuid.UUID
     name: str
     location: str | None
+    address: str | None
+    manager_name: str | None
+    description: str | None
     workspace_id: uuid.UUID
     is_active: bool
 

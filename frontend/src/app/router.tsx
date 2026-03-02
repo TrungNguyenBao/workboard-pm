@@ -20,8 +20,12 @@ const OverviewPage = lazy(() => import('@/modules/pms/features/projects/pages/ov
 const TimelinePage = lazy(() => import('@/modules/pms/features/projects/pages/timeline'))
 const GoalsPage = lazy(() => import('@/modules/pms/features/goals/pages/goals-list'))
 
-// Lazy-loaded pages — WMS module (placeholder)
-const WmsHomePage = lazy(() => import('@/modules/wms/features/warehouses/pages/warehouses-list'))
+// Lazy-loaded pages — WMS module
+const WmsProductsPage = lazy(() => import('@/modules/wms/features/products/pages/products-list'))
+const WmsWarehousesPage = lazy(() => import('@/modules/wms/features/warehouses/pages/warehouses-list'))
+const WmsDevicesPage = lazy(() => import('@/modules/wms/features/devices/pages/devices-list'))
+const WmsInventoryPage = lazy(() => import('@/modules/wms/features/inventory/pages/inventory-list'))
+const WmsSuppliersPage = lazy(() => import('@/modules/wms/features/suppliers/pages/suppliers-list'))
 
 // Lazy-loaded pages — HRM module (placeholder)
 const HrmHomePage = lazy(() => import('@/modules/hrm/features/employees/pages/employees-list'))
@@ -66,7 +70,12 @@ export function AppRouter() {
             <Route path="/pms/projects/:projectId/timeline" element={<TimelinePage />} />
 
             {/* WMS module */}
-            <Route path="/wms" element={<WmsHomePage />} />
+            <Route path="/wms" element={<Navigate to="/wms/products" replace />} />
+            <Route path="/wms/products" element={<WmsProductsPage />} />
+            <Route path="/wms/warehouses" element={<WmsWarehousesPage />} />
+            <Route path="/wms/devices" element={<WmsDevicesPage />} />
+            <Route path="/wms/inventory" element={<WmsInventoryPage />} />
+            <Route path="/wms/suppliers" element={<WmsSuppliersPage />} />
 
             {/* HRM module */}
             <Route path="/hrm" element={<HrmHomePage />} />

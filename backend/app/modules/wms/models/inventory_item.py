@@ -16,7 +16,12 @@ class InventoryItem(Base, TimestampMixin):
     quantity: Mapped[int] = mapped_column(Integer, default=0)
     unit: Mapped[str] = mapped_column(String(50), default="pcs")
     warehouse_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("warehouses.id"), index=True)
+    product_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("wms_products.id"), nullable=True, index=True
+    )
+    min_threshold: Mapped[int] = mapped_column(Integer, default=0)
     workspace_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("workspaces.id"), index=True)
 
     warehouse: Mapped["Warehouse"] = relationship(back_populates="inventory_items")  # noqa: F821
+    product: Mapped["Product | None"] = relationship()  # noqa: F821
     workspace: Mapped["Workspace"] = relationship()  # noqa: F821
