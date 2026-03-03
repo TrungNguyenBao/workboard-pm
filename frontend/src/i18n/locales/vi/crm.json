@@ -1,0 +1,28 @@
+{
+  "contacts.title": "Liên hệ",
+  "contacts.description": "Quản lý khách hàng và đối tác",
+  "contacts.new": "Liên hệ mới",
+  "contacts.empty": "Chưa có liên hệ",
+  "contacts.deleted": "Liên hệ đã được xóa",
+  "contacts.name": "Tên",
+  "contacts.email": "Email",
+  "contacts.phone": "Điện thoại",
+  "contacts.company": "Công ty",
+
+  "deals.title": "Giao dịch",
+  "deals.description": "Theo dõi quy trình bán hàng và tiến độ giao dịch",
+  "deals.new": "Giao dịch mới",
+  "deals.empty": "Chưa có giao dịch",
+  "deals.deleted": "Giao dịch đã được xóa",
+  "deals.titleLabel": "Tiêu đề",
+  "deals.value": "Giá trị",
+  "deals.stage": "Giai đoạn",
+  "deals.contact": "Liên hệ",
+  "deals.allStages": "Tất cả giai đoạn",
+  "deals.stage.lead": "Tiếp cận",
+  "deals.stage.qualified": "Đủ điều kiện",
+  "deals.stage.proposal": "Đề xuất",
+  "deals.stage.negotiation": "Đàm phán",
+  "deals.stage.closedWon": "Thành công",
+  "deals.stage.closedLost": "Thất bại"
+}

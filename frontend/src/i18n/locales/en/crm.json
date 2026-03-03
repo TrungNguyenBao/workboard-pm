@@ -1,0 +1,28 @@
+{
+  "contacts.title": "Contacts",
+  "contacts.description": "Manage customers and business contacts",
+  "contacts.new": "New contact",
+  "contacts.empty": "No contacts yet",
+  "contacts.deleted": "Contact deleted",
+  "contacts.name": "Name",
+  "contacts.email": "Email",
+  "contacts.phone": "Phone",
+  "contacts.company": "Company",
+
+  "deals.title": "Deals",
+  "deals.description": "Track sales pipeline and deal progress",
+  "deals.new": "New deal",
+  "deals.empty": "No deals yet",
+  "deals.deleted": "Deal deleted",
+  "deals.titleLabel": "Title",
+  "deals.value": "Value",
+  "deals.stage": "Stage",
+  "deals.contact": "Contact",
+  "deals.allStages": "All stages",
+  "deals.stage.lead": "Lead",
+  "deals.stage.qualified": "Qualified",
+  "deals.stage.proposal": "Proposal",
+  "deals.stage.negotiation": "Negotiation",
+  "deals.stage.closedWon": "Closed Won",
+  "deals.stage.closedLost": "Closed Lost"
+}

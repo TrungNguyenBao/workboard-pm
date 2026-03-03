@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import { Badge } from '@/shared/components/ui/badge'
 import { WmsDataTable } from '../../shared/components/wms-data-table'
@@ -10,6 +11,7 @@ import { toast } from '@/shared/components/ui/toast'
 import { Pencil, Trash2 } from 'lucide-react'
 
 export default function SuppliersListPage() {
+  const { t } = useTranslation('wms')
   const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId) ?? ''
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
@@ -20,12 +22,12 @@ export default function SuppliersListPage() {
   const deleteSupplier = useDeleteSupplier(workspaceId)
 
   const columns = [
-    { key: 'name', label: 'Name', render: (s: Supplier) => <span className="font-medium">{s.name}</span> },
-    { key: 'email', label: 'Email', render: (s: Supplier) => s.contact_email ?? '—' },
-    { key: 'phone', label: 'Phone', render: (s: Supplier) => s.phone ?? '—' },
+    { key: 'name', label: t('common:common.name'), render: (s: Supplier) => <span className="font-medium">{s.name}</span> },
+    { key: 'email', label: t('common:common.email'), render: (s: Supplier) => s.contact_email ?? '—' },
+    { key: 'phone', label: t('common:common.phone'), render: (s: Supplier) => s.phone ?? '—' },
     { key: 'address', label: 'Address', render: (s: Supplier) => s.address ?? '—' },
-    { key: 'status', label: 'Status', render: (s: Supplier) => (
-      <Badge variant={s.is_active ? 'default' : 'secondary'}>{s.is_active ? 'Active' : 'Inactive'}</Badge>
+    { key: 'status', label: t('common:common.status'), render: (s: Supplier) => (
+      <Badge variant={s.is_active ? 'default' : 'secondary'}>{s.is_active ? t('common:common.active') : t('common:common.inactive')}</Badge>
     )},
     { key: 'actions', label: '', className: 'w-20', render: (s: Supplier) => (
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
@@ -33,9 +35,9 @@ export default function SuppliersListPage() {
           <Pencil className="h-3.5 w-3.5" />
         </button>
         <button className="p-1 text-neutral-400 hover:text-red-600" onClick={async () => {
-          if (window.confirm(`Delete "${s.name}"?`)) {
+          if (window.confirm(t('common:common.deleteConfirm', { name: s.name }))) {
             await deleteSupplier.mutateAsync(s.id)
-            toast({ title: 'Supplier deleted', variant: 'success' })
+            toast({ title: t('suppliers.deleted'), variant: 'success' })
           }
         }}>
           <Trash2 className="h-3.5 w-3.5" />
@@ -47,15 +49,15 @@ export default function SuppliersListPage() {
   return (
     <div className="flex flex-col h-full">
       <WmsPageHeader
-        title="Suppliers"
-        description="Manage supplier directory"
+        title={t('suppliers.title')}
+        description={t('suppliers.description')}
         searchValue={search}
         onSearchChange={(v) => { setSearch(v); setPage(1) }}
         onCreateClick={() => { setEditSupplier(null); setDialogOpen(true) }}
-        createLabel="New supplier"
+        createLabel={t('suppliers.new')}
       />
 
-      <WmsDataTable columns={columns} data={data?.items ?? []} keyFn={(s) => s.id} emptyMessage="No suppliers yet" />
+      <WmsDataTable columns={columns} data={data?.items ?? []} keyFn={(s) => s.id} emptyMessage={t('suppliers.empty')} />
       <WmsPagination page={page} pageSize={20} total={data?.total ?? 0} onPageChange={setPage} />
 
       <SupplierFormDialog

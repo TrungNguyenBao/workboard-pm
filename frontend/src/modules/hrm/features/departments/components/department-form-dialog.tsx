@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog'
 import { Input } from '@/shared/components/ui/input'
@@ -23,6 +24,7 @@ export function DepartmentFormDialog({ open, onOpenChange, workspaceId, departme
 }
 
 function DepartmentFormContent({ workspaceId, department, onOpenChange }: Omit<Props, 'open'>) {
+  const { t } = useTranslation('hrm')
   const createDepartment = useCreateDepartment(workspaceId)
   const updateDepartment = useUpdateDepartment(workspaceId)
   const isEdit = !!department
@@ -47,7 +49,7 @@ function DepartmentFormContent({ workspaceId, department, onOpenChange }: Omit<P
       }
       onOpenChange(false)
     } catch {
-      toast({ title: `Failed to ${isEdit ? 'update' : 'create'} department`, variant: 'error' })
+      toast({ title: 'Failed to save department', variant: 'error' })
     }
   }
 
@@ -56,21 +58,21 @@ function DepartmentFormContent({ workspaceId, department, onOpenChange }: Omit<P
   return (
     <DialogContent className="max-w-md">
       <DialogHeader>
-        <DialogTitle>{isEdit ? 'Edit department' : 'New department'}</DialogTitle>
+        <DialogTitle>{isEdit ? 'Edit department' : t('departments.new')}</DialogTitle>
       </DialogHeader>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1.5">
-          <Label htmlFor="dept-name">Name *</Label>
+          <Label htmlFor="dept-name">{t('common:common.name')} *</Label>
           <Input id="dept-name" value={name} onChange={(e) => setName(e.target.value)} autoFocus />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="dept-description">Description</Label>
+          <Label htmlFor="dept-description">{t('common:common.description')}</Label>
           <Input id="dept-description" value={description} onChange={(e) => setDescription(e.target.value)} />
         </div>
         <div className="flex justify-end gap-2 pt-1">
-          <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>{t('common:common.cancel')}</Button>
           <Button type="submit" disabled={pending || !name.trim()}>
-            {pending ? 'Saving...' : isEdit ? 'Save changes' : 'Create department'}
+            {pending ? t('common:common.loading') : isEdit ? t('common:common.save') : t('departments.new')}
           </Button>
         </div>
       </form>

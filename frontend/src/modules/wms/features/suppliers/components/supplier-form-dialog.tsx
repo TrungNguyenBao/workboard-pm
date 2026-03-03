@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog'
 import { Input } from '@/shared/components/ui/input'
@@ -23,6 +24,7 @@ export function SupplierFormDialog({ open, onOpenChange, workspaceId, supplier }
 }
 
 function SupplierFormContent({ workspaceId, supplier, onOpenChange }: Omit<Props, 'open'>) {
+  const { t } = useTranslation('wms')
   const createSupplier = useCreateSupplier(workspaceId)
   const updateSupplier = useUpdateSupplier(workspaceId)
   const isEdit = !!supplier
@@ -51,7 +53,7 @@ function SupplierFormContent({ workspaceId, supplier, onOpenChange }: Omit<Props
       }
       onOpenChange(false)
     } catch {
-      toast({ title: `Failed to ${isEdit ? 'update' : 'create'} supplier`, variant: 'error' })
+      toast({ title: 'Failed to save supplier', variant: 'error' })
     }
   }
 
@@ -60,20 +62,20 @@ function SupplierFormContent({ workspaceId, supplier, onOpenChange }: Omit<Props
   return (
     <DialogContent className="max-w-md">
       <DialogHeader>
-        <DialogTitle>{isEdit ? 'Edit supplier' : 'New supplier'}</DialogTitle>
+        <DialogTitle>{isEdit ? 'Edit supplier' : t('suppliers.new')}</DialogTitle>
       </DialogHeader>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1.5">
-          <Label htmlFor="sup-name">Name *</Label>
+          <Label htmlFor="sup-name">{t('common:common.name')} *</Label>
           <Input id="sup-name" value={name} onChange={(e) => setName(e.target.value)} autoFocus />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <Label htmlFor="sup-email">Email</Label>
+            <Label htmlFor="sup-email">{t('common:common.email')}</Label>
             <Input id="sup-email" type="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="sup-phone">Phone</Label>
+            <Label htmlFor="sup-phone">{t('common:common.phone')}</Label>
             <Input id="sup-phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
           </div>
         </div>
@@ -82,9 +84,9 @@ function SupplierFormContent({ workspaceId, supplier, onOpenChange }: Omit<Props
           <Input id="sup-address" value={address} onChange={(e) => setAddress(e.target.value)} />
         </div>
         <div className="flex justify-end gap-2 pt-1">
-          <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>{t('common:common.cancel')}</Button>
           <Button type="submit" disabled={pending || !name.trim()}>
-            {pending ? 'Saving…' : isEdit ? 'Save changes' : 'Create supplier'}
+            {pending ? t('products.saving') : isEdit ? t('products.saveChanges') : t('suppliers.new')}
           </Button>
         </div>
       </form>

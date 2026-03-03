@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import { Badge } from '@/shared/components/ui/badge'
@@ -23,6 +24,7 @@ function formatCurrency(value: number) {
 }
 
 export default function PayrollListPage() {
+  const { t } = useTranslation('hrm')
   const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId) ?? ''
   const [page, setPage] = useState(1)
   const [statusFilter, setStatusFilter] = useState('all')
@@ -42,7 +44,7 @@ export default function PayrollListPage() {
     { key: 'net', label: 'Net', render: (r: PayrollRecord) => formatCurrency(r.net) },
     {
       key: 'status',
-      label: 'Status',
+      label: t('common:common.status'),
       render: (r: PayrollRecord) => (
         <Badge variant="outline" className={STATUS_COLORS[r.status] ?? ''}>
           {r.status}
@@ -80,12 +82,12 @@ export default function PayrollListPage() {
   return (
     <div className="flex flex-col h-full">
       <HrmPageHeader
-        title="Payroll"
-        description="Manage employee payroll records"
+        title={t('payroll.title')}
+        description={t('payroll.description')}
         searchValue=""
         onSearchChange={() => {}}
         onCreateClick={() => { setEditRecord(null); setDialogOpen(true) }}
-        createLabel="New record"
+        createLabel={t('payroll.new')}
       >
         <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1) }}>
           <SelectTrigger className="w-32 h-8"><SelectValue /></SelectTrigger>
@@ -101,7 +103,7 @@ export default function PayrollListPage() {
         columns={columns}
         data={data?.items ?? []}
         keyFn={(r) => r.id}
-        emptyMessage="No payroll records yet"
+        emptyMessage={t('payroll.empty')}
       />
       <HrmPagination page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
       <PayrollFormDialog

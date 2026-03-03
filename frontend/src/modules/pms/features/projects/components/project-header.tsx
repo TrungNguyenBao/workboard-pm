@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { LayoutGrid, List, Calendar, Search, BarChart2, GanttChart } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/components/ui/button'
 import { NotificationBell } from '@/features/notifications/components/notification-bell'
 import { CommandPalette } from '@/features/search/components/command-palette'
@@ -10,15 +11,7 @@ import api from '@/shared/lib/api'
 
 interface Project { id: string; name: string; color: string }
 
-const VIEWS = [
-  { key: 'board', label: 'Board', icon: LayoutGrid },
-  { key: 'list', label: 'List', icon: List },
-  { key: 'calendar', label: 'Calendar', icon: Calendar },
-  { key: 'overview', label: 'Overview', icon: BarChart2 },
-  { key: 'timeline', label: 'Timeline', icon: GanttChart },
-] as const
-
-type View = typeof VIEWS[number]['key']
+type View = 'board' | 'list' | 'calendar' | 'overview' | 'timeline'
 
 interface Props {
   activeView: View
@@ -26,9 +19,18 @@ interface Props {
 }
 
 export function ProjectHeader({ activeView, actions }: Props) {
+  const { t } = useTranslation('pms')
   const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
   const [searchOpen, setSearchOpen] = useState(false)
+
+  const VIEWS = [
+    { key: 'board' as const, label: t('project.views.board'), icon: LayoutGrid },
+    { key: 'list' as const, label: t('project.views.list'), icon: List },
+    { key: 'calendar' as const, label: t('project.views.calendar'), icon: Calendar },
+    { key: 'overview' as const, label: t('project.views.overview'), icon: BarChart2 },
+    { key: 'timeline' as const, label: t('project.views.timeline'), icon: GanttChart },
+  ]
 
   const { data: project } = useQuery<Project>({
     queryKey: ['project', projectId],

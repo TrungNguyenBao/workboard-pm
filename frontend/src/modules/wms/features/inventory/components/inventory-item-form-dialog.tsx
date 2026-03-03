@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog'
 import { Input } from '@/shared/components/ui/input'
@@ -26,6 +27,7 @@ export function InventoryItemFormDialog({ open, onOpenChange, workspaceId, item 
 }
 
 function InventoryFormContent({ workspaceId, item, onOpenChange }: Omit<Props, 'open'>) {
+  const { t } = useTranslation('wms')
   const createItem = useCreateInventoryItem(workspaceId)
   const updateItem = useUpdateInventoryItem(workspaceId)
   const isEdit = !!item
@@ -65,7 +67,7 @@ function InventoryFormContent({ workspaceId, item, onOpenChange }: Omit<Props, '
       }
       onOpenChange(false)
     } catch {
-      toast({ title: `Failed to ${isEdit ? 'update' : 'create'} item`, variant: 'error' })
+      toast({ title: 'Failed to save inventory item', variant: 'error' })
     }
   }
 
@@ -74,16 +76,16 @@ function InventoryFormContent({ workspaceId, item, onOpenChange }: Omit<Props, '
   return (
     <DialogContent className="max-w-md">
       <DialogHeader>
-        <DialogTitle>{isEdit ? 'Edit inventory item' : 'New inventory item'}</DialogTitle>
+        <DialogTitle>{isEdit ? 'Edit inventory item' : t('inventory.new')}</DialogTitle>
       </DialogHeader>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <Label htmlFor="inv-sku">SKU *</Label>
+            <Label htmlFor="inv-sku">{t('products.sku')} *</Label>
             <Input id="inv-sku" value={sku} onChange={(e) => setSku(e.target.value)} autoFocus />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="inv-name">Name *</Label>
+            <Label htmlFor="inv-name">{t('common:common.name')} *</Label>
             <Input id="inv-name" value={name} onChange={(e) => setName(e.target.value)} />
           </div>
         </div>
@@ -93,7 +95,7 @@ function InventoryFormContent({ workspaceId, item, onOpenChange }: Omit<Props, '
             <Input id="inv-qty" type="number" value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="inv-unit">Unit</Label>
+            <Label htmlFor="inv-unit">{t('products.unit')}</Label>
             <Input id="inv-unit" value={unit} onChange={(e) => setUnit(e.target.value)} />
           </div>
           <div className="space-y-1.5">
@@ -103,7 +105,7 @@ function InventoryFormContent({ workspaceId, item, onOpenChange }: Omit<Props, '
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <Label>Warehouse *</Label>
+            <Label>{t('warehouses.title')} *</Label>
             <Select value={warehouseId} onValueChange={setWarehouseId}>
               <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
               <SelectContent>
@@ -114,7 +116,7 @@ function InventoryFormContent({ workspaceId, item, onOpenChange }: Omit<Props, '
             </Select>
           </div>
           <div className="space-y-1.5">
-            <Label>Product</Label>
+            <Label>{t('products.title')}</Label>
             <Select value={productId} onValueChange={setProductId}>
               <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
               <SelectContent>
@@ -126,9 +128,9 @@ function InventoryFormContent({ workspaceId, item, onOpenChange }: Omit<Props, '
           </div>
         </div>
         <div className="flex justify-end gap-2 pt-1">
-          <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>{t('common:common.cancel')}</Button>
           <Button type="submit" disabled={pending || !sku.trim() || !name.trim() || !warehouseId}>
-            {pending ? 'Saving…' : isEdit ? 'Save changes' : 'Create item'}
+            {pending ? t('products.saving') : isEdit ? t('products.saveChanges') : t('inventory.new')}
           </Button>
         </div>
       </form>

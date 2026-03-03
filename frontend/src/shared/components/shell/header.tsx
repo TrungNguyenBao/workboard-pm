@@ -1,5 +1,6 @@
 import { Search } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/components/ui/button'
 import { NotificationBell } from '@/features/notifications/components/notification-bell'
 import { CommandPalette } from '@/features/search/components/command-palette'
@@ -10,6 +11,7 @@ interface HeaderProps {
 }
 
 export function Header({ title, actions }: HeaderProps) {
+  const { t } = useTranslation()
   const [searchOpen, setSearchOpen] = useState(false)
 
   return (
@@ -19,7 +21,7 @@ export function Header({ title, actions }: HeaderProps) {
 
       <div className="flex items-center gap-2">
         {actions}
-        <Button variant="ghost" size="icon-sm" onClick={() => setSearchOpen(true)} title="Search (⌘K)">
+        <Button variant="ghost" size="icon-sm" onClick={() => setSearchOpen(true)} title={t('common.search') + ' (⌘K)'}>
           <Search className="h-4 w-4" />
         </Button>
         <NotificationBell />

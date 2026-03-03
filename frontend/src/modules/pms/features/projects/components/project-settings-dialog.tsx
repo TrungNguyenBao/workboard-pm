@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog'
 import { Button } from '@/shared/components/ui/button'
 import { Label } from '@/shared/components/ui/label'
@@ -29,6 +30,7 @@ interface Props {
 }
 
 export function ProjectSettingsDialog({ project, workspaceId, open, onOpenChange }: Props) {
+  const { t } = useTranslation('pms')
   const qc = useQueryClient()
   const [color, setColor] = useState(project?.color ?? COLORS[0])
   const [description, setDescription] = useState(project?.description ?? '')
@@ -53,11 +55,11 @@ export function ProjectSettingsDialog({ project, workspaceId, open, onOpenChange
         is_archived: isArchived,
       })
       qc.invalidateQueries({ queryKey: ['projects', workspaceId] })
-      toast({ title: 'Project settings saved', variant: 'success' })
+      toast({ title: t('common:settings.saved'), variant: 'success' })
       onOpenChange(false)
     } catch (err) {
       const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
-      toast({ title: 'Failed to save', description: detail ?? 'Please try again', variant: 'error' })
+      toast({ title: t('common:settings.saveFailed'), description: detail ?? 'Please try again', variant: 'error' })
     } finally {
       setLoading(false)
     }
@@ -67,11 +69,11 @@ export function ProjectSettingsDialog({ project, workspaceId, open, onOpenChange
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Project settings — {project?.name}</DialogTitle>
+          <DialogTitle>{t('common:settings.title')} — {project?.name}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 pt-1">
           <div className="space-y-1.5">
-            <Label>Color</Label>
+            <Label>{t('project.color')}</Label>
             <div className="flex gap-2 flex-wrap">
               {COLORS.map((c) => (
                 <button
@@ -95,7 +97,7 @@ export function ProjectSettingsDialog({ project, workspaceId, open, onOpenChange
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="proj-desc">Description</Label>
+            <Label htmlFor="proj-desc">{t('common:common.description')}</Label>
             <textarea
               id="proj-desc"
               value={description}
@@ -107,7 +109,7 @@ export function ProjectSettingsDialog({ project, workspaceId, open, onOpenChange
           </div>
 
           <div className="border-t border-border pt-4">
-            <p className="text-xs font-semibold text-neutral-400 uppercase mb-2">Custom Fields</p>
+            <p className="text-xs font-semibold text-neutral-400 uppercase mb-2">{t('customField.title')}</p>
             {project && <FieldConfigPanel projectId={project.id} />}
           </div>
 
@@ -131,10 +133,10 @@ export function ProjectSettingsDialog({ project, workspaceId, open, onOpenChange
 
           <div className="flex justify-end gap-2 pt-1">
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
-              Cancel
+              {t('common:common.cancel')}
             </Button>
             <Button onClick={handleSave} disabled={loading}>
-              {loading ? 'Saving…' : 'Save'}
+              {loading ? t('common:settings.saving') : t('common:common.save')}
             </Button>
           </div>
         </div>

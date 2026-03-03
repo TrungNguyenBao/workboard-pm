@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useDroppable } from '@dnd-kit/core'
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/components/ui/dropdown-menu'
 import { Button } from '@/shared/components/ui/button'
 import { BoardTaskCard } from './board-task-card'
@@ -17,6 +18,7 @@ interface BoardKanbanColumnProps {
 
 /** Kanban column with droppable zone and sortable task list */
 export function BoardKanbanColumn({ section, tasks, projectId, onOpenTask }: BoardKanbanColumnProps) {
+  const { t } = useTranslation('pms')
   const taskIds = tasks.map((t) => t.id)
   const [renaming, setRenaming] = useState(false)
   const [nameInput, setNameInput] = useState(section.name)
@@ -67,18 +69,18 @@ export function BoardKanbanColumn({ section, tasks, projectId, onOpenTask }: Boa
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => { setNameInput(section.name); setRenaming(true) }}>
               <Pencil className="h-3.5 w-3.5 mr-2" />
-              Rename
+              {t('common:common.rename')}
             </DropdownMenuItem>
             <DropdownMenuItem
               className="text-red-600 focus:text-red-600"
               onClick={() => {
-                if (window.confirm(`Delete "${section.name}" and all its tasks?`)) {
+                if (window.confirm(t('project.deleteConfirm', { name: section.name }))) {
                   deleteSection.mutate(section.id)
                 }
               }}
             >
               <Trash2 className="h-3.5 w-3.5 mr-2" />
-              Delete
+              {t('common:common.delete')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

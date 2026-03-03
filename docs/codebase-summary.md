@@ -1,7 +1,7 @@
 # A-ERP Codebase Summary
 
-**Last generated:** 2026-03-02
-**Based on commit:** c99454b (feat(wms): implement full WMS module with products, devices, suppliers)
+**Last generated:** 2026-03-03
+**Based on commit:** Latest HRM implementation
 
 ---
 
@@ -11,8 +11,8 @@
 
 - **PMS** — Project Management System (Fully implemented)
 - **WMS** — Warehouse Management System (Fully implemented)
-- **HRM** — Human Resource Management (Scaffold)
-- **CRM** — Customer Relationship Management (Scaffold)
+- **HRM** — Human Resource Management (Fully implemented)
+- **CRM** — Customer Relationship Management (Fully implemented)
 
 **Technology Stack:**
 - Backend: Python 3.12, FastAPI, SQLAlchemy 2.0 ORM, PostgreSQL 15, Redis 7, Alembic migrations
@@ -32,7 +32,7 @@ backend/
 │   │   ├── router.py                    # Aggregates all module routers
 │   │   └── routers/                     # Shared endpoints (auth, workspaces, teams, notifications, SSE, agents)
 │   ├── models/                          # Shared ORM models (User, Workspace, Team, Token)
-│   ├── schemas/                         # Shared Pydantic models (auth, workspace, team)
+│   ├── schemas/                         # Shared Pydantic models (auth, workspace, team, pagination)
 │   ├── services/                        # Shared business logic (auth, workspace, notifications, SSE)
 │   ├── dependencies/                    # Reusable Depends() functions (auth, RBAC)
 │   ├── core/
@@ -43,8 +43,8 @@ backend/
 │   ├── modules/                         # Feature modules (PMS, WMS, HRM, CRM)
 │   │   ├── pms/                         # Project Management System (complete)
 │   │   ├── wms/                         # Warehouse Management System (complete)
-│   │   ├── hrm/                         # Human Resource Management (scaffold)
-│   │   └── crm/                         # Customer Relationship Management (scaffold)
+│   │   ├── hrm/                         # Human Resource Management (complete)
+│   │   └── crm/                         # Customer Relationship Management (complete)
 │   ├── agents/                          # Agent orchestration layer
 │   │   ├── base.py                      # Abstract BaseAgent
 │   │   ├── registry.py                  # Agent registration + lookup
@@ -66,6 +66,7 @@ backend/
 │       ├── 0004_add_recurring_task_fields.py  # Recurring task support
 │       ├── 0005_add_custom_fields.py    # Dynamic field definitions per project
 │       ├── 0006_add_goals.py            # Goals + portfolio tracking
+│       ├── 0007_add_hrm_leave_payroll_tables.py  # HRM leave types, requests, payroll records
 │       └── 203a42c349d6_wms_add_products_devices_suppliers_.py  # WMS extension (products, devices, suppliers)
 ├── pyproject.toml                       # Project metadata (uv, package name: a-erp-backend)
 ├── alembic.ini                          # Alembic configuration
@@ -189,13 +190,24 @@ class WmsProduct(Base):
 ```
 frontend/
 ├── src/
+│   ├── i18n/                             # Internationalization (i18next)
+│   │   ├── index.ts                      # i18next config + initialization
+│   │   └── locales/
+│   │       ├── vi/                       # Vietnamese translations
+│   │       │   ├── common.json           # Shared strings (auth, nav, settings, UI patterns)
+│   │       │   ├── pms.json              # PMS module strings
+│   │       │   ├── wms.json              # WMS module strings
+│   │       │   ├── hrm.json              # HRM module strings
+│   │       │   └── crm.json              # CRM module strings
+│   │       └── en/                       # English translations (same structure)
 │   ├── shared/
 │   │   ├── components/
 │   │   │   ├── shell/
 │   │   │   │   ├── app-shell.tsx         # Main layout wrapper
 │   │   │   │   ├── sidebar.tsx           # Module navigation (PMS/WMS/HRM/CRM switcher)
 │   │   │   │   ├── header.tsx            # Top bar with user/workspace menu
-│   │   │   │   └── keyboard-shortcuts.tsx # Command palette + hotkeys
+│   │   │   │   ├── keyboard-shortcuts.tsx # Command palette + hotkeys
+│   │   │   │   └── language-switcher.tsx # Language selector (Globe icon + dropdown)
 │   │   │   └── ui/                       # shadcn/ui wrapped components (button, dialog, form, etc.)
 │   │   ├── lib/
 │   │   │   ├── api.ts                    # API client (baseURL, auth headers)
@@ -215,13 +227,23 @@ frontend/
 │   │   │   ├── tasks/                    # Task CRUD + board/list/calendar views
 │   │   │   ├── goals/                    # Goals list + portfolio tracking
 │   │   │   └── custom-fields/            # Field definition editor
-│   │   └── wms/features/                 # Warehouse Management module
-│   │       ├── warehouses/               # Warehouse list + form dialog
-│   │       ├── products/                 # Product list + form dialog + TanStack hook
-│   │       ├── devices/                  # Device list + form dialog + TanStack hook
-│   │       ├── suppliers/                # Supplier list + form dialog + TanStack hook
-│   │       ├── inventory/                # Inventory item list + form dialog + TanStack hook
-│   │       └── shared/                   # WMS shared components (data-table, page-header, pagination)
+│   │   ├── wms/features/                 # Warehouse Management module
+│   │   │   ├── warehouses/               # Warehouse list + form dialog
+│   │   │   ├── products/                 # Product list + form dialog + TanStack hook
+│   │   │   ├── devices/                  # Device list + form dialog + TanStack hook
+│   │   │   ├── suppliers/                # Supplier list + form dialog + TanStack hook
+│   │   │   ├── inventory/                # Inventory item list + form dialog + TanStack hook
+│   │   │   └── shared/                   # WMS shared components (data-table, page-header, pagination)
+│   │   ├── hrm/features/                 # Human Resource Management module
+│   │   │   ├── departments/              # Department list + form dialog + TanStack hook
+│   │   │   ├── employees/                # Employee list + form dialog + department select + TanStack hook
+│   │   │   ├── leave/                    # Leave types + requests + approve/reject workflow + TanStack hooks
+│   │   │   ├── payroll/                  # Payroll records list + form dialog + currency formatting + TanStack hook
+│   │   │   └── shared/                   # HRM shared components (data-table, page-header, pagination)
+│   │   └── crm/features/                 # Customer Relationship Management module
+│   │       ├── contacts/                 # Contact list + form dialog + TanStack hook
+│   │       ├── deals/                    # Deal list + form dialog + contact select + TanStack hook
+│   │       └── shared/                   # CRM shared components (data-table, page-header, pagination)
 │   ├── app/
 │   │   ├── App.tsx                       # Root component + providers
 │   │   └── router.tsx                    # TanStack Router routes (pms/*, wms/*, etc.)
@@ -266,6 +288,36 @@ modules/wms/features/products/
 | Global auth + workspace | Zustand | `stores/auth.store.ts`, `stores/workspace.store.ts` |
 | Form validation | React Hook Form + Zod | Inline per form component |
 | Local UI state | useState | Within component |
+
+### Internationalization (i18n)
+
+**Framework:** react-i18next with i18next
+
+**Language Support:**
+- Default language: Vietnamese (VI)
+- Fallback language: Vietnamese
+- Supported languages: Vietnamese (vi), English (en)
+
+**Structure:**
+- Configuration in `src/i18n/index.ts` initialized at module level before React renders
+- Translations organized by namespace: `common` (shared), `pms`, `wms`, `hrm`, `crm`
+- 10 JSON files in `src/i18n/locales/{vi,en}/` with identical key sets across languages
+- 500+ user-facing strings catalogued: auth, navigation, buttons, labels, confirmations, empty states, toasts
+
+**Usage Pattern:**
+- Components use `const { t } = useTranslation()` or `useTranslation('pms')` for module namespace
+- Multi-namespace access: `useTranslation(['pms', 'common'])` — first namespace is default, prefix others with `common:` (e.g., `t('common:common.cancel')`)
+- Interpolation support: `t('key', { name: 'John' })` renders `{{name}}` placeholders
+
+**Language Switching:**
+- UI: Language switcher dropdown in sidebar footer + settings page
+- Logic: `i18n.changeLanguage(lng)` triggers immediate re-render
+- Persistence: User choice stored in `localStorage` key `a-erp-language`
+- No page reload required; all `useTranslation()` consumers update reactively
+
+**Bundle Impact:**
+- 10 JSON files (~2KB each) bundled at build time
+- No HTTP fetching or runtime parsing — all translations available upfront
 
 ### Real-time Integration
 
@@ -319,14 +371,17 @@ modules/wms/features/products/
 | `wms_suppliers` | id, workspace_id, name, email, phone, address | Supplier registry |
 | `inventory_items` | id, workspace_id, warehouse_id, sku, name, quantity, unit | Stock tracking |
 
-### HRM Tables (Human Resources) — Scaffold
+### HRM Tables (Human Resources)
 
 | Table | Key Columns | Purpose |
 |-------|-------------|---------|
 | `departments` | id, workspace_id, name, description | Department registry |
 | `employees` | id, workspace_id, user_id, name, email, department_id, position, hire_date | Employee directory |
+| `leave_types` | id, workspace_id, name, days_per_year | Leave type definitions (e.g., vacation, sick, unpaid) |
+| `leave_requests` | id, employee_id (FK CASCADE), leave_type_id (FK RESTRICT), start_date, end_date, days, status, reviewed_by_id | Leave request workflow (pending/approved/rejected) |
+| `payroll_records` | id, employee_id (FK CASCADE), period (YYYY-MM), gross, net, deductions (JSONB), status | Payroll history + tax deductions |
 
-### CRM Tables (Customer Relations) — Scaffold
+### CRM Tables (Customer Relations)
 
 | Table | Key Columns | Purpose |
 |-------|-------------|---------|
@@ -366,6 +421,23 @@ modules/wms/features/products/
 - `GET/POST /api/v1/wms/inventory` — Inventory CRUD (paginated)
 
 All WMS endpoints use `?limit=20&offset=0` pagination with `PaginatedResponse` wrapper.
+
+### HRM Routes
+
+- `POST/GET/GET/:id/PATCH/DELETE /api/v1/hrm/workspaces/{id}/departments` — Department CRUD (member+/guest/guest/member/admin)
+- `POST/GET/GET/:id/PATCH/DELETE /api/v1/hrm/workspaces/{id}/employees` — Employee CRUD (member+/guest/guest/member/admin)
+- `POST/GET/PATCH/DELETE /api/v1/hrm/workspaces/{id}/leave-types` — Leave type CRUD (admin/guest/admin/admin)
+- `POST/GET/PATCH/DELETE /api/v1/hrm/workspaces/{id}/leave-requests` — Leave request CRUD (member/guest/member/admin)
+- `POST /api/v1/hrm/workspaces/{id}/leave-requests/{id}/approve` — Approve leave request (admin only)
+- `POST /api/v1/hrm/workspaces/{id}/leave-requests/{id}/reject` — Reject leave request (admin only)
+- `POST/GET/GET/:id/PATCH/DELETE /api/v1/hrm/workspaces/{id}/payroll-records` — Payroll CRUD (admin only)
+
+All HRM endpoints use offset-based pagination (`?limit=20&offset=0`) with shared `PaginatedResponse` from `app/schemas/pagination.py`.
+
+### CRM Routes
+
+- `GET/POST /api/v1/crm/workspaces/{id}/contacts` — Contact CRUD (paginated)
+- `GET/POST /api/v1/crm/workspaces/{id}/deals` — Deal CRUD (paginated)
 
 ---
 
@@ -493,18 +565,20 @@ make format         # ruff format + prettier
 ## Roadmap Status
 
 - **Phase 1-4:** Complete (Foundation, Task Management, Real-time, Activity Log)
-- **Phase 5:** In progress (Production readiness — Docker, Nginx, logging, rate limiting)
+- **Phase 5:** Complete (Production readiness — Docker, Nginx, logging, rate limiting)
 - **Phase 6:** Complete (Timeline, Recurring tasks, Custom fields, Goals)
 - **Phase 7:** Complete (A-ERP restructure, WMS full CRUD, Agent layer, MCP protocol)
+- **Phase 8:** Complete (HRM full implementation — departments, employees, leave, payroll)
+- **Phase 9:** Complete (CRM full implementation — contacts, deals, pagination/search/filtering)
 
 **Next Steps:**
 - E2E test coverage (Playwright)
 - MinIO / S3 for file attachments
 - Email delivery (ARQ background job)
-- HRM + CRM full implementation
 - Multi-instance support (Redis Pub/Sub upgrade)
+- Advanced reporting and analytics dashboards
 
 ---
 
 Generated by Repomix v1.12.0
-Total: 309 files, 211k tokens, 863k chars
+Total: 346 files, 243k tokens, 992k chars

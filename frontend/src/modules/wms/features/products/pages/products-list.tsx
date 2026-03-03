@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import { Badge } from '@/shared/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
@@ -11,6 +12,7 @@ import { toast } from '@/shared/components/ui/toast'
 import { Pencil, Trash2 } from 'lucide-react'
 
 export default function ProductsListPage() {
+  const { t } = useTranslation('wms')
   const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId) ?? ''
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState<string>('')
@@ -26,15 +28,15 @@ export default function ProductsListPage() {
   const deleteProduct = useDeleteProduct(workspaceId)
 
   const columns = [
-    { key: 'name', label: 'Name', render: (p: Product) => <span className="font-medium">{p.name}</span> },
-    { key: 'sku', label: 'SKU', render: (p: Product) => p.sku },
-    { key: 'category', label: 'Category', render: (p: Product) => (
+    { key: 'name', label: t('products.name'), render: (p: Product) => <span className="font-medium">{p.name}</span> },
+    { key: 'sku', label: t('products.sku'), render: (p: Product) => p.sku },
+    { key: 'category', label: t('products.category'), render: (p: Product) => (
       <Badge variant={p.category === 'equipment' ? 'default' : 'secondary'}>{p.category}</Badge>
     )},
-    { key: 'unit', label: 'Unit', render: (p: Product) => p.unit },
-    { key: 'serial', label: 'Serial Tracked', render: (p: Product) => p.is_serial_tracked ? 'Yes' : 'No' },
-    { key: 'status', label: 'Status', render: (p: Product) => (
-      <Badge variant={p.is_active ? 'default' : 'secondary'}>{p.is_active ? 'Active' : 'Inactive'}</Badge>
+    { key: 'unit', label: t('products.unit'), render: (p: Product) => p.unit },
+    { key: 'serial', label: t('products.serialTracked'), render: (p: Product) => p.is_serial_tracked ? t('common:common.yes') : t('common:common.no') },
+    { key: 'status', label: t('common:common.status'), render: (p: Product) => (
+      <Badge variant={p.is_active ? 'default' : 'secondary'}>{p.is_active ? t('common:common.active') : t('common:common.inactive')}</Badge>
     )},
     { key: 'actions', label: '', className: 'w-20', render: (p: Product) => (
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
@@ -42,9 +44,9 @@ export default function ProductsListPage() {
           <Pencil className="h-3.5 w-3.5" />
         </button>
         <button className="p-1 text-neutral-400 hover:text-red-600" onClick={async () => {
-          if (window.confirm(`Delete "${p.name}"?`)) {
+          if (window.confirm(t('common:common.deleteConfirm', { name: p.name }))) {
             await deleteProduct.mutateAsync(p.id)
-            toast({ title: 'Product deleted', variant: 'success' })
+            toast({ title: t('products.deleted'), variant: 'success' })
           }
         }}>
           <Trash2 className="h-3.5 w-3.5" />
@@ -56,24 +58,24 @@ export default function ProductsListPage() {
   return (
     <div className="flex flex-col h-full">
       <WmsPageHeader
-        title="Products"
-        description="Manage product catalog"
+        title={t('products.title')}
+        description={t('products.description')}
         searchValue={search}
         onSearchChange={(v) => { setSearch(v); setPage(1) }}
         onCreateClick={() => { setEditProduct(null); setDialogOpen(true) }}
-        createLabel="New product"
+        createLabel={t('products.new')}
       >
         <Select value={category} onValueChange={(v) => { setCategory(v === 'all' ? '' : v); setPage(1) }}>
-          <SelectTrigger className="w-36"><SelectValue placeholder="All categories" /></SelectTrigger>
+          <SelectTrigger className="w-36"><SelectValue placeholder={t('products.allCategories')} /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All categories</SelectItem>
-            <SelectItem value="equipment">Equipment</SelectItem>
-            <SelectItem value="accessory">Accessory</SelectItem>
+            <SelectItem value="all">{t('products.allCategories')}</SelectItem>
+            <SelectItem value="equipment">{t('products.equipment')}</SelectItem>
+            <SelectItem value="accessory">{t('products.accessory')}</SelectItem>
           </SelectContent>
         </Select>
       </WmsPageHeader>
 
-      <WmsDataTable columns={columns} data={data?.items ?? []} keyFn={(p) => p.id} emptyMessage="No products yet" />
+      <WmsDataTable columns={columns} data={data?.items ?? []} keyFn={(p) => p.id} emptyMessage={t('products.empty')} />
       <WmsPagination page={page} pageSize={20} total={data?.total ?? 0} onPageChange={setPage} />
 
       <ProductFormDialog

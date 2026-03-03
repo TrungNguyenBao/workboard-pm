@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { ProjectHeader } from '../components/project-header'
 import { ActivityTimeline } from '../components/activity-timeline'
 import api from '@/shared/lib/api'
@@ -33,12 +34,7 @@ const PRIORITY_COLORS: Record<string, string> = {
   none: 'bg-neutral-100 text-neutral-500',
 }
 
-const PRIORITY_LABELS: Record<string, string> = {
-  high: 'High',
-  medium: 'Medium',
-  low: 'Low',
-  none: 'No priority',
-}
+// PRIORITY_LABELS moved inside component to use t()
 
 function StatCard({ label, value, sub }: { label: string; value: number; sub?: string }) {
   return (
@@ -60,7 +56,15 @@ function ProgressBar({ value, max }: { value: number; max: number }) {
 }
 
 export default function OverviewPage() {
+  const { t } = useTranslation('pms')
   const { projectId } = useParams<{ projectId: string }>()
+
+  const PRIORITY_LABELS: Record<string, string> = {
+    high: t('task.priority.high'),
+    medium: t('task.priority.medium'),
+    low: t('task.priority.low'),
+    none: t('task.priority.none'),
+  }
 
   const { data: stats, isLoading, isError } = useQuery<Stats>({
     queryKey: ['project-stats', projectId],
@@ -79,7 +83,7 @@ export default function OverviewPage() {
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-3xl mx-auto w-full pt-6 px-6 pb-12 space-y-6">
           {isLoading && (
-            <p className="text-sm text-neutral-400 text-center py-16">Loading stats…</p>
+            <p className="text-sm text-neutral-400 text-center py-16">{t('common:common.loading')}</p>
           )}
 
           {isError && (
@@ -90,10 +94,10 @@ export default function OverviewPage() {
             <>
               {/* Summary cards */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <StatCard label="Total tasks" value={stats.total_tasks} />
-                <StatCard label="Completed" value={stats.completed} sub={`${completionPct}%`} />
-                <StatCard label="Incomplete" value={stats.incomplete} />
-                <StatCard label="Overdue" value={stats.overdue} />
+                <StatCard label={t('task.title')} value={stats.total_tasks} />
+                <StatCard label={t('task.status.completed')} value={stats.completed} sub={`${completionPct}%`} />
+                <StatCard label={t('task.status.inProgress')} value={stats.incomplete} />
+                <StatCard label={t('myTasks.overdue')} value={stats.overdue} />
               </div>
 
               {/* Completion ring + section breakdown */}

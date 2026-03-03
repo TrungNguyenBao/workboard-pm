@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Plus, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/components/ui/button'
 import { useCreateTask } from '../hooks/use-project-tasks'
 
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export function InlineTaskInput({ projectId, sectionId, variant = 'card' }: Props) {
+  const { t } = useTranslation('pms')
   const [open, setOpen] = useState(false)
   const [title, setTitle] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
@@ -46,7 +48,7 @@ export function InlineTaskInput({ projectId, sectionId, variant = 'card' }: Prop
           onClick={() => setOpen(true)}
         >
           <Plus className="h-3.5 w-3.5" />
-          Add task
+          {t('task.addTask')}
         </button>
       )
     }
@@ -58,7 +60,7 @@ export function InlineTaskInput({ projectId, sectionId, variant = 'card' }: Prop
         onClick={() => setOpen(true)}
       >
         <Plus className="h-3.5 w-3.5 mr-1" />
-        Add task
+        {t('task.addTask')}
       </Button>
     )
   }
@@ -73,7 +75,7 @@ export function InlineTaskInput({ projectId, sectionId, variant = 'card' }: Prop
           onChange={(e) => setTitle(e.target.value)}
           onKeyDown={handleKeyDown}
           onBlur={handleBlur}
-          placeholder="Task name…"
+          placeholder={t('task.title')}
           className="flex-1 text-sm outline-none placeholder:text-neutral-300"
         />
         <button
@@ -81,7 +83,7 @@ export function InlineTaskInput({ projectId, sectionId, variant = 'card' }: Prop
           disabled={!title.trim() || createTask.isPending}
           className="text-xs text-primary font-medium disabled:opacity-40 hover:text-primary/80"
         >
-          {createTask.isPending ? 'Adding…' : 'Add'}
+          {createTask.isPending ? '…' : t('task.addTask')}
         </button>
         <button
           onMouseDown={(e) => { e.preventDefault(); setOpen(false); setTitle('') }}
@@ -102,7 +104,7 @@ export function InlineTaskInput({ projectId, sectionId, variant = 'card' }: Prop
         onChange={(e) => setTitle(e.target.value)}
         onKeyDown={handleKeyDown}
         onBlur={handleBlur}
-        placeholder="Task name…"
+        placeholder={t('task.title')}
         className="w-full text-sm outline-none placeholder:text-neutral-300 mb-2"
       />
       <div className="flex items-center gap-1.5">
@@ -111,7 +113,7 @@ export function InlineTaskInput({ projectId, sectionId, variant = 'card' }: Prop
           disabled={!title.trim() || createTask.isPending}
           className="px-2 py-1 text-xs rounded-sm bg-primary text-white font-medium disabled:opacity-40 hover:bg-primary/90"
         >
-          {createTask.isPending ? 'Adding…' : 'Add'}
+          {createTask.isPending ? '…' : t('task.addTask')}
         </button>
         <button
           onMouseDown={(e) => { e.preventDefault(); setOpen(false); setTitle('') }}

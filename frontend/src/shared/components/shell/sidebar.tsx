@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Box, Briefcase, Calendar, ChevronDown, Cpu, DollarSign, Home, LogOut, MoreHorizontal, Package, Pencil, Plus, Settings, Target, Trash2, Truck, Users, UserPlus, Warehouse as WarehouseIcon } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth.store'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import { useModuleStore } from '@/stores/module.store'
@@ -9,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avat
 import { Button } from '@/shared/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/components/ui/dropdown-menu'
 import { cn, generateInitials } from '@/shared/lib/utils'
+import { LanguageSwitcher } from './language-switcher'
 import { CreateWorkspaceDialog } from '@/features/workspaces/components/create-workspace-dialog'
 import { CreateProjectDialog } from '@/modules/pms/features/projects/components/create-project-dialog'
 import { ProjectSettingsDialog } from '@/modules/pms/features/projects/components/project-settings-dialog'
@@ -19,6 +21,7 @@ interface Workspace { id: string; name: string; slug: string }
 interface Project { id: string; name: string; color: string; description: string | null; is_archived: boolean }
 
 export function Sidebar() {
+  const { t } = useTranslation()
   const user = useAuthStore((s) => s.user)
   const logout = useAuthStore((s) => s.logout)
   const navigate = useNavigate()
@@ -77,7 +80,7 @@ export function Sidebar() {
               {activeWorkspace ? activeWorkspace.name[0].toUpperCase() : 'W'}
             </div>
             <span className="text-sm font-semibold text-neutral-900 truncate flex-1 text-left">
-              {activeWorkspace?.name ?? 'No workspace'}
+              {activeWorkspace?.name ?? t('sidebar.noWorkspace')}
             </span>
             <ChevronDown className="h-3.5 w-3.5 text-neutral-400 flex-shrink-0" />
           </button>
@@ -105,7 +108,7 @@ export function Sidebar() {
                   {ws.id === activeWorkspaceId && (
                     <button
                       className="pr-3 opacity-0 group-hover:opacity-100 text-neutral-400 hover:text-neutral-700 transition-all"
-                      title="Rename workspace"
+                      title={t('sidebar.renameWorkspace')}
                       onClick={() => {
                         setWsRenameInput(ws.name)
                         setWsRenaming(true)
@@ -122,13 +125,13 @@ export function Sidebar() {
                 onClick={() => { setWsPickerOpen(false); setWsDialogOpen(true) }}
               >
                 <Plus className="h-3.5 w-3.5" />
-                New workspace
+                {t('sidebar.newWorkspace')}
               </button>
             </div>
           )}
           {wsRenaming && (
             <div className="absolute left-0 right-0 top-full z-50 bg-white border border-border rounded-b-md shadow-popover p-3">
-              <p className="text-xs font-medium text-neutral-500 mb-2">Rename workspace</p>
+              <p className="text-xs font-medium text-neutral-500 mb-2">{t('sidebar.renameWorkspace')}</p>
               <input
                 autoFocus
                 value={wsRenameInput}
@@ -144,7 +147,7 @@ export function Sidebar() {
                 className="w-full rounded border border-border px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-primary/40 mb-2"
               />
               <div className="flex gap-2 justify-end">
-                <button className="text-xs text-neutral-400 hover:text-neutral-700" onClick={() => setWsRenaming(false)}>Cancel</button>
+                <button className="text-xs text-neutral-400 hover:text-neutral-700" onClick={() => setWsRenaming(false)}>{t('common.cancel')}</button>
                 <button
                   className="text-xs text-primary hover:text-primary/80 font-medium"
                   onClick={async () => {
@@ -155,7 +158,7 @@ export function Sidebar() {
                     }
                   }}
                 >
-                  Save
+                  {t('common.save')}
                 </button>
               </div>
             </div>
@@ -166,44 +169,44 @@ export function Sidebar() {
         <nav className="flex-1 overflow-y-auto px-2 py-3 space-y-0.5">
           {noWorkspace ? (
             <div className="px-2 py-6 text-center">
-              <p className="text-xs text-neutral-400 mb-3">No workspace yet</p>
+              <p className="text-xs text-neutral-400 mb-3">{t('sidebar.noWorkspaceYet')}</p>
               <Button size="sm" onClick={() => setWsDialogOpen(true)}>
-                Create workspace
+                {t('sidebar.createWorkspace')}
               </Button>
             </div>
           ) : (
             <>
               {activeModule === 'hrm' ? (
                 <>
-                  <NavItem to="/hrm/employees" icon={<Users className="h-4 w-4" />} label="Employees" active={isActive('/hrm/employees')} />
-                  <NavItem to="/hrm/departments" icon={<Briefcase className="h-4 w-4" />} label="Departments" active={isActive('/hrm/departments')} />
-                  <NavItem to="/hrm/leave" icon={<Calendar className="h-4 w-4" />} label="Leave" active={isActive('/hrm/leave')} />
-                  <NavItem to="/hrm/payroll" icon={<DollarSign className="h-4 w-4" />} label="Payroll" active={isActive('/hrm/payroll')} />
-                  <NavItem to="/members" icon={<UserPlus className="h-4 w-4" />} label="Members" active={isActive('/members')} />
+                  <NavItem to="/hrm/employees" icon={<Users className="h-4 w-4" />} label={t('nav.employees')} active={isActive('/hrm/employees')} />
+                  <NavItem to="/hrm/departments" icon={<Briefcase className="h-4 w-4" />} label={t('nav.departments')} active={isActive('/hrm/departments')} />
+                  <NavItem to="/hrm/leave" icon={<Calendar className="h-4 w-4" />} label={t('nav.leave')} active={isActive('/hrm/leave')} />
+                  <NavItem to="/hrm/payroll" icon={<DollarSign className="h-4 w-4" />} label={t('nav.payroll')} active={isActive('/hrm/payroll')} />
+                  <NavItem to="/members" icon={<UserPlus className="h-4 w-4" />} label={t('nav.members')} active={isActive('/members')} />
                 </>
               ) : activeModule === 'crm' ? (
                 <>
-                  <NavItem to="/crm/contacts" icon={<Users className="h-4 w-4" />} label="Contacts" active={isActive('/crm/contacts')} />
-                  <NavItem to="/crm/deals" icon={<DollarSign className="h-4 w-4" />} label="Deals" active={isActive('/crm/deals')} />
-                  <NavItem to="/members" icon={<UserPlus className="h-4 w-4" />} label="Members" active={isActive('/members')} />
+                  <NavItem to="/crm/contacts" icon={<Users className="h-4 w-4" />} label={t('nav.contacts')} active={isActive('/crm/contacts')} />
+                  <NavItem to="/crm/deals" icon={<DollarSign className="h-4 w-4" />} label={t('nav.deals')} active={isActive('/crm/deals')} />
+                  <NavItem to="/members" icon={<UserPlus className="h-4 w-4" />} label={t('nav.members')} active={isActive('/members')} />
                 </>
               ) : activeModule === 'wms' ? (
                 <>
-                  <NavItem to="/wms/products" icon={<Package className="h-4 w-4" />} label="Products" active={isActive('/wms/products')} />
-                  <NavItem to="/wms/warehouses" icon={<WarehouseIcon className="h-4 w-4" />} label="Warehouses" active={isActive('/wms/warehouses')} />
-                  <NavItem to="/wms/devices" icon={<Cpu className="h-4 w-4" />} label="Devices" active={isActive('/wms/devices')} />
-                  <NavItem to="/wms/inventory" icon={<Box className="h-4 w-4" />} label="Inventory" active={isActive('/wms/inventory')} />
-                  <NavItem to="/wms/suppliers" icon={<Truck className="h-4 w-4" />} label="Suppliers" active={isActive('/wms/suppliers')} />
-                  <NavItem to="/members" icon={<Users className="h-4 w-4" />} label="Members" active={isActive('/members')} />
+                  <NavItem to="/wms/products" icon={<Package className="h-4 w-4" />} label={t('nav.products')} active={isActive('/wms/products')} />
+                  <NavItem to="/wms/warehouses" icon={<WarehouseIcon className="h-4 w-4" />} label={t('nav.warehouses')} active={isActive('/wms/warehouses')} />
+                  <NavItem to="/wms/devices" icon={<Cpu className="h-4 w-4" />} label={t('nav.devices')} active={isActive('/wms/devices')} />
+                  <NavItem to="/wms/inventory" icon={<Box className="h-4 w-4" />} label={t('nav.inventory')} active={isActive('/wms/inventory')} />
+                  <NavItem to="/wms/suppliers" icon={<Truck className="h-4 w-4" />} label={t('nav.suppliers')} active={isActive('/wms/suppliers')} />
+                  <NavItem to="/members" icon={<Users className="h-4 w-4" />} label={t('nav.members')} active={isActive('/members')} />
                 </>
               ) : (
                 <>
-                  <NavItem to="/pms/my-tasks" icon={<Home className="h-4 w-4" />} label="My Tasks" active={isActive('/pms/my-tasks')} />
-                  <NavItem to="/pms/goals" icon={<Target className="h-4 w-4" />} label="Goals" active={isActive('/pms/goals')} />
-                  <NavItem to="/members" icon={<Users className="h-4 w-4" />} label="Members" active={isActive('/members')} />
+                  <NavItem to="/pms/my-tasks" icon={<Home className="h-4 w-4" />} label={t('nav.myTasks')} active={isActive('/pms/my-tasks')} />
+                  <NavItem to="/pms/goals" icon={<Target className="h-4 w-4" />} label={t('nav.goals')} active={isActive('/pms/goals')} />
+                  <NavItem to="/members" icon={<Users className="h-4 w-4" />} label={t('nav.members')} active={isActive('/members')} />
 
                   <div className="pt-4 pb-1 px-2">
-                    <span className="text-xs font-semibold text-neutral-400 uppercase tracking-wide">Projects</span>
+                    <span className="text-xs font-semibold text-neutral-400 uppercase tracking-wide">{t('sidebar.projects')}</span>
                   </div>
 
                   {projects.filter((p) => !p.is_archived).map((p) => (
@@ -222,7 +225,7 @@ export function Sidebar() {
                     onClick={() => setProjDialogOpen(true)}
                   >
                     <Plus className="h-3.5 w-3.5 mr-1.5" />
-                    New Project
+                    {t('sidebar.newProject')}
                   </Button>
                   <Button
                     variant="ghost"
@@ -231,7 +234,7 @@ export function Sidebar() {
                     onClick={() => setInviteDialogOpen(true)}
                   >
                     <UserPlus className="h-3.5 w-3.5 mr-1.5" />
-                    Invite members
+                    {t('sidebar.inviteMembers')}
                   </Button>
                 </>
               )}
@@ -239,12 +242,17 @@ export function Sidebar() {
           )}
         </nav>
 
+        {/* Language */}
+        <div className="border-t border-border px-3 pt-2">
+          <LanguageSwitcher />
+        </div>
+
         {/* User */}
         <div className="border-t border-border p-3 flex items-center gap-2">
           <button
             onClick={() => navigate('/settings')}
             className="flex items-center gap-2 flex-1 min-w-0 hover:opacity-80 transition-opacity"
-            title="Profile settings"
+            title={t('sidebar.profileSettings')}
           >
             <Avatar className="h-7 w-7 flex-shrink-0">
               <AvatarImage src={user?.avatar_url ?? undefined} />
@@ -255,14 +263,14 @@ export function Sidebar() {
           <button
             onClick={() => navigate('/settings')}
             className="p-1 text-neutral-400 hover:text-neutral-700 rounded"
-            title="Settings"
+            title={t('sidebar.settings')}
           >
             <Settings className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={async () => { await logout(); navigate('/login') }}
             className="p-1 text-neutral-400 hover:text-neutral-700 rounded"
-            title="Log out"
+            title={t('sidebar.logOut')}
           >
             <LogOut className="h-3.5 w-3.5" />
           </button>
@@ -293,6 +301,7 @@ export function Sidebar() {
 }
 
 function ProjectNavItem({ project, active, workspaceId }: { project: Project; active: boolean; workspaceId: string }) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const qc = useQueryClient()
   const [renaming, setRenaming] = useState(false)
@@ -359,20 +368,20 @@ function ProjectNavItem({ project, active, workspaceId }: { project: Project; ac
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => { setNameInput(project.name); setRenaming(true) }}>
             <Pencil className="h-3.5 w-3.5 mr-2" />
-            Rename
+            {t('common.rename')}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
             <Settings className="h-3.5 w-3.5 mr-2" />
-            Settings
+            {t('common.settings')}
           </DropdownMenuItem>
           <DropdownMenuItem
             className="text-red-600 focus:text-red-600"
             onClick={() => {
-              if (window.confirm(`Delete "${project.name}"? This cannot be undone.`)) remove.mutate()
+              if (window.confirm(t('common.deleteConfirmFull', { name: project.name }))) remove.mutate()
             }}
           >
             <Trash2 className="h-3.5 w-3.5 mr-2" />
-            Delete
+            {t('common.delete')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

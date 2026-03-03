@@ -5,6 +5,19 @@ Format: `## [version] — YYYY-MM-DD` with grouped entries.
 
 ---
 
+## [2.2.0] — 2026-03-03
+
+### Added — Frontend i18n Multi-language Support (EN/VI)
+
+- **i18next Installation** — `react-i18next` and `i18next` packages installed. Config in `frontend/src/i18n/index.ts` with namespace support for `common`, `pms`, `wms`, `hrm`, `crm`.
+- **Translation Files** — 10 JSON files created (5 namespaces × 2 languages). Files: `locales/vi/{common,pms,wms,hrm,crm}.json` and `locales/en/{common,pms,wms,hrm,crm}.json`. All 500+ user-facing strings catalogued and translated.
+- **Translation Integration** — All 55+ frontend components updated with `useTranslation()` hook. Hardcoded strings replaced with `t()` calls. Proper namespace handling: shared strings use `common` namespace, module-specific strings use module namespaces (prefix with `common:` when accessing common keys from module namespace).
+- **Language Persistence** — Default language: Vietnamese. User preference saved to `localStorage` key `a-erp-language`. Language choice persists across page refreshes.
+- **UI Language Switcher** — New `language-switcher.tsx` component with Globe icon and dropdown. Integrated into sidebar footer for quick access. Also available in settings page for discoverability.
+- **Real-time Language Switching** — `i18n.changeLanguage()` triggers immediate re-render of all components using `useTranslation()`. No page reload needed.
+
+---
+
 ## [2.1.0] — 2026-03-03
 
 ### Added — HRM Module Full Implementation

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Plus, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog'
 import { Button } from '@/shared/components/ui/button'
 import { Input } from '@/shared/components/ui/input'
@@ -31,6 +32,7 @@ interface OptionRow {
 }
 
 export function AddFieldDialog({ projectId, open, onOpenChange }: Props) {
+  const { t } = useTranslation('pms')
   const [name, setName] = useState('')
   const [fieldType, setFieldType] = useState('text')
   const [description, setDescription] = useState('')
@@ -76,11 +78,11 @@ export function AddFieldDialog({ projectId, open, onOpenChange }: Props) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Add custom field</DialogTitle>
+          <DialogTitle>{t('customField.addField')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 pt-1">
           <div className="space-y-1.5">
-            <Label htmlFor="field-name">Field name</Label>
+            <Label htmlFor="field-name">{t('common:common.name')}</Label>
             <Input id="field-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Story points" autoFocus />
           </div>
 
@@ -133,9 +135,9 @@ export function AddFieldDialog({ projectId, open, onOpenChange }: Props) {
           )}
 
           <div className="flex justify-end gap-2 pt-1">
-            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
+            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>{t('common:common.cancel')}</Button>
             <Button type="submit" disabled={!name.trim() || createField.isPending}>
-              {createField.isPending ? 'Adding…' : 'Add field'}
+              {createField.isPending ? '…' : t('customField.addField')}
             </Button>
           </div>
         </form>

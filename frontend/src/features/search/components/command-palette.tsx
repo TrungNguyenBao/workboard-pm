@@ -3,6 +3,7 @@ import { Command } from 'cmdk'
 import { Search, CheckSquare } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { Dialog, DialogContent } from '@/shared/components/ui/dialog'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import api from '@/shared/lib/api'
@@ -16,6 +17,7 @@ interface Project { id: string; name: string; color: string }
 interface TaskResult { id: string; title: string; project_id: string; status: string }
 
 export function CommandPalette({ open, onOpenChange }: Props) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId)
   const [query, setQuery] = useState('')
@@ -80,34 +82,34 @@ export function CommandPalette({ open, onOpenChange }: Props) {
             <Command.Input
               value={query}
               onValueChange={setQuery}
-              placeholder="Search tasks, projects…"
+              placeholder={t('search.placeholder')}
               className="flex-1 bg-transparent text-sm outline-none placeholder:text-neutral-400"
             />
           </div>
           <Command.List className="max-h-80 overflow-y-auto p-1">
             <Command.Empty className="py-6 text-center text-sm text-neutral-400">
-              {searching ? 'Searching…' : 'No results found'}
+              {searching ? t('search.searching') : t('search.noResults')}
             </Command.Empty>
 
             {taskResults.length > 0 && (
-              <Command.Group heading="Tasks">
-                {taskResults.map((t) => (
+              <Command.Group heading={t('search.tasks')}>
+                {taskResults.map((task) => (
                   <Command.Item
-                    key={t.id}
-                    value={t.title}
-                    onSelect={() => select(() => navigate(`/pms/projects/${t.project_id}/board`))}
+                    key={task.id}
+                    value={task.title}
+                    onSelect={() => select(() => navigate(`/pms/projects/${task.project_id}/board`))}
                     className="flex items-center gap-2 px-2 py-1.5 rounded-xs text-sm text-neutral-700 cursor-pointer aria-selected:bg-neutral-100"
                   >
-                    <CheckSquare className={`h-3.5 w-3.5 flex-shrink-0 ${t.status === 'completed' ? 'text-primary' : 'text-neutral-300'}`} />
-                    <span className="flex-1 truncate">{t.title}</span>
-                    <span className="text-xs text-neutral-400 flex-shrink-0">{t.projectName}</span>
+                    <CheckSquare className={`h-3.5 w-3.5 flex-shrink-0 ${task.status === 'completed' ? 'text-primary' : 'text-neutral-300'}`} />
+                    <span className="flex-1 truncate">{task.title}</span>
+                    <span className="text-xs text-neutral-400 flex-shrink-0">{task.projectName}</span>
                   </Command.Item>
                 ))}
               </Command.Group>
             )}
 
             {projects.length > 0 && (
-              <Command.Group heading="Projects">
+              <Command.Group heading={t('search.projects')}>
                 {projects
                   .filter((p) => p.name.toLowerCase().includes(query.toLowerCase()))
                   .map((p) => (
@@ -124,9 +126,9 @@ export function CommandPalette({ open, onOpenChange }: Props) {
               </Command.Group>
             )}
 
-            <Command.Group heading="Navigation">
+            <Command.Group heading={t('search.navigation')}>
               {[
-                { label: 'My Tasks', path: '/pms/my-tasks' },
+                { label: t('nav.myTasks'), path: '/pms/my-tasks' },
               ]
                 .filter((n) => n.label.toLowerCase().includes(query.toLowerCase()))
                 .map((n) => (

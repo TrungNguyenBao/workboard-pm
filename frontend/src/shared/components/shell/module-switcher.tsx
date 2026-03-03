@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { ClipboardList, Handshake, Users, Warehouse } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { type ModuleId, MODULES, useModuleStore } from '@/stores/module.store'
 import { cn } from '@/shared/lib/utils'
 
@@ -11,6 +12,7 @@ const ICON_MAP: Record<string, React.ElementType> = {
 }
 
 export function ModuleSwitcher() {
+  const { t } = useTranslation()
   const activeModule = useModuleStore((s) => s.activeModule)
   const setActiveModule = useModuleStore((s) => s.setActiveModule)
   const navigate = useNavigate()
@@ -29,7 +31,7 @@ export function ModuleSwitcher() {
           <button
             key={mod.id}
             onClick={() => handleSwitch(mod.id, mod.path)}
-            title={mod.description}
+            title={t(`module.${mod.id}.description`)}
             className={cn(
               'flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium transition-colors',
               isActive
@@ -38,7 +40,7 @@ export function ModuleSwitcher() {
             )}
           >
             <Icon className="h-3.5 w-3.5" />
-            <span>{mod.name}</span>
+            <span>{t(`module.${mod.id}`)}</span>
           </button>
         )
       })}

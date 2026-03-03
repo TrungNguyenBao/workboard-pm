@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog'
 import { Input } from '@/shared/components/ui/input'
@@ -25,6 +26,7 @@ export function PayrollFormDialog({ open, onOpenChange, workspaceId, record }: P
 }
 
 function PayrollFormContent({ workspaceId, record, onOpenChange }: Omit<Props, 'open'>) {
+  const { t } = useTranslation('hrm')
   const createRecord = useCreatePayrollRecord(workspaceId)
   const updateRecord = useUpdatePayrollRecord(workspaceId)
   const { data: employeesData } = useEmployees(workspaceId, { page_size: 100 })
@@ -60,7 +62,7 @@ function PayrollFormContent({ workspaceId, record, onOpenChange }: Omit<Props, '
       }
       onOpenChange(false)
     } catch {
-      toast({ title: `Failed to ${isEdit ? 'update' : 'create'} payroll record`, variant: 'error' })
+      toast({ title: 'Failed to save payroll record', variant: 'error' })
     }
   }
 
@@ -69,12 +71,12 @@ function PayrollFormContent({ workspaceId, record, onOpenChange }: Omit<Props, '
   return (
     <DialogContent className="max-w-md">
       <DialogHeader>
-        <DialogTitle>{isEdit ? 'Edit payroll record' : 'New payroll record'}</DialogTitle>
+        <DialogTitle>{isEdit ? 'Edit payroll record' : t('payroll.new')}</DialogTitle>
       </DialogHeader>
       <form onSubmit={handleSubmit} className="space-y-4">
         {!isEdit && (
           <div className="space-y-1.5">
-            <Label>Employee *</Label>
+            <Label>{t('employees.title')} *</Label>
             <Select value={employeeId} onValueChange={setEmployeeId}>
               <SelectTrigger><SelectValue placeholder="Select employee" /></SelectTrigger>
               <SelectContent>
@@ -98,7 +100,7 @@ function PayrollFormContent({ workspaceId, record, onOpenChange }: Omit<Props, '
           </div>
           {isEdit && (
             <div className="space-y-1.5">
-              <Label>Status</Label>
+              <Label>{t('common:common.status')}</Label>
               <Select value={status} onValueChange={setStatus}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -121,9 +123,9 @@ function PayrollFormContent({ workspaceId, record, onOpenChange }: Omit<Props, '
           </div>
         </div>
         <div className="flex justify-end gap-2 pt-1">
-          <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>{t('common:common.cancel')}</Button>
           <Button type="submit" disabled={pending || (!isEdit && !employeeId) || !period}>
-            {pending ? 'Saving...' : isEdit ? 'Save changes' : 'Create record'}
+            {pending ? t('common:common.loading') : isEdit ? t('common:common.save') : t('payroll.new')}
           </Button>
         </div>
       </form>

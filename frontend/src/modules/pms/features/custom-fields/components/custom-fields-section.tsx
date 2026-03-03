@@ -1,4 +1,5 @@
 import { Settings } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useCustomFields } from '../hooks/use-custom-fields'
 import { CustomFieldRenderer } from './custom-field-renderer'
 
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function CustomFieldsSection({ projectId, taskId: _taskId, customFields, onUpdate }: Props) {
+  const { t } = useTranslation('pms')
   const { data: definitions = [], isLoading } = useCustomFields(projectId)
   const values = customFields ?? {}
 
@@ -23,7 +25,7 @@ export function CustomFieldsSection({ projectId, taskId: _taskId, customFields, 
   if (definitions.length === 0) {
     return (
       <div className="px-6 py-4 border-b border-border">
-        <p className="text-xs font-medium text-neutral-500 mb-1">Custom Fields</p>
+        <p className="text-xs font-medium text-neutral-500 mb-1">{t('customField.title')}</p>
         <p className="text-xs text-neutral-400 flex items-center gap-1">
           <Settings className="h-3 w-3" />
           No custom fields. Configure in project settings.
@@ -34,7 +36,7 @@ export function CustomFieldsSection({ projectId, taskId: _taskId, customFields, 
 
   return (
     <div className="px-6 py-4 border-b border-border">
-      <p className="text-xs font-medium text-neutral-500 mb-3">Custom Fields</p>
+      <p className="text-xs font-medium text-neutral-500 mb-3">{t('customField.title')}</p>
       <div className="space-y-2.5">
         {definitions.map((def) => (
           <div key={def.id} className="flex items-center gap-3">

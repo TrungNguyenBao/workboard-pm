@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Check, Pencil, Trash2, X } from 'lucide-react'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import { Badge } from '@/shared/components/ui/badge'
@@ -30,6 +31,7 @@ const STATUS_COLORS: Record<string, string> = {
 }
 
 export default function LeaveRequestsListPage() {
+  const { t } = useTranslation('hrm')
   const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId) ?? ''
   const [page, setPage] = useState(1)
   const [statusFilter, setStatusFilter] = useState('all')
@@ -58,7 +60,7 @@ export default function LeaveRequestsListPage() {
     { key: 'days', label: 'Days', className: 'w-16', render: (r: LeaveRequest) => r.days },
     {
       key: 'status',
-      label: 'Status',
+      label: t('common:common.status'),
       render: (r: LeaveRequest) => (
         <Badge variant="outline" className={STATUS_COLORS[r.status] ?? ''}>
           {r.status}
@@ -114,12 +116,12 @@ export default function LeaveRequestsListPage() {
   return (
     <div className="flex flex-col h-full">
       <HrmPageHeader
-        title="Leave Requests"
-        description="Manage employee leave requests and types"
+        title={t('leave.title')}
+        description={t('leave.description')}
         searchValue=""
         onSearchChange={() => {}}
         onCreateClick={() => setRequestDialogOpen(true)}
-        createLabel="New request"
+        createLabel={t('leave.new')}
       >
         <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1) }}>
           <SelectTrigger className="w-32 h-8"><SelectValue /></SelectTrigger>
@@ -138,17 +140,17 @@ export default function LeaveRequestsListPage() {
       {/* Leave types chips */}
       {(typesData?.items ?? []).length > 0 && (
         <div className="flex flex-wrap gap-2 px-6 py-2 border-b border-border bg-neutral-50/50">
-          {(typesData?.items ?? []).map((t) => (
-            <div key={t.id} className="flex items-center gap-1 text-xs bg-white border border-border rounded px-2 py-1">
-              <span>{t.name} ({t.days_per_year}d/yr)</span>
-              <button className="text-neutral-400 hover:text-neutral-700" onClick={() => { setEditType(t); setTypeDialogOpen(true) }}>
+          {(typesData?.items ?? []).map((lt) => (
+            <div key={lt.id} className="flex items-center gap-1 text-xs bg-white border border-border rounded px-2 py-1">
+              <span>{lt.name} ({lt.days_per_year}d/yr)</span>
+              <button className="text-neutral-400 hover:text-neutral-700" onClick={() => { setEditType(lt); setTypeDialogOpen(true) }}>
                 <Pencil className="h-3 w-3" />
               </button>
               <button
                 className="text-neutral-400 hover:text-red-600"
                 onClick={async () => {
-                  if (window.confirm(`Delete "${t.name}"?`)) {
-                    await deleteType.mutateAsync(t.id)
+                  if (window.confirm(t('common:common.deleteConfirm', { name: lt.name }))) {
+                    await deleteType.mutateAsync(lt.id)
                     toast({ title: 'Leave type deleted', variant: 'success' })
                   }
                 }}
@@ -164,7 +166,7 @@ export default function LeaveRequestsListPage() {
         columns={columns}
         data={data?.items ?? []}
         keyFn={(r) => r.id}
-        emptyMessage="No leave requests yet"
+        emptyMessage={t('leave.empty')}
       />
       <HrmPagination page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
 

@@ -1,6 +1,7 @@
 import { Bell } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/shared/components/ui/dropdown-menu'
 import { formatRelativeTime } from '@/shared/lib/utils'
@@ -18,6 +19,7 @@ interface Notification {
 }
 
 export function NotificationBell() {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const navigate = useNavigate()
 
@@ -42,7 +44,7 @@ export function NotificationBell() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon-sm" className="relative">
+        <Button variant="ghost" size="icon-sm" className="relative" aria-label={t('notifications.title')}>
           <Bell className="h-4 w-4" />
           {unread.length > 0 && (
             <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-primary text-white text-xs flex items-center justify-center font-medium">
@@ -53,19 +55,19 @@ export function NotificationBell() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-72">
         <div className="flex items-center justify-between px-2 py-1.5">
-          <DropdownMenuLabel className="p-0">Notifications</DropdownMenuLabel>
+          <DropdownMenuLabel className="p-0">{t('notifications.title')}</DropdownMenuLabel>
           {unread.length > 0 && (
             <button
               onClick={() => markAllRead.mutate()}
               className="text-xs text-primary hover:underline"
             >
-              Mark all read
+              {t('notifications.markAllRead')}
             </button>
           )}
         </div>
         <DropdownMenuSeparator />
         {notifications.length === 0 && (
-          <div className="px-3 py-4 text-center text-sm text-neutral-400">No notifications</div>
+          <div className="px-3 py-4 text-center text-sm text-neutral-400">{t('notifications.empty')}</div>
         )}
         {notifications.slice(0, 8).map((n) => (
           <DropdownMenuItem

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/components/ui/button'
 import { Badge } from '@/shared/components/ui/badge'
 import { useCustomFields, useDeleteCustomField } from '../hooks/use-custom-fields'
@@ -20,17 +21,18 @@ interface Props {
 }
 
 export function FieldConfigPanel({ projectId }: Props) {
+  const { t } = useTranslation('pms')
   const [addOpen, setAddOpen] = useState(false)
   const { data: fields = [], isLoading } = useCustomFields(projectId)
   const deleteField = useDeleteCustomField(projectId)
 
   function handleDelete(fieldId: string, name: string) {
-    if (!window.confirm(`Delete field "${name}"? This will remove its values from all tasks.`)) return
+    if (!window.confirm(t('common:common.deleteConfirmFull', { name }))) return
     deleteField.mutate(fieldId)
   }
 
   if (isLoading) {
-    return <p className="text-xs text-neutral-400 py-2">Loading fields…</p>
+    return <p className="text-xs text-neutral-400 py-2">{t('common:common.loading')}</p>
   }
 
   return (
@@ -71,7 +73,7 @@ export function FieldConfigPanel({ projectId }: Props) {
         className="text-xs gap-1 h-7 px-2"
       >
         <Plus className="h-3.5 w-3.5" />
-        Add field
+        {t('customField.addField')}
       </Button>
 
       <AddFieldDialog projectId={projectId} open={addOpen} onOpenChange={setAddOpen} />

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog'
 import { Input } from '@/shared/components/ui/input'
@@ -23,6 +24,7 @@ export function LeaveTypeFormDialog({ open, onOpenChange, workspaceId, leaveType
 }
 
 function LeaveTypeFormContent({ workspaceId, leaveType, onOpenChange }: Omit<Props, 'open'>) {
+  const { t } = useTranslation('hrm')
   const createType = useCreateLeaveType(workspaceId)
   const updateType = useUpdateLeaveType(workspaceId)
   const isEdit = !!leaveType
@@ -44,7 +46,7 @@ function LeaveTypeFormContent({ workspaceId, leaveType, onOpenChange }: Omit<Pro
       }
       onOpenChange(false)
     } catch {
-      toast({ title: `Failed to ${isEdit ? 'update' : 'create'} leave type`, variant: 'error' })
+      toast({ title: 'Failed to save leave type', variant: 'error' })
     }
   }
 
@@ -57,7 +59,7 @@ function LeaveTypeFormContent({ workspaceId, leaveType, onOpenChange }: Omit<Pro
       </DialogHeader>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1.5">
-          <Label htmlFor="lt-name">Name *</Label>
+          <Label htmlFor="lt-name">{t('common:common.name')} *</Label>
           <Input id="lt-name" value={name} onChange={(e) => setName(e.target.value)} autoFocus placeholder="e.g. Annual, Sick" />
         </div>
         <div className="space-y-1.5">
@@ -65,9 +67,9 @@ function LeaveTypeFormContent({ workspaceId, leaveType, onOpenChange }: Omit<Pro
           <Input id="lt-days" type="number" min="0" value={daysPerYear} onChange={(e) => setDaysPerYear(e.target.value)} />
         </div>
         <div className="flex justify-end gap-2 pt-1">
-          <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>{t('common:common.cancel')}</Button>
           <Button type="submit" disabled={pending || !name.trim()}>
-            {pending ? 'Saving...' : isEdit ? 'Save changes' : 'Create type'}
+            {pending ? t('common:common.loading') : isEdit ? t('common:common.save') : 'Create type'}
           </Button>
         </div>
       </form>

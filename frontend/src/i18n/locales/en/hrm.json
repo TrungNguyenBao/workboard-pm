@@ -1,0 +1,27 @@
+{
+  "employees.title": "Employees",
+  "employees.description": "Manage workforce and personnel",
+  "employees.new": "New employee",
+  "employees.empty": "No employees yet",
+  "employees.deleted": "Employee deleted",
+  "employees.name": "Name",
+  "employees.email": "Email",
+  "employees.position": "Position",
+  "employees.hireDate": "Hire Date",
+
+  "departments.title": "Departments",
+  "departments.description": "Manage departments",
+  "departments.new": "New department",
+  "departments.empty": "No departments yet",
+  "departments.deleted": "Department deleted",
+
+  "leave.title": "Leave",
+  "leave.description": "Manage leave requests",
+  "leave.new": "New leave request",
+  "leave.empty": "No leave requests yet",
+
+  "payroll.title": "Payroll",
+  "payroll.description": "Manage payroll",
+  "payroll.new": "New payroll",
+  "payroll.empty": "No payroll records yet"
+}

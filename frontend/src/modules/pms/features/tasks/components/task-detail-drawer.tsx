@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { CalendarDays, CheckSquare, History, MessageSquare, Paperclip, Plus, Repeat, Tag, Trash2, Upload, User, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/shared/components/ui/sheet'
 import { Button } from '@/shared/components/ui/button'
 import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar'
@@ -51,6 +52,7 @@ interface Props {
 }
 
 export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Props) {
+  const { t } = useTranslation('pms')
   const qc = useQueryClient()
   const [newComment, setNewComment] = useState('')
   const [commentLoading, setCommentLoading] = useState(false)
@@ -205,10 +207,10 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
                 </SheetTitle>
                 <button
                   onClick={() => {
-                    if (window.confirm('Delete this task?')) deleteTask.mutate()
+                    if (window.confirm(t('common:common.deleteConfirmFull', { name: task.title }))) deleteTask.mutate()
                   }}
                   className="mt-0.5 flex-shrink-0 text-neutral-300 hover:text-red-500 transition-colors"
-                  title="Delete task"
+                  title={t('common:common.delete')}
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -219,7 +221,7 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
               {/* Meta */}
               <div className="px-6 py-4 space-y-3 border-b border-border">
                 {/* Priority */}
-                <MetaRow icon={<Tag className="h-4 w-4" />} label="Priority">
+                <MetaRow icon={<Tag className="h-4 w-4" />} label={t('task.priority')}>
                   <Select
                     value={task.priority}
                     onValueChange={(v) => updateTask.mutate({ priority: v })}
@@ -228,16 +230,17 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {['none', 'low', 'medium', 'high'].map((p) => (
-                        <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>
-                      ))}
+                      <SelectItem value="none">{t('task.priority.none')}</SelectItem>
+                      <SelectItem value="low">{t('task.priority.low')}</SelectItem>
+                      <SelectItem value="medium">{t('task.priority.medium')}</SelectItem>
+                      <SelectItem value="high">{t('task.priority.high')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </MetaRow>
 
                 {/* Assignee */}
                 {members.length > 0 && (
-                  <MetaRow icon={<User className="h-4 w-4" />} label="Assignee">
+                  <MetaRow icon={<User className="h-4 w-4" />} label={t('task.assignee')}>
                     <Select
                       value={task.assignee_id ?? 'none'}
                       onValueChange={(v) =>
@@ -245,10 +248,10 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
                       }
                     >
                       <SelectTrigger className="h-7 w-36 text-xs border-0 bg-neutral-100 hover:bg-neutral-200">
-                        <SelectValue placeholder="Unassigned" />
+                        <SelectValue placeholder={t('task.assignee')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="none">Unassigned</SelectItem>
+                        <SelectItem value="none">{t('task.assignee')}</SelectItem>
                         {members.map((m) => (
                           <SelectItem key={m.user_id} value={m.user_id}>
                             {m.user_name}
@@ -260,7 +263,7 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
                 )}
 
                 {/* Due date */}
-                <MetaRow icon={<CalendarDays className="h-4 w-4" />} label="Due date">
+                <MetaRow icon={<CalendarDays className="h-4 w-4" />} label={t('task.dueDate')}>
                   <input
                     type="date"
                     defaultValue={task.due_date ? task.due_date.slice(0, 10) : ''}
@@ -288,7 +291,7 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
 
               {/* Description */}
               <div className="px-6 py-4 border-b border-border">
-                <p className="text-xs font-medium text-neutral-500 mb-2">Description</p>
+                <p className="text-xs font-medium text-neutral-500 mb-2">{t('task.description')}</p>
                 <div
                   contentEditable
                   suppressContentEditableWarning
@@ -424,7 +427,7 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
               <div className="px-6 py-4 border-b border-border">
                 <p className="text-xs font-medium text-neutral-500 mb-2">
                   <History className="h-3.5 w-3.5 inline mr-1" />
-                  History
+                  {t('task.activity')}
                 </p>
                 <TaskActivity taskId={task.id} projectId={projectId} />
               </div>
@@ -433,7 +436,7 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
               <div className="px-6 py-4">
                 <p className="text-xs font-medium text-neutral-500 mb-3">
                   <MessageSquare className="h-3.5 w-3.5 inline mr-1" />
-                  Activity ({comments.length})
+                  {t('task.activity')} ({comments.length})
                 </p>
                 <div className="space-y-3 mb-4">
                   {comments.map((c) => (

@@ -145,3 +145,20 @@ Full HRM module with pagination/filtering, leave management, and payroll trackin
 | Frontend: Payroll Records UI (list, create, edit, delete) | Done |
 | Frontend: HRM router with 4 sub-routes (`/hrm/departments`, `/hrm/employees`, `/hrm/leave`, `/hrm/payroll`) | Done |
 | Frontend: Sidebar navigation for HRM features | Done |
+
+---
+
+## Phase 9 — Frontend i18n Multi-language Support (Complete)
+
+English and Vietnamese (EN/VI) internationalization across entire A-ERP frontend using react-i18next.
+
+| Item | Status |
+|---|---|
+| Frontend: Install react-i18next and i18next packages | Done |
+| Frontend: Create i18n config with 5 namespaces (common, pms, wms, hrm, crm) | Done |
+| Frontend: Create 10 translation JSON files (vi/en for each namespace) | Done |
+| Frontend: Replace all hardcoded strings with t() calls in 55+ components | Done |
+| Frontend: Create language switcher component with Globe icon | Done |
+| Frontend: Add language switcher to sidebar footer | Done |
+| Frontend: Add language option to settings page | Done |
+| Frontend: Persist language preference in localStorage (key: a-erp-language) | Done |

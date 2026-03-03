@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog'
 
 interface ShortcutsDialogProps {
@@ -6,34 +7,36 @@ interface ShortcutsDialogProps {
   onClose: () => void
 }
 
-const SHORTCUTS: { group: string; items: { keys: string[]; label: string }[] }[] = [
-  {
-    group: 'Navigation',
-    items: [
-      { keys: ['G', 'H'], label: 'Go to My Tasks' },
-      { keys: ['G', 'B'], label: 'Go to Board view' },
-      { keys: ['G', 'L'], label: 'Go to List view' },
-    ],
-  },
-  {
-    group: 'Tasks',
-    items: [
-      { keys: ['N'], label: 'New task (in focused section)' },
-      { keys: ['Enter'], label: 'Open selected task' },
-      { keys: ['Backspace'], label: 'Delete selected task' },
-    ],
-  },
-  {
-    group: 'Search & Help',
-    items: [
-      { keys: ['Ctrl', 'K'], label: 'Open command palette' },
-      { keys: ['?'], label: 'Show keyboard shortcuts' },
-      { keys: ['Esc'], label: 'Close dialog / cancel' },
-    ],
-  },
-]
-
 export function KeyboardShortcutsDialog({ open, onClose }: ShortcutsDialogProps) {
+  const { t } = useTranslation()
+
+  const SHORTCUTS = [
+    {
+      group: t('shortcuts.navigation'),
+      items: [
+        { keys: ['G', 'H'], label: t('shortcuts.goToMyTasks') },
+        { keys: ['G', 'B'], label: t('shortcuts.goToBoard') },
+        { keys: ['G', 'L'], label: t('shortcuts.goToList') },
+      ],
+    },
+    {
+      group: t('shortcuts.tasks'),
+      items: [
+        { keys: ['N'], label: t('shortcuts.newTask') },
+        { keys: ['Enter'], label: t('shortcuts.openSelected') },
+        { keys: ['Backspace'], label: t('shortcuts.deleteSelected') },
+      ],
+    },
+    {
+      group: t('shortcuts.searchHelp'),
+      items: [
+        { keys: ['Ctrl', 'K'], label: t('shortcuts.openCommandPalette') },
+        { keys: ['?'], label: t('shortcuts.showShortcuts') },
+        { keys: ['Esc'], label: t('shortcuts.closeDialog') },
+      ],
+    },
+  ]
+
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose()
@@ -46,7 +49,7 @@ export function KeyboardShortcutsDialog({ open, onClose }: ShortcutsDialogProps)
     <Dialog open={open} onOpenChange={(v) => { if (!v) onClose() }}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Keyboard Shortcuts</DialogTitle>
+          <DialogTitle>{t('shortcuts.title')}</DialogTitle>
         </DialogHeader>
         <div className="space-y-5 pt-1">
           {SHORTCUTS.map(({ group, items }) => (

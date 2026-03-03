@@ -1,12 +1,6 @@
 import { type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { CheckCircle2, LayoutDashboard, Users, Zap } from 'lucide-react'
-
-const features = [
-  { icon: LayoutDashboard, text: 'Organize projects with boards, lists & timelines' },
-  { icon: Users, text: 'Collaborate with your team in real-time' },
-  { icon: Zap, text: 'Automate workflows and stay on track' },
-  { icon: CheckCircle2, text: 'Track progress from idea to completion' },
-]
 
 interface AuthLayoutProps {
   children: ReactNode
@@ -14,6 +8,15 @@ interface AuthLayoutProps {
 
 /** Split-panel auth layout: left branding + right form */
 export function AuthLayout({ children }: AuthLayoutProps) {
+  const { t } = useTranslation()
+
+  const features = [
+    { icon: LayoutDashboard, text: t('auth.branding.feature1') },
+    { icon: Users, text: t('auth.branding.feature2') },
+    { icon: Zap, text: t('auth.branding.feature3') },
+    { icon: CheckCircle2, text: t('auth.branding.feature4') },
+  ]
+
   return (
     <div className="flex min-h-screen">
       {/* Left branding panel — hidden on mobile */}
@@ -24,18 +27,15 @@ export function AuthLayout({ children }: AuthLayoutProps) {
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm text-lg font-bold">
               W
             </div>
-            <span className="text-xl font-semibold tracking-tight">WorkBoard</span>
+            <span className="text-xl font-semibold tracking-tight">{t('app.name')}</span>
           </div>
 
           {/* Tagline */}
-          <h2 className="text-3xl font-bold leading-tight mb-3">
-            Where teams turn plans
-            <br />
-            into progress.
+          <h2 className="text-3xl font-bold leading-tight mb-3" style={{ whiteSpace: 'pre-line' }}>
+            {t('auth.branding.tagline')}
           </h2>
           <p className="text-white/70 text-base mb-12 max-w-[340px]">
-            The project management platform that keeps everyone aligned, from first idea to final
-            delivery.
+            {t('auth.branding.subtitle')}
           </p>
 
           {/* Feature list */}
@@ -52,7 +52,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         </div>
 
         {/* Footer */}
-        <p className="text-xs text-white/40">&copy; {new Date().getFullYear()} WorkBoard. All rights reserved.</p>
+        <p className="text-xs text-white/40">&copy; {new Date().getFullYear()} {t('auth.branding.copyright')}</p>
       </div>
 
       {/* Right form panel */}

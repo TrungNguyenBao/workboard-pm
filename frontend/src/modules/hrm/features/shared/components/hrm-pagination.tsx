@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/components/ui/button'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
@@ -9,13 +10,14 @@ interface Props {
 }
 
 export function HrmPagination({ page, pageSize, total, onPageChange }: Props) {
+  const { t } = useTranslation()
   const totalPages = Math.max(1, Math.ceil(total / pageSize))
   if (total <= pageSize) return null
 
   return (
     <div className="flex items-center justify-between border-t border-border px-6 py-3">
       <span className="text-sm text-neutral-500">
-        {total} item{total !== 1 ? 's' : ''} · Page {page} of {totalPages}
+        {t('common.items', { count: total })} · {t('common.page', { page, total: totalPages })}
       </span>
       <div className="flex items-center gap-1">
         <Button variant="ghost" size="sm" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>

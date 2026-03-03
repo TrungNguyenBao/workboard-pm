@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog'
 import { Input } from '@/shared/components/ui/input'
@@ -24,6 +25,7 @@ export function LeaveRequestFormDialog({ open, onOpenChange, workspaceId }: Prop
 }
 
 function LeaveRequestFormContent({ workspaceId, onOpenChange }: Omit<Props, 'open'>) {
+  const { t } = useTranslation('hrm')
   const createRequest = useCreateLeaveRequest(workspaceId)
   const { data: typesData } = useLeaveTypes(workspaceId, { page_size: 50 })
   const { data: employeesData } = useEmployees(workspaceId, { page_size: 100 })
@@ -50,16 +52,17 @@ function LeaveRequestFormContent({ workspaceId, onOpenChange }: Omit<Props, 'ope
     } catch {
       toast({ title: 'Failed to create leave request', variant: 'error' })
     }
+
   }
 
   return (
     <DialogContent className="max-w-md">
       <DialogHeader>
-        <DialogTitle>New leave request</DialogTitle>
+        <DialogTitle>{t('leave.new')}</DialogTitle>
       </DialogHeader>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1.5">
-          <Label>Employee *</Label>
+          <Label>{t('employees.title')} *</Label>
           <Select value={employeeId} onValueChange={setEmployeeId}>
             <SelectTrigger><SelectValue placeholder="Select employee" /></SelectTrigger>
             <SelectContent>
@@ -95,9 +98,9 @@ function LeaveRequestFormContent({ workspaceId, onOpenChange }: Omit<Props, 'ope
           </div>
         </div>
         <div className="flex justify-end gap-2 pt-1">
-          <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>{t('common:common.cancel')}</Button>
           <Button type="submit" disabled={createRequest.isPending || !employeeId || !leaveTypeId || !startDate || !endDate}>
-            {createRequest.isPending ? 'Creating...' : 'Create request'}
+            {createRequest.isPending ? t('common:common.loading') : t('leave.new')}
           </Button>
         </div>
       </form>

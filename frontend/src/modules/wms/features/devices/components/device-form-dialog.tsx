@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog'
 import { Input } from '@/shared/components/ui/input'
@@ -34,6 +35,7 @@ export function DeviceFormDialog({ open, onOpenChange, workspaceId, device }: Pr
 }
 
 function DeviceFormContent({ workspaceId, device, onOpenChange }: Omit<Props, 'open'>) {
+  const { t } = useTranslation('wms')
   const createDevice = useCreateDevice(workspaceId)
   const updateDevice = useUpdateDevice(workspaceId)
   const isEdit = !!device
@@ -69,7 +71,7 @@ function DeviceFormContent({ workspaceId, device, onOpenChange }: Omit<Props, 'o
       }
       onOpenChange(false)
     } catch {
-      toast({ title: `Failed to ${isEdit ? 'update' : 'create'} device`, variant: 'error' })
+      toast({ title: 'Failed to save device', variant: 'error' })
     }
   }
 
@@ -78,7 +80,7 @@ function DeviceFormContent({ workspaceId, device, onOpenChange }: Omit<Props, 'o
   return (
     <DialogContent className="max-w-md">
       <DialogHeader>
-        <DialogTitle>{isEdit ? 'Edit device' : 'New device'}</DialogTitle>
+        <DialogTitle>{isEdit ? 'Edit device' : t('devices.new')}</DialogTitle>
       </DialogHeader>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1.5">
@@ -87,7 +89,7 @@ function DeviceFormContent({ workspaceId, device, onOpenChange }: Omit<Props, 'o
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <Label>Product *</Label>
+            <Label>{t('products.title')} *</Label>
             <Select value={productId} onValueChange={setProductId}>
               <SelectTrigger><SelectValue placeholder="Select product" /></SelectTrigger>
               <SelectContent>
@@ -98,7 +100,7 @@ function DeviceFormContent({ workspaceId, device, onOpenChange }: Omit<Props, 'o
             </Select>
           </div>
           <div className="space-y-1.5">
-            <Label>Warehouse</Label>
+            <Label>{t('warehouses.title')}</Label>
             <Select value={warehouseId} onValueChange={setWarehouseId}>
               <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
               <SelectContent>
@@ -110,7 +112,7 @@ function DeviceFormContent({ workspaceId, device, onOpenChange }: Omit<Props, 'o
           </div>
         </div>
         <div className="space-y-1.5">
-          <Label>Status</Label>
+          <Label>{t('common:common.status')}</Label>
           <Select value={status} onValueChange={setStatus}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -125,9 +127,9 @@ function DeviceFormContent({ workspaceId, device, onOpenChange }: Omit<Props, 'o
           <Input id="dev-notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
         </div>
         <div className="flex justify-end gap-2 pt-1">
-          <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>{t('common:common.cancel')}</Button>
           <Button type="submit" disabled={pending || !serialNumber.trim() || !productId}>
-            {pending ? 'Saving…' : isEdit ? 'Save changes' : 'Create device'}
+            {pending ? t('products.saving') : isEdit ? t('products.saveChanges') : t('devices.new')}
           </Button>
         </div>
       </form>

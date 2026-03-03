@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import { toast } from '@/shared/components/ui/toast'
@@ -11,6 +12,7 @@ import { type Department, useDepartments, useDeleteDepartment } from '../hooks/u
 const PAGE_SIZE = 20
 
 export default function DepartmentsListPage() {
+  const { t } = useTranslation('hrm')
   const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId) ?? ''
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
@@ -21,8 +23,8 @@ export default function DepartmentsListPage() {
   const deleteDept = useDeleteDepartment(workspaceId)
 
   const columns = [
-    { key: 'name', label: 'Name', render: (d: Department) => <span className="font-medium">{d.name}</span> },
-    { key: 'description', label: 'Description', render: (d: Department) => d.description ?? '-' },
+    { key: 'name', label: t('common:common.name'), render: (d: Department) => <span className="font-medium">{d.name}</span> },
+    { key: 'description', label: t('common:common.description'), render: (d: Department) => d.description ?? '-' },
     {
       key: 'actions',
       label: '',
@@ -38,9 +40,9 @@ export default function DepartmentsListPage() {
           <button
             className="p-1 text-neutral-400 hover:text-red-600"
             onClick={async () => {
-              if (window.confirm(`Delete "${d.name}"?`)) {
+              if (window.confirm(t('common:common.deleteConfirm', { name: d.name }))) {
                 await deleteDept.mutateAsync(d.id)
-                toast({ title: 'Department deleted', variant: 'success' })
+                toast({ title: t('departments.deleted'), variant: 'success' })
               }
             }}
           >
@@ -54,18 +56,18 @@ export default function DepartmentsListPage() {
   return (
     <div className="flex flex-col h-full">
       <HrmPageHeader
-        title="Departments"
-        description="Manage organizational departments"
+        title={t('departments.title')}
+        description={t('departments.description')}
         searchValue={search}
         onSearchChange={(v) => { setSearch(v); setPage(1) }}
         onCreateClick={() => { setEditDept(null); setDialogOpen(true) }}
-        createLabel="New department"
+        createLabel={t('departments.new')}
       />
       <HrmDataTable
         columns={columns}
         data={data?.items ?? []}
         keyFn={(d) => d.id}
-        emptyMessage="No departments yet"
+        emptyMessage={t('departments.empty')}
       />
       <HrmPagination page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
       <DepartmentFormDialog

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/components/ui/button'
 import { Input } from '@/shared/components/ui/input'
 import { Plus, Search } from 'lucide-react'
@@ -21,6 +22,7 @@ export function WmsPageHeader({
   createLabel = 'Create',
   children,
 }: Props) {
+  const { t } = useTranslation()
   return (
     <div className="border-b border-border px-6 py-4">
       <div className="flex items-center justify-between mb-3">
@@ -37,7 +39,7 @@ export function WmsPageHeader({
         <div className="relative flex-1 max-w-xs">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
           <Input
-            placeholder="Search…"
+            placeholder={t('common.search')}
             value={searchValue}
             onChange={(e) => onSearchChange(e.target.value)}
             className="pl-9 h-8"

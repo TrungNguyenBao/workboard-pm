@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { UserPlus } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import {
   Dialog,
   DialogContent,
@@ -19,6 +20,7 @@ interface Props {
 }
 
 export function InviteMembersDialog({ open, onOpenChange, workspaceId }: Props) {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const [email, setEmail] = useState('')
   const [role, setRole] = useState('member')
@@ -36,7 +38,7 @@ export function InviteMembersDialog({ open, onOpenChange, workspaceId }: Props) 
       onOpenChange(false)
     },
     onError: (err: { response?: { data?: { detail?: string } } }) => {
-      setError(err.response?.data?.detail ?? 'Failed to invite member')
+      setError(err.response?.data?.detail ?? t('members.invite') + ' failed')
     },
   })
 
@@ -53,13 +55,13 @@ export function InviteMembersDialog({ open, onOpenChange, workspaceId }: Props) 
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <UserPlus className="h-4 w-4" />
-            Invite members
+            {t('sidebar.inviteMembers')}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
           <div className="flex gap-2">
             <Input
-              placeholder="Email address"
+              placeholder={t('common.email')}
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -71,22 +73,22 @@ export function InviteMembersDialog({ open, onOpenChange, workspaceId }: Props) 
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="member">Member</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="guest">Guest</SelectItem>
+                <SelectItem value="member">{t('members.role.member')}</SelectItem>
+                <SelectItem value="admin">{t('members.role.admin')}</SelectItem>
+                <SelectItem value="guest">{t('members.role.guest')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           {error && <p className="text-xs text-red-500">{error}</p>}
           <p className="text-xs text-neutral-500">
-            The user must already have a WorkBoard account.
+            {t('app.name')} — {t('auth.alreadyHaveAccount')}
           </p>
           <div className="flex justify-end gap-2">
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" disabled={!email.trim() || invite.isPending}>
-              {invite.isPending ? 'Inviting…' : 'Invite'}
+              {invite.isPending ? t('common.loading') : t('members.invite')}
             </Button>
           </div>
         </form>

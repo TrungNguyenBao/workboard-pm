@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/shared/components/ui/sheet'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { useUpdateGoal, useDeleteGoal } from '../hooks/use-goals'
@@ -21,6 +22,7 @@ const PROGRESS_COLOR: Record<string, string> = {
 }
 
 export function GoalDetailDrawer({ goal, workspaceId, onClose }: Props) {
+  const { t } = useTranslation('pms')
   const updateGoal = useUpdateGoal(workspaceId)
   const deleteGoal = useDeleteGoal(workspaceId)
 
@@ -37,7 +39,7 @@ export function GoalDetailDrawer({ goal, workspaceId, onClose }: Props) {
 
   function handleDelete() {
     if (!goal) return
-    if (window.confirm('Delete this goal? This cannot be undone.')) {
+    if (window.confirm(t('common:common.deleteConfirmFull', { name: goal.title }))) {
       deleteGoal.mutate(goal.id)
       onClose()
     }
@@ -67,7 +69,7 @@ export function GoalDetailDrawer({ goal, workspaceId, onClose }: Props) {
                 <button
                   onClick={handleDelete}
                   className="mt-0.5 flex-shrink-0 text-neutral-300 hover:text-red-500 transition-colors"
-                  title="Delete goal"
+                  title={t('common:common.delete')}
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -77,17 +79,17 @@ export function GoalDetailDrawer({ goal, workspaceId, onClose }: Props) {
             <div className="flex-1 overflow-y-auto">
               {/* Meta fields */}
               <div className="px-6 py-4 space-y-3 border-b border-border">
-                <MetaRow label="Status">
+                <MetaRow label={t('common:common.status')}>
                   <Select value={goal.status} onValueChange={(v) => patch({ status: v })}>
                     <SelectTrigger className="h-7 w-32 text-xs border-0 bg-neutral-100 hover:bg-neutral-200">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="on_track">On Track</SelectItem>
-                      <SelectItem value="at_risk">At Risk</SelectItem>
-                      <SelectItem value="off_track">Off Track</SelectItem>
-                      <SelectItem value="achieved">Achieved</SelectItem>
-                      <SelectItem value="dropped">Dropped</SelectItem>
+                      <SelectItem value="on_track">{t('goal.status.onTrack')}</SelectItem>
+                      <SelectItem value="at_risk">{t('goal.status.atRisk')}</SelectItem>
+                      <SelectItem value="off_track">{t('goal.status.offTrack')}</SelectItem>
+                      <SelectItem value="achieved">{t('goal.status.achieved')}</SelectItem>
+                      <SelectItem value="dropped">{t('goal.status.dropped')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </MetaRow>
@@ -105,7 +107,7 @@ export function GoalDetailDrawer({ goal, workspaceId, onClose }: Props) {
                   </Select>
                 </MetaRow>
 
-                <MetaRow label="Due date">
+                <MetaRow label={t('task.dueDate')}>
                   <input
                     type="date"
                     defaultValue={goal.due_date ? goal.due_date.slice(0, 10) : ''}
@@ -158,7 +160,7 @@ export function GoalDetailDrawer({ goal, workspaceId, onClose }: Props) {
 
               {/* Description */}
               <div className="px-6 py-4 border-b border-border">
-                <p className="text-xs font-medium text-neutral-500 mb-2">Description</p>
+                <p className="text-xs font-medium text-neutral-500 mb-2">{t('common:common.description')}</p>
                 <div
                   contentEditable
                   suppressContentEditableWarning

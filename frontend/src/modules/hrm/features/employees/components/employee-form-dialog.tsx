@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog'
 import { Input } from '@/shared/components/ui/input'
@@ -25,6 +26,7 @@ export function EmployeeFormDialog({ open, onOpenChange, workspaceId, employee }
 }
 
 function EmployeeFormContent({ workspaceId, employee, onOpenChange }: Omit<Props, 'open'>) {
+  const { t } = useTranslation('hrm')
   const createEmployee = useCreateEmployee(workspaceId)
   const updateEmployee = useUpdateEmployee(workspaceId)
   const { data: deptsData } = useDepartments(workspaceId, { page_size: 100 })
@@ -56,7 +58,7 @@ function EmployeeFormContent({ workspaceId, employee, onOpenChange }: Omit<Props
       }
       onOpenChange(false)
     } catch {
-      toast({ title: `Failed to ${isEdit ? 'update' : 'create'} employee`, variant: 'error' })
+      toast({ title: 'Failed to save employee', variant: 'error' })
     }
   }
 
@@ -65,29 +67,29 @@ function EmployeeFormContent({ workspaceId, employee, onOpenChange }: Omit<Props
   return (
     <DialogContent className="max-w-md">
       <DialogHeader>
-        <DialogTitle>{isEdit ? 'Edit employee' : 'New employee'}</DialogTitle>
+        <DialogTitle>{isEdit ? 'Edit employee' : t('employees.new')}</DialogTitle>
       </DialogHeader>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1.5">
-          <Label htmlFor="emp-name">Name *</Label>
+          <Label htmlFor="emp-name">{t('employees.name')} *</Label>
           <Input id="emp-name" value={name} onChange={(e) => setName(e.target.value)} autoFocus />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="emp-email">Email *</Label>
+          <Label htmlFor="emp-email">{t('employees.email')} *</Label>
           <Input id="emp-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <Label htmlFor="emp-position">Position</Label>
+            <Label htmlFor="emp-position">{t('employees.position')}</Label>
             <Input id="emp-position" value={position} onChange={(e) => setPosition(e.target.value)} />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="emp-hire-date">Hire date</Label>
+            <Label htmlFor="emp-hire-date">{t('employees.hireDate')}</Label>
             <Input id="emp-hire-date" type="date" value={hireDate} onChange={(e) => setHireDate(e.target.value)} />
           </div>
         </div>
         <div className="space-y-1.5">
-          <Label>Department</Label>
+          <Label>{t('departments.title')}</Label>
           <Select value={departmentId} onValueChange={setDepartmentId}>
             <SelectTrigger><SelectValue placeholder="No department" /></SelectTrigger>
             <SelectContent>
@@ -99,9 +101,9 @@ function EmployeeFormContent({ workspaceId, employee, onOpenChange }: Omit<Props
           </Select>
         </div>
         <div className="flex justify-end gap-2 pt-1">
-          <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>{t('common:common.cancel')}</Button>
           <Button type="submit" disabled={pending || !name.trim() || !email.trim()}>
-            {pending ? 'Saving...' : isEdit ? 'Save changes' : 'Create employee'}
+            {pending ? t('common:common.loading') : isEdit ? t('common:common.save') : t('employees.new')}
           </Button>
         </div>
       </form>

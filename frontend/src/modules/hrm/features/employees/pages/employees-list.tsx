@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import { toast } from '@/shared/components/ui/toast'
@@ -11,6 +12,7 @@ import { type Employee, useEmployees, useDeleteEmployee } from '../hooks/use-emp
 const PAGE_SIZE = 20
 
 export default function EmployeesListPage() {
+  const { t } = useTranslation('hrm')
   const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId) ?? ''
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
@@ -21,12 +23,12 @@ export default function EmployeesListPage() {
   const deleteEmployee = useDeleteEmployee(workspaceId)
 
   const columns = [
-    { key: 'name', label: 'Name', render: (e: Employee) => <span className="font-medium">{e.name}</span> },
-    { key: 'email', label: 'Email', render: (e: Employee) => e.email },
-    { key: 'position', label: 'Position', render: (e: Employee) => e.position ?? '-' },
+    { key: 'name', label: t('employees.name'), render: (e: Employee) => <span className="font-medium">{e.name}</span> },
+    { key: 'email', label: t('employees.email'), render: (e: Employee) => e.email },
+    { key: 'position', label: t('employees.position'), render: (e: Employee) => e.position ?? '-' },
     {
       key: 'hire_date',
-      label: 'Hire Date',
+      label: t('employees.hireDate'),
       render: (e: Employee) => e.hire_date ? new Date(e.hire_date).toLocaleDateString() : '-',
     },
     {
@@ -44,9 +46,9 @@ export default function EmployeesListPage() {
           <button
             className="p-1 text-neutral-400 hover:text-red-600"
             onClick={async () => {
-              if (window.confirm(`Delete "${e.name}"?`)) {
+              if (window.confirm(t('common:common.deleteConfirm', { name: e.name }))) {
                 await deleteEmployee.mutateAsync(e.id)
-                toast({ title: 'Employee deleted', variant: 'success' })
+                toast({ title: t('employees.deleted'), variant: 'success' })
               }
             }}
           >
@@ -60,18 +62,18 @@ export default function EmployeesListPage() {
   return (
     <div className="flex flex-col h-full">
       <HrmPageHeader
-        title="Employees"
-        description="Manage workforce and personnel"
+        title={t('employees.title')}
+        description={t('employees.description')}
         searchValue={search}
         onSearchChange={(v) => { setSearch(v); setPage(1) }}
         onCreateClick={() => { setEditEmployee(null); setDialogOpen(true) }}
-        createLabel="New employee"
+        createLabel={t('employees.new')}
       />
       <HrmDataTable
         columns={columns}
         data={data?.items ?? []}
         keyFn={(e) => e.id}
-        emptyMessage="No employees yet"
+        emptyMessage={t('employees.empty')}
       />
       <HrmPagination page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
       <EmployeeFormDialog

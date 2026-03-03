@@ -1,14 +1,18 @@
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { Header } from '@/features/auth/components/header'
 import { Button } from '@/shared/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar'
 import { useAuthStore } from '@/stores/auth.store'
 import { generateInitials } from '@/shared/lib/utils'
+import { LANGUAGE_STORAGE_KEY } from '@/i18n'
 import api from '@/shared/lib/api'
 import type { AuthUser } from '@/stores/auth.store'
 
 export default function SettingsPage() {
+  const { t, i18n } = useTranslation()
   const user = useAuthStore((s) => s.user)
   const setUser = useAuthStore((s) => s.setUser)
 
@@ -44,7 +48,7 @@ export default function SettingsPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <Header title="Settings" />
+      <Header title={t('settings.title')} />
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-lg mx-auto w-full pt-8 px-6 pb-12">
           {/* Avatar preview */}
@@ -61,7 +65,7 @@ export default function SettingsPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-neutral-700 block mb-1">Name</label>
+              <label className="text-sm font-medium text-neutral-700 block mb-1">{t('settings.name')}</label>
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -70,7 +74,7 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-neutral-700 block mb-1">Avatar URL</label>
+              <label className="text-sm font-medium text-neutral-700 block mb-1">{t('settings.avatarUrl')}</label>
               <input
                 value={avatarUrl}
                 onChange={(e) => setAvatarUrl(e.target.value)}
@@ -80,7 +84,7 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-neutral-700 block mb-1">Email</label>
+              <label className="text-sm font-medium text-neutral-700 block mb-1">{t('settings.email')}</label>
               <input
                 value={user?.email ?? ''}
                 disabled
@@ -88,11 +92,30 @@ export default function SettingsPage() {
               />
             </div>
 
+            <div>
+              <label className="text-sm font-medium text-neutral-700 block mb-1">{t('language.label')}</label>
+              <Select
+                value={i18n.language}
+                onValueChange={(lng) => {
+                  i18n.changeLanguage(lng)
+                  localStorage.setItem(LANGUAGE_STORAGE_KEY, lng)
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="vi">{t('language.vi')}</SelectItem>
+                  <SelectItem value="en">{t('language.en')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             <hr className="border-border" />
-            <p className="text-sm font-semibold text-neutral-700">Change Password</p>
+            <p className="text-sm font-semibold text-neutral-700">{t('settings.changePassword')}</p>
 
             <div>
-              <label className="text-sm font-medium text-neutral-700 block mb-1">Current Password</label>
+              <label className="text-sm font-medium text-neutral-700 block mb-1">{t('settings.currentPassword')}</label>
               <input
                 type="password"
                 value={currentPw}
@@ -102,7 +125,7 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-neutral-700 block mb-1">New Password</label>
+              <label className="text-sm font-medium text-neutral-700 block mb-1">{t('settings.newPassword')}</label>
               <input
                 type="password"
                 value={newPw}
@@ -113,11 +136,11 @@ export default function SettingsPage() {
 
             <div className="flex items-center gap-3 pt-2">
               <Button type="submit" disabled={save.isPending}>
-                {save.isPending ? 'Saving…' : saved ? 'Saved ✓' : 'Save Changes'}
+                {save.isPending ? t('settings.saving') : saved ? t('settings.saved') : t('settings.save')}
               </Button>
               {save.isError && (
                 <p className="text-sm text-red-500">
-                  {(save.error as { response?: { data?: { detail?: string } } })?.response?.data?.detail ?? 'Failed to save'}
+                  {(save.error as { response?: { data?: { detail?: string } } })?.response?.data?.detail ?? t('settings.saveFailed')}
                 </p>
               )}
             </div>

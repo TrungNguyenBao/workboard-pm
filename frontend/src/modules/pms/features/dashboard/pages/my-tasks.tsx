@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { CheckCircle2, CheckSquare, Circle } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Header } from '@/features/auth/components/header'
 import { Badge } from '@/shared/components/ui/badge'
 import { TaskDetailDrawer } from '@/modules/pms/features/tasks/components/task-detail-drawer'
@@ -178,6 +179,7 @@ function BucketSection({
 }
 
 export default function MyTasksPage() {
+  const { t } = useTranslation('pms')
   const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId)
   const { data: tasks = [], isLoading } = useMyTasks()
   const { data: projects = [] } = useWorkspaceProjects()
@@ -189,23 +191,23 @@ export default function MyTasksPage() {
   return (
     <>
       <div className="flex flex-col h-full">
-        <Header title="My Tasks" />
+        <Header title={t('myTasks.title')} />
         <div className="flex-1 overflow-y-auto max-w-3xl w-full mx-auto pt-6">
           {isLoading && (
-            <div className="flex items-center justify-center py-16 text-sm text-neutral-400">Loading…</div>
+            <div className="flex items-center justify-center py-16 text-sm text-neutral-400">{t('common:common.loading')}</div>
           )}
 
           {!isLoading && tasks.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 text-neutral-400">
               <CheckSquare className="h-10 w-10 mb-3 opacity-30" />
-              <p className="text-sm">All caught up!</p>
+              <p className="text-sm">{t('myTasks.allCaughtUp')}</p>
             </div>
           )}
 
-          <BucketSection label="Overdue" tasks={overdue} workspaceId={activeWorkspaceId!} projectMap={projectMap} onOpen={setSelectedTask} accent="red" />
-          <BucketSection label="Today" tasks={today} workspaceId={activeWorkspaceId!} projectMap={projectMap} onOpen={setSelectedTask} accent="amber" />
-          <BucketSection label="Upcoming" tasks={upcoming} workspaceId={activeWorkspaceId!} projectMap={projectMap} onOpen={setSelectedTask} />
-          <BucketSection label="Later" tasks={later} workspaceId={activeWorkspaceId!} projectMap={projectMap} onOpen={setSelectedTask} />
+          <BucketSection label={t('myTasks.overdue')} tasks={overdue} workspaceId={activeWorkspaceId!} projectMap={projectMap} onOpen={setSelectedTask} accent="red" />
+          <BucketSection label={t('myTasks.today')} tasks={today} workspaceId={activeWorkspaceId!} projectMap={projectMap} onOpen={setSelectedTask} accent="amber" />
+          <BucketSection label={t('myTasks.upcoming')} tasks={upcoming} workspaceId={activeWorkspaceId!} projectMap={projectMap} onOpen={setSelectedTask} />
+          <BucketSection label={t('myTasks.later')} tasks={later} workspaceId={activeWorkspaceId!} projectMap={projectMap} onOpen={setSelectedTask} />
         </div>
       </div>
       <TaskDetailDrawer

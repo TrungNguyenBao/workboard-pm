@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog'
 import { Input } from '@/shared/components/ui/input'
@@ -23,6 +24,7 @@ export function WarehouseFormDialog({ open, onOpenChange, workspaceId, warehouse
 }
 
 function WarehouseFormContent({ workspaceId, warehouse, onOpenChange }: Omit<Props, 'open'>) {
+  const { t } = useTranslation('wms')
   const createWarehouse = useCreateWarehouse(workspaceId)
   const updateWarehouse = useUpdateWarehouse(workspaceId)
   const isEdit = !!warehouse
@@ -53,7 +55,7 @@ function WarehouseFormContent({ workspaceId, warehouse, onOpenChange }: Omit<Pro
       }
       onOpenChange(false)
     } catch {
-      toast({ title: `Failed to ${isEdit ? 'update' : 'create'} warehouse`, variant: 'error' })
+      toast({ title: 'Failed to save warehouse', variant: 'error' })
     }
   }
 
@@ -62,11 +64,11 @@ function WarehouseFormContent({ workspaceId, warehouse, onOpenChange }: Omit<Pro
   return (
     <DialogContent className="max-w-md">
       <DialogHeader>
-        <DialogTitle>{isEdit ? 'Edit warehouse' : 'New warehouse'}</DialogTitle>
+        <DialogTitle>{isEdit ? 'Edit warehouse' : t('warehouses.new')}</DialogTitle>
       </DialogHeader>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1.5">
-          <Label htmlFor="wh-name">Name *</Label>
+          <Label htmlFor="wh-name">{t('common:common.name')} *</Label>
           <Input id="wh-name" value={name} onChange={(e) => setName(e.target.value)} autoFocus />
         </div>
         <div className="grid grid-cols-2 gap-3">
@@ -84,13 +86,13 @@ function WarehouseFormContent({ workspaceId, warehouse, onOpenChange }: Omit<Pro
           <Input id="wh-address" value={address} onChange={(e) => setAddress(e.target.value)} />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="wh-desc">Description</Label>
+          <Label htmlFor="wh-desc">{t('common:common.description')}</Label>
           <Input id="wh-desc" value={description} onChange={(e) => setDescription(e.target.value)} />
         </div>
         <div className="flex justify-end gap-2 pt-1">
-          <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>{t('common:common.cancel')}</Button>
           <Button type="submit" disabled={pending || !name.trim()}>
-            {pending ? 'Saving…' : isEdit ? 'Save changes' : 'Create warehouse'}
+            {pending ? t('products.saving') : isEdit ? t('products.saveChanges') : t('warehouses.new')}
           </Button>
         </div>
       </form>

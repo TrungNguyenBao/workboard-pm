@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog'
 import { Button } from '@/shared/components/ui/button'
 import { Input } from '@/shared/components/ui/input'
@@ -24,6 +25,7 @@ function toSlug(name: string) {
 }
 
 export function CreateWorkspaceDialog({ open, onOpenChange, required }: Props) {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const setActiveWorkspace = useWorkspaceStore((s) => s.setActiveWorkspace)
   const [name, setName] = useState('')
@@ -49,14 +51,14 @@ export function CreateWorkspaceDialog({ open, onOpenChange, required }: Props) {
       const { data } = await api.post('/workspaces', { name: name.trim(), slug: slug.trim() })
       setActiveWorkspace(data.id)
       qc.invalidateQueries({ queryKey: ['workspaces'] })
-      toast({ title: `Workspace "${data.name}" created`, variant: 'success' })
+      toast({ title: t('workspace.created', { name: data.name }), variant: 'success' })
       setName('')
       setSlug('')
       setSlugTouched(false)
       onOpenChange(false)
     } catch (err) {
       const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
-      toast({ title: 'Failed to create workspace', description: detail ?? 'Please try again', variant: 'error' })
+      toast({ title: t('workspace.createFailed'), description: detail ?? t('auth.pleaseTryAgain'), variant: 'error' })
     } finally {
       setLoading(false)
     }
@@ -66,14 +68,14 @@ export function CreateWorkspaceDialog({ open, onOpenChange, required }: Props) {
     <Dialog open={open} onOpenChange={required ? undefined : onOpenChange}>
       <DialogContent className="max-w-md" onInteractOutside={required ? (e) => e.preventDefault() : undefined}>
         <DialogHeader>
-          <DialogTitle>Create a workspace</DialogTitle>
+          <DialogTitle>{t('workspace.create')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
-            <Label htmlFor="ws-name">Workspace name</Label>
+            <Label htmlFor="ws-name">{t('workspace.name')}</Label>
             <Input
               id="ws-name"
-              placeholder="Acme Corp"
+              placeholder={t('workspace.namePlaceholder')}
               value={name}
               onChange={(e) => handleNameChange(e.target.value)}
               autoFocus
@@ -81,9 +83,9 @@ export function CreateWorkspaceDialog({ open, onOpenChange, required }: Props) {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="ws-slug">
-              URL slug
+              {t('workspace.slug')}
               <span className="ml-1 text-xs text-neutral-400 font-normal">
-                (letters, numbers, hyphens)
+                {t('workspace.slugHint')}
               </span>
             </Label>
             <div className="flex items-center gap-1">
@@ -100,11 +102,11 @@ export function CreateWorkspaceDialog({ open, onOpenChange, required }: Props) {
           <div className="flex justify-end gap-2 pt-1">
             {!required && (
               <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
-                Cancel
+                {t('common.cancel')}
               </Button>
             )}
             <Button type="submit" disabled={loading || !name.trim() || !slug.trim()}>
-              {loading ? 'Creating…' : 'Create workspace'}
+              {loading ? t('workspace.creating') : t('workspace.create')}
             </Button>
           </div>
         </form>

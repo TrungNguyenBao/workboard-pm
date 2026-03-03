@@ -1,0 +1,27 @@
+{
+  "employees.title": "Nhân viên",
+  "employees.description": "Quản lý nhân sự và nhân viên",
+  "employees.new": "Nhân viên mới",
+  "employees.empty": "Chưa có nhân viên",
+  "employees.deleted": "Nhân viên đã được xóa",
+  "employees.name": "Tên",
+  "employees.email": "Email",
+  "employees.position": "Chức vụ",
+  "employees.hireDate": "Ngày tuyển dụng",
+
+  "departments.title": "Phòng ban",
+  "departments.description": "Quản lý phòng ban",
+  "departments.new": "Phòng ban mới",
+  "departments.empty": "Chưa có phòng ban",
+  "departments.deleted": "Phòng ban đã được xóa",
+
+  "leave.title": "Nghỉ phép",
+  "leave.description": "Quản lý yêu cầu nghỉ phép",
+  "leave.new": "Yêu cầu nghỉ phép mới",
+  "leave.empty": "Chưa có yêu cầu nghỉ phép",
+
+  "payroll.title": "Bảng lương",
+  "payroll.description": "Quản lý bảng lương",
+  "payroll.new": "Bảng lương mới",
+  "payroll.empty": "Chưa có bảng lương"
+}
