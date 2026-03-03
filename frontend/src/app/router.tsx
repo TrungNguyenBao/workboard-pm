@@ -27,11 +27,15 @@ const WmsDevicesPage = lazy(() => import('@/modules/wms/features/devices/pages/d
 const WmsInventoryPage = lazy(() => import('@/modules/wms/features/inventory/pages/inventory-list'))
 const WmsSuppliersPage = lazy(() => import('@/modules/wms/features/suppliers/pages/suppliers-list'))
 
-// Lazy-loaded pages — HRM module (placeholder)
-const HrmHomePage = lazy(() => import('@/modules/hrm/features/employees/pages/employees-list'))
+// Lazy-loaded pages — HRM module
+const HrmEmployeesPage = lazy(() => import('@/modules/hrm/features/employees/pages/employees-list'))
+const HrmDepartmentsPage = lazy(() => import('@/modules/hrm/features/departments/pages/departments-list'))
+const HrmLeavePage = lazy(() => import('@/modules/hrm/features/leave/pages/leave-requests-list'))
+const HrmPayrollPage = lazy(() => import('@/modules/hrm/features/payroll/pages/payroll-list'))
 
-// Lazy-loaded pages — CRM module (placeholder)
-const CrmHomePage = lazy(() => import('@/modules/crm/features/contacts/pages/contacts-list'))
+// Lazy-loaded pages — CRM module
+const CrmContactsPage = lazy(() => import('@/modules/crm/features/contacts/pages/contacts-list'))
+const CrmDealsPage = lazy(() => import('@/modules/crm/features/deals/pages/deals-list'))
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const user = useAuthStore((s) => s.user)
@@ -78,10 +82,16 @@ export function AppRouter() {
             <Route path="/wms/suppliers" element={<WmsSuppliersPage />} />
 
             {/* HRM module */}
-            <Route path="/hrm" element={<HrmHomePage />} />
+            <Route path="/hrm" element={<Navigate to="/hrm/employees" replace />} />
+            <Route path="/hrm/employees" element={<HrmEmployeesPage />} />
+            <Route path="/hrm/departments" element={<HrmDepartmentsPage />} />
+            <Route path="/hrm/leave" element={<HrmLeavePage />} />
+            <Route path="/hrm/payroll" element={<HrmPayrollPage />} />
 
             {/* CRM module */}
-            <Route path="/crm" element={<CrmHomePage />} />
+            <Route path="/crm" element={<Navigate to="/crm/contacts" replace />} />
+            <Route path="/crm/contacts" element={<CrmContactsPage />} />
+            <Route path="/crm/deals" element={<CrmDealsPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

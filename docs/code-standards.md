@@ -1,6 +1,6 @@
 # WorkBoard — Code Standards
 
-**Last updated:** 2026-02-27
+**Last updated:** 2026-03-03
 
 ---
 
@@ -96,9 +96,41 @@ async def create_activity(
 | `require_project_role("editor")` | Can edit tasks |
 | `require_project_role("owner")` | Project owner only |
 
+### Pagination
+
+All modules use the shared `PaginatedResponse` schema from `app/schemas/pagination.py`:
+
+```python
+class PaginatedResponse(BaseModel, Generic[T]):
+    items: list[T]
+    total: int
+    page: int
+    page_size: int
+```
+
+- **WMS, HRM, CRM:** Offset-based pagination with `?limit=20&offset=0` query params.
+- **PMS (Activity):** Cursor-based pagination using UUID of last seen record.
+- Import: `from app.schemas.pagination import PaginatedResponse`
+
+### Action Endpoints
+
+For non-CRUD operations (approve, reject, archive, etc.), use action endpoint pattern:
+
+```python
+@router.post("/leave-requests/{id}/approve", response_model=LeaveRequestResponse)
+async def approve_leave_request(
+    id: UUID,
+    current_user: User = Depends(require_workspace_role("admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await approve_leave_request_service(db, leave_request_id=id, reviewed_by_id=current_user.id)
+```
+
+Route: `POST /resource/{id}/{action_name}` (e.g., `/leave-requests/{id}/approve`, `/leave-requests/{id}/reject`).
+
 ### Migrations
 
-- One migration per feature. Name: `{sequence}_{description}` (e.g., `0002_add_activity_log`).
+- One migration per feature. Name: `{sequence}_{description}` (e.g., `0002_add_activity_log`, `0007_add_hrm_leave_payroll_tables`).
 - Always add indexes in the same migration as the table.
 - Never modify a completed migration; create a new one.
 
@@ -196,8 +228,9 @@ queryKey: ["activity", "task", taskId]
 - Resource URLs: plural nouns, kebab-case (`/activity-logs` if standalone, nested as `/projects/{id}/activity`).
 - Module routes: `/api/v1/{module}/{resource}` (e.g., `/api/v1/pms/projects`, `/api/v1/wms/products`).
 - Nested resources use parent scope in path: `/projects/{project_id}/tasks/{task_id}/activity`.
-- **WMS Pagination** (offset-based): `GET /api/v1/wms/products?limit=20&offset=0` → returns `PaginatedResponse[ProductResponse]`.
+- **WMS/HRM/CRM Pagination** (offset-based): `GET /api/v1/wms/products?limit=20&offset=0` → returns `PaginatedResponse[ProductResponse]`.
 - **PMS Pagination** (cursor-based): `GET /api/v1/pms/projects/{id}/activity?limit=50&cursor={uuid}` — uses UUID of last seen record.
+- **Action endpoints:** `POST /resource/{id}/{action_name}` for non-CRUD operations (e.g., `POST /api/v1/hrm/workspaces/{id}/leave-requests/{id}/approve`).
 - HTTP methods: `GET` read, `POST` create, `PATCH` partial update, `DELETE` remove.
 - Auth errors: `401 Unauthorized`; permission errors: `403 Forbidden`; not found: `404 Not Found`.
 

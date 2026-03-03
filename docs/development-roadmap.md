@@ -1,6 +1,6 @@
 # A-ERP — Development Roadmap
 
-**Last updated:** 2026-03-02
+**Last updated:** 2026-03-03
 
 ---
 
@@ -118,6 +118,30 @@ Transformed WorkBoard into A-ERP (Agentic Enterprise Resource Platform) with mod
 | Frontend: Shell components (app-shell, sidebar, module-switcher) | Done |
 | Frontend: Module-prefixed routes (`/pms/*`, `/wms/*`, `/hrm`, `/crm`) | Done |
 | Frontend: API URL migration (`/projects/` → `/pms/projects/`) | Done |
-| Frontend: HRM/CRM placeholder pages | Done |
+| Frontend: HRM placeholder pages | Done |
+| Frontend: CRM full UI (contacts + deals list, form dialogs, hooks, pagination, filtering) | Done |
 | Config: pyproject.toml renamed to a-erp-backend | Done |
 | Docs: CLAUDE.md, system-architecture, roadmap, changelog updated | Done |
+
+---
+
+## Phase 8 — HRM Module Implementation (Complete)
+
+Full HRM module with pagination/filtering, leave management, and payroll tracking.
+
+| Item | Status |
+|---|---|
+| Backend: Pagination schema moved to shared (`schemas/pagination.py`) | Done |
+| Backend: Department list with pagination/filtering | Done |
+| Backend: Employee list with pagination/filtering | Done |
+| Backend: LeaveType and LeaveRequest models with approval workflow | Done |
+| Backend: PayrollRecord model (salary, deductions, bonus) | Done |
+| Backend: HRM routers for departments, employees, leave, payroll | Done |
+| Backend: Alembic migration 0007 for all HRM tables | Done |
+| Frontend: HRM shared components (data-table, page-header, pagination) | Done |
+| Frontend: Departments CRUD UI (list, create, edit, delete) | Done |
+| Frontend: Employees CRUD UI (list, create, edit, delete, department filtering) | Done |
+| Frontend: Leave Requests UI (list, create, approve, reject) | Done |
+| Frontend: Payroll Records UI (list, create, edit, delete) | Done |
+| Frontend: HRM router with 4 sub-routes (`/hrm/departments`, `/hrm/employees`, `/hrm/leave`, `/hrm/payroll`) | Done |
+| Frontend: Sidebar navigation for HRM features | Done |

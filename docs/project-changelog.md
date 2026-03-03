@@ -5,6 +5,29 @@ Format: `## [version] — YYYY-MM-DD` with grouped entries.
 
 ---
 
+## [2.1.0] — 2026-03-03
+
+### Added — HRM Module Full Implementation
+
+- **HRM Backend Enhancements** — Paginated endpoints for departments and employees. Department list: search by name/description. Employee list: filter by department_id, search by name/email. All responses include `created_at` and `updated_at` timestamps. Workspace-scoped with RBAC.
+- **HRM New Models** — `LeaveType` (name, description), `LeaveRequest` (employee_id, leave_type_id, start_date, end_date, status='pending'/'approved'/'rejected', admin approval workflow), `PayrollRecord` (employee_id, month, salary, deductions, bonus).
+- **HRM Routers** — Departments CRUD at `/hrm/workspaces/{workspace_id}/departments`. Employees CRUD at `/hrm/workspaces/{workspace_id}/employees`. LeaveRequest CRUD with approve/reject actions at `/hrm/workspaces/{workspace_id}/leave`. PayrollRecord CRUD at `/hrm/workspaces/{workspace_id}/payroll`.
+- **HRM Shared Schema** — `PaginatedResponse` moved from CRM to shared `app/schemas/pagination.py` for reuse across all modules.
+- **HRM Frontend Shared Components** — `HrmDataTable<T>` generic table component, `HrmPagination` with prev/next navigation, `HrmPageHeader` with title, search, create button. Located in `modules/hrm/features/shared/components/`.
+- **HRM Departments Frontend** — Full CRUD UI. `useDepartments`, `useCreateDepartment`, `useUpdateDepartment`, `useDeleteDepartment` hooks with TanStack Query. Department form dialog with name, description fields. Departments list page with search and pagination. Sidebar navigation added.
+- **HRM Employees Frontend** — Full CRUD UI. `useEmployees`, `useCreateEmployee`, `useUpdateEmployee`, `useDeleteEmployee` hooks with TanStack Query. Employee form dialog with name, email, position, hire_date, department selector fields. Employees list page with department filter, search, pagination. FK cascade on deletion.
+- **HRM Leave Requests Frontend** — `useLeaveRequests`, `useCreateLeaveRequest`, `useApproveLeaveRequest`, `useRejectLeaveRequest` hooks. Leave request form dialog with date range and leave type selector. Leave requests list page with status filter, approve/reject action buttons for admins. Sidebar navigation.
+- **HRM Payroll Records Frontend** — `usePayrollRecords`, `useCreatePayrollRecord`, `useUpdatePayrollRecord`, `useDeletePayrollRecord` hooks. Payroll form dialog with employee selector, month, salary, deductions, bonus fields. Payroll records list page with pagination and CRUD actions.
+- **HRM Module Routes** — `/hrm/departments`, `/hrm/employees`, `/hrm/leave`, `/hrm/payroll` routes added to router. Module switcher includes HRM. Sidebar shows HRM nav items when `activeModule === 'hrm'`.
+- **Alembic Migration 0007** — Creates `leave_types`, `leave_requests`, `payroll_records` tables with proper foreign keys, workspace scoping, and cascade rules on employee deletion.
+
+### Fixed
+- **Employee FK Cascade** — Employees properly cascade-deleted when deleted (leave_requests and payroll_records cascade).
+- **Date Validation** — Leave request start_date must be before end_date; date range validation at service layer.
+- **Pagination Schema** — Moved to shared location for DRY across CRM, WMS, HRM modules.
+
+---
+
 ## [2.0.0] — 2026-03-02
 
 ### Added — A-ERP Restructure
@@ -23,6 +46,14 @@ Format: `## [version] — YYYY-MM-DD` with grouped entries.
 ---
 
 ## [Unreleased]
+
+### Added — CRM Module Full Implementation
+
+- **CRM Backend Enhancements** — Paginated endpoints for contacts and deals. Contact list: search by name/email/company. Deal list: filter by stage and contact_id, search by title. All responses include `created_at` and `updated_at` timestamps. Admin role required for delete operations (guest=read, member=write, admin=delete).
+- **CRM Frontend Shared Components** — `CrmDataTable<T>` generic table component, `CrmPagination` with prev/next navigation, `CrmPageHeader` with title, search, create button, and filter children slot. Located in `modules/crm/features/shared/components/`.
+- **CRM Contacts Frontend** — Full CRUD UI. `useContacts`, `useCreateContact`, `useUpdateContact`, `useDeleteContact` hooks with TanStack Query. Contact form dialog with name, email, phone, company fields. Contacts list page with search and pagination. Sidebar navigation added.
+- **CRM Deals Frontend** — Full CRUD UI. `useDeals`, `useCreateDeal`, `useUpdateDeal`, `useDeleteDeal` hooks with TanStack Query. Deal form dialog with title, value (currency), stage selector (lead/qualified/proposal/negotiation/closed_won/closed_lost), and contact dropdown selector. Deals list page with stage filter, search, and pagination. Currency formatting for deal values. Client-side contact name lookup for deal list.
+- **CRM Module Routes** — `/crm/contacts` and `/crm/deals` routes added to router. `/crm` base route redirects to `/crm/contacts`.
 
 ### Added
 - **Board View Drag-and-Drop Improvements** (`refactor: kanban DnD with between-task insertion`)

@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
+from app.schemas.pagination import PaginatedResponse
 from app.modules.hrm.schemas.employee import EmployeeCreate, EmployeeResponse, EmployeeUpdate
 from app.modules.hrm.services.employee import (
     create_employee,
@@ -32,14 +33,21 @@ async def create(
     return await create_employee(db, workspace_id, data)
 
 
-@router.get("/workspaces/{workspace_id}/employees", response_model=list[EmployeeResponse])
+@router.get(
+    "/workspaces/{workspace_id}/employees",
+    response_model=PaginatedResponse[EmployeeResponse],
+)
 async def list_(
     workspace_id: uuid.UUID,
     department_id: uuid.UUID | None = Query(default=None),
+    search: str | None = Query(default=None),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=20, ge=1, le=100),
     current_user: User = Depends(require_workspace_role("guest")),
     db: AsyncSession = Depends(get_db),
 ):
-    return await list_employees(db, workspace_id, department_id)
+    items, total = await list_employees(db, workspace_id, department_id, search, page, page_size)
+    return PaginatedResponse(items=items, total=total, page=page, page_size=page_size)
 
 
 @router.get(
@@ -52,7 +60,7 @@ async def get(
     current_user: User = Depends(require_workspace_role("guest")),
     db: AsyncSession = Depends(get_db),
 ):
-    return await get_employee(db, employee_id)
+    return await get_employee(db, employee_id, workspace_id)
 
 
 @router.patch(
@@ -66,7 +74,7 @@ async def update(
     current_user: User = Depends(require_workspace_role("member")),
     db: AsyncSession = Depends(get_db),
 ):
-    return await update_employee(db, employee_id, data)
+    return await update_employee(db, employee_id, workspace_id, data)
 
 
 @router.delete(
@@ -79,4 +87,4 @@ async def delete(
     current_user: User = Depends(require_workspace_role("admin")),
     db: AsyncSession = Depends(get_db),
 ):
-    await delete_employee(db, employee_id)
+    await delete_employee(db, employee_id, workspace_id)

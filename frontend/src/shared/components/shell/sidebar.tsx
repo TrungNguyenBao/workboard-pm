@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Box, ChevronDown, Cpu, Home, LogOut, MoreHorizontal, Package, Pencil, Plus, Settings, Target, Trash2, Truck, Users, UserPlus, Warehouse as WarehouseIcon } from 'lucide-react'
+import { Box, Briefcase, Calendar, ChevronDown, Cpu, DollarSign, Home, LogOut, MoreHorizontal, Package, Pencil, Plus, Settings, Target, Trash2, Truck, Users, UserPlus, Warehouse as WarehouseIcon } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '@/stores/auth.store'
 import { useWorkspaceStore } from '@/stores/workspace.store'
@@ -173,7 +173,21 @@ export function Sidebar() {
             </div>
           ) : (
             <>
-              {activeModule === 'wms' ? (
+              {activeModule === 'hrm' ? (
+                <>
+                  <NavItem to="/hrm/employees" icon={<Users className="h-4 w-4" />} label="Employees" active={isActive('/hrm/employees')} />
+                  <NavItem to="/hrm/departments" icon={<Briefcase className="h-4 w-4" />} label="Departments" active={isActive('/hrm/departments')} />
+                  <NavItem to="/hrm/leave" icon={<Calendar className="h-4 w-4" />} label="Leave" active={isActive('/hrm/leave')} />
+                  <NavItem to="/hrm/payroll" icon={<DollarSign className="h-4 w-4" />} label="Payroll" active={isActive('/hrm/payroll')} />
+                  <NavItem to="/members" icon={<UserPlus className="h-4 w-4" />} label="Members" active={isActive('/members')} />
+                </>
+              ) : activeModule === 'crm' ? (
+                <>
+                  <NavItem to="/crm/contacts" icon={<Users className="h-4 w-4" />} label="Contacts" active={isActive('/crm/contacts')} />
+                  <NavItem to="/crm/deals" icon={<DollarSign className="h-4 w-4" />} label="Deals" active={isActive('/crm/deals')} />
+                  <NavItem to="/members" icon={<UserPlus className="h-4 w-4" />} label="Members" active={isActive('/members')} />
+                </>
+              ) : activeModule === 'wms' ? (
                 <>
                   <NavItem to="/wms/products" icon={<Package className="h-4 w-4" />} label="Products" active={isActive('/wms/products')} />
                   <NavItem to="/wms/warehouses" icon={<WarehouseIcon className="h-4 w-4" />} label="Warehouses" active={isActive('/wms/warehouses')} />

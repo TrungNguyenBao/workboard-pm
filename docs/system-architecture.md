@@ -1,6 +1,6 @@
 # A-ERP — System Architecture
 
-**Last updated:** 2026-03-02
+**Last updated:** 2026-03-03
 
 ---
 
@@ -33,7 +33,7 @@ backend/
       router.py          # aggregates shared + module routers
       routers/           # shared: auth, health, workspaces, teams, notifications, sse, agents
     models/              # shared only: user, workspace, team, token, base, enums
-    schemas/             # shared only: auth, workspace, team
+    schemas/             # shared only: auth, workspace, team, pagination
     services/            # shared: auth, workspace, notifications
     dependencies/        # shared: auth, workspace RBAC, db session
     core/                # config, database engine, security utilities
@@ -50,13 +50,13 @@ backend/
         routers/         # warehouses, products, devices, suppliers, inventory_items
         services/        # warehouse, product, device, supplier, inventory_item
         models/          # warehouse, product, device, supplier, inventory_item
-        schemas/         # warehouse, product, device, supplier, inventory_item, pagination
+        schemas/         # warehouse, product, device, supplier, inventory_item
         router.py        # aggregates WMS routers under /wms prefix
       hrm/               # Human Resource Management
-        routers/         # departments, employees
-        services/        # department, employee
-        models/          # department, employee
-        schemas/         # department, employee
+        routers/         # departments, employees, leave_requests, payroll_records
+        services/        # department, employee, leave_request, payroll_record
+        models/          # department, employee, leave_type, leave_request, payroll_record
+        schemas/         # department, employee, leave_request, payroll_record
         router.py        # aggregates HRM routers under /hrm prefix
       crm/               # Customer Relationship Management
         routers/         # contacts, deals
@@ -86,8 +86,8 @@ frontend/
     modules/
       pms/features/      # dashboard, projects, tasks, goals, custom-fields
       wms/features/      # warehouses, products, devices, suppliers, inventory; shared components (data-table, page-header, pagination)
-      hrm/features/      # employees, departments (placeholder)
-      crm/features/      # contacts, deals (placeholder)
+      hrm/features/      # departments, employees, leave requests, payroll records; shared components (data-table, page-header, pagination)
+      crm/features/      # contacts, deals (shared: data-table, page-header, pagination)
     stores/              # Zustand: auth, workspace, module
     app/                 # App.tsx, router.tsx
 docker-compose.yml
@@ -115,7 +115,7 @@ Makefile
 
 ### Pagination Pattern
 
-WMS endpoints use a **generic `PaginatedResponse`** schema for list operations:
+All modules use a **generic `PaginatedResponse`** schema for list operations:
 
 ```python
 class PaginatedResponse(BaseModel, Generic[T]):
@@ -126,7 +126,7 @@ class PaginatedResponse(BaseModel, Generic[T]):
 ```
 
 Used in routers like `GET /wms/products?limit=20&offset=0` → returns `PaginatedResponse[ProductResponse]`.
-This pattern is reusable across all modules for consistent list APIs.
+Located in `app/schemas/pagination.py` for reuse across WMS, HRM, CRM modules.
 
 ---
 
@@ -168,15 +168,18 @@ This pattern is reusable across all modules for consistent list APIs.
 
 | Table | Key Columns | Notes |
 |---|---|---|
-| `departments` | `id`, `name`, `description`, `workspace_id` | Workspace-scoped |
-| `employees` | `id`, `user_id`, `name`, `email`, `department_id`, `position`, `hire_date`, `workspace_id` | Optional FK to user |
+| `departments` | `id`, `name`, `description`, `workspace_id`, `created_at`, `updated_at` | Workspace-scoped |
+| `employees` | `id`, `name`, `email`, `position`, `hire_date`, `department_id`, `workspace_id`, `created_at`, `updated_at` | FK to department (nullable); optional FK to user; ILIKE search on name/email |
+| `leave_types` | `id`, `name`, `description`, `workspace_id`, `created_at` | Define leave categories (vacation, sick, etc.) |
+| `leave_requests` | `id`, `employee_id`, `leave_type_id`, `start_date`, `end_date`, `status` ('pending'/'approved'/'rejected'), `workspace_id`, `created_at`, `updated_at` | Admin approval workflow; cascade delete with employee |
+| `payroll_records` | `id`, `employee_id`, `month`, `salary`, `deductions`, `bonus`, `workspace_id`, `created_at`, `updated_at` | Store-only; no auto-calc; cascade delete with employee |
 
 ### CRM Tables
 
 | Table | Key Columns | Notes |
 |---|---|---|
-| `contacts` | `id`, `name`, `email`, `phone`, `company`, `workspace_id` | Workspace-scoped |
-| `deals` | `id`, `title`, `value`, `stage`, `contact_id`, `workspace_id` | FK to contact |
+| `contacts` | `id`, `name`, `email`, `phone`, `company`, `workspace_id`, `created_at`, `updated_at` | Workspace-scoped; EmailStr validation; ILIKE search on name/email/company |
+| `deals` | `id`, `title`, `value`, `stage`, `contact_id`, `workspace_id`, `created_at`, `updated_at` | FK to contact (nullable); stage default='lead'; workspace-scoped filtering |
 
 ### Key Indexes
 
@@ -334,6 +337,117 @@ A module switcher component in the shell allows navigation between modules.
 ### Real-time Integration
 
 `shared/hooks/use-sse.ts` maintains a single `EventSource` per authenticated session. On `activity_created` events it calls `queryClient.invalidateQueries` for the relevant project/task activity keys. On `notification` events it invalidates the notification list query.
+
+---
+
+## HRM Module API
+
+### Departments Endpoints
+
+| Method | Endpoint | RBAC | Description |
+|---|---|---|---|
+| `POST` | `/hrm/workspaces/{workspace_id}/departments` | member+ | Create department |
+| `GET` | `/hrm/workspaces/{workspace_id}/departments` | guest+ | List departments with pagination & ILIKE search (name/description) |
+| `GET` | `/hrm/workspaces/{workspace_id}/departments/{dept_id}` | guest+ | Get department by id (404 if workspace mismatch) |
+| `PATCH` | `/hrm/workspaces/{workspace_id}/departments/{dept_id}` | member+ | Update department fields |
+| `DELETE` | `/hrm/workspaces/{workspace_id}/departments/{dept_id}` | admin+ | Delete department |
+
+**Request/Response:**
+- `DepartmentCreate`: `name` (required, 1-255 chars), `description` (optional)
+- `DepartmentResponse`: includes `id`, `workspace_id`, `created_at`, `updated_at`
+- List response: `PaginatedResponse[DepartmentResponse]` with `items`, `total`, `limit`, `offset`
+
+### Employees Endpoints
+
+| Method | Endpoint | RBAC | Description |
+|---|---|---|---|
+| `POST` | `/hrm/workspaces/{workspace_id}/employees` | member+ | Create employee |
+| `GET` | `/hrm/workspaces/{workspace_id}/employees` | guest+ | List employees with pagination, department filter, ILIKE search (name/email) |
+| `GET` | `/hrm/workspaces/{workspace_id}/employees/{emp_id}` | guest+ | Get employee by id (404 if workspace mismatch) |
+| `PATCH` | `/hrm/workspaces/{workspace_id}/employees/{emp_id}` | member+ | Update employee fields |
+| `DELETE` | `/hrm/workspaces/{workspace_id}/employees/{emp_id}` | admin+ | Delete employee (cascades leave requests, payroll records) |
+
+**Request/Response:**
+- `EmployeeCreate`: `name` (required), `email` (optional, EmailStr), `position` (optional), `hire_date` (optional, date), `department_id` (optional, UUID)
+- `EmployeeResponse`: includes `id`, `workspace_id`, `department_id`, `created_at`, `updated_at`
+- List response: `PaginatedResponse[EmployeeResponse]` with filtering by `department_id`, search by name/email
+
+### Leave Request Endpoints
+
+| Method | Endpoint | RBAC | Description |
+|---|---|---|---|
+| `POST` | `/hrm/workspaces/{workspace_id}/leave-requests` | member+ | Create leave request |
+| `GET` | `/hrm/workspaces/{workspace_id}/leave-requests` | guest+ | List leave requests with pagination, status filter |
+| `POST` | `/hrm/workspaces/{workspace_id}/leave-requests/{req_id}/approve` | admin+ | Approve leave request |
+| `POST` | `/hrm/workspaces/{workspace_id}/leave-requests/{req_id}/reject` | admin+ | Reject leave request |
+| `DELETE` | `/hrm/workspaces/{workspace_id}/leave-requests/{req_id}` | admin+ | Delete leave request |
+
+**Request/Response:**
+- `LeaveRequestCreate`: `employee_id` (required, UUID), `leave_type_id` (required, UUID), `start_date` (required, date), `end_date` (required, date; must be ≥ start_date)
+- `LeaveRequestResponse`: includes `id`, `employee_id`, `leave_type_id`, `status` ('pending', 'approved', 'rejected'), `created_at`, `updated_at`
+
+### Payroll Record Endpoints
+
+| Method | Endpoint | RBAC | Description |
+|---|---|---|---|
+| `POST` | `/hrm/workspaces/{workspace_id}/payroll-records` | member+ | Create payroll record |
+| `GET` | `/hrm/workspaces/{workspace_id}/payroll-records` | guest+ | List payroll records with pagination, employee filter |
+| `GET` | `/hrm/workspaces/{workspace_id}/payroll-records/{rec_id}` | guest+ | Get payroll record by id (404 if workspace mismatch) |
+| `PATCH` | `/hrm/workspaces/{workspace_id}/payroll-records/{rec_id}` | member+ | Update payroll record fields |
+| `DELETE` | `/hrm/workspaces/{workspace_id}/payroll-records/{rec_id}` | admin+ | Delete payroll record |
+
+**Request/Response:**
+- `PayrollRecordCreate`: `employee_id` (required, UUID), `month` (required, YYYY-MM format), `salary` (float, default=0.0), `deductions` (float, default=0.0), `bonus` (float, default=0.0)
+- `PayrollRecordResponse`: includes `id`, `employee_id`, `month`, `salary`, `deductions`, `bonus`, `workspace_id`, `created_at`, `updated_at`
+
+### Frontend Integration
+
+- **Shared components**: `hrm-data-table`, `hrm-page-header`, `hrm-pagination`
+- **Routes**: `/hrm/departments`, `/hrm/employees`, `/hrm/leave`, `/hrm/payroll`; sidebar shows HRM nav when `activeModule === 'hrm'`
+- **State**: TanStack Query v5 hooks (`useDepartments`, `useEmployees`, `useLeaveRequests`, `usePayrollRecords`) + Zustand workspace store
+- **Search**: server-side ILIKE filtering + client-side pagination
+
+---
+
+## CRM Module API
+
+### Contacts Endpoints
+
+| Method | Endpoint | RBAC | Description |
+|---|---|---|---|
+| `POST` | `/crm/workspaces/{workspace_id}/contacts` | member+ | Create contact |
+| `GET` | `/crm/workspaces/{workspace_id}/contacts` | guest+ | List contacts with pagination & ILIKE search (name/email/company) |
+| `GET` | `/crm/workspaces/{workspace_id}/contacts/{contact_id}` | guest+ | Get contact by id (404 if workspace mismatch) |
+| `PATCH` | `/crm/workspaces/{workspace_id}/contacts/{contact_id}` | member+ | Update contact fields |
+| `DELETE` | `/crm/workspaces/{workspace_id}/contacts/{contact_id}` | admin+ | Delete contact |
+
+**Request/Response:**
+- `ContactCreate`: `name` (required, 1-255 chars), `email` (optional, EmailStr), `phone` (optional, ≤50 chars), `company` (optional, ≤255 chars)
+- `ContactResponse`: includes `id`, `workspace_id`, `created_at`, `updated_at`
+- List response: `PaginatedResponse[ContactResponse]` with `items`, `total`, `page`, `page_size`
+
+### Deals Endpoints
+
+| Method | Endpoint | RBAC | Description |
+|---|---|---|---|
+| `POST` | `/crm/workspaces/{workspace_id}/deals` | member+ | Create deal |
+| `GET` | `/crm/workspaces/{workspace_id}/deals` | guest+ | List deals with pagination, stage/contact_id/title filters |
+| `GET` | `/crm/workspaces/{workspace_id}/deals/{deal_id}` | guest+ | Get deal by id (404 if workspace mismatch) |
+| `PATCH` | `/crm/workspaces/{workspace_id}/deals/{deal_id}` | member+ | Update deal fields |
+| `DELETE` | `/crm/workspaces/{workspace_id}/deals/{deal_id}` | admin+ | Delete deal |
+
+**Request/Response:**
+- `DealCreate`: `title` (required, 1-255 chars), `value` (float, default=0.0), `stage` (default='lead', ≤50 chars), `contact_id` (optional, UUID)
+- `DealResponse`: includes `id`, `workspace_id`, `created_at`, `updated_at`
+- List response: `PaginatedResponse[DealResponse]` with `items`, `total`, `page`, `page_size`
+- **Deal stages** (frontend constant `DEAL_STAGES`): lead, qualified, proposal, negotiation, closed_won, closed_lost
+
+### Frontend Integration
+
+- **Shared components**: `crm-data-table`, `crm-page-header`, `crm-pagination`
+- **Routes**: `/crm` redirects to `/crm/contacts`; sidebar shows CRM nav when `activeModule === 'crm'`
+- **State**: TanStack Query v5 hooks (`useContacts`, `useDeals`) + Zustand workspace store
+- **Search**: client-side pagination + server-side ILIKE filtering
 
 ---
 
