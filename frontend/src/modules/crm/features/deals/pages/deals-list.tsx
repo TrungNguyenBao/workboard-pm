@@ -1,11 +1,108 @@
+import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Pencil, Trash2 } from 'lucide-react'
+import { useWorkspaceStore } from '@/stores/workspace.store'
+import { Badge } from '@/shared/components/ui/badge'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
+import { toast } from '@/shared/components/ui/toast'
+import { CrmDataTable } from '../../shared/components/crm-data-table'
+import { CrmPageHeader } from '../../shared/components/crm-page-header'
+import { CrmPagination } from '../../shared/components/crm-pagination'
+import { DealFormDialog } from '../components/deal-form-dialog'
+import { type Deal, DEAL_STAGES, useDeals, useDeleteDeal } from '../hooks/use-deals'
+import { useContacts } from '../../contacts/hooks/use-contacts'
+
+const PAGE_SIZE = 20
+
+// Stage badge variant: closed_won gets default (primary), rest get secondary
+const STAGE_VARIANT: Record<string, 'default' | 'secondary'> = {
+  closed_won: 'default',
+}
+
+function formatCurrency(value: number): string {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value)
+}
+
 export default function DealsListPage() {
+  const { t } = useTranslation('crm')
+  const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId) ?? ''
+  const [search, setSearch] = useState('')
+  const [stage, setStage] = useState('all')
+  const [page, setPage] = useState(1)
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [editDeal, setEditDeal] = useState<Deal | null>(null)
+
+  const { data } = useDeals(workspaceId, {
+    search: search || undefined,
+    stage: stage === 'all' ? undefined : stage,
+    page,
+    page_size: PAGE_SIZE,
+  })
+  const { data: contactsData } = useContacts(workspaceId, { page_size: 100 })
+  const deleteDeal = useDeleteDeal(workspaceId)
+
+  // Build contact id → name lookup map
+  const contactMap = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const c of contactsData?.items ?? []) map.set(c.id, c.name)
+    return map
+  }, [contactsData])
+
+  const columns = [
+    { key: 'title', label: t('deals.titleLabel'), render: (d: Deal) => <span className="font-medium">{d.title}</span> },
+    { key: 'value', label: t('deals.value'), render: (d: Deal) => formatCurrency(d.value) },
+    {
+      key: 'stage', label: t('deals.stage'),
+      render: (d: Deal) => (
+        <Badge variant={STAGE_VARIANT[d.stage] ?? 'secondary'}>
+          {DEAL_STAGES.find((s) => s.value === d.stage)?.label ?? d.stage}
+        </Badge>
+      ),
+    },
+    { key: 'contact', label: t('deals.contact'), render: (d: Deal) => (d.contact_id ? contactMap.get(d.contact_id) ?? '-' : '-') },
+    {
+      key: 'actions', label: '', className: 'w-20',
+      render: (d: Deal) => (
+        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+          <button className="p-1 text-neutral-400 hover:text-neutral-700" onClick={() => { setEditDeal(d); setDialogOpen(true) }}>
+            <Pencil className="h-3.5 w-3.5" />
+          </button>
+          <button className="p-1 text-neutral-400 hover:text-red-600" onClick={async () => {
+            if (window.confirm(t('common:common.deleteConfirm', { name: d.title }))) {
+              await deleteDeal.mutateAsync(d.id)
+              toast({ title: t('deals.deleted'), variant: 'success' })
+            }
+          }}>
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      ),
+    },
+  ]
+
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold text-neutral-900 mb-2">Deals</h1>
-      <p className="text-sm text-neutral-500 mb-6">Sales pipeline and deal tracking</p>
-      <div className="rounded-lg border border-dashed border-neutral-300 p-12 text-center">
-        <p className="text-neutral-400 text-sm">Deal pipeline coming soon.</p>
-      </div>
+    <div className="flex flex-col h-full">
+      <CrmPageHeader
+        title={t('deals.title')}
+        description={t('deals.description')}
+        searchValue={search}
+        onSearchChange={(v) => { setSearch(v); setPage(1) }}
+        onCreateClick={() => { setEditDeal(null); setDialogOpen(true) }}
+        createLabel={t('deals.new')}
+      >
+        <Select value={stage} onValueChange={(v) => { setStage(v); setPage(1) }}>
+          <SelectTrigger className="w-36 h-8"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t('deals.allStages')}</SelectItem>
+            {DEAL_STAGES.map((s) => (
+              <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </CrmPageHeader>
+      <CrmDataTable columns={columns} data={data?.items ?? []} keyFn={(d) => d.id} emptyMessage={t('deals.empty')} />
+      <CrmPagination page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
+      <DealFormDialog open={dialogOpen} onOpenChange={setDialogOpen} workspaceId={workspaceId} deal={editDeal} />
     </div>
   )
 }
