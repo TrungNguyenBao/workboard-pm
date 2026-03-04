@@ -1,7 +1,7 @@
 """Seed HRM: departments, employees, leave types, leave requests, payroll."""
 import json
 import uuid
-from datetime import date, timedelta
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,7 +15,7 @@ async def seed_hrm(
     bob_id: uuid.UUID,
 ) -> None:
     print("Creating HRM data...")
-    today = date.today()
+    today = datetime.now(timezone.utc)
 
     # Departments (4)
     dept_ids: list[uuid.UUID] = []
@@ -90,8 +90,8 @@ async def seed_hrm(
         """), {
             "id": uuid.uuid4(), "ws": ws_id,
             "emp": emp_ids[emp_idx], "lt": lt_ids[lt_idx],
-            "start": today + timedelta(days=start_off),
-            "end":   today + timedelta(days=end_off),
+            "start": (today + timedelta(days=start_off)).date(),
+            "end":   (today + timedelta(days=end_off)).date(),
             "days": num_days, "status": status, "reviewer": reviewer,
         })
 
