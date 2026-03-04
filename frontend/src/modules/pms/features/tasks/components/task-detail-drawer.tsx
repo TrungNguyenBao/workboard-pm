@@ -320,7 +320,7 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
                             'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium transition-opacity',
                             active ? 'opacity-100 ring-2 ring-offset-1' : 'opacity-40 hover:opacity-70',
                           )}
-                          style={{ backgroundColor: tag.color + '22', color: tag.color, ringColor: tag.color }}
+                          style={{ backgroundColor: tag.color + '22', color: tag.color }}
                         >
                           {tag.name}
                         </button>

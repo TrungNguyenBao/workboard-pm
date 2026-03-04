@@ -1,0 +1,342 @@
+1. EXECUTIVE SUMMARY
+Product Name
+
+A-ERP: Agentic Enterprise Resource Platform
+
+Vision
+
+Tái định nghĩa ERP truyền thống thành một hệ thống vận hành thông minh, nơi:
+
+Dữ liệu là nền tảng
+
+Agent AI là lớp ra quyết định
+
+Các module phối hợp qua MCP (Model Context Protocol)
+
+Doanh nghiệp chuyển từ “ghi nhận dữ liệu” sang “tự động hóa quyết định”
+
+Positioning
+
+“ERP vận hành bằng AI Agent – không chỉ lưu trữ, mà chủ động tối ưu.”
+
+2. PROBLEM STATEMENT
+2.1 Vấn đề thị trường
+
+ERP truyền thống:
+
+Chỉ là hệ thống ghi nhận
+
+Phụ thuộc thao tác con người
+
+Không phối hợp cross-department
+
+Thiếu khả năng ra quyết định tự động
+
+Doanh nghiệp hiện nay:
+
+Dữ liệu phân mảnh
+
+Tốn chi phí vận hành
+
+Không có hệ thần kinh nội bộ
+
+3. SOLUTION OVERVIEW
+
+A-ERP gồm 3 lớp:
+
+Core ERP Modules
+
+PMS (Project)
+
+WMS (Warehouse)
+
+HRM (Human Resources)
+
+CRM (Customer)
+
+Agent Layer
+
+Domain AI Agents
+
+Cross-Agent Orchestration
+
+Policy & Governance
+
+MCP Communication Protocol
+
+Chuẩn giao tiếp giữa agent & system
+
+Event-driven backbone
+
+Context sharing
+
+4. PRODUCT ARCHITECTURE (HIGH-LEVEL)
+4
+Layers
+
+Presentation Layer
+
+API Gateway
+
+Core ERP Services
+
+Agent Orchestration Layer
+
+MCP Protocol Layer
+
+Unified Data Layer
+
+5. PRODUCT COMPONENTS
+5.1 PMS (Project Management System)
+
+Project lifecycle
+
+Resource allocation
+
+Budget & burn rate
+
+Task dependency
+
+Agent:
+
+Risk Detection Agent
+
+Workload Optimization Agent
+
+5.2 WMS (Warehouse Management)
+
+Inventory tracking
+
+SKU management
+
+Inbound / Outbound
+
+Audit log
+
+Agent:
+
+Demand Forecast Agent
+
+Anomaly Detection Agent
+
+5.3 HRM (Human Resources)
+
+Employee management
+
+Attendance
+
+KPI & performance
+
+Agent:
+
+Workforce Planning Agent
+
+Attrition Risk Agent
+
+5.4 CRM (Customer Management)
+
+Lead tracking
+
+Sales pipeline
+
+Customer 360
+
+Agent:
+
+Lead Scoring Agent
+
+Revenue Forecast Agent
+
+6. DIFFERENTIATION
+ERP truyền thống	A-ERP
+Data recording	Data + Decision
+Rule-based automation	AI-driven automation
+Module isolated	Cross-agent collaboration
+Reactive	Predictive
+Human-dependent	Semi-autonomous
+7. CORE INNOVATION
+7.1 MCP – Model Context Protocol
+
+Chuẩn message nội bộ:
+
+{
+  "type": "event | command | context",
+  "domain": "PMS | WMS | HRM | CRM",
+  "payload": {},
+  "permission_level": "read | suggest | action"
+}
+
+Giúp:
+
+Agent giao tiếp chuẩn hóa
+
+Context được chia sẻ realtime
+
+Kiểm soát quyền ra quyết định
+
+7.2 Agent Governance Layer
+
+Agent không được ghi DB trực tiếp
+
+Policy engine kiểm soát hành động
+
+Audit trail toàn bộ quyết định AI
+
+8. TARGET MARKET
+8.1 ICP (Ideal Customer Profile)
+
+Doanh nghiệp 50–500 nhân sự
+
+Software / AI / Tech
+
+Logistics & supply chain
+
+Mid-size manufacturing
+
+8.2 TAM / SAM (ước lượng chiến lược)
+
+ERP market toàn cầu > $50B+
+
+AI ERP segment mới nổi
+
+SME segment underserved bởi SAP / Oracle
+
+9. BUSINESS MODEL
+9.1 Giai đoạn 1 – Internal Deployment
+
+Kiểm chứng ROI
+
+Giảm OPEX
+
+Tối ưu quy trình
+
+9.2 Giai đoạn 2 – SaaS
+
+Revenue streams:
+
+Subscription per organization
+
+Add-on Agent packs
+
+Usage-based AI inference
+
+Enterprise customization
+
+10. GO-TO-MARKET STRATEGY
+
+Phase 1:
+
+Build internal
+
+Validate KPI
+
+Phase 2:
+
+Spin-off SaaS brand
+
+Target tech companies
+
+Phase 3:
+
+Partner ecosystem
+
+Vertical-specific agent packs
+
+11. SUCCESS METRICS
+Metric	Target
+Manual task reduction	30–50%
+Inventory optimization	15–20%
+Sales efficiency gain	10–15%
+Workforce optimization	20%
+12. ROADMAP (STRATEGIC)
+
+Year 1:
+
+ERP Core
+
+MCP backbone
+
+Single-agent per domain
+
+Year 2:
+
+Cross-agent orchestration
+
+Semi-autonomous workflows
+
+SaaS architecture
+
+Year 3:
+
+Multi-tenant
+
+Agent marketplace
+
+Vertical specialization
+
+13. UNIT ECONOMICS (SaaS Projection)
+
+Assumption:
+
+$80–150 / user / month
+
+Agent add-on upsell 20–40%
+
+Gross margin 70–80%
+
+AI cost:
+
+LLM inference tối ưu bằng hybrid architecture
+
+Vector DB self-hosted
+
+14. COMPETITIVE LANDSCAPE
+Player	Weakness
+SAP	Phức tạp, đắt
+Oracle	Enterprise only
+Odoo	Automation yếu
+HubSpot	Không full ERP
+
+A-ERP positioning:
+
+AI-native ERP from day one.
+
+15. RISKS & MITIGATION
+Risk	Mitigation
+Agent sai quyết định	Human-in-loop
+Overengineering	Build phased
+Adoption resistance	UX-first design
+AI cost cao	Hybrid AI strategy
+16. EXIT STRATEGY
+
+Strategic acquisition (ERP vendor)
+
+AI-native enterprise platform merger
+
+Vertical ERP consolidation
+
+17. WHY NOW?
+
+LLM maturity
+
+AI infrastructure cost giảm
+
+ERP market đang chậm đổi mới
+
+Doanh nghiệp cần automation sâu
+
+18. FUNDING USE (IF RAISING)
+
+Engineering team
+
+AI research
+
+Cloud infrastructure
+
+Go-to-market
+
+FINAL POSITIONING STATEMENT
+
+A-ERP không chỉ là ERP.
+
+Đây là hệ điều hành doanh nghiệp với AI Agent làm lớp vận hành thông minh.

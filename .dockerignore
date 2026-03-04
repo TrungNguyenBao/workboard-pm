@@ -1,0 +1,32 @@
+# Node
+frontend/node_modules
+frontend/.cache
+
+# Python
+backend/.venv
+backend/__pycache__
+backend/.pytest_cache
+backend/.ruff_cache
+
+# Git & IDE
+.git
+.gitignore
+.vscode
+.claude
+.opencode
+
+# Docs & plans
+docs
+plans
+*.md
+*.txt
+
+# Logs & tmp
+backend-logs.txt
+*.log
+
+# Dev-only files
+docker-compose.yml
+.env*
+!.env.production.example
+vercel.json

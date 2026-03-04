@@ -50,3 +50,4 @@ AGENTS.md
 release-manifest.json
 plans/reports/
 plans/templates/
+.vercel

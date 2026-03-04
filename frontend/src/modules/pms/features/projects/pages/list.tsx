@@ -18,7 +18,7 @@ type SortBy = 'position' | 'priority' | 'due_date'
 
 const PRIORITY_RANK: Record<string, number> = { high: 3, medium: 2, low: 1, none: 0 }
 
-const PRIORITY_BADGE: Record<string, string | undefined> = {
+const PRIORITY_BADGE: Record<string, 'danger' | 'warning' | 'secondary' | undefined> = {
   high: 'danger',
   medium: 'warning',
   low: 'secondary',

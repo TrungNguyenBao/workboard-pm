@@ -11,6 +11,11 @@ services:
       CORS_ORIGINS: ${CORS_ORIGINS:-[]}
       FRONTEND_URL: ${FRONTEND_URL}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      WEB_CONCURRENCY: ${WEB_CONCURRENCY:-4}
+      UPLOAD_DIR: /app/uploads
+      MAX_UPLOAD_SIZE_MB: ${MAX_UPLOAD_SIZE_MB:-10}
+    volumes:
+      - uploads_data:/app/uploads
     depends_on:
       postgres:
         condition: service_healthy
@@ -39,7 +44,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     # No external port — only reachable from backend on internal network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-workboard}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-workboard}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -51,7 +56,7 @@ services:
       - redis_data:/data
     # No external port — only reachable from backend on internal network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -60,3 +65,4 @@ services:
 volumes:
   postgres_data:
   redis_data:
+  uploads_data:

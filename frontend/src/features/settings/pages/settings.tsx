@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Header } from '@/features/auth/components/header'
+import { Header } from '@/shared/components/shell/header'
 import { Button } from '@/shared/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar'
