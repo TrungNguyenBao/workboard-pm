@@ -13,9 +13,10 @@ interface Props<T> {
   keyFn: (item: T) => string
   onRowClick?: (item: T) => void
   emptyMessage?: string
+  renderExpanded?: (item: T) => React.ReactNode
 }
 
-export function HrmDataTable<T>({ columns, data, keyFn, onRowClick, emptyMessage = 'No data' }: Props<T>) {
+export function HrmDataTable<T>({ columns, data, keyFn, onRowClick, emptyMessage = 'No data', renderExpanded }: Props<T>) {
   if (data.length === 0) {
     return (
       <div className="flex-1 flex items-center justify-center p-12">
@@ -40,22 +41,35 @@ export function HrmDataTable<T>({ columns, data, keyFn, onRowClick, emptyMessage
           </tr>
         </thead>
         <tbody>
-          {data.map((item) => (
-            <tr
-              key={keyFn(item)}
-              onClick={() => onRowClick?.(item)}
-              className={cn(
-                'border-b border-border hover:bg-neutral-50 transition-colors',
-                onRowClick && 'cursor-pointer',
-              )}
-            >
-              {columns.map((col) => (
-                <td key={col.key} className={cn('px-4 py-2.5 text-sm text-neutral-700', col.className)}>
-                  {col.render(item)}
-                </td>
-              ))}
-            </tr>
-          ))}
+          {data.map((item) => {
+            const expanded = renderExpanded?.(item)
+            return (
+              <>
+                <tr
+                  key={keyFn(item)}
+                  onClick={() => onRowClick?.(item)}
+                  className={cn(
+                    'border-b border-border hover:bg-neutral-50 transition-colors',
+                    onRowClick && 'cursor-pointer',
+                    expanded && 'border-b-0',
+                  )}
+                >
+                  {columns.map((col) => (
+                    <td key={col.key} className={cn('px-4 py-2.5 text-sm text-neutral-700', col.className)}>
+                      {col.render(item)}
+                    </td>
+                  ))}
+                </tr>
+                {expanded && (
+                  <tr key={`${keyFn(item)}-expanded`} className="border-b border-border">
+                    <td colSpan={columns.length} className="p-0">
+                      {expanded}
+                    </td>
+                  </tr>
+                )}
+              </>
+            )
+          })}
         </tbody>
       </table>
     </div>

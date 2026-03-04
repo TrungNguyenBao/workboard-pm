@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Box, Briefcase, Calendar, ChevronDown, ClipboardCheck, Clock, Cpu, DollarSign, Home, LogOut, MoreHorizontal, Package, Pencil, Plus, Settings, Shield, Target, Trash2, Truck, Users, UserPlus, Warehouse as WarehouseIcon } from 'lucide-react'
+import { Box, Briefcase, Calendar, ChevronDown, ClipboardCheck, Clock, Cpu, DollarSign, Home, LogOut, MoreHorizontal, Package, Pencil, Plus, Settings, Shield, Star, Target, TrendingUp, Trash2, Truck, Users, UserPlus, Warehouse as WarehouseIcon } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth.store'
@@ -187,6 +187,8 @@ export function Sidebar() {
                   <NavItem to="/hrm/insurance" icon={<Shield className="h-4 w-4" />} label={t('nav.insurance')} active={isActive('/hrm/insurance')} />
                   <NavItem to="/hrm/recruitment" icon={<UserPlus className="h-4 w-4" />} label={t('nav.recruitment')} active={isActive('/hrm/recruitment')} />
                   <NavItem to="/hrm/onboarding" icon={<ClipboardCheck className="h-4 w-4" />} label={t('nav.onboarding')} active={isActive('/hrm/onboarding')} />
+                  <NavItem to="/hrm/performance" icon={<TrendingUp className="h-4 w-4" />} label={t('nav.performance')} active={isActive('/hrm/performance')} />
+                  <NavItem to="/hrm/reviews" icon={<Star className="h-4 w-4" />} label={t('nav.reviews')} active={isActive('/hrm/reviews')} />
                   <NavItem to="/members" icon={<Users className="h-4 w-4" />} label={t('nav.members')} active={isActive('/members')} />
                 </>
               ) : activeModule === 'crm' ? (

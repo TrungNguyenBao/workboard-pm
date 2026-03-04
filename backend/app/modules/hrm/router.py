@@ -8,13 +8,17 @@ from app.modules.hrm.routers import (
     employees,
     insurance_records,
     interviews,
+    kpi_assignments,
+    kpi_templates,
     leave_requests,
     leave_types,
     offers,
     onboarding_checklists,
     payroll_records,
+    performance_reviews,
     positions,
     recruitment_requests,
+    review_feedback,
     salary_history,
 )
 
@@ -35,3 +39,7 @@ hrm_router.include_router(offers.router)
 hrm_router.include_router(onboarding_checklists.router)
 hrm_router.include_router(attendance_records.router)
 hrm_router.include_router(insurance_records.router)
+hrm_router.include_router(kpi_templates.router)
+hrm_router.include_router(kpi_assignments.router)
+hrm_router.include_router(performance_reviews.router)
+hrm_router.include_router(review_feedback.router)

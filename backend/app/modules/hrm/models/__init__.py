@@ -15,3 +15,7 @@ from app.modules.hrm.models.payroll_record import PayrollRecord  # noqa: F401
 from app.modules.hrm.models.position import Position  # noqa: F401
 from app.modules.hrm.models.recruitment_request import RecruitmentRequest  # noqa: F401
 from app.modules.hrm.models.salary_history import SalaryHistory  # noqa: F401
+from app.modules.hrm.models.kpi_template import KpiTemplate  # noqa: F401
+from app.modules.hrm.models.kpi_assignment import KpiAssignment  # noqa: F401
+from app.modules.hrm.models.performance_review import PerformanceReview  # noqa: F401
+from app.modules.hrm.models.review_feedback import ReviewFeedback  # noqa: F401

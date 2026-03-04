@@ -40,6 +40,10 @@ const HrmRecruitmentListPage = lazy(() => import('@/modules/hrm/features/recruit
 const HrmRecruitmentDetailPage = lazy(() => import('@/modules/hrm/features/recruitment/pages/recruitment-detail'))
 const HrmOnboardingListPage = lazy(() => import('@/modules/hrm/features/onboarding/pages/onboarding-list'))
 
+// Lazy-loaded pages — HRM performance
+const HrmKpiListPage = lazy(() => import('@/modules/hrm/features/performance/pages/kpi-list'))
+const HrmReviewsListPage = lazy(() => import('@/modules/hrm/features/performance/pages/reviews-list'))
+
 // Lazy-loaded pages — CRM module
 const CrmContactsPage = lazy(() => import('@/modules/crm/features/contacts/pages/contacts-list'))
 const CrmDealsPage = lazy(() => import('@/modules/crm/features/deals/pages/deals-list'))
@@ -101,6 +105,8 @@ export function AppRouter() {
             <Route path="/hrm/recruitment" element={<HrmRecruitmentListPage />} />
             <Route path="/hrm/recruitment/:requestId" element={<HrmRecruitmentDetailPage />} />
             <Route path="/hrm/onboarding" element={<HrmOnboardingListPage />} />
+            <Route path="/hrm/performance" element={<HrmKpiListPage />} />
+            <Route path="/hrm/reviews" element={<HrmReviewsListPage />} />
 
             {/* CRM module */}
             <Route path="/crm" element={<Navigate to="/crm/contacts" replace />} />
