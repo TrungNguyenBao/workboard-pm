@@ -25,26 +25,17 @@ def days(n: int) -> timedelta:
     return timedelta(days=n)
 
 
-# All tables from all modules — order matters for FK constraints
-TRUNCATE_TABLES = (
-    "payroll_records, leave_requests, leave_types, employees, departments, "
-    "inventory_items, wms_devices, wms_products, wms_suppliers, warehouses, "
-    "deals, contacts, "
-    "goal_task_links, goal_project_links, goals, "
-    "task_followers, task_tags, task_dependencies, "
-    "comments, attachments, custom_field_definitions, "
-    "tasks, sections, project_memberships, projects, "
-    "tags, team_memberships, teams, "
-    "workspace_memberships, workspaces, "
-    "refresh_tokens, activity_logs, notifications, users"
-)
-
-
 async def clear_data(session: AsyncSession) -> None:
     print("  Clearing existing data...")
-    await session.execute(
-        text(f"TRUNCATE TABLE {TRUNCATE_TABLES} RESTART IDENTITY CASCADE")
-    )
+    # Get all tables in public schema
+    result = await session.execute(text(
+        "SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename != 'alembic_version'"
+    ))
+    tables = [row[0] for row in result.fetchall()]
+    if tables:
+        tables_str = ", ".join(tables)
+        # Using CASCADE to handle all foreign key constraints
+        await session.execute(text(f"TRUNCATE TABLE {tables_str} RESTART IDENTITY CASCADE"))
     await session.commit()
     print("  Done clearing.")
 

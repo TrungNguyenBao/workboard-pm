@@ -34,6 +34,11 @@ const HrmDepartmentsPage = lazy(() => import('@/modules/hrm/features/departments
 const HrmLeavePage = lazy(() => import('@/modules/hrm/features/leave/pages/leave-requests-list'))
 const HrmPayrollPage = lazy(() => import('@/modules/hrm/features/payroll/pages/payroll-list'))
 const HrmPositionsPage = lazy(() => import('@/modules/hrm/features/positions/pages/positions-list'))
+const HrmAttendancePage = lazy(() => import('@/modules/hrm/features/attendance/pages/attendance-list'))
+const HrmInsurancePage = lazy(() => import('@/modules/hrm/features/payroll/pages/insurance-list'))
+const HrmRecruitmentListPage = lazy(() => import('@/modules/hrm/features/recruitment/pages/recruitment-list'))
+const HrmRecruitmentDetailPage = lazy(() => import('@/modules/hrm/features/recruitment/pages/recruitment-detail'))
+const HrmOnboardingListPage = lazy(() => import('@/modules/hrm/features/onboarding/pages/onboarding-list'))
 
 // Lazy-loaded pages — CRM module
 const CrmContactsPage = lazy(() => import('@/modules/crm/features/contacts/pages/contacts-list'))
@@ -91,6 +96,11 @@ export function AppRouter() {
             <Route path="/hrm/positions" element={<HrmPositionsPage />} />
             <Route path="/hrm/leave" element={<HrmLeavePage />} />
             <Route path="/hrm/payroll" element={<HrmPayrollPage />} />
+            <Route path="/hrm/attendance" element={<HrmAttendancePage />} />
+            <Route path="/hrm/insurance" element={<HrmInsurancePage />} />
+            <Route path="/hrm/recruitment" element={<HrmRecruitmentListPage />} />
+            <Route path="/hrm/recruitment/:requestId" element={<HrmRecruitmentDetailPage />} />
+            <Route path="/hrm/onboarding" element={<HrmOnboardingListPage />} />
 
             {/* CRM module */}
             <Route path="/crm" element={<Navigate to="/crm/contacts" replace />} />

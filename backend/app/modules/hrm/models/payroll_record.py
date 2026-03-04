@@ -1,6 +1,7 @@
 import uuid
+from decimal import Decimal
 
-from sqlalchemy import ForeignKey, Numeric, String
+from sqlalchemy import ForeignKey, Integer, Numeric, String
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -19,6 +20,22 @@ class PayrollRecord(Base, TimestampMixin):
     deductions: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
     status: Mapped[str] = mapped_column(String(20), default="draft")  # draft, approved, paid
     workspace_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("workspaces.id"), index=True)
+
+    # Enhanced C&B fields
+    base_salary: Mapped[Decimal | None] = mapped_column(Numeric(12, 2), nullable=True)
+    allowances: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    bhxh_employee: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=0)
+    bhxh_employer: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=0)
+    bhyt_employee: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=0)
+    bhyt_employer: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=0)
+    bhtn_employee: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=0)
+    bhtn_employer: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=0)
+    taxable_income: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=0)
+    personal_deduction: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=11_000_000)
+    dependent_deduction: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=0)
+    pit_amount: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=0)
+    working_days: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    actual_working_days: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
     employee: Mapped["Employee"] = relationship()  # noqa: F821
     workspace: Mapped["Workspace"] = relationship()  # noqa: F821

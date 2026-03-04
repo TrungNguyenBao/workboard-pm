@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Box, Briefcase, Calendar, ChevronDown, Cpu, DollarSign, Home, LogOut, MoreHorizontal, Package, Pencil, Plus, Settings, Target, Trash2, Truck, Users, UserPlus, Warehouse as WarehouseIcon } from 'lucide-react'
+import { Box, Briefcase, Calendar, ChevronDown, ClipboardCheck, Clock, Cpu, DollarSign, Home, LogOut, MoreHorizontal, Package, Pencil, Plus, Settings, Shield, Target, Trash2, Truck, Users, UserPlus, Warehouse as WarehouseIcon } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth.store'
@@ -183,7 +183,11 @@ export function Sidebar() {
                   <NavItem to="/hrm/positions" icon={<Box className="h-4 w-4" />} label={t('nav.positions')} active={isActive('/hrm/positions')} />
                   <NavItem to="/hrm/leave" icon={<Calendar className="h-4 w-4" />} label={t('nav.leave')} active={isActive('/hrm/leave')} />
                   <NavItem to="/hrm/payroll" icon={<DollarSign className="h-4 w-4" />} label={t('nav.payroll')} active={isActive('/hrm/payroll')} />
-                  <NavItem to="/members" icon={<UserPlus className="h-4 w-4" />} label={t('nav.members')} active={isActive('/members')} />
+                  <NavItem to="/hrm/attendance" icon={<Clock className="h-4 w-4" />} label={t('nav.attendance')} active={isActive('/hrm/attendance')} />
+                  <NavItem to="/hrm/insurance" icon={<Shield className="h-4 w-4" />} label={t('nav.insurance')} active={isActive('/hrm/insurance')} />
+                  <NavItem to="/hrm/recruitment" icon={<UserPlus className="h-4 w-4" />} label={t('nav.recruitment')} active={isActive('/hrm/recruitment')} />
+                  <NavItem to="/hrm/onboarding" icon={<ClipboardCheck className="h-4 w-4" />} label={t('nav.onboarding')} active={isActive('/hrm/onboarding')} />
+                  <NavItem to="/members" icon={<Users className="h-4 w-4" />} label={t('nav.members')} active={isActive('/members')} />
                 </>
               ) : activeModule === 'crm' ? (
                 <>
