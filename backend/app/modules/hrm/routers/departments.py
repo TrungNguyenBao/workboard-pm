@@ -10,6 +10,7 @@ from app.schemas.pagination import PaginatedResponse
 from app.modules.hrm.schemas.department import (
     DepartmentCreate,
     DepartmentResponse,
+    DepartmentTreeNode,
     DepartmentUpdate,
 )
 from app.modules.hrm.services.department import (
@@ -19,6 +20,7 @@ from app.modules.hrm.services.department import (
     list_departments,
     update_department,
 )
+from app.modules.hrm.services.org_tree import get_headcount_summary, get_org_tree
 
 router = APIRouter(tags=["hrm"])
 
@@ -51,6 +53,31 @@ async def list_(
 ):
     items, total = await list_departments(db, workspace_id, search, page, page_size)
     return PaginatedResponse(items=items, total=total, page=page, page_size=page_size)
+
+
+# Static sub-paths must come before /{department_id} to avoid route conflicts
+@router.get(
+    "/workspaces/{workspace_id}/departments/tree",
+    response_model=list[DepartmentTreeNode],
+)
+async def get_tree(
+    workspace_id: uuid.UUID,
+    current_user: User = Depends(require_workspace_role("guest")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await get_org_tree(db, workspace_id)
+
+
+@router.get(
+    "/workspaces/{workspace_id}/departments/headcount",
+    response_model=list[dict],
+)
+async def get_headcount(
+    workspace_id: uuid.UUID,
+    current_user: User = Depends(require_workspace_role("guest")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await get_headcount_summary(db, workspace_id)
 
 
 @router.get(

@@ -6,6 +6,8 @@ export interface Department {
   name: string
   description: string | null
   workspace_id: string
+  parent_department_id: string | null
+  manager_id: string | null
 }
 
 export interface PaginatedDepartments {

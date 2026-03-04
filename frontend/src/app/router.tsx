@@ -29,9 +29,11 @@ const WmsSuppliersPage = lazy(() => import('@/modules/wms/features/suppliers/pag
 
 // Lazy-loaded pages — HRM module
 const HrmEmployeesPage = lazy(() => import('@/modules/hrm/features/employees/pages/employees-list'))
+const HrmEmployeeDetailPage = lazy(() => import('@/modules/hrm/features/employees/pages/employee-detail'))
 const HrmDepartmentsPage = lazy(() => import('@/modules/hrm/features/departments/pages/departments-list'))
 const HrmLeavePage = lazy(() => import('@/modules/hrm/features/leave/pages/leave-requests-list'))
 const HrmPayrollPage = lazy(() => import('@/modules/hrm/features/payroll/pages/payroll-list'))
+const HrmPositionsPage = lazy(() => import('@/modules/hrm/features/positions/pages/positions-list'))
 
 // Lazy-loaded pages — CRM module
 const CrmContactsPage = lazy(() => import('@/modules/crm/features/contacts/pages/contacts-list'))
@@ -52,7 +54,7 @@ function RequireGuest({ children }: { children: React.ReactNode }) {
 export function AppRouter() {
   return (
     <BrowserRouter>
-      <Suspense fallback={<div className="flex h-screen items-center justify-center text-sm text-neutral-500">Loading…</div>}>
+      <Suspense fallback={<div className="flex h-screen items-center justify-center text-sm text-muted-foreground">Loading…</div>}>
         <Routes>
           <Route path="/login" element={<RequireGuest><LoginPage /></RequireGuest>} />
           <Route path="/register" element={<RequireGuest><RegisterPage /></RequireGuest>} />
@@ -83,8 +85,10 @@ export function AppRouter() {
 
             {/* HRM module */}
             <Route path="/hrm" element={<Navigate to="/hrm/employees" replace />} />
+            <Route path="/hrm/employees/:employeeId" element={<HrmEmployeeDetailPage />} />
             <Route path="/hrm/employees" element={<HrmEmployeesPage />} />
             <Route path="/hrm/departments" element={<HrmDepartmentsPage />} />
+            <Route path="/hrm/positions" element={<HrmPositionsPage />} />
             <Route path="/hrm/leave" element={<HrmLeavePage />} />
             <Route path="/hrm/payroll" element={<HrmPayrollPage />} />
 

@@ -1,7 +1,12 @@
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, Field
+
+if TYPE_CHECKING:
+    from app.modules.hrm.schemas.contract import ContractResponse
+    from app.modules.hrm.schemas.salary_history import SalaryHistoryResponse
 
 
 class EmployeeCreate(BaseModel):
@@ -33,3 +38,19 @@ class EmployeeResponse(BaseModel):
     workspace_id: uuid.UUID
 
     model_config = {"from_attributes": True}
+
+
+class EmployeeDetailResponse(EmployeeResponse):
+    active_contract: "ContractResponse | None" = None
+    recent_salary_changes: "list[SalaryHistoryResponse]" = []
+    leave_balance: dict = {}  # {leave_type_name: {total, used, remaining}}
+
+
+# Resolve forward references at module load time
+def _update_forward_refs() -> None:
+    from app.modules.hrm.schemas.contract import ContractResponse  # noqa: F401
+    from app.modules.hrm.schemas.salary_history import SalaryHistoryResponse  # noqa: F401
+    EmployeeDetailResponse.model_rebuild()
+
+
+_update_forward_refs()

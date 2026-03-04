@@ -23,3 +23,4 @@ class Employee(Base, TimestampMixin):
     user: Mapped["User | None"] = relationship()  # noqa: F821
     department: Mapped["Department | None"] = relationship(back_populates="employees")  # noqa: F821
     workspace: Mapped["Workspace"] = relationship()  # noqa: F821
+    contracts: Mapped[list["Contract"]] = relationship(back_populates="employee", cascade="all, delete-orphan")  # noqa: F821

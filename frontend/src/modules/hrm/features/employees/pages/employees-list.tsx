@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useWorkspaceStore } from '@/stores/workspace.store'
@@ -13,6 +14,7 @@ const PAGE_SIZE = 20
 
 export default function EmployeesListPage() {
   const { t } = useTranslation('hrm')
+  const navigate = useNavigate()
   const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId) ?? ''
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
@@ -73,6 +75,7 @@ export default function EmployeesListPage() {
         columns={columns}
         data={data?.items ?? []}
         keyFn={(e) => e.id}
+        onRowClick={(e) => navigate(`/hrm/employees/${e.id}`)}
         emptyMessage={t('employees.empty')}
       />
       <HrmPagination page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />

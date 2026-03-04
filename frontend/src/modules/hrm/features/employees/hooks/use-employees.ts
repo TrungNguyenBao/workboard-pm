@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import api from '@/shared/lib/api'
+import type { Contract } from './use-contracts'
+import type { SalaryHistory } from './use-salary-history'
 
 export interface Employee {
   id: string
@@ -53,6 +55,21 @@ export function useUpdateEmployee(workspaceId: string) {
     mutationFn: ({ employeeId, ...data }: { employeeId: string } & Record<string, unknown>) =>
       api.patch(`${base(workspaceId)}/${employeeId}`, data).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['hrm-employees', workspaceId] }),
+  })
+}
+
+export interface EmployeeDetail extends Employee {
+  active_contract: Contract | null
+  recent_salary_changes: SalaryHistory[]
+  leave_balance: Record<string, { total: number; used: number; remaining: number }>
+}
+
+export function useEmployeeDetail(workspaceId: string, employeeId: string) {
+  return useQuery<EmployeeDetail>({
+    queryKey: ['hrm-employee-detail', workspaceId, employeeId],
+    queryFn: () =>
+      api.get(`${base(workspaceId)}/${employeeId}/detail`).then((r) => r.data),
+    enabled: !!workspaceId && !!employeeId,
   })
 }
 

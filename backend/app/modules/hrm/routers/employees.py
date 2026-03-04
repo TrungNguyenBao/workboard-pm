@@ -7,11 +7,12 @@ from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
 from app.schemas.pagination import PaginatedResponse
-from app.modules.hrm.schemas.employee import EmployeeCreate, EmployeeResponse, EmployeeUpdate
+from app.modules.hrm.schemas.employee import EmployeeCreate, EmployeeDetailResponse, EmployeeResponse, EmployeeUpdate
 from app.modules.hrm.services.employee import (
     create_employee,
     delete_employee,
     get_employee,
+    get_employee_detail,
     list_employees,
     update_employee,
 )
@@ -48,6 +49,19 @@ async def list_(
 ):
     items, total = await list_employees(db, workspace_id, department_id, search, page, page_size)
     return PaginatedResponse(items=items, total=total, page=page, page_size=page_size)
+
+
+@router.get(
+    "/workspaces/{workspace_id}/employees/{employee_id}/detail",
+    response_model=EmployeeDetailResponse,
+)
+async def get_detail(
+    workspace_id: uuid.UUID,
+    employee_id: uuid.UUID,
+    current_user: User = Depends(require_workspace_role("guest")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await get_employee_detail(db, employee_id, workspace_id)
 
 
 @router.get(

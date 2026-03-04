@@ -5,7 +5,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/compo
 import { Input } from '@/shared/components/ui/input'
 import { Label } from '@/shared/components/ui/label'
 import { toast } from '@/shared/components/ui/toast'
-import { type Department, useCreateDepartment, useUpdateDepartment } from '../hooks/use-departments'
+import { useEmployees } from '../../employees/hooks/use-employees'
+import { type Department, useCreateDepartment, useDepartments, useUpdateDepartment } from '../hooks/use-departments'
 
 interface Props {
   open: boolean
@@ -27,10 +28,17 @@ function DepartmentFormContent({ workspaceId, department, onOpenChange }: Omit<P
   const { t } = useTranslation('hrm')
   const createDepartment = useCreateDepartment(workspaceId)
   const updateDepartment = useUpdateDepartment(workspaceId)
+  const { data: deptData } = useDepartments(workspaceId, { page_size: 100 })
+  const { data: empData } = useEmployees(workspaceId, { page_size: 100 })
   const isEdit = !!department
 
   const [name, setName] = useState(department?.name ?? '')
   const [description, setDescription] = useState(department?.description ?? '')
+  const [parentDeptId, setParentDeptId] = useState(department?.parent_department_id ?? '')
+  const [managerId, setManagerId] = useState(department?.manager_id ?? '')
+
+  // Exclude self from parent options when editing
+  const parentOptions = deptData?.items.filter((d) => d.id !== department?.id) ?? []
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -39,6 +47,8 @@ function DepartmentFormContent({ workspaceId, department, onOpenChange }: Omit<P
       const payload = {
         name: name.trim(),
         description: description.trim() || null,
+        parent_department_id: parentDeptId || null,
+        manager_id: managerId || null,
       }
       if (isEdit) {
         await updateDepartment.mutateAsync({ departmentId: department.id, ...payload })
@@ -68,6 +78,34 @@ function DepartmentFormContent({ workspaceId, department, onOpenChange }: Omit<P
         <div className="space-y-1.5">
           <Label htmlFor="dept-description">{t('common:common.description')}</Label>
           <Input id="dept-description" value={description} onChange={(e) => setDescription(e.target.value)} />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="dept-parent">Parent department</Label>
+          <select
+            id="dept-parent"
+            value={parentDeptId}
+            onChange={(e) => setParentDeptId(e.target.value)}
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          >
+            <option value="">None (root department)</option>
+            {parentOptions.map((d) => (
+              <option key={d.id} value={d.id}>{d.name}</option>
+            ))}
+          </select>
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="dept-manager">Manager</Label>
+          <select
+            id="dept-manager"
+            value={managerId}
+            onChange={(e) => setManagerId(e.target.value)}
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          >
+            <option value="">No manager assigned</option>
+            {empData?.items.map((emp) => (
+              <option key={emp.id} value={emp.id}>{emp.name}</option>
+            ))}
+          </select>
         </div>
         <div className="flex justify-end gap-2 pt-1">
           <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>{t('common:common.cancel')}</Button>

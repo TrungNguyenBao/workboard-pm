@@ -69,20 +69,20 @@ export function Sidebar() {
 
   return (
     <>
-      <aside className="flex h-screen w-56 flex-col border-r border-border bg-neutral-50">
+      <aside className="flex h-screen w-56 flex-col border-r border-border bg-muted/50">
         {/* Workspace switcher */}
         <div className="relative border-b border-border">
           <button
-            className="flex w-full items-center gap-2 px-4 py-3 hover:bg-neutral-100 transition-colors"
+            className="flex w-full items-center gap-2 px-4 py-3 hover:bg-accent transition-colors"
             onClick={() => setWsPickerOpen((v) => !v)}
           >
             <div className="h-6 w-6 rounded bg-primary flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
               {activeWorkspace ? activeWorkspace.name[0].toUpperCase() : 'W'}
             </div>
-            <span className="text-sm font-semibold text-neutral-900 truncate flex-1 text-left">
+            <span className="text-sm font-semibold text-foreground truncate flex-1 text-left">
               {activeWorkspace?.name ?? t('sidebar.noWorkspace')}
             </span>
-            <ChevronDown className="h-3.5 w-3.5 text-neutral-400 flex-shrink-0" />
+            <ChevronDown className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
           </button>
 
           {wsPickerOpen && (
@@ -91,7 +91,7 @@ export function Sidebar() {
                 <div key={ws.id} className="flex items-center group">
                   <button
                     className={cn(
-                      'flex flex-1 items-center gap-2 px-4 py-2 text-sm hover:bg-neutral-50 transition-colors',
+                      'flex flex-1 items-center gap-2 px-4 py-2 text-sm hover:bg-muted transition-colors',
                       ws.id === activeWorkspaceId && 'text-primary font-medium',
                     )}
                     onClick={() => {
@@ -107,7 +107,7 @@ export function Sidebar() {
                   </button>
                   {ws.id === activeWorkspaceId && (
                     <button
-                      className="pr-3 opacity-0 group-hover:opacity-100 text-neutral-400 hover:text-neutral-700 transition-all"
+                      className="pr-3 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-foreground transition-all"
                       title={t('sidebar.renameWorkspace')}
                       onClick={() => {
                         setWsRenameInput(ws.name)
@@ -121,7 +121,7 @@ export function Sidebar() {
                 </div>
               ))}
               <button
-                className="flex w-full items-center gap-2 px-4 py-2 text-sm text-neutral-500 hover:bg-neutral-50 border-t border-border transition-colors"
+                className="flex w-full items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:bg-muted border-t border-border transition-colors"
                 onClick={() => { setWsPickerOpen(false); setWsDialogOpen(true) }}
               >
                 <Plus className="h-3.5 w-3.5" />
@@ -131,7 +131,7 @@ export function Sidebar() {
           )}
           {wsRenaming && (
             <div className="absolute left-0 right-0 top-full z-50 bg-white border border-border rounded-b-md shadow-popover p-3">
-              <p className="text-xs font-medium text-neutral-500 mb-2">{t('sidebar.renameWorkspace')}</p>
+              <p className="text-xs font-medium text-muted-foreground mb-2">{t('sidebar.renameWorkspace')}</p>
               <input
                 autoFocus
                 value={wsRenameInput}
@@ -147,7 +147,7 @@ export function Sidebar() {
                 className="w-full rounded border border-border px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-primary/40 mb-2"
               />
               <div className="flex gap-2 justify-end">
-                <button className="text-xs text-neutral-400 hover:text-neutral-700" onClick={() => setWsRenaming(false)}>{t('common.cancel')}</button>
+                <button className="text-xs text-muted-foreground hover:text-foreground" onClick={() => setWsRenaming(false)}>{t('common.cancel')}</button>
                 <button
                   className="text-xs text-primary hover:text-primary/80 font-medium"
                   onClick={async () => {
@@ -169,7 +169,7 @@ export function Sidebar() {
         <nav className="flex-1 overflow-y-auto px-2 py-3 space-y-0.5">
           {noWorkspace ? (
             <div className="px-2 py-6 text-center">
-              <p className="text-xs text-neutral-400 mb-3">{t('sidebar.noWorkspaceYet')}</p>
+              <p className="text-xs text-muted-foreground mb-3">{t('sidebar.noWorkspaceYet')}</p>
               <Button size="sm" onClick={() => setWsDialogOpen(true)}>
                 {t('sidebar.createWorkspace')}
               </Button>
@@ -180,6 +180,7 @@ export function Sidebar() {
                 <>
                   <NavItem to="/hrm/employees" icon={<Users className="h-4 w-4" />} label={t('nav.employees')} active={isActive('/hrm/employees')} />
                   <NavItem to="/hrm/departments" icon={<Briefcase className="h-4 w-4" />} label={t('nav.departments')} active={isActive('/hrm/departments')} />
+                  <NavItem to="/hrm/positions" icon={<Box className="h-4 w-4" />} label={t('nav.positions')} active={isActive('/hrm/positions')} />
                   <NavItem to="/hrm/leave" icon={<Calendar className="h-4 w-4" />} label={t('nav.leave')} active={isActive('/hrm/leave')} />
                   <NavItem to="/hrm/payroll" icon={<DollarSign className="h-4 w-4" />} label={t('nav.payroll')} active={isActive('/hrm/payroll')} />
                   <NavItem to="/members" icon={<UserPlus className="h-4 w-4" />} label={t('nav.members')} active={isActive('/members')} />
@@ -206,7 +207,7 @@ export function Sidebar() {
                   <NavItem to="/members" icon={<Users className="h-4 w-4" />} label={t('nav.members')} active={isActive('/members')} />
 
                   <div className="pt-4 pb-1 px-2">
-                    <span className="text-xs font-semibold text-neutral-400 uppercase tracking-wide">{t('sidebar.projects')}</span>
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t('sidebar.projects')}</span>
                   </div>
 
                   {projects.filter((p) => !p.is_archived).map((p) => (
@@ -221,7 +222,7 @@ export function Sidebar() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="w-full justify-start text-neutral-400 hover:text-neutral-700 mt-1"
+                    className="w-full justify-start text-muted-foreground hover:text-foreground mt-1"
                     onClick={() => setProjDialogOpen(true)}
                   >
                     <Plus className="h-3.5 w-3.5 mr-1.5" />
@@ -230,7 +231,7 @@ export function Sidebar() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="w-full justify-start text-neutral-400 hover:text-neutral-700"
+                    className="w-full justify-start text-muted-foreground hover:text-foreground"
                     onClick={() => setInviteDialogOpen(true)}
                   >
                     <UserPlus className="h-3.5 w-3.5 mr-1.5" />
@@ -258,18 +259,18 @@ export function Sidebar() {
               <AvatarImage src={user?.avatar_url ?? undefined} />
               <AvatarFallback>{generateInitials(user?.name ?? 'U')}</AvatarFallback>
             </Avatar>
-            <span className="text-sm text-neutral-700 flex-1 truncate text-left">{user?.name}</span>
+            <span className="text-sm text-foreground flex-1 truncate text-left">{user?.name}</span>
           </button>
           <button
             onClick={() => navigate('/settings')}
-            className="p-1 text-neutral-400 hover:text-neutral-700 rounded"
+            className="p-1 text-muted-foreground hover:text-foreground rounded"
             title={t('sidebar.settings')}
           >
             <Settings className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={async () => { await logout(); navigate('/login') }}
-            className="p-1 text-neutral-400 hover:text-neutral-700 rounded"
+            className="p-1 text-muted-foreground hover:text-foreground rounded"
             title={t('sidebar.logOut')}
           >
             <LogOut className="h-3.5 w-3.5" />
@@ -353,7 +354,7 @@ function ProjectNavItem({ project, active, workspaceId }: { project: Project; ac
           'flex flex-1 min-w-0 items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors',
           active
             ? 'bg-primary/10 text-primary font-medium'
-            : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900',
+            : 'text-muted-foreground hover:bg-accent hover:text-foreground',
         )}
       >
         <span className="h-2 w-2 rounded-full flex-shrink-0" style={{ backgroundColor: project.color }} />
@@ -361,7 +362,7 @@ function ProjectNavItem({ project, active, workspaceId }: { project: Project; ac
       </Link>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="p-1 opacity-0 group-hover:opacity-100 text-neutral-400 hover:text-neutral-700 rounded transition-opacity">
+          <button className="p-1 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-foreground rounded transition-opacity">
             <MoreHorizontal className="h-3.5 w-3.5" />
           </button>
         </DropdownMenuTrigger>
@@ -410,7 +411,7 @@ function NavItem({
         'flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors',
         active
           ? 'bg-primary/10 text-primary font-medium'
-          : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900',
+          : 'text-muted-foreground hover:bg-accent hover:text-foreground',
       )}
     >
       {icon}
