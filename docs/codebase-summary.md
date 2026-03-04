@@ -56,6 +56,17 @@ backend/
 │   │   ├── context.py                   # Shared context key-value store
 │   │   └── policy.py                    # Governance rules + audit log
 │   ├── worker/                          # ARQ background job definitions
+│   ├── scripts/                         # Data seeding scripts (modular architecture)
+│   │   ├── __init__.py                  # Module marker
+│   │   ├── __main__.py                  # Entry point: python -m app.scripts.seed
+│   │   ├── seed_shared.py               # DB engine, helpers, users, workspace, TRUNCATE_TABLES
+│   │   ├── seed_pms.py                  # PMS: orchestrator calling pms_setup/pms_tasks/pms_extras
+│   │   ├── seed_pms_setup.py            # PMS: projects, sections, tags
+│   │   ├── seed_pms_tasks.py            # PMS: tasks, subtasks, dependencies, attachments
+│   │   ├── seed_pms_extras.py           # PMS: comments, goals, followers, custom fields
+│   │   ├── seed_crm.py                  # CRM: contacts, deals
+│   │   ├── seed_wms.py                  # WMS: warehouses, products, suppliers, devices, inventory
+│   │   └── seed_hrm.py                  # HRM: departments, employees, leave types/requests, payroll
 │   └── main.py                          # FastAPI app initialization
 ├── alembic/
 │   ├── env.py                           # Migration runner

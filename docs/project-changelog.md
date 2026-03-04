@@ -5,6 +5,29 @@ Format: `## [version] — YYYY-MM-DD` with grouped entries.
 
 ---
 
+## [2.3.0] — 2026-03-04
+
+### Added — Seed Demo Data Restructure & Extension
+
+- **Modular Seed Architecture** — Restructured monolithic `backend/scripts/seed.py` (675 lines) into modular files under `backend/app/scripts/` to support scalable data seeding. Entry point: `__main__.py` orchestrates all modules.
+- **Seed Module Structure** — Each seed module exports `async def seed_xxx(session, ws_id, ...) -> dict` for composition:
+  - `seed_shared.py` (75 lines) — Users, workspace, memberships, DB engine, helpers, TRUNCATE_TABLES
+  - `seed_pms.py` + `seed_pms_setup.py` + `seed_pms_tasks.py` + `seed_pms_extras.py` (split to 200-line limit) — Projects, sections, tasks, tags, comments, goals, custom fields, followers
+  - `seed_crm.py` (80 lines) — Contacts, deals
+  - `seed_wms.py` (new, 180+ lines) — Warehouses, products, suppliers, devices, inventory
+  - `seed_hrm.py` (new, 180+ lines) — Departments, employees, leave types, leave requests, payroll
+- **WMS Seed Data** — 2 Vietnamese warehouses (Ho Chi Minh + Hanoi), 6 products (laptops, monitors, keyboards, mice, cables, paper), 3 suppliers, 8 serial-tracked devices, 6 inventory items with quantities and thresholds.
+- **HRM Seed Data** — 4 Vietnamese departments (Ky Thuat, Marketing, Nhan Su, Kinh Doanh), 8 employees (3 linked to app users demo/alice/bob, 5 Vietnamese staff), 4 leave types (Annual, Sick, Maternity, Unpaid), 6 leave requests (mix of past/future, approved/pending/rejected), 16 payroll records (2 months × 8 employees) with realistic VND salaries and deductions (bhxh, bhyt, tncn).
+- **TRUNCATE_TABLES Update** — Now includes all WMS and HRM tables: `payroll_records`, `leave_requests`, `leave_types`, `employees`, `departments`, `inventory_items`, `wms_devices`, `wms_products`, `wms_suppliers`, `warehouses` (plus existing PMS/CRM tables).
+- **All Files <200 Lines** — Respects codebase standard. Longest files: seed_pms.py (~150 lines), seed_wms.py (~180 lines), seed_hrm.py (~180 lines).
+- **Vietnamese-Friendly Data** — Employee names, department names, supplier names all in Vietnamese. Product names include Vietnamese descriptions. Payroll uses Vietnamese deduction labels (bhxh, bhyt, tncn).
+- **Idempotent Execution** — `make seed` can run multiple times without errors. TRUNCATE CASCADE clears all data before insert.
+
+### Fixed
+- **Module Path Consistency** — `Makefile` runs `cd backend && uv run python -m app.scripts.seed` which correctly resolves to `app/scripts/__main__.py` (previously would have failed with old `backend/scripts/seed.py`).
+
+---
+
 ## [2.2.0] — 2026-03-03
 
 ### Added — Frontend i18n Multi-language Support (EN/VI)

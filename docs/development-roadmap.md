@@ -162,3 +162,22 @@ English and Vietnamese (EN/VI) internationalization across entire A-ERP frontend
 | Frontend: Add language switcher to sidebar footer | Done |
 | Frontend: Add language option to settings page | Done |
 | Frontend: Persist language preference in localStorage (key: a-erp-language) | Done |
+
+---
+
+## Phase 10 — Seed Demo Data (Complete)
+
+Restructured and extended seed script to populate all modules with realistic Vietnamese-friendly demo data.
+
+| Item | Status |
+|---|---|
+| Backend: Restructure monolithic `seed.py` into modular files under `app/scripts/` | Done |
+| Backend: Split `seed_pms.py` into 4 files (seed_pms.py, seed_pms_setup.py, seed_pms_tasks.py, seed_pms_extras.py) to respect 200-line limit | Done |
+| Backend: Create `seed_wms.py` with 2 warehouses, 6 products, 3 suppliers, 8 devices, 6 inventory items | Done |
+| Backend: Create `seed_hrm.py` with 4 departments, 8 employees, 4 leave types, 6 leave requests, 16 payroll records | Done |
+| Backend: Update `TRUNCATE_TABLES` in `seed_shared.py` to include all WMS and HRM tables | Done |
+| Backend: Create `__main__.py` entry point orchestrating all seed modules | Done |
+| Backend: Remove old `backend/scripts/seed.py` and create `app/scripts/` module path | Done |
+| Verification: Run `make seed` end-to-end without errors | Done |
+| Verification: All modules populated with correct data | Done |
+| Verification: Seed script is idempotent (running twice produces same result) | Done |

@@ -21,7 +21,7 @@ migrate-create:
 	cd backend && uv run alembic revision --autogenerate -m "$(name)"
 
 seed:
-	cd backend && uv run python -m app.scripts.seed
+	cd backend && uv run python -m app.scripts
 
 db-reset:
 	cd backend && uv run alembic downgrade base && uv run alembic upgrade head
