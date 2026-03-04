@@ -118,4 +118,71 @@ async def seed_hrm(
                 "ded": json.dumps(deductions), "status": pr_status,
             })
 
-    print("  HRM: 4 departments, 8 employees, 4 leave types, 6 leave requests, 16 payroll records")
+    # Positions (6) — per department
+    pos_ids: list[uuid.UUID] = []
+    positions = [
+        (0, "CTO",                  1,  "Lead technology strategy"),
+        (0, "Senior Developer",     3,  "Full-stack engineering"),
+        (0, "Junior Developer",     5,  None),
+        (1, "Marketing Manager",    1,  "Brand and campaigns"),
+        (2, "HR Specialist",        2,  "Recruitment and training"),
+        (3, "Sales Executive",      4,  "Client acquisition"),
+    ]
+    for dept_idx, title, headcount, desc in positions:
+        pid = uuid.uuid4()
+        pos_ids.append(pid)
+        await session.execute(text("""
+            INSERT INTO positions (id, workspace_id, department_id, title, headcount_limit, description, is_active, created_at, updated_at)
+            VALUES (:id, :ws, :dept, :title, :hc, :desc, true, now(), now())
+        """), {"id": pid, "ws": ws_id, "dept": dept_ids[dept_idx], "title": title, "hc": headcount, "desc": desc})
+
+    # Update departments with manager assignments
+    await session.execute(text("UPDATE departments SET manager_id=:mgr WHERE id=:dept"), {"mgr": emp_ids[0], "dept": dept_ids[0]})
+    await session.execute(text("UPDATE departments SET manager_id=:mgr WHERE id=:dept"), {"mgr": emp_ids[1], "dept": dept_ids[1]})
+    await session.execute(text("UPDATE departments SET manager_id=:mgr WHERE id=:dept"), {"mgr": emp_ids[5], "dept": dept_ids[2]})
+    await session.execute(text("UPDATE departments SET manager_id=:mgr WHERE id=:dept"), {"mgr": emp_ids[4], "dept": dept_ids[3]})
+
+    # Contracts (8) — one per employee
+    from datetime import date
+    contract_data = [
+        # emp_idx, contract_type, start_days_ago, end_days, base_salary, allowances, status
+        (0, "indefinite", 730, None,  45_000_000, {"transport": 1_000_000, "meal": 730_000}, "active"),
+        (1, "indefinite", 540, None,  30_000_000, {"transport": 1_000_000, "meal": 730_000}, "active"),
+        (2, "fixed_term", 450, 180,   35_000_000, {"transport": 1_000_000}, "active"),
+        (3, "probation",  365, 60,    22_000_000, None, "active"),
+        (4, "fixed_term", 300, 240,   20_000_000, {"transport": 500_000}, "active"),
+        (5, "indefinite", 500, None,  18_000_000, {"meal": 730_000}, "active"),
+        (6, "probation",  200, 45,    25_000_000, None, "active"),
+        (7, "probation",  150, 30,    16_000_000, None, "active"),
+    ]
+    for emp_idx, ctype, start_ago, end_in, salary, allowances, status in contract_data:
+        start = (today - timedelta(days=start_ago)).date()
+        end = (today + timedelta(days=end_in)).date() if end_in else None
+        await session.execute(text("""
+            INSERT INTO contracts (id, workspace_id, employee_id, contract_type, start_date, end_date, base_salary, allowances, status, created_at, updated_at)
+            VALUES (:id, :ws, :emp, :type, :start, :end, :salary, CAST(:allow AS jsonb), :status, now(), now())
+        """), {
+            "id": uuid.uuid4(), "ws": ws_id, "emp": emp_ids[emp_idx],
+            "type": ctype, "start": start, "end": end, "salary": salary,
+            "allow": json.dumps(allowances) if allowances else None, "status": status,
+        })
+
+    # Salary History (4) — for employees who had salary changes
+    salary_history = [
+        (0, 400, 40_000_000, 45_000_000, "Annual performance review promotion", demo_id),
+        (2, 300, 28_000_000, 35_000_000, "Converted from probation to full-time", demo_id),
+        (5, 250, 15_000_000, 18_000_000, "Annual salary adjustment", demo_id),
+        (6,  60, 22_000_000, 25_000_000, "Probation completion adjustment",      demo_id),
+    ]
+    for emp_idx, days_ago, prev_amt, new_amt, reason, approved_by in salary_history:
+        eff_date = (today - timedelta(days=days_ago)).date()
+        await session.execute(text("""
+            INSERT INTO salary_history (id, workspace_id, employee_id, effective_date, previous_amount, new_amount, reason, approved_by_id, created_at, updated_at)
+            VALUES (:id, :ws, :emp, :date, :prev, :new, :reason, :approver, now(), now())
+        """), {
+            "id": uuid.uuid4(), "ws": ws_id, "emp": emp_ids[emp_idx],
+            "date": eff_date, "prev": prev_amt, "new": new_amt,
+            "reason": reason, "approver": approved_by,
+        })
+
+    print("  HRM: 4 departments, 8 employees, 6 positions, 4 leave types, 6 leave requests, 16 payroll records, 8 contracts, 4 salary history")
