@@ -19,3 +19,12 @@ from app.modules.hrm.models.kpi_template import KpiTemplate  # noqa: F401
 from app.modules.hrm.models.kpi_assignment import KpiAssignment  # noqa: F401
 from app.modules.hrm.models.performance_review import PerformanceReview  # noqa: F401
 from app.modules.hrm.models.review_feedback import ReviewFeedback  # noqa: F401
+from app.modules.hrm.models.resignation import Resignation  # noqa: F401
+from app.modules.hrm.models.handover_task import HandoverTask  # noqa: F401
+from app.modules.hrm.models.exit_interview import ExitInterview  # noqa: F401
+from app.modules.hrm.models.asset import Asset  # noqa: F401
+from app.modules.hrm.models.asset_assignment import AssetAssignment  # noqa: F401
+from app.modules.hrm.models.purchase_request import PurchaseRequest  # noqa: F401
+from app.modules.hrm.models.purchase_item import PurchaseItem  # noqa: F401
+from app.modules.hrm.models.training_program import TrainingProgram  # noqa: F401
+from app.modules.hrm.models.training_enrollment import TrainingEnrollment  # noqa: F401

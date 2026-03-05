@@ -1,11 +1,15 @@
 from fastapi import APIRouter
 
 from app.modules.hrm.routers import (
+    asset_assignments,
+    assets,
     attendance_records,
     candidates,
     contracts,
     departments,
     employees,
+    exit_interviews,
+    handover_tasks,
     insurance_records,
     interviews,
     kpi_assignments,
@@ -17,9 +21,14 @@ from app.modules.hrm.routers import (
     payroll_records,
     performance_reviews,
     positions,
+    purchase_items,
+    purchase_requests,
     recruitment_requests,
+    resignations,
     review_feedback,
     salary_history,
+    training_programs,
+    training_enrollments,
 )
 
 hrm_router = APIRouter(prefix="/hrm", tags=["hrm"])
@@ -43,3 +52,12 @@ hrm_router.include_router(kpi_templates.router)
 hrm_router.include_router(kpi_assignments.router)
 hrm_router.include_router(performance_reviews.router)
 hrm_router.include_router(review_feedback.router)
+hrm_router.include_router(training_programs.router)
+hrm_router.include_router(training_enrollments.router)
+hrm_router.include_router(resignations.router)
+hrm_router.include_router(handover_tasks.router)
+hrm_router.include_router(exit_interviews.router)
+hrm_router.include_router(assets.router)
+hrm_router.include_router(asset_assignments.router)
+hrm_router.include_router(purchase_requests.router)
+hrm_router.include_router(purchase_items.router)

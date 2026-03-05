@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Box, Briefcase, Calendar, ChevronDown, ClipboardCheck, Clock, Cpu, DollarSign, Home, LogOut, MoreHorizontal, Package, Pencil, Plus, Settings, Shield, Star, Target, TrendingUp, Trash2, Truck, Users, UserPlus, Warehouse as WarehouseIcon } from 'lucide-react'
+import { BookOpen, Box, Briefcase, Calendar, ChevronDown, ClipboardCheck, Clock, Cpu, DollarSign, Home, LogOut, MoreHorizontal, Package, Pencil, Plus, Settings, Shield, ShoppingCart, Star, Target, TrendingUp, Trash2, Truck, Users, UserPlus, Warehouse as WarehouseIcon } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth.store'
@@ -189,6 +189,10 @@ export function Sidebar() {
                   <NavItem to="/hrm/onboarding" icon={<ClipboardCheck className="h-4 w-4" />} label={t('nav.onboarding')} active={isActive('/hrm/onboarding')} />
                   <NavItem to="/hrm/performance" icon={<TrendingUp className="h-4 w-4" />} label={t('nav.performance')} active={isActive('/hrm/performance')} />
                   <NavItem to="/hrm/reviews" icon={<Star className="h-4 w-4" />} label={t('nav.reviews')} active={isActive('/hrm/reviews')} />
+                  <NavItem to="/hrm/training" icon={<BookOpen className="h-4 w-4" />} label={t('nav.training')} active={isActive('/hrm/training')} />
+                  <NavItem to="/hrm/offboarding" icon={<LogOut className="h-4 w-4" />} label={t('nav.offboarding')} active={isActive('/hrm/offboarding')} />
+                  <NavItem to="/hrm/assets" icon={<Package className="h-4 w-4" />} label={t('nav.assets')} active={isActive('/hrm/assets')} />
+                  <NavItem to="/hrm/procurement" icon={<ShoppingCart className="h-4 w-4" />} label={t('nav.procurement')} active={isActive('/hrm/procurement')} />
                   <NavItem to="/members" icon={<Users className="h-4 w-4" />} label={t('nav.members')} active={isActive('/members')} />
                 </>
               ) : activeModule === 'crm' ? (
