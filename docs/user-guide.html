@@ -1,0 +1,1839 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A-ERP User Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── CSS Custom Properties ─────────────────────────────── */
+:root {
+  --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  --color-primary: #5E6AD2;
+  --color-primary-hover: #4F55C4;
+  --color-accent: #F28C38;
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+  --color-info: #38BDF8;
+
+  --bg-page: #FFFFFF;
+  --bg-surface: #F9F9FB;
+  --bg-elevated: #FFFFFF;
+  --border-default: #E4E4E7;
+  --text-primary: #18181B;
+  --text-secondary: #52525B;
+  --text-tertiary: #A1A1AA;
+
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-elevated: 0 4px 12px rgba(0,0,0,0.10);
+
+  --sidebar-width: 260px;
+  --topbar-height: 52px;
+  --duration-base: 150ms;
+}
+
+[data-theme="dark"] {
+  --bg-page: #0F0F12;
+  --bg-surface: #1A1A1F;
+  --bg-elevated: #25252B;
+  --border-default: rgba(255,255,255,0.10);
+  --text-primary: #FAFAFA;
+  --text-secondary: #A1A1AA;
+  --text-tertiary: #52525B;
+  --color-primary: #6E78E8;
+  --color-primary-hover: #7D87EE;
+  --color-accent: #F5A05A;
+  --color-success: #4ADE80;
+  --color-warning: #FBB532;
+  --color-danger: #F87171;
+  --color-info: #7DD3FC;
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.30);
+  --shadow-elevated: 0 4px 12px rgba(0,0,0,0.40);
+}
+
+/* ── Reset & Base ──────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; font-size: 14px; }
+
+body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background: var(--bg-page);
+  transition: background var(--duration-base) ease, color var(--duration-base) ease;
+}
+
+/* ── Layout Shell ──────────────────────────────────────── */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── Topbar ────────────────────────────────────────────── */
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--topbar-height);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 12px;
+  z-index: 100;
+  transition: background var(--duration-base) ease;
+}
+
+.topbar-brand {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: -0.3px;
+  flex-shrink: 0;
+}
+
+.topbar-brand span {
+  color: var(--text-primary);
+  font-weight: 400;
+}
+
+.topbar-subtitle {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-weight: 400;
+  border-left: 1px solid var(--border-default);
+  padding-left: 12px;
+  margin-left: 4px;
+}
+
+.topbar-spacer { flex: 1; }
+
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  transition: background var(--duration-base) ease;
+}
+.hamburger:hover { background: var(--bg-elevated); }
+.hamburger svg { display: block; }
+
+.dark-toggle {
+  background: none;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 6px 10px;
+  font-size: 13px;
+  font-family: var(--font-sans);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background var(--duration-base) ease, border-color var(--duration-base) ease;
+}
+.dark-toggle:hover { background: var(--bg-elevated); border-color: var(--text-tertiary); }
+
+/* ── Sidebar ───────────────────────────────────────────── */
+.sidebar {
+  position: fixed;
+  top: var(--topbar-height);
+  left: 0;
+  width: var(--sidebar-width);
+  height: calc(100vh - var(--topbar-height));
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border-default);
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 90;
+  transition: transform var(--duration-base) ease, background var(--duration-base) ease;
+  padding: 16px 0 32px;
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 2px; }
+
+.sidebar-section { margin-bottom: 8px; }
+
+.sidebar-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 16px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.sidebar-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-tertiary);
+}
+
+.sidebar-chevron {
+  color: var(--text-tertiary);
+  transition: transform var(--duration-base) ease;
+}
+.sidebar-section.collapsed .sidebar-chevron { transform: rotate(-90deg); }
+.sidebar-section-items { overflow: hidden; }
+.sidebar-section.collapsed .sidebar-section-items { display: none; }
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px 6px 24px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-radius: 0;
+  cursor: pointer;
+  transition: background var(--duration-base) ease, color var(--duration-base) ease;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  line-height: 1.4;
+}
+.sidebar-link:hover { background: var(--bg-elevated); color: var(--text-primary); }
+.sidebar-link.active {
+  background: rgba(94,106,210,0.10);
+  color: var(--color-primary);
+  font-weight: 500;
+}
+[data-theme="dark"] .sidebar-link.active {
+  background: rgba(110,120,232,0.15);
+  color: var(--color-primary);
+}
+
+.sidebar-link-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+
+/* ── Sidebar overlay (mobile) ──────────────────────────── */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.40);
+  z-index: 89;
+}
+
+/* ── Main Content ──────────────────────────────────────── */
+.main {
+  margin-left: var(--sidebar-width);
+  margin-top: var(--topbar-height);
+  padding: 40px 48px;
+  max-width: calc(100% - var(--sidebar-width));
+  min-height: calc(100vh - var(--topbar-height));
+}
+
+.content-area {
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+/* ── Typography ────────────────────────────────────────── */
+h1 {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  letter-spacing: -0.4px;
+}
+
+h2 {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-primary);
+  margin-top: 52px;
+  margin-bottom: 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-default);
+  letter-spacing: -0.3px;
+}
+
+h2:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+
+h3 {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-primary);
+  margin-top: 32px;
+  margin-bottom: 10px;
+}
+
+h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
+
+p {
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  line-height: 1.7;
+}
+
+p:last-child { margin-bottom: 0; }
+
+ul, ol {
+  padding-left: 20px;
+  margin-bottom: 12px;
+  color: var(--text-secondary);
+}
+li { margin-bottom: 4px; line-height: 1.6; }
+li strong { color: var(--text-primary); }
+
+a { color: var(--color-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xs);
+  padding: 1px 5px;
+  color: var(--color-primary);
+}
+[data-theme="dark"] code { background: var(--bg-elevated); }
+
+kbd {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-bottom-width: 2px;
+  border-radius: var(--radius-xs);
+  padding: 2px 6px;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+/* ── Page Header ───────────────────────────────────────── */
+.page-header {
+  margin-bottom: 40px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.page-header-meta {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  margin-top: 8px;
+}
+
+/* ── Tables ────────────────────────────────────────────── */
+.table-wrap { overflow-x: auto; margin-bottom: 20px; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th {
+  text-align: left;
+  padding: 8px 12px;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-tertiary);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-default);
+  white-space: nowrap;
+}
+
+td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+td strong { color: var(--text-primary); }
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg-surface); }
+
+/* ── Badges ────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.badge-admin {
+  background: rgba(94,106,210,0.12);
+  color: var(--color-primary);
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.badge-success { background: rgba(34,197,94,0.12); color: #16A34A; }
+.badge-warning { background: rgba(245,158,11,0.12); color: #D97706; }
+.badge-danger { background: rgba(239,68,68,0.12); color: #DC2626; }
+.badge-info { background: rgba(56,189,248,0.12); color: #0284C7; }
+.badge-neutral { background: #F4F4F5; color: #52525B; }
+[data-theme="dark"] .badge-success { color: #4ADE80; }
+[data-theme="dark"] .badge-warning { color: #FBB532; }
+[data-theme="dark"] .badge-danger { color: #F87171; }
+[data-theme="dark"] .badge-info { color: #7DD3FC; }
+[data-theme="dark"] .badge-neutral { background: rgba(255,255,255,0.08); color: var(--text-secondary); }
+
+/* ── Callout Boxes ─────────────────────────────────────── */
+.callout {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  margin: 20px 0;
+  border-left: 3px solid;
+}
+
+.callout-icon {
+  font-size: 16px;
+  line-height: 1.5;
+  flex-shrink: 0;
+}
+
+.callout-body { flex: 1; font-size: 13px; line-height: 1.6; }
+.callout-body strong { display: block; margin-bottom: 2px; font-size: 13px; }
+.callout-body p { margin: 0; font-size: 13px; }
+
+.callout-tip {
+  background: rgba(34,197,94,0.07);
+  border-color: var(--color-success);
+}
+.callout-tip .callout-body { color: #166534; }
+[data-theme="dark"] .callout-tip .callout-body { color: #86efac; }
+
+.callout-info {
+  background: rgba(56,189,248,0.07);
+  border-color: var(--color-info);
+}
+.callout-info .callout-body { color: #075985; }
+[data-theme="dark"] .callout-info .callout-body { color: #7dd3fc; }
+
+.callout-warning {
+  background: rgba(245,158,11,0.07);
+  border-color: var(--color-warning);
+}
+.callout-warning .callout-body { color: #92400e; }
+[data-theme="dark"] .callout-warning .callout-body { color: #fcd34d; }
+
+.callout-note {
+  background: rgba(94,106,210,0.07);
+  border-color: var(--color-primary);
+}
+.callout-note .callout-body { color: #3730a3; }
+[data-theme="dark"] .callout-note .callout-body { color: #a5b4fc; }
+
+/* ── Back to Top ───────────────────────────────────────── */
+.back-to-top {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 40px;
+  height: 40px;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-elevated);
+  z-index: 200;
+  transition: background var(--duration-base) ease, transform var(--duration-base) ease;
+}
+.back-to-top:hover { background: var(--color-primary-hover); transform: translateY(-2px); }
+.back-to-top.visible { display: flex; }
+
+/* ── Section dividers ──────────────────────────────────── */
+.section-intro {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 24px;
+  line-height: 1.7;
+}
+
+/* ── Feature Grid ──────────────────────────────────────── */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 20px 0;
+}
+.feature-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+.feature-card-title {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.feature-card-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ── Shortcuts Table ───────────────────────────────────── */
+.shortcuts-table td:first-child {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  width: 180px;
+}
+
+/* ── Step List ─────────────────────────────────────────── */
+.step-list {
+  list-style: none;
+  padding: 0;
+  counter-reset: step;
+}
+.step-list li {
+  counter-increment: step;
+  display: flex;
+  gap: 14px;
+  margin-bottom: 14px;
+  align-items: flex-start;
+}
+.step-list li::before {
+  content: counter(step);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+.step-list li span { color: var(--text-secondary); font-size: 14px; line-height: 1.6; }
+
+/* ── Route pill ────────────────────────────────────────── */
+.route {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xs);
+  padding: 1px 6px;
+  color: var(--text-secondary);
+}
+
+/* ── Responsive ────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    z-index: 95;
+  }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-overlay.open { display: block; }
+  .hamburger { display: flex; }
+  .topbar-subtitle { display: none; }
+  .main {
+    margin-left: 0;
+    max-width: 100%;
+    padding: 24px 20px;
+  }
+  .feature-grid { grid-template-columns: 1fr; }
+  h1 { font-size: 22px; }
+  h2 { font-size: 18px; }
+}
+
+/* ── Print ─────────────────────────────────────────────── */
+@media print {
+  .sidebar, .topbar, .back-to-top, .dark-toggle, .hamburger { display: none !important; }
+  .main { margin: 0; padding: 20px; max-width: 100%; }
+  h2 { page-break-before: always; }
+  h2:first-child { page-break-before: avoid; }
+  .callout { break-inside: avoid; }
+  table { break-inside: avoid; }
+}
+
+/* ── Reduced Motion ────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+/* ── ScrollSpy highlight ───────────────────────────────── */
+.sidebar-link.spy-active {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* ── Module Tag ────────────────────────────────────────── */
+.module-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.module-pms { background: rgba(94,106,210,0.12); color: var(--color-primary); }
+.module-wms { background: rgba(34,197,94,0.12); color: #16A34A; }
+.module-hrm { background: rgba(245,158,11,0.12); color: #D97706; }
+.module-crm { background: rgba(239,68,68,0.12); color: #DC2626; }
+[data-theme="dark"] .module-wms { color: #4ADE80; }
+[data-theme="dark"] .module-hrm { color: #FBB532; }
+[data-theme="dark"] .module-crm { color: #F87171; }
+</style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<header class="topbar">
+  <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <span class="topbar-brand">A-ERP <span>User Guide</span></span>
+  <span class="topbar-subtitle">Agentic Enterprise Resource Platform</span>
+  <span class="topbar-spacer"></span>
+  <button class="dark-toggle" id="darkToggle" aria-label="Toggle dark mode">
+    <svg id="sunIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+    <svg id="moonIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <span id="darkToggleLabel">Dark</span>
+  </button>
+</header>
+
+<!-- Sidebar Overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Sidebar Navigation -->
+<nav class="sidebar" id="sidebar" aria-label="Table of contents">
+
+  <div class="sidebar-section" id="sec-start">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-start')">
+      <span class="sidebar-section-title">Getting Started</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#welcome" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Welcome to A-ERP</a>
+      <a class="sidebar-link" href="#creating-account" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Creating an Account</a>
+      <a class="sidebar-link" href="#logging-in" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Logging In</a>
+      <a class="sidebar-link" href="#first-time-setup" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>First-Time Setup</a>
+      <a class="sidebar-link" href="#navigation" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Navigation</a>
+      <a class="sidebar-link" href="#language" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Language</a>
+    </div>
+  </div>
+
+  <div class="sidebar-section" id="sec-workspace">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-workspace')">
+      <span class="sidebar-section-title">Workspace &amp; Admin</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#workspace-management" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Workspace Management</a>
+      <a class="sidebar-link" href="#members-page" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Members</a>
+      <a class="sidebar-link" href="#workspace-roles" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Roles &amp; Permissions</a>
+    </div>
+  </div>
+
+  <div class="sidebar-section" id="sec-pms">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-pms')">
+      <span class="sidebar-section-title">PMS — Projects</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#pms-dashboard" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Dashboard</a>
+      <a class="sidebar-link" href="#my-tasks" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>My Tasks</a>
+      <a class="sidebar-link" href="#creating-project" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Creating a Project</a>
+      <a class="sidebar-link" href="#board-view" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Board View</a>
+      <a class="sidebar-link" href="#list-view" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>List View</a>
+      <a class="sidebar-link" href="#calendar-view" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Calendar View</a>
+      <a class="sidebar-link" href="#timeline-view" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Timeline View</a>
+      <a class="sidebar-link" href="#project-overview" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Project Overview</a>
+      <a class="sidebar-link" href="#task-details" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Task Details</a>
+      <a class="sidebar-link" href="#goals" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Goals</a>
+      <a class="sidebar-link" href="#project-settings" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Project Settings</a>
+    </div>
+  </div>
+
+  <div class="sidebar-section" id="sec-wms">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-wms')">
+      <span class="sidebar-section-title">WMS — Warehouse</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#wms-dashboard" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Dashboard</a>
+      <a class="sidebar-link" href="#products" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Products</a>
+      <a class="sidebar-link" href="#warehouses" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Warehouses</a>
+      <a class="sidebar-link" href="#inventory" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Inventory</a>
+      <a class="sidebar-link" href="#devices" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Devices</a>
+      <a class="sidebar-link" href="#suppliers" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Suppliers</a>
+    </div>
+  </div>
+
+  <div class="sidebar-section" id="sec-hrm">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-hrm')">
+      <span class="sidebar-section-title">HRM — People</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#hrm-dashboard" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Dashboard</a>
+      <a class="sidebar-link" href="#employees" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Employees</a>
+      <a class="sidebar-link" href="#departments" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Departments</a>
+      <a class="sidebar-link" href="#positions" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Positions</a>
+      <a class="sidebar-link" href="#leave" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Leave</a>
+      <a class="sidebar-link" href="#attendance" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Attendance</a>
+      <a class="sidebar-link" href="#payroll" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Payroll</a>
+      <a class="sidebar-link" href="#insurance" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Insurance</a>
+      <a class="sidebar-link" href="#recruitment" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Recruitment</a>
+      <a class="sidebar-link" href="#onboarding" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Onboarding</a>
+      <a class="sidebar-link" href="#kpis-performance" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>KPIs &amp; Performance</a>
+      <a class="sidebar-link" href="#reviews" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Reviews</a>
+      <a class="sidebar-link" href="#training" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Training</a>
+      <a class="sidebar-link" href="#offboarding" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Offboarding</a>
+      <a class="sidebar-link" href="#assets" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Assets</a>
+      <a class="sidebar-link" href="#procurement" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Procurement</a>
+    </div>
+  </div>
+
+  <div class="sidebar-section" id="sec-crm">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-crm')">
+      <span class="sidebar-section-title">CRM — Sales</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#crm-dashboard" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Dashboard</a>
+      <a class="sidebar-link" href="#contacts" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Contacts</a>
+      <a class="sidebar-link" href="#deals" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Deals</a>
+    </div>
+  </div>
+
+  <div class="sidebar-section" id="sec-settings">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-settings')">
+      <span class="sidebar-section-title">Settings &amp; More</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#settings-profile" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Profile &amp; Settings</a>
+      <a class="sidebar-link" href="#notifications-section" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Notifications</a>
+      <a class="sidebar-link" href="#command-palette" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Command Palette</a>
+      <a class="sidebar-link" href="#shortcuts" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Keyboard Shortcuts</a>
+      <a class="sidebar-link" href="#tips" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span>Tips &amp; Best Practices</a>
+    </div>
+  </div>
+
+</nav>
+
+<!-- Main Content -->
+<main class="main" id="mainContent">
+<div class="content-area">
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  PAGE HEADER                                                -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="page-header">
+  <h1>A-ERP User Guide</h1>
+  <p class="section-intro">Complete guide to using the Agentic Enterprise Resource Platform — covering Projects, Warehouse, HR, and Sales management.</p>
+  <p class="page-header-meta">Version 1.0 &nbsp;&middot;&nbsp; Last updated March 2026 &nbsp;&middot;&nbsp; For all roles: Admin, Member, Guest</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  1. GETTING STARTED                                         -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<h2 id="welcome">1. Welcome to A-ERP</h2>
+<p class="section-intro">A-ERP is an Agentic Enterprise Resource Platform that brings all your core business operations into one connected workspace. It is built around four modules — each covering a distinct business domain — that share a common authentication, notification, and search layer.</p>
+
+<div class="feature-grid">
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="module-tag module-pms">PMS</span> Project Management</div>
+    <div class="feature-card-desc">Tasks, boards, timelines, goals, and custom fields for teams of any size.</div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="module-tag module-wms">WMS</span> Warehouse Management</div>
+    <div class="feature-card-desc">Products, inventory, warehouses, devices, and supplier records.</div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="module-tag module-hrm">HRM</span> Human Resources</div>
+    <div class="feature-card-desc">Employee lifecycle from recruitment through offboarding, plus payroll and performance.</div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="module-tag module-crm">CRM</span> Sales Management</div>
+    <div class="feature-card-desc">Contact database and deal pipeline from Lead to Closed Won.</div>
+  </div>
+</div>
+
+<p>All four modules share the same workspace, user accounts, role-based access control, real-time notifications, and global search. You switch between modules using the module switcher in the left sidebar — your context (workspace, permissions) carries across automatically.</p>
+
+<!-- ─── Creating Account ─── -->
+<h2 id="creating-account">Creating an Account</h2>
+<p>Navigate to <code>/register</code> to create a new account. Fill in the registration form:</p>
+<ol>
+  <li><strong>Full Name</strong> — displayed in the app, visible to teammates.</li>
+  <li><strong>Email address</strong> — used to log in; must be unique across the platform.</li>
+  <li><strong>Password</strong> — minimum 8 characters. Use the eye icon on the right side of the password field to toggle visibility while typing.</li>
+</ol>
+<p>After submitting, you will be redirected to the login page to sign in with your new credentials.</p>
+
+<div class="callout callout-tip">
+  <span class="callout-icon">&#10003;</span>
+  <div class="callout-body"><strong>Tip</strong> Use a strong, unique password. A-ERP uses secure bcrypt hashing and stores refresh tokens as HttpOnly cookies — your credentials are never exposed to client-side scripts.</div>
+</div>
+
+<!-- ─── Logging In ─── -->
+<h2 id="logging-in">Logging In</h2>
+<p>Navigate to <code>/login</code> and enter your email address and password. After a successful login, the platform redirects you to <strong>My Tasks</strong> — your personal task inbox across all projects.</p>
+
+<p>A-ERP uses a dual-token authentication scheme:</p>
+<ul>
+  <li><strong>Access token</strong> — short-lived JWT held in memory (not localStorage). Sent with every API request via the <code>Authorization: Bearer</code> header.</li>
+  <li><strong>Refresh token</strong> — longer-lived token stored in an HttpOnly cookie (30-day expiry). Used to obtain a new access token automatically when the current one expires, so sessions persist across page refreshes without requiring you to log in again.</li>
+</ul>
+
+<div class="callout callout-info">
+  <span class="callout-icon">&#9432;</span>
+  <div class="callout-body"><strong>Session Persistence</strong> Closing the browser tab does not log you out. Your session is maintained via the HttpOnly refresh cookie until it expires after 30 days of inactivity, or until you explicitly log out.</div>
+</div>
+
+<!-- ─── First-Time Setup ─── -->
+<h2 id="first-time-setup">First-Time Setup</h2>
+<p>The first time you log in, a <strong>Workspace Creation</strong> dialog appears automatically. Every user must belong to a workspace to access any module.</p>
+<ol>
+  <li>Enter a <strong>Workspace Name</strong> (e.g. "Acme Corp" or "Product Team"). A URL-friendly slug is generated automatically — for example, "Acme Corp" becomes <code>acme-corp</code>.</li>
+  <li>Click <strong>Create Workspace</strong>. You are automatically assigned the <strong>Admin</strong> role in the new workspace.</li>
+  <li>You can now invite team members from the Members page <code>/members</code>.</li>
+</ol>
+<p>If someone invites you to an existing workspace, you will join that workspace directly and skip this step. You can also create additional workspaces later from the workspace picker in the sidebar header.</p>
+
+<!-- ─── Navigation ─── -->
+<h2 id="navigation">Navigation</h2>
+
+<h3>Sidebar</h3>
+<p>The left sidebar (240px wide) is the primary navigation surface. It contains:</p>
+<ul>
+  <li><strong>Workspace picker</strong> — at the top. Click to switch between workspaces you belong to, or create a new one.</li>
+  <li><strong>Module switcher</strong> — toggle between PMS, WMS, HRM, and CRM. The sidebar navigation links below change to reflect the active module.</li>
+  <li><strong>Module navigation links</strong> — section-specific pages for the active module (e.g. Dashboard, My Tasks, Projects for PMS).</li>
+  <li><strong>User footer</strong> — at the bottom. Shows your avatar and name, with a link to Settings and a Logout button.</li>
+</ul>
+<p>On screens narrower than 768px, the sidebar collapses and is accessible via the hamburger menu button in the top bar. Tap anywhere outside the sidebar to close it.</p>
+
+<h3>Top Bar</h3>
+<p>The 48px-high top bar appears on every page and provides:</p>
+<ul>
+  <li><strong>Breadcrumb</strong> — shows your current location, e.g. "Projects / Sprint Q2 / Board".</li>
+  <li><strong>Search</strong> — click the search icon or press <kbd>Ctrl</kbd>+<kbd>K</kbd> to open the command palette for full-text search across tasks and projects.</li>
+  <li><strong>Dark mode toggle</strong> — switches the app-wide theme. Preference is saved to <code>localStorage</code> so it persists across sessions.</li>
+  <li><strong>Notifications bell</strong> — shows unread notification count (displays "9+" when more than 9 unread). Click to open the notification dropdown.</li>
+</ul>
+
+<!-- ─── Language ─── -->
+<h2 id="language">Language</h2>
+<p>A-ERP supports <strong>English</strong> and <strong>Vietnamese</strong>. To switch language:</p>
+<ul>
+  <li>Click your user avatar in the sidebar footer and select <strong>Settings</strong>.</li>
+  <li>Under the <em>Preferences</em> section, choose your preferred language from the dropdown.</li>
+</ul>
+<p>Language preference is saved to <code>localStorage</code> and persists across sessions without requiring an account-level change. You can also switch quickly from the language selector in the sidebar footer (displayed as a flag icon or "EN / VI" label).</p>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  2. WORKSPACE & ADMINISTRATION                              -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<h2 id="workspace-management">2. Workspace Management</h2>
+<p>A workspace is the top-level container for all your data — projects, employees, inventory, contacts, and deals are all scoped to a single workspace. You can belong to multiple workspaces with different roles in each.</p>
+
+<h3>Switching Workspaces</h3>
+<p>Click the workspace name at the top of the sidebar to open a dropdown listing all workspaces you belong to. Click any workspace to switch immediately. The active module and page are preserved if the same route exists in the new workspace.</p>
+
+<h3>Renaming a Workspace</h3>
+<p><span class="badge-admin">Admin</span> In the workspace dropdown, click the pencil icon next to the current workspace name to enter inline-edit mode. Type the new name and press <kbd>Enter</kbd> to save. The URL slug does not change when you rename a workspace.</p>
+
+<h3>Creating a New Workspace</h3>
+<p>At the bottom of the workspace picker dropdown, click <strong>+ New Workspace</strong>. The same creation dialog as first-time setup appears. You will be assigned as Admin of the new workspace.</p>
+
+<!-- ─── Members ─── -->
+<h2 id="members-page">Members Page <span class="badge-admin">Admin</span></h2>
+<p>Navigate to <span class="route">/members</span> to manage everyone in your workspace. The Members page shows a table of all current members with:</p>
+<ul>
+  <li><strong>Avatar</strong> — initials or uploaded image.</li>
+  <li><strong>Name &amp; Email</strong> — user identity.</li>
+  <li><strong>Role badge</strong> — Admin, Member, or Guest.</li>
+  <li><strong>Actions</strong> — change role (dropdown) or remove from workspace (trash icon).</li>
+</ul>
+
+<h3>Inviting Members</h3>
+<p>Click <strong>Invite Member</strong> (top right). Enter the invitee's email address, select a role (Admin / Member / Guest), and click <strong>Send Invite</strong>. An invitation email is sent. Once the recipient accepts, they appear in the members list.</p>
+
+<h3>Changing Roles</h3>
+<p>Click the role badge or dropdown next to any member to change their workspace role. Role changes take effect immediately — the user's next request will use the updated permissions.</p>
+
+<div class="callout callout-warning">
+  <span class="callout-icon">&#9888;</span>
+  <div class="callout-body"><strong>Caution</strong> Removing a member revokes access immediately. Their data (tasks, comments, etc.) is retained but will be unassigned or shown with a deleted-user indicator.</div>
+</div>
+
+<!-- ─── Roles ─── -->
+<h2 id="workspace-roles">Roles &amp; Permissions</h2>
+
+<h3>Workspace Roles</h3>
+<p>Every member has one workspace-level role. This role gates access to administrative functions across all modules.</p>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>Permission</th><th>Guest</th><th>Member</th><th>Admin</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>View workspace data (projects, employees, contacts, etc.)</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td></tr>
+    <tr><td>Create / edit records</td><td></td><td>&#10003;</td><td>&#10003;</td></tr>
+    <tr><td>Invite members &amp; change roles</td><td></td><td></td><td>&#10003;</td></tr>
+    <tr><td>Delete members from workspace</td><td></td><td></td><td>&#10003;</td></tr>
+    <tr><td>Approve / reject leave requests</td><td></td><td></td><td>&#10003;</td></tr>
+    <tr><td>Approve / reject procurement requests</td><td></td><td></td><td>&#10003;</td></tr>
+    <tr><td>Delete records (employees, products, contacts)</td><td></td><td></td><td>&#10003;</td></tr>
+    <tr><td>Rename workspace</td><td></td><td></td><td>&#10003;</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Project Roles (PMS)</h3>
+<p>In addition to the workspace role, each PMS project has its own member list with finer-grained roles. A user must be a project member (with any project role) to access a non-public project.</p>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>Permission</th><th>Viewer</th><th>Commenter</th><th>Editor</th><th>Owner</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>View tasks and project details</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td></tr>
+    <tr><td>View activity log</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td></tr>
+    <tr><td>Comment on tasks</td><td></td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td></tr>
+    <tr><td>Create tasks and sections</td><td></td><td></td><td>&#10003;</td><td>&#10003;</td></tr>
+    <tr><td>Edit task details (title, priority, due date, etc.)</td><td></td><td></td><td>&#10003;</td><td>&#10003;</td></tr>
+    <tr><td>Move / reorder tasks (drag-drop)</td><td></td><td></td><td>&#10003;</td><td>&#10003;</td></tr>
+    <tr><td>Upload and delete attachments</td><td></td><td></td><td>&#10003;</td><td>&#10003;</td></tr>
+    <tr><td>Manage project settings (name, color, custom fields)</td><td></td><td></td><td></td><td>&#10003;</td></tr>
+    <tr><td>Archive / delete project</td><td></td><td></td><td></td><td>&#10003;</td></tr>
+    <tr><td>Manage project members &amp; roles</td><td></td><td></td><td></td><td>&#10003;</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout callout-note">
+  <span class="callout-icon">&#9432;</span>
+  <div class="callout-body"><strong>Role Interaction</strong> A workspace Admin has full access to all projects regardless of their project role. A workspace Guest cannot create or edit any record even if assigned as a project Editor — workspace roles take precedence on write operations.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  3. PMS — PROJECT MANAGEMENT                                -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<h2 id="pms-dashboard"><span class="module-tag module-pms">PMS</span> 3. Dashboard</h2>
+<p>The PMS Dashboard at <span class="route">/pms/dashboard</span> gives a workspace-wide snapshot of all project activity. Four KPI cards show the key numbers at a glance:</p>
+<ul>
+  <li><strong>Total Tasks</strong> — all open tasks across every project you have access to.</li>
+  <li><strong>Overdue</strong> — tasks with a due date in the past that are not yet completed. Displayed in red to draw attention.</li>
+  <li><strong>Completed This Week</strong> — tasks marked done in the last 7 days.</li>
+  <li><strong>Active Projects</strong> — count of non-archived projects in the workspace.</li>
+</ul>
+<p>Below the KPI row, a <strong>Tasks by Priority</strong> bar chart shows the distribution of open tasks across High, Medium, Low, and None priority levels — useful for spotting if your team is overloaded with high-priority work.</p>
+
+<!-- ─── My Tasks ─── -->
+<h2 id="my-tasks">My Tasks</h2>
+<p><span class="route">/pms/my-tasks</span> is the default landing page after login. It consolidates every task assigned to you across all projects into one view, grouped into time-based buckets:</p>
+<ul>
+  <li><span class="badge badge-danger">Overdue</span> — past due date and not yet complete. Shown in red.</li>
+  <li><span class="badge badge-warning">Today</span> — due today. Shown in amber.</li>
+  <li><span class="badge badge-neutral">Upcoming</span> — due within the next 7 days.</li>
+  <li><span class="badge badge-neutral">Later</span> — due beyond 7 days, or no due date set.</li>
+</ul>
+<p>Click any task row to open the full <strong>Task Details drawer</strong> without leaving My Tasks. You can complete tasks, update due dates, reassign, and add comments directly from this view.</p>
+
+<div class="callout callout-tip">
+  <span class="callout-icon">&#10003;</span>
+  <div class="callout-body"><strong>Daily Habit</strong> Start each day on My Tasks. The Overdue and Today buckets give you an immediate picture of what needs attention before you dive into project-level work.</div>
+</div>
+
+<!-- ─── Creating a Project ─── -->
+<h2 id="creating-project">Creating a Project</h2>
+<ol class="step-list">
+  <li><span>In the PMS sidebar, click the <strong>+</strong> button next to the "Projects" section header.</span></li>
+  <li><span>Enter a <strong>project name</strong>. This appears in the sidebar and on all task cards.</span></li>
+  <li><span>Select a <strong>color</strong> from the 12-color swatch palette. The color appears as a dot in the sidebar and as the kanban card left-border accent.</span></li>
+  <li><span>Optionally add a <strong>description</strong> to explain the project's purpose.</span></li>
+  <li><span>Click <strong>Create</strong>. You are taken directly to the new project's Board view.</span></li>
+</ol>
+<p>You are automatically assigned as the project <strong>Owner</strong>. You can invite additional members from Project Settings.</p>
+
+<!-- ─── Board View ─── -->
+<h2 id="board-view">Board View</h2>
+<p><span class="route">/pms/projects/:id/board</span> — The Kanban board is the most visual way to manage a project. Each <strong>section</strong> becomes a column. Tasks are draggable cards within and between columns.</p>
+
+<h3>Working with Columns</h3>
+<ul>
+  <li>Click <strong>+ Add Section</strong> (rightmost column) to create a new column.</li>
+  <li>Click a column header to rename the section inline.</li>
+  <li>Drag columns left or right to reorder them.</li>
+</ul>
+
+<h3>Task Cards</h3>
+<p>Each card shows the task title, priority dot (color-coded), due date, assignee avatar, and attachment count. Drag the grip handle on the left side of a card to move it within or between columns. The position is saved using <strong>fractional indexing</strong> — inserting a task between two existing tasks assigns it a position exactly halfway between their positions, preventing conflicts during concurrent moves.</p>
+
+<h3>Filters</h3>
+<p>Use the filter bar above the board to narrow cards by Priority (High / Medium / Low / None) or Status. Multiple filters can be combined. Filtered columns show only matching cards; empty filtered columns are still displayed to preserve layout.</p>
+
+<h3>Adding Tasks</h3>
+<p>Click <strong>+ Add Task</strong> at the bottom of any column, or click the <strong>+</strong> card button that appears on hover. Enter the title and press <kbd>Enter</kbd> to create instantly.</p>
+
+<!-- ─── List View ─── -->
+<h2 id="list-view">List View</h2>
+<p><span class="route">/pms/projects/:id/list</span> — The List view presents tasks in a compact table grouped by section. Each section is collapsible (click the chevron next to the section name).</p>
+
+<h3>Columns</h3>
+<p>The table shows: <strong>Checkbox</strong> (complete toggle), <strong>Title</strong>, <strong>Priority</strong> (colored dot + label), <strong>Due Date</strong>, and <strong>Assignee</strong> (avatar). Column widths are fixed to maximize information density.</p>
+
+<h3>Inline Task Creation</h3>
+<p>Click <strong>+ Add Task</strong> at the bottom of any section group to append a new task inline. Type the title and press <kbd>Enter</kbd> to save, or <kbd>Esc</kbd> to cancel.</p>
+
+<h3>Search, Filter &amp; Sort</h3>
+<ul>
+  <li><strong>Inline search</strong> — the search box above the table filters tasks by title in real time (client-side).</li>
+  <li><strong>Filter</strong> — filter by Priority, Assignee, or Due Date range.</li>
+  <li><strong>Sort</strong> — sort by Due Date, Priority, or Assignee. Click a column header to toggle ascending/descending.</li>
+</ul>
+
+<!-- ─── Calendar View ─── -->
+<h2 id="calendar-view">Calendar View</h2>
+<p><span class="route">/pms/projects/:id/calendar</span> — The Calendar view displays tasks on a monthly grid based on their due dates. It is ideal for deadline planning and spotting days with high workload.</p>
+<ul>
+  <li>Tasks appear on the cell matching their due date, color-coded by priority (red=High, amber=Medium, blue=Low).</li>
+  <li>Completed tasks are shown with a strikethrough title in a muted color.</li>
+  <li>When a day has more than 3 tasks, the cell shows the first 3 and an overflow indicator, e.g. "+4 more". Click it to see all tasks for that date.</li>
+  <li>Navigate months using the left and right arrow buttons. Click <strong>Today</strong> to jump to the current month.</li>
+  <li>Click any task chip to open the Task Details drawer.</li>
+</ul>
+
+<!-- ─── Timeline View ─── -->
+<h2 id="timeline-view">Timeline View</h2>
+<p><span class="route">/pms/projects/:id/timeline</span> — The Timeline (Gantt) view shows task bars along a horizontal time axis. It is the best view for managing deadline-heavy projects and understanding how tasks overlap.</p>
+<ul>
+  <li><strong>Zoom levels</strong> — toggle between Weeks and Months using the zoom buttons in the top-right. Weeks is ideal for current sprint work; Months gives a higher-level roadmap perspective.</li>
+  <li><strong>Navigation</strong> — use the left/right arrow buttons to scroll the timeline, or click <strong>Today</strong> to snap back to the current date.</li>
+  <li><strong>Dragging bars</strong> — click and drag the left or right edge of a task bar to change its start or end date. Drag the middle of the bar to shift the whole date range without changing the duration.</li>
+  <li>Tasks without start or end dates are not visible on the timeline. Set due dates from the Task Details drawer to make them appear.</li>
+</ul>
+
+<div class="callout callout-tip">
+  <span class="callout-icon">&#10003;</span>
+  <div class="callout-body"><strong>Tip</strong> Use Timeline view when presenting a project roadmap to stakeholders. The Months zoom level gives a clean bird's-eye view of the entire quarter.</div>
+</div>
+
+<!-- ─── Overview ─── -->
+<h2 id="project-overview">Project Overview</h2>
+<p><span class="route">/pms/projects/:id/overview</span> — A read-only analytical summary of the project's health. Useful for project owners and stakeholders who want progress information without navigating task lists.</p>
+<ul>
+  <li><strong>Stats cards</strong> — Total Tasks, Completed, In Progress, Overdue.</li>
+  <li><strong>Circular completion gauge</strong> — percentage of tasks completed, rendered as a donut chart.</li>
+  <li><strong>Progress by Section</strong> — a horizontal progress bar per section showing how many tasks are done vs. total.</li>
+  <li><strong>Priority distribution</strong> — breakdown of open tasks by priority (High / Medium / Low / None).</li>
+  <li><strong>Activity timeline</strong> — recent project events (task created, completed, commented, etc.).</li>
+  <li><strong>Top contributors</strong> — team members ranked by number of tasks completed this month.</li>
+</ul>
+
+<!-- ─── Task Details ─── -->
+<h2 id="task-details">Task Details Drawer</h2>
+<p>Clicking any task — from Board, List, Calendar, Timeline, My Tasks, or search results — opens a 480px drawer from the right side of the screen. The drawer overlays the current page with a semi-transparent scrim. Press <kbd>Esc</kbd> or click the scrim to close it.</p>
+
+<h3>Editing</h3>
+<ul>
+  <li><strong>Title</strong> — click the title text to enter inline-edit mode. Press <kbd>Enter</kbd> to save or <kbd>Esc</kbd> to cancel.</li>
+  <li><strong>Complete toggle</strong> — the circle checkbox at the top-left. Click to mark the task done (or reopen it).</li>
+</ul>
+
+<h3>Properties</h3>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Field</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Priority</strong></td><td>High (red), Medium (amber), Low (blue), None. Select from dropdown.</td></tr>
+    <tr><td><strong>Assignee</strong></td><td>Select any workspace member. One assignee per task.</td></tr>
+    <tr><td><strong>Due Date</strong></td><td>Date picker. Shown in red if overdue.</td></tr>
+    <tr><td><strong>Recurrence</strong></td><td>Daily / Weekly / Monthly / Custom. Creates a new task automatically when the current one is completed.</td></tr>
+    <tr><td><strong>Tags</strong></td><td>Color-coded chips. Select from existing workspace tags or create new ones inline.</td></tr>
+    <tr><td><strong>Custom Fields</strong></td><td>Project-specific fields (see Project Settings). Types: Text, Number, Date, Select, Multi-select.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Description</h3>
+<p>A rich text area below the properties. Click to focus and type. Supports basic formatting. Content is auto-saved on blur.</p>
+
+<h3>File Attachments</h3>
+<p>Click the <strong>Attach File</strong> button or drag files into the attachments zone. Uploaded files appear as a list with filename, size, and a download link. Editors and above can delete attachments using the trash icon next to each file.</p>
+
+<h3>Subtasks</h3>
+<p>In the Subtasks section, click <strong>+ Add Subtask</strong> to create a child task. Subtasks have their own title, assignee, and due date. They are displayed as a checklist and count toward the parent task's completion indicator. Click a subtask title to open its own drawer.</p>
+
+<h3>Activity Log</h3>
+<p>A chronological feed of all changes made to the task — who changed what, and when. Entries include: task created, field updated (shows old → new value), comment added, attachment uploaded, assignee changed, and status changed.</p>
+
+<h3>Comments</h3>
+<p>Any project member with Commenter role or above can post comments. Comments support plain text. Click <strong>Post</strong> or press <kbd>Ctrl</kbd>+<kbd>Enter</kbd> to submit. Mentions (<code>@username</code>) trigger a notification to the mentioned user.</p>
+
+<!-- ─── Goals ─── -->
+<h2 id="goals">Goals</h2>
+<p><span class="route">/pms/goals</span> — Goals help you track high-level objectives that may span multiple projects. They appear as cards in a grid layout.</p>
+
+<h3>Creating a Goal</h3>
+<p>Click <strong>+ New Goal</strong>. Enter a title and optionally a description and target date. Goals start in <span class="badge badge-info">On Track</span> status by default.</p>
+
+<h3>Goal Statuses</h3>
+<ul>
+  <li><span class="badge badge-success">Achieved</span> — goal has been met.</li>
+  <li><span class="badge badge-info">On Track</span> — progress is proceeding normally.</li>
+  <li><span class="badge badge-warning">At Risk</span> — progress is slower than expected.</li>
+  <li><span class="badge badge-danger">Off Track</span> — significantly behind target.</li>
+  <li><span class="badge badge-neutral">Dropped</span> — goal has been deprioritized or cancelled.</li>
+</ul>
+<p>Filter the goals grid by any status using the filter buttons at the top of the page.</p>
+
+<h3>Goal Detail Drawer</h3>
+<p>Click any goal card to open the detail drawer. You can:</p>
+<ul>
+  <li>Update progress using <strong>manual tracking</strong> — enter a percentage (0–100%) directly.</li>
+  <li>Use <strong>auto tracking</strong> — link specific projects or tasks to the goal. Progress is then calculated automatically based on the completion rate of linked items.</li>
+  <li>Change the status via the status dropdown.</li>
+  <li>Add notes and update description.</li>
+</ul>
+
+<!-- ─── Project Settings ─── -->
+<h2 id="project-settings">Project Settings <span class="badge-admin">Owner</span></h2>
+<p>Access Project Settings from the project sidebar link or the <strong>Settings</strong> tab in any project view. This section is only accessible to project Owners (and workspace Admins).</p>
+
+<h3>General</h3>
+<ul>
+  <li><strong>Project name</strong> — inline edit.</li>
+  <li><strong>Color</strong> — select from 12 color swatches. Changes the dot in the sidebar and the card accent border.</li>
+  <li><strong>Description</strong> — multiline text field.</li>
+</ul>
+
+<h3>Custom Fields</h3>
+<p>Custom fields allow you to add structured metadata to every task in the project. Click <strong>+ Add Field</strong> and choose a type:</p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Field Type</th><th>Description</th><th>Example</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Text</strong></td><td>Free-form text input</td><td>"Ticket ID", "Branch Name"</td></tr>
+    <tr><td><strong>Number</strong></td><td>Numeric value (integer or decimal)</td><td>"Story Points", "Estimated Hours"</td></tr>
+    <tr><td><strong>Date</strong></td><td>Date picker</td><td>"Deployment Date", "Review Date"</td></tr>
+    <tr><td><strong>Select</strong></td><td>Single selection from a defined list of options</td><td>"Environment: Dev / Staging / Prod"</td></tr>
+    <tr><td><strong>Multi-select</strong></td><td>Multiple selections from a defined list</td><td>"Affected Systems"</td></tr>
+  </tbody>
+</table>
+</div>
+<p>Custom fields appear in the Task Details drawer under the Properties section and in the List view as additional columns.</p>
+
+<h3>Archiving a Project</h3>
+<p>Archived projects are hidden from the sidebar and all lists but retain all data. Click <strong>Archive Project</strong> at the bottom of Settings. To restore, go to the workspace settings and find the Archived Projects list.</p>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  4. WMS — WAREHOUSE MANAGEMENT                              -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<h2 id="wms-dashboard"><span class="module-tag module-wms">WMS</span> 4. WMS Dashboard</h2>
+<p>The WMS Dashboard at <span class="route">/wms/dashboard</span> provides an overview of your warehouse operations. Four KPI cards show:</p>
+<ul>
+  <li><strong>Total Products</strong> — number of unique product SKUs defined in the workspace.</li>
+  <li><strong>Warehouses</strong> — number of active warehouse locations.</li>
+  <li><strong>Inventory Items</strong> — total line items across all warehouses (one product can have multiple inventory records in different warehouses).</li>
+  <li><strong>Suppliers</strong> — number of registered suppliers.</li>
+</ul>
+<p>The <strong>Top Inventory by Quantity</strong> bar chart shows the 10 highest-quantity inventory items, helping you quickly identify your largest stock positions.</p>
+
+<!-- ─── Products ─── -->
+<h2 id="products">Products</h2>
+<p><span class="route">/wms/products</span> — The Products page maintains the master catalog of all goods you track. Each product represents a unique SKU definition; actual stock quantities live in Inventory.</p>
+
+<h3>Products Table</h3>
+<p>A searchable, paginated table with columns: <strong>SKU</strong> (monospace), <strong>Name</strong>, <strong>Description</strong>, <strong>Unit Price</strong>, and <strong>Actions</strong> (edit/delete). Use the search bar above the table to filter by SKU or name — search is server-side ILIKE for fast results on large catalogs.</p>
+
+<h3>Creating and Editing Products</h3>
+<p>Click <strong>+ Add Product</strong> (top right) to open the creation dialog. Fields:</p>
+<ul>
+  <li><strong>SKU</strong> — unique stock-keeping unit identifier (e.g. "WIDGET-001").</li>
+  <li><strong>Name</strong> — human-readable product name.</li>
+  <li><strong>Description</strong> — optional details about the product.</li>
+  <li><strong>Unit Price</strong> — base price per unit (stored in your workspace currency).</li>
+</ul>
+<p>Click the pencil icon in the Actions column to edit an existing product. Click the trash icon to delete — deletion is permanent and will also remove associated inventory records.</p>
+
+<!-- ─── Warehouses ─── -->
+<h2 id="warehouses">Warehouses</h2>
+<p><span class="route">/wms/warehouses</span> — Physical or virtual storage locations where inventory is held. You must create at least one warehouse before adding inventory items.</p>
+<p>The Warehouses table shows: <strong>Name</strong>, <strong>Location</strong> (address or description), and <strong>Status</strong> (Active / Inactive). Use the CRUD action buttons to create, edit, or delete warehouses. Deactivating a warehouse hides it from inventory filters but retains all associated inventory records.</p>
+
+<!-- ─── Inventory ─── -->
+<h2 id="inventory">Inventory</h2>
+<p><span class="route">/wms/inventory</span> — The Inventory page tracks actual stock quantities per warehouse. This is where day-to-day stock management happens.</p>
+
+<h3>Filtering by Warehouse</h3>
+<p>Use the <strong>Warehouse</strong> dropdown at the top of the page to view inventory for a specific location, or select "All Warehouses" to see everything combined.</p>
+
+<h3>Inventory Table Columns</h3>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Column</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><strong>SKU</strong></td><td>Displayed in monospace font. Links to the product record.</td></tr>
+    <tr><td><strong>Name</strong></td><td>Item description.</td></tr>
+    <tr><td><strong>Product</strong></td><td>The parent product this inventory item belongs to.</td></tr>
+    <tr><td><strong>Quantity</strong></td><td>Current stock level. Shown in red when at or below the minimum threshold.</td></tr>
+    <tr><td><strong>Unit</strong></td><td>Unit of measure (e.g. pcs, kg, L).</td></tr>
+    <tr><td><strong>Min Threshold</strong></td><td>Reorder point. When Quantity ≤ Min Threshold, a <span class="badge badge-danger">Low</span> badge appears.</td></tr>
+    <tr><td><strong>Warehouse</strong></td><td>Which warehouse holds this stock.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout callout-tip">
+  <span class="callout-icon">&#10003;</span>
+  <div class="callout-body"><strong>Low Stock Alerts</strong> Set a meaningful minimum threshold for every item. The red quantity display and Low badge make it easy to spot stockouts during daily inventory checks without needing a separate alert system.</div>
+</div>
+
+<!-- ─── Devices ─── -->
+<h2 id="devices">Devices</h2>
+<p><span class="route">/wms/devices</span> — Track physical devices associated with warehouse operations, such as barcode scanners, RFID readers, forklifts, or any other equipment requiring lifecycle management.</p>
+<p>The Devices list is paginated and shows: <strong>Device ID</strong>, <strong>Type</strong>, <strong>Location</strong> (which area it operates in), and <strong>Status</strong>. Click <strong>+ Add Device</strong> to register a new device. Edit or delete existing devices using the action buttons in each row.</p>
+
+<!-- ─── Suppliers ─── -->
+<h2 id="suppliers">Suppliers</h2>
+<p><span class="route">/wms/suppliers</span> — A searchable directory of all suppliers you work with. Use this as the reference when creating purchase orders or procurement requests.</p>
+<p>The Suppliers table shows: <strong>Name</strong>, <strong>Email</strong>, <strong>Phone</strong>, and <strong>Address</strong>. Search by supplier name. Full CRUD is available — create, view, edit, and delete supplier records. Deleting a supplier does not affect historical purchase records.</p>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  5. HRM — HUMAN RESOURCE MANAGEMENT                        -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<h2 id="hrm-dashboard"><span class="module-tag module-hrm">HRM</span> 5. HRM Dashboard</h2>
+<p>The HRM Dashboard at <span class="route">/hrm/dashboard</span> gives a real-time view of your workforce. KPI cards display:</p>
+<ul>
+  <li><strong>Total Employees</strong> — headcount across all departments.</li>
+  <li><strong>Departments</strong> — number of active departments.</li>
+  <li><strong>Pending Leave Requests</strong> — leave requests awaiting approval.</li>
+  <li><strong>Payroll Records</strong> — total payroll entries recorded this month.</li>
+</ul>
+<p>The <strong>Employees by Department</strong> bar chart shows headcount distribution across departments — useful for spotting imbalances in organizational structure.</p>
+
+<!-- ─── Employees ─── -->
+<h2 id="employees">Employees</h2>
+<p><span class="route">/hrm/employees</span> — The central employee registry. The table lists all employees with columns: <strong>Name</strong>, <strong>Email</strong>, <strong>Position</strong>, <strong>Department</strong>, <strong>Hire Date</strong>, and <strong>Actions</strong>.</p>
+<p>Use the search bar to filter by name or email (server-side ILIKE). Filter by department using the department dropdown. Paginated results load 20 records per page.</p>
+
+<h3>Employee Detail Page</h3>
+<p>Click any employee row to navigate to their detail page. The page is organized into four tabs:</p>
+
+<h4>Info Tab</h4>
+<p>Personal and employment information: full name, email, position title, hire date, and department. Admins and Members can edit these fields inline. Admins can delete the employee (this cascades and deletes all associated leave requests and payroll records).</p>
+
+<h4>Contracts Tab</h4>
+<p>Employment contract records showing contract type (permanent, fixed-term, probationary), start and end dates, and salary details. Multiple contracts can be stored to represent contract renewals or type changes over time.</p>
+
+<h4>Salary History Tab</h4>
+<p>A chronological list of all salary changes, showing effective date, previous salary, new salary, and reason for change. This provides a complete compensation history for the employee.</p>
+
+<h4>Leave Tab</h4>
+<p>Displays the employee's leave balance broken down by leave type (e.g. Annual Leave: 10 days remaining, Sick Leave: 5 days remaining), plus a list of all past and pending leave requests with their status badges.</p>
+
+<!-- ─── Departments ─── -->
+<h2 id="departments">Departments</h2>
+<p><span class="route">/hrm/departments</span> — Departments group employees into organizational units. The departments table shows <strong>Name</strong>, <strong>Description</strong>, and <strong>Headcount</strong>.</p>
+<p>Full CRUD is available. Creating a department requires only a name; description is optional. Employees are assigned to departments via their profile. Deleting a department sets the <code>department_id</code> of all associated employees to null — employees are retained but become unassigned.</p>
+
+<h3>Org Chart</h3>
+<p>Click <strong>Org Chart</strong> (top right on the Departments page) to switch to a tree visualization. The org chart shows the department hierarchy with headcount displayed below each department node. Use this view for organizational planning and to share structure with new team members.</p>
+
+<!-- ─── Positions ─── -->
+<h2 id="positions">Positions</h2>
+<p><span class="route">/hrm/positions</span> — A catalog of job positions/titles used across the organization. Positions are separate from departments — a position like "Senior Engineer" can exist across multiple departments.</p>
+<p>The Positions table shows <strong>Position Title</strong>, <strong>Department</strong> (optional association), and <strong>Description</strong>. CRUD operations are available. When creating employees, position titles from this catalog are suggested to ensure consistency in job title naming.</p>
+
+<!-- ─── Leave ─── -->
+<h2 id="leave">Leave Management</h2>
+<p><span class="route">/hrm/leave</span> — Leave management has two parts: defining leave types, and managing requests.</p>
+
+<h3>Leave Types</h3>
+<p>Leave types define the categories available to employees (e.g. Annual Leave, Sick Leave, Maternity Leave, Unpaid Leave). Each type has a <strong>Name</strong> and optional <strong>Description</strong>. <span class="badge-admin">Admin</span> can create, edit, and delete leave types. Deleting a leave type does not affect existing requests that reference it.</p>
+
+<h3>Leave Requests</h3>
+<p>The leave requests table shows all requests across the workspace with columns: <strong>Employee</strong>, <strong>Leave Type</strong>, <strong>Start Date</strong>, <strong>End Date</strong>, <strong>Duration</strong>, and <strong>Status</strong>.</p>
+
+<h4>Creating a Request</h4>
+<p>Click <strong>+ New Request</strong>. Select the employee, leave type, start date, and end date. End date must be on or after the start date. Click <strong>Submit</strong> — the request is created with status <span class="badge badge-warning">Pending</span>.</p>
+
+<h4>Approval Workflow</h4>
+<p><span class="badge-admin">Admin</span> Pending requests show <strong>Approve</strong> and <strong>Reject</strong> action buttons. Approved requests update status to <span class="badge badge-success">Approved</span>; rejected requests update to <span class="badge badge-danger">Rejected</span>. Employees are notified of the decision via the notification system.</p>
+
+<!-- ─── Attendance ─── -->
+<h2 id="attendance">Attendance</h2>
+<p><span class="route">/hrm/attendance</span> — Attendance tracking records when employees are present, late, or absent. The page includes:</p>
+<ul>
+  <li><strong>Summary cards</strong> — today's totals for Present, Late, Absent, and On Leave.</li>
+  <li><strong>Attendance log table</strong> — searchable list of attendance entries with employee name, date, check-in time, check-out time, and status.</li>
+  <li><strong>Log entry creation</strong> — click <strong>+ Log Attendance</strong> to manually record an entry for an employee. Select employee, date, check-in/out times, and status.</li>
+</ul>
+
+<!-- ─── Payroll ─── -->
+<h2 id="payroll">Payroll</h2>
+<p><span class="route">/hrm/payroll</span> — Payroll records store monthly compensation data for each employee. A-ERP stores payroll data but does not auto-calculate payroll — records are entered manually or via integration.</p>
+<p>The payroll records table shows: <strong>Employee</strong>, <strong>Month</strong> (YYYY-MM format), <strong>Base Salary</strong>, <strong>Deductions</strong>, <strong>Bonus</strong>, and calculated <strong>Net Pay</strong> (Salary - Deductions + Bonus). Filter by employee using the search box.</p>
+
+<h3>Creating a Payroll Record</h3>
+<p>Click <strong>+ Add Record</strong>. Select the employee and enter the month (e.g. 2026-03). Fill in Base Salary, Deductions, and Bonus (all default to 0.0 if left empty). Save to create the record. Multiple records for the same employee and month are allowed to represent corrections.</p>
+
+<!-- ─── Insurance ─── -->
+<h2 id="insurance">Insurance</h2>
+<p><span class="route">/hrm/insurance</span> — Insurance records track employee benefit coverage, including health insurance, social insurance, and other schemes. Each record is linked to an employee and includes the insurance type, provider, policy number, coverage period start/end dates, and premium amount.</p>
+<p>Full CRUD operations are available. Use the employee filter to view insurance records for a specific team member.</p>
+
+<!-- ─── Recruitment ─── -->
+<h2 id="recruitment">Recruitment</h2>
+<p><span class="route">/hrm/recruitment</span> — The Recruitment module manages the full hiring pipeline from job opening to offer acceptance.</p>
+
+<h3>Job Openings</h3>
+<p>The main Recruitment page shows a table of all open and closed job positions. Each row shows the position title, department, number of candidates, and status (Open / Closed). Click <strong>+ New Opening</strong> to create a job posting with title, department, description, and requirements.</p>
+
+<h3>Candidate Pipeline</h3>
+<p>Click any job opening row to navigate to its detail page. Candidates are tracked through these stages:</p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Stage</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><span class="badge badge-neutral">Screening</span></td><td>Initial review of application and resume.</td></tr>
+    <tr><td><span class="badge badge-info">Interviewing</span></td><td>Active interview process underway.</td></tr>
+    <tr><td><span class="badge badge-warning">Offered</span></td><td>An offer has been extended to the candidate.</td></tr>
+    <tr><td><span class="badge badge-success">Hired</span></td><td>Offer accepted; candidate becomes an employee.</td></tr>
+    <tr><td><span class="badge badge-danger">Rejected</span></td><td>Candidate did not advance or declined the offer.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Managing Candidates</h3>
+<ul>
+  <li><strong>Add Candidate</strong> — enter name, email, phone, and resume link. Candidate starts at Screening.</li>
+  <li><strong>Schedule Interview</strong> — click the calendar icon next to a candidate to schedule an interview. Enter date, time, format (in-person/video), and interviewer.</li>
+  <li><strong>Record Feedback</strong> — after each interview, interviewers can add structured feedback with a score (1–5) and written notes. All feedback is visible on the candidate's detail card.</li>
+  <li><strong>Make an Offer</strong> — when ready to hire, click <strong>Make Offer</strong> on the candidate card. Enter offer salary, start date, and any notes. The offer status updates to <em>Sent</em>. Record candidate response as <em>Accepted</em> or <em>Rejected</em>.</li>
+  <li>When an offer is <strong>Accepted</strong>, click <strong>Convert to Employee</strong> to automatically create an employee record from the candidate's data.</li>
+</ul>
+
+<!-- ─── Onboarding ─── -->
+<h2 id="onboarding">Onboarding</h2>
+<p><span class="route">/hrm/onboarding</span> — Onboarding checklists ensure new employees complete all necessary steps in their first days and weeks. Each employee has their own onboarding checklist instance.</p>
+
+<h3>Generating Default Checklists</h3>
+<p>Click <strong>Generate Defaults</strong> when viewing a new employee's onboarding to populate the checklist with your organization's standard tasks. Default categories typically include:</p>
+<ul>
+  <li><strong>Documentation</strong> — ID verification, contract signing, tax forms.</li>
+  <li><strong>IT Setup</strong> — laptop provisioning, account creation, tool access.</li>
+  <li><strong>Orientation</strong> — company introduction, team meetings, policy review.</li>
+  <li><strong>Training</strong> — required training modules to complete in the first 30 days.</li>
+</ul>
+
+<h3>Tracking Progress</h3>
+<p>Check off items as they are completed by clicking the checkbox next to each task. Progress is displayed as a percentage bar at the top of the employee's onboarding view. HR Admins can check off items on behalf of any employee.</p>
+
+<!-- ─── KPIs ─── -->
+<h2 id="kpis-performance">KPIs &amp; Performance</h2>
+<p><span class="route">/hrm/performance</span> — The Performance module uses KPI templates to define measurable metrics, then assigns those metrics to employees for specific periods.</p>
+
+<h3>KPI Templates</h3>
+<p>Templates define reusable metrics that can be assigned to multiple employees. Each template has:</p>
+<ul>
+  <li><strong>Name</strong> — e.g. "Customer Satisfaction Score", "Code Review Rate".</li>
+  <li><strong>Category</strong> — grouping such as "Sales", "Engineering", "Customer Support".</li>
+  <li><strong>Unit</strong> — the measurement unit, e.g. %, number, USD.</li>
+</ul>
+
+<h3>KPI Assignments</h3>
+<p>Assign a KPI template to an employee for a specific period. Each assignment record stores:</p>
+<ul>
+  <li><strong>Employee</strong> — who is being measured.</li>
+  <li><strong>KPI Template</strong> — which metric applies.</li>
+  <li><strong>Period</strong> — date range (e.g. Q1 2026, January 2026).</li>
+  <li><strong>Target</strong> — the goal value (e.g. 90 for "90% Customer Satisfaction").</li>
+  <li><strong>Progress %</strong> — current achievement, updated manually or via integration. Displayed as a colored progress bar (green when at/above target, amber when close, red when far below).</li>
+</ul>
+
+<!-- ─── Reviews ─── -->
+<h2 id="reviews">Performance Reviews</h2>
+<p><span class="route">/hrm/reviews</span> — Performance Reviews enable structured evaluation cycles. Admins create review cycles (e.g. "Annual Review 2026") that define the review period and participants. Employees and managers complete feedback forms for each review cycle.</p>
+<p>The Reviews page lists all active and past review cycles. Click a cycle to view all associated feedback forms. Each form captures: reviewer name, reviewee name, scores on competency dimensions, and written feedback. Completed reviews are locked for editing to preserve the record.</p>
+
+<!-- ─── Training ─── -->
+<h2 id="training">Training</h2>
+<p><span class="route">/hrm/training</span> — Manage training programs and track employee enrollment and completion. The Training page has two tabs:</p>
+
+<h3>Programs Tab</h3>
+<p>Lists all training programs with: <strong>Name</strong>, <strong>Trainer</strong> (person or organization delivering the training), <strong>Start Date</strong>, <strong>End Date</strong>, and <strong>Budget</strong>. Click <strong>+ New Program</strong> to create a training program. Edit or delete programs from the action buttons.</p>
+
+<h3>Enrollments Tab</h3>
+<p>Shows which employees are enrolled in which programs. Columns: <strong>Employee</strong>, <strong>Program</strong>, <strong>Status</strong> (Enrolled / Completed / Dropped), and <strong>Score</strong> (optional assessment score on completion). Click <strong>+ Enroll Employee</strong> to add an enrollment. Update status and score as the training progresses.</p>
+
+<!-- ─── Offboarding ─── -->
+<h2 id="offboarding">Offboarding</h2>
+<p><span class="route">/hrm/offboarding</span> — The Offboarding module manages the employee exit process. When an employee submits a resignation or is terminated, an offboarding record is created.</p>
+
+<h3>Resignation Records</h3>
+<p>The main Offboarding page shows a table of all offboarding cases with: <strong>Employee</strong>, <strong>Last Working Day</strong>, <strong>Reason</strong>, and <strong>Status</strong>. Click <strong>+ New Offboarding</strong> to initiate the process for an employee.</p>
+
+<h3>Offboarding Detail Page</h3>
+<p>Click an offboarding record to open the detail page, which has two sections:</p>
+<ul>
+  <li><strong>Handover Tasks</strong> — a checklist of items the departing employee must complete before their last day, such as "Hand over project documentation", "Remove personal data", "Return laptop". Add custom tasks or use default templates. Check off items as they are completed.</li>
+  <li><strong>Exit Interview</strong> — structured feedback form capturing the employee's reasons for leaving, satisfaction scores, and suggestions for improvement. Results are stored privately and only visible to workspace Admins.</li>
+</ul>
+
+<!-- ─── Assets ─── -->
+<h2 id="assets">Assets</h2>
+<p><span class="route">/hrm/assets</span> — The Assets module tracks company equipment assigned to employees, such as laptops, phones, access cards, and furniture.</p>
+
+<h3>Asset Catalog</h3>
+<p>Assets have a lifecycle tracked via status:</p>
+<ul>
+  <li><span class="badge badge-success">Available</span> — in stock, ready to assign.</li>
+  <li><span class="badge badge-info">Assigned</span> — currently with an employee.</li>
+  <li><span class="badge badge-warning">Maintenance</span> — undergoing repair or service.</li>
+  <li><span class="badge badge-neutral">Retired</span> — decommissioned, no longer in use.</li>
+</ul>
+
+<h3>Assigning Assets</h3>
+<p>Select an asset with <em>Available</em> status and click <strong>Assign to Employee</strong>. Choose the employee and optional assignment date/notes. The asset status changes to <em>Assigned</em> and appears on the employee's profile. When an employee leaves, use the <strong>Return</strong> action to set the asset back to <em>Available</em> (or <em>Maintenance</em> if it needs servicing).</p>
+
+<!-- ─── Procurement ─── -->
+<h2 id="procurement">Procurement</h2>
+<p><span class="route">/hrm/procurement</span> — The Procurement module handles internal purchase requests from submission through approval and fulfillment. <span class="badge-admin">Admin</span> approval required for requests above a threshold.</p>
+
+<h3>Purchase Request Workflow</h3>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Stage</th><th>Who Acts</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><span class="badge badge-neutral">Draft</span></td><td>Any Member</td><td>Request is being filled in, not yet submitted.</td></tr>
+    <tr><td><span class="badge badge-info">Submitted</span></td><td>Requester</td><td>Submitted for review — requester can no longer edit.</td></tr>
+    <tr><td><span class="badge badge-success">Approved</span></td><td><span class="badge-admin">Admin</span></td><td>Admin has approved the purchase request.</td></tr>
+    <tr><td><span class="badge badge-danger">Rejected</span></td><td><span class="badge-admin">Admin</span></td><td>Admin has rejected the request with a reason.</td></tr>
+    <tr><td><span class="badge badge-warning">Ordered</span></td><td>Procurement Team</td><td>Purchase order has been placed with the supplier.</td></tr>
+    <tr><td><span class="badge badge-success">Completed</span></td><td>Procurement Team</td><td>Goods received and request fully fulfilled.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Creating a Purchase Request</h3>
+<p>Click <strong>+ New Request</strong>. Fill in: item name, quantity, estimated unit price, total estimated cost, supplier (optional, select from Suppliers list), required by date, and justification. Save as <em>Draft</em> while editing, then click <strong>Submit</strong> to send for approval.</p>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  6. CRM — CUSTOMER RELATIONSHIP MANAGEMENT                 -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<h2 id="crm-dashboard"><span class="module-tag module-crm">CRM</span> 6. CRM Dashboard</h2>
+<p>The CRM Dashboard at <span class="route">/crm/dashboard</span> gives a high-level view of your sales pipeline. KPI cards show:</p>
+<ul>
+  <li><strong>Total Contacts</strong> — number of contacts in your CRM.</li>
+  <li><strong>Active Deals</strong> — deals not in Closed Won or Closed Lost stage.</li>
+  <li><strong>Pipeline Value</strong> — total value of all non-closed deals. Displayed in millions (e.g. "$2.4M") or thousands ("$850K") depending on scale.</li>
+  <li><strong>Won This Month</strong> — count of deals moved to Closed Won in the current calendar month.</li>
+</ul>
+
+<h3>Deals by Stage Chart</h3>
+<p>A bar chart showing the number of deals in each stage, color-coded for quick scanning:</p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Stage</th><th>Color</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Lead</strong></td><td><span class="badge badge-neutral">gray</span></td><td>Initial contact, unqualified.</td></tr>
+    <tr><td><strong>Qualified</strong></td><td><span class="badge badge-info">sky blue</span></td><td>Confirmed interest and fit.</td></tr>
+    <tr><td><strong>Proposal</strong></td><td><span class="badge" style="background:rgba(94,106,210,.12);color:var(--color-primary)">indigo</span></td><td>Proposal or demo delivered.</td></tr>
+    <tr><td><strong>Negotiation</strong></td><td><span class="badge badge-warning">amber</span></td><td>Finalizing terms and pricing.</td></tr>
+    <tr><td><strong>Closed Won</strong></td><td><span class="badge badge-success">green</span></td><td>Deal successfully closed.</td></tr>
+    <tr><td><strong>Closed Lost</strong></td><td><span class="badge badge-danger">red</span></td><td>Deal lost to competitor or cancelled.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ─── Contacts ─── -->
+<h2 id="contacts">Contacts</h2>
+<p><span class="route">/crm/contacts</span> — The Contacts page is your complete directory of people and companies you interact with. The default landing page for the CRM module.</p>
+
+<h3>Contacts Table</h3>
+<p>A searchable, paginated table with columns: <strong>Name</strong>, <strong>Email</strong>, <strong>Phone</strong>, <strong>Company</strong>, <strong>Created</strong>, and <strong>Actions</strong>. The search box filters across name, email, and company simultaneously (server-side ILIKE). Results are paginated 20 per page.</p>
+
+<h3>Creating a Contact</h3>
+<p>Click <strong>+ Add Contact</strong>. Fill in:</p>
+<ul>
+  <li><strong>Name</strong> — required. Full name of the person or company contact (up to 255 characters).</li>
+  <li><strong>Email</strong> — optional. Must be a valid email format.</li>
+  <li><strong>Phone</strong> — optional. Up to 50 characters.</li>
+  <li><strong>Company</strong> — optional. Organization the contact belongs to.</li>
+</ul>
+<p>Click the pencil icon in the Actions column to edit any field. <span class="badge-admin">Admin</span> can delete contacts — this does not delete associated deals, but the contact reference on those deals is cleared.</p>
+
+<!-- ─── Deals ─── -->
+<h2 id="deals">Deals</h2>
+<p><span class="route">/crm/deals</span> — Deals represent sales opportunities. Each deal is linked to a contact (optional) and progresses through the pipeline stages from Lead to closed.</p>
+
+<h3>Deals Table</h3>
+<p>Columns: <strong>Title</strong>, <strong>Value</strong> (in USD), <strong>Stage</strong> (colored badge), <strong>Contact</strong>, <strong>Created</strong>, and <strong>Actions</strong>. Filter deals by stage using the stage filter buttons above the table. Multiple stages can be selected simultaneously.</p>
+
+<h3>Creating a Deal</h3>
+<p>Click <strong>+ Add Deal</strong>. Fill in:</p>
+<ul>
+  <li><strong>Title</strong> — descriptive name for the deal (e.g. "Acme Corp — Enterprise License Q2").</li>
+  <li><strong>Value</strong> — estimated deal value in USD (defaults to 0.0).</li>
+  <li><strong>Stage</strong> — starting stage; defaults to <em>Lead</em>.</li>
+  <li><strong>Contact</strong> — optional link to an existing contact.</li>
+</ul>
+
+<h3>Moving a Deal Through Stages</h3>
+<p>Click the pencil icon on a deal to edit it. Change the Stage dropdown to advance or regress the deal. For example, move from <em>Qualified</em> to <em>Proposal</em> once a proposal has been sent. When a deal is won, set stage to <em>Closed Won</em>; if lost, set to <em>Closed Lost</em>. Closed deals are excluded from the pipeline value calculation but remain in the table for reporting.</p>
+
+<div class="callout callout-tip">
+  <span class="callout-icon">&#10003;</span>
+  <div class="callout-body"><strong>Pipeline Health</strong> A healthy pipeline has deals distributed across early stages (Lead/Qualified) with a narrowing funnel toward Closed Won. If most deals are stuck at Proposal or Negotiation, review your follow-up cadence.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  7. SETTINGS & PREFERENCES                                  -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<h2 id="settings-profile">7. Profile &amp; Settings</h2>
+<p>Access Settings by clicking your avatar in the sidebar footer and selecting <strong>Settings</strong>, or navigating directly to <span class="route">/settings</span>.</p>
+
+<h3>Profile</h3>
+<ul>
+  <li><strong>Display Name</strong> — the name shown to teammates. Click the field to edit inline and save.</li>
+  <li><strong>Avatar</strong> — enter a URL for a profile image. The image is displayed as a 32px circle in the sidebar, task assignments, and comments.</li>
+  <li><strong>Email</strong> — read-only. Your email is your login identity and cannot be changed in the current version.</li>
+</ul>
+
+<h3>Language</h3>
+<p>Select English or Vietnamese from the language dropdown. The UI language updates immediately without a page reload. Your preference is stored in <code>localStorage</code>.</p>
+
+<h3>Change Password</h3>
+<p>In the Security section, enter your current password, then your new password (minimum 8 characters), and confirm. Click <strong>Update Password</strong>. You will remain logged in; all other active sessions using the old refresh token will be invalidated.</p>
+
+<!-- ─── Notifications ─── -->
+<h2 id="notifications-section">Notifications</h2>
+<p>The <strong>Bell icon</strong> in the top-right corner shows your unread notification count. When there are more than 9 unread notifications, the badge displays <strong>9+</strong>. Click the bell to open a dropdown showing your 8 most recent notifications.</p>
+
+<h3>Notification Actions</h3>
+<ul>
+  <li><strong>Click a notification</strong> — navigates to the relevant record (e.g. the task that was mentioned in or commented on).</li>
+  <li><strong>Mark all read</strong> — button at the top of the dropdown. Clears the unread count and marks all notifications as read.</li>
+</ul>
+
+<h3>How Notifications Work</h3>
+<p>A-ERP delivers notifications via two complementary methods:</p>
+<ul>
+  <li><strong>Server-Sent Events (SSE)</strong> — a persistent connection from your browser to the server receives notifications in real time while you are actively using the app. New notifications appear instantly without any page refresh.</li>
+  <li><strong>Polling</strong> — every 30 seconds, the app polls for new notifications. This acts as a fallback if the SSE connection drops, ensuring you never miss a notification.</li>
+</ul>
+<p>You receive notifications for: task assignments, task mentions, comments on tasks you follow, due date reminders, and leave request approval/rejection decisions.</p>
+
+<!-- ─── Command Palette ─── -->
+<h2 id="command-palette">Command Palette</h2>
+<p>Press <kbd>Ctrl</kbd>+<kbd>K</kbd> (or <kbd>Cmd</kbd>+<kbd>K</kbd> on Mac) to open the Command Palette from anywhere in the app. The palette provides a unified search interface powered by PostgreSQL full-text search.</p>
+
+<h3>What You Can Search</h3>
+<ul>
+  <li><strong>Tasks</strong> — search by title or description keywords. Results show task title, project name, and priority.</li>
+  <li><strong>Projects</strong> — search by project name. Click a result to navigate to the project's Board view.</li>
+  <li><strong>Navigation</strong> — type a module or page name (e.g. "payroll", "suppliers", "my tasks") to jump there directly.</li>
+</ul>
+<p>Results are grouped by type (Tasks / Projects / Navigation) and update as you type. Click any result or use arrow keys to navigate and <kbd>Enter</kbd> to open. Press <kbd>Esc</kbd> to close the palette without navigating.</p>
+
+<!-- ─── Shortcuts ─── -->
+<h2 id="shortcuts">Keyboard Shortcuts</h2>
+<p>A-ERP is designed for keyboard-efficient workflows. Press <kbd>?</kbd> at any time to display the full shortcuts dialog. The most useful shortcuts:</p>
+
+<div class="table-wrap">
+<table class="shortcuts-table">
+  <thead>
+    <tr><th>Shortcut</th><th>Action</th><th>Context</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>K</kbd> / <kbd>Cmd</kbd>+<kbd>K</kbd></td><td>Open command palette / search</td><td>Global</td></tr>
+    <tr><td><kbd>?</kbd></td><td>Open keyboard shortcuts dialog</td><td>Global</td></tr>
+    <tr><td><kbd>Esc</kbd></td><td>Close dialog, drawer, or modal</td><td>Global</td></tr>
+    <tr><td><kbd>G</kbd> then <kbd>H</kbd></td><td>Go to My Tasks</td><td>Global</td></tr>
+    <tr><td><kbd>G</kbd> then <kbd>B</kbd></td><td>Switch to Board view</td><td>In a project</td></tr>
+    <tr><td><kbd>G</kbd> then <kbd>L</kbd></td><td>Switch to List view</td><td>In a project</td></tr>
+    <tr><td><kbd>G</kbd> then <kbd>C</kbd></td><td>Switch to Calendar view</td><td>In a project</td></tr>
+    <tr><td><kbd>G</kbd> then <kbd>T</kbd></td><td>Switch to Timeline view</td><td>In a project</td></tr>
+    <tr><td><kbd>N</kbd></td><td>New task (in current project/section)</td><td>Board / List</td></tr>
+    <tr><td><kbd>Enter</kbd></td><td>Open selected task detail</td><td>List view</td></tr>
+    <tr><td><kbd>Backspace</kbd></td><td>Delete selected task</td><td>List view (selected row)</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>Enter</kbd></td><td>Submit comment</td><td>Task drawer</td></tr>
+    <tr><td><kbd>F</kbd></td><td>Open filter panel</td><td>Board / List view</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout callout-info">
+  <span class="callout-icon">&#9432;</span>
+  <div class="callout-body"><strong>Two-Key Navigation</strong> The <kbd>G</kbd> shortcuts use sequential key detection — press <kbd>G</kbd>, release it, then press the second key within 1.5 seconds. This pattern (inspired by Gmail) lets you navigate without modifiers.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  8. TIPS & BEST PRACTICES                                   -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<h2 id="tips">8. Tips &amp; Best Practices</h2>
+
+<h3>Project Management</h3>
+<div class="callout callout-tip">
+  <span class="callout-icon">&#10003;</span>
+  <div class="callout-body"><strong>Use Goals to connect strategy to execution.</strong> Link your Q1 projects directly to a company Goal. When project tasks get completed, the Goal progress updates automatically — giving leadership real-time visibility into strategic objectives.</div>
+</div>
+<div class="callout callout-tip">
+  <span class="callout-icon">&#10003;</span>
+  <div class="callout-body"><strong>Custom fields add project-specific structure.</strong> Don't over-rely on the description field for structured data. If your engineering team needs to track "Story Points" or "PR Link" per task, add custom fields to that project. This keeps task data queryable and consistent.</div>
+</div>
+<div class="callout callout-tip">
+  <span class="callout-icon">&#10003;</span>
+  <div class="callout-body"><strong>Tags work across projects; sections don't.</strong> Use tags (e.g. "bug", "design", "blocked") for cross-project categorization. Use sections/columns for within-project status stages. A task can have multiple tags but belongs to exactly one section.</div>
+</div>
+<div class="callout callout-tip">
+  <span class="callout-icon">&#10003;</span>
+  <div class="callout-body"><strong>Use Timeline view for deadline-heavy projects.</strong> Switch to Timeline before sprint planning to visualize date overlaps. Drag task bars to resolve scheduling conflicts before they become problems.</div>
+</div>
+
+<h3>My Tasks Routine</h3>
+<div class="callout callout-tip">
+  <span class="callout-icon">&#10003;</span>
+  <div class="callout-body"><strong>Start every day on My Tasks.</strong> The Overdue and Today buckets tell you exactly what must be addressed first. Review the Upcoming bucket to plan your week. This habit prevents tasks from falling through the cracks across multiple projects.</div>
+</div>
+
+<h3>Warehouse</h3>
+<div class="callout callout-tip">
+  <span class="callout-icon">&#10003;</span>
+  <div class="callout-body"><strong>Set min thresholds for every inventory item.</strong> A minimum threshold of 0 means the Low Stock badge only appears when you're completely out. Set realistic reorder points (typically a 1–2 week supply buffer) so you can restock before running out.</div>
+</div>
+
+<h3>Human Resources</h3>
+<div class="callout callout-tip">
+  <span class="callout-icon">&#10003;</span>
+  <div class="callout-body"><strong>Generate onboarding defaults immediately after hiring.</strong> When you convert a recruited candidate to an employee, go directly to their Onboarding page and click <strong>Generate Defaults</strong>. This ensures no step is missed during the first day chaos.</div>
+</div>
+<div class="callout callout-tip">
+  <span class="callout-icon">&#10003;</span>
+  <div class="callout-body"><strong>Use KPI templates for consistency.</strong> Define your standard performance metrics as templates once (e.g. "Customer Satisfaction Score %", "Tickets Resolved Per Week") and reuse them across quarterly assignments. This makes performance reviews comparable across periods.</div>
+</div>
+
+<h3>CRM</h3>
+<div class="callout callout-tip">
+  <span class="callout-icon">&#10003;</span>
+  <div class="callout-body"><strong>Monitor deals stuck in the same stage.</strong> Filter the Deals table by stage and sort by Created date. Deals that have been at the same stage for longer than your average sales cycle length need attention — either advance them or mark as Closed Lost to keep your pipeline accurate.</div>
+</div>
+<div class="callout callout-tip">
+  <span class="callout-icon">&#10003;</span>
+  <div class="callout-body"><strong>Keep your pipeline value realistic.</strong> Include only genuinely qualified opportunities. Inflated pipeline value (deals unlikely to close) makes the CRM Dashboard misleading. Move speculative leads to Closed Lost early so forecasting stays accurate.</div>
+</div>
+
+<h3>Security</h3>
+<div class="callout callout-warning">
+  <span class="callout-icon">&#9888;</span>
+  <div class="callout-body"><strong>Never share your account credentials.</strong> Each team member should have their own account. Use workspace roles to give colleagues the access they need. If someone needs temporary access, assign them as Guest rather than sharing a login.</div>
+</div>
+
+</div><!-- /.content-area -->
+</main>
+
+<!-- Back to Top Button -->
+<button class="back-to-top" id="backToTop" aria-label="Back to top">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<script>
+// ── Dark Mode ───────────────────────────────────────────────
+(function() {
+  const html = document.documentElement;
+  const toggle = document.getElementById('darkToggle');
+  const sunIcon = document.getElementById('sunIcon');
+  const moonIcon = document.getElementById('moonIcon');
+  const label = document.getElementById('darkToggleLabel');
+
+  function applyTheme(dark) {
+    html.setAttribute('data-theme', dark ? 'dark' : 'light');
+    sunIcon.style.display = dark ? 'none' : 'block';
+    moonIcon.style.display = dark ? 'block' : 'none';
+    label.textContent = dark ? 'Light' : 'Dark';
+  }
+
+  const stored = localStorage.getItem('aerpTheme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const isDark = stored ? stored === 'dark' : prefersDark;
+  applyTheme(isDark);
+
+  toggle.addEventListener('click', function() {
+    const nowDark = html.getAttribute('data-theme') !== 'dark';
+    applyTheme(nowDark);
+    localStorage.setItem('aerpTheme', nowDark ? 'dark' : 'light');
+  });
+})();
+
+// ── Sidebar Collapse Sections ───────────────────────────────
+function toggleSection(id) {
+  const sec = document.getElementById(id);
+  if (sec) sec.classList.toggle('collapsed');
+}
+
+// ── Mobile Hamburger ─────────────────────────────────────────
+const hamburger = document.getElementById('hamburgerBtn');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('sidebarOverlay');
+
+function openSidebar() {
+  sidebar.classList.add('open');
+  overlay.classList.add('open');
+}
+
+function closeSidebar() {
+  sidebar.classList.remove('open');
+  overlay.classList.remove('open');
+}
+
+function closeSidebarMobile() {
+  if (window.innerWidth < 768) closeSidebar();
+}
+
+hamburger.addEventListener('click', function() {
+  if (sidebar.classList.contains('open')) closeSidebar();
+  else openSidebar();
+});
+
+overlay.addEventListener('click', closeSidebar);
+
+// ── Back to Top ──────────────────────────────────────────────
+const btt = document.getElementById('backToTop');
+window.addEventListener('scroll', function() {
+  if (window.scrollY > 400) btt.classList.add('visible');
+  else btt.classList.remove('visible');
+}, { passive: true });
+
+btt.addEventListener('click', function() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// ── ScrollSpy ────────────────────────────────────────────────
+(function() {
+  const headings = document.querySelectorAll('h2[id], h3[id]');
+  const links = document.querySelectorAll('.sidebar-link');
+
+  const linkMap = {};
+  links.forEach(function(link) {
+    const href = link.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      linkMap[href.slice(1)] = link;
+    }
+  });
+
+  let current = null;
+
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        if (current) {
+          current.classList.remove('active', 'spy-active');
+        }
+        const link = linkMap[id];
+        if (link) {
+          link.classList.add('active', 'spy-active');
+          current = link;
+          // scroll sidebar to keep active link visible
+          const sidebarEl = document.getElementById('sidebar');
+          const linkTop = link.offsetTop;
+          const sidebarScrollTop = sidebarEl.scrollTop;
+          const sidebarHeight = sidebarEl.clientHeight;
+          if (linkTop < sidebarScrollTop || linkTop > sidebarScrollTop + sidebarHeight - 60) {
+            sidebarEl.scrollTo({ top: linkTop - 80, behavior: 'smooth' });
+          }
+        }
+      }
+    });
+  }, {
+    rootMargin: '-60px 0px -70% 0px',
+    threshold: 0
+  });
+
+  headings.forEach(function(h) { observer.observe(h); });
+})();
+
+// ── Smooth scroll for sidebar links ──────────────────────────
+document.querySelectorAll('.sidebar-link[href^="#"]').forEach(function(link) {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    const id = this.getAttribute('href').slice(1);
+    const target = document.getElementById(id);
+    if (target) {
+      const offset = 72; // topbar height + margin
+      const top = target.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top: top, behavior: 'smooth' });
+    }
+  });
+});
+</script>
+</body>
+</html>
