@@ -62,6 +62,13 @@ const HrmProcurementPage = lazy(() => import('@/modules/hrm/features/procurement
 const CrmDashboardPage = lazy(() => import('@/modules/crm/features/dashboard/pages/crm-dashboard'))
 const CrmContactsPage = lazy(() => import('@/modules/crm/features/contacts/pages/contacts-list'))
 const CrmDealsPage = lazy(() => import('@/modules/crm/features/deals/pages/deals-list'))
+const CrmPipelinePage = lazy(() => import('@/modules/crm/features/deals/pages/deals-pipeline'))
+const CrmLeadsPage = lazy(() => import('@/modules/crm/features/leads/pages/leads-list'))
+const CrmAccountsListPage = lazy(() => import('@/modules/crm/features/accounts/pages/accounts-list'))
+const CrmAccountDetailPage = lazy(() => import('@/modules/crm/features/accounts/pages/account-detail'))
+const CrmActivitiesPage = lazy(() => import('@/modules/crm/features/activities/pages/activities-list'))
+const CrmCampaignsPage = lazy(() => import('@/modules/crm/features/campaigns/pages/campaigns-list'))
+const CrmTicketsPage = lazy(() => import('@/modules/crm/features/tickets/pages/tickets-list'))
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const user = useAuthStore((s) => s.user)
@@ -134,8 +141,15 @@ export function AppRouter() {
             {/* CRM module */}
             <Route path="/crm" element={<Navigate to="/crm/dashboard" replace />} />
             <Route path="/crm/dashboard" element={<CrmDashboardPage />} />
+            <Route path="/crm/leads" element={<CrmLeadsPage />} />
             <Route path="/crm/contacts" element={<CrmContactsPage />} />
+            <Route path="/crm/accounts" element={<CrmAccountsListPage />} />
+            <Route path="/crm/accounts/:accountId" element={<CrmAccountDetailPage />} />
             <Route path="/crm/deals" element={<CrmDealsPage />} />
+            <Route path="/crm/pipeline" element={<CrmPipelinePage />} />
+            <Route path="/crm/activities" element={<CrmActivitiesPage />} />
+            <Route path="/crm/campaigns" element={<CrmCampaignsPage />} />
+            <Route path="/crm/tickets" element={<CrmTicketsPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

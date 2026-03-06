@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { BookOpen, Box, Briefcase, Calendar, CheckSquare, ClipboardCheck, Clock, Cpu, DollarSign, Home, LogOut, Package, Plus, Shield, ShoppingCart, Star, Target, TrendingUp, Truck, Users, UserPlus, Warehouse as WarehouseIcon } from 'lucide-react'
+import { Activity, BookOpen, Box, Briefcase, Building2, Calendar, CheckSquare, ClipboardCheck, Clock, Cpu, DollarSign, Home, Kanban, LogOut, Megaphone, Package, Plus, Shield, ShoppingCart, Star, Target, Ticket, TrendingUp, Truck, UserCheck, Users, UserPlus, Warehouse as WarehouseIcon } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useWorkspaceStore } from '@/stores/workspace.store'
@@ -94,8 +94,14 @@ export function SidebarNavigation({ collapsed }: Props) {
         ) : activeModule === 'crm' ? (
           <>
             <NavItem to="/crm/dashboard" icon={<Home className="h-4 w-4" />} label={t('nav.dashboard', 'Dashboard')} active={isActive('/crm/dashboard')} collapsed={collapsed} />
+            <NavItem to="/crm/leads" icon={<UserCheck className="h-4 w-4" />} label="Leads" active={isActive('/crm/leads')} collapsed={collapsed} />
             <NavItem to="/crm/contacts" icon={<Users className="h-4 w-4" />} label={t('nav.contacts')} active={isActive('/crm/contacts')} collapsed={collapsed} />
+            <NavItem to="/crm/accounts" icon={<Building2 className="h-4 w-4" />} label="Accounts" active={isActive('/crm/accounts')} collapsed={collapsed} />
             <NavItem to="/crm/deals" icon={<DollarSign className="h-4 w-4" />} label={t('nav.deals')} active={isActive('/crm/deals')} collapsed={collapsed} />
+            <NavItem to="/crm/pipeline" icon={<Kanban className="h-4 w-4" />} label="Pipeline" active={isActive('/crm/pipeline')} collapsed={collapsed} />
+            <NavItem to="/crm/activities" icon={<Activity className="h-4 w-4" />} label="Activities" active={isActive('/crm/activities')} collapsed={collapsed} />
+            <NavItem to="/crm/campaigns" icon={<Megaphone className="h-4 w-4" />} label="Campaigns" active={isActive('/crm/campaigns')} collapsed={collapsed} />
+            <NavItem to="/crm/tickets" icon={<Ticket className="h-4 w-4" />} label="Tickets" active={isActive('/crm/tickets')} collapsed={collapsed} />
             <NavItem to="/members" icon={<UserPlus className="h-4 w-4" />} label={t('nav.members')} active={isActive('/members')} collapsed={collapsed} />
           </>
         ) : activeModule === 'wms' ? (

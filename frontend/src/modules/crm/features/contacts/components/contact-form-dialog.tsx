@@ -4,8 +4,10 @@ import { Button } from '@/shared/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog'
 import { Input } from '@/shared/components/ui/input'
 import { Label } from '@/shared/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { toast } from '@/shared/components/ui/toast'
 import { type Contact, useCreateContact, useUpdateContact } from '../hooks/use-contacts'
+import { useAccounts } from '../../accounts/hooks/use-accounts'
 
 interface Props {
   open: boolean
@@ -28,12 +30,14 @@ function ContactFormContent({ workspaceId, contact, onOpenChange }: Omit<Props, 
   const { t } = useTranslation('crm')
   const createContact = useCreateContact(workspaceId)
   const updateContact = useUpdateContact(workspaceId)
+  const { data: accountsData } = useAccounts(workspaceId, { page_size: 100 })
   const isEdit = !!contact
 
   const [name, setName] = useState(contact?.name ?? '')
   const [email, setEmail] = useState(contact?.email ?? '')
   const [phone, setPhone] = useState(contact?.phone ?? '')
   const [company, setCompany] = useState(contact?.company ?? '')
+  const [accountId, setAccountId] = useState(contact?.account_id ?? 'none')
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -44,6 +48,7 @@ function ContactFormContent({ workspaceId, contact, onOpenChange }: Omit<Props, 
         email: email.trim() || null,
         phone: phone.trim() || null,
         company: company.trim() || null,
+        account_id: accountId === 'none' ? null : accountId,
       }
       if (isEdit) {
         await updateContact.mutateAsync({ contactId: contact.id, ...payload })
@@ -80,9 +85,21 @@ function ContactFormContent({ workspaceId, contact, onOpenChange }: Omit<Props, 
             <Input id="contact-phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
           </div>
         </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="contact-company">{t('contacts.company')}</Label>
-          <Input id="contact-company" value={company} onChange={(e) => setCompany(e.target.value)} />
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <Label htmlFor="contact-company">{t('contacts.company')}</Label>
+            <Input id="contact-company" value={company} onChange={(e) => setCompany(e.target.value)} />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Account</Label>
+            <Select value={accountId} onValueChange={setAccountId}>
+              <SelectTrigger><SelectValue placeholder="No account" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No account</SelectItem>
+                {(accountsData?.items ?? []).map((a) => <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         <div className="flex justify-end gap-2 pt-1">
           <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>{t('common:common.cancel')}</Button>

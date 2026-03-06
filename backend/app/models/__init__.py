@@ -7,7 +7,7 @@ from app.models.user import User  # noqa: F401
 from app.models.workspace import Workspace, WorkspaceMembership  # noqa: F401
 
 # CRM module models
-from app.modules.crm.models import Contact, Deal  # noqa: F401
+from app.modules.crm.models import Account, Activity, Campaign, Contact, Deal, Lead, Ticket  # noqa: F401
 
 # HRM module models
 from app.modules.hrm.models import Department, Employee, LeaveRequest, LeaveType, PayrollRecord  # noqa: F401

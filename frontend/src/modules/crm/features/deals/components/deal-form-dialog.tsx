@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from '@/shared/components/ui/toast'
 import { type Deal, DEAL_STAGES, useCreateDeal, useUpdateDeal } from '../hooks/use-deals'
 import { useContacts } from '../../contacts/hooks/use-contacts'
+import { useAccounts } from '../../accounts/hooks/use-accounts'
 
 interface Props {
   open: boolean
@@ -25,19 +26,21 @@ export function DealFormDialog({ open, onOpenChange, workspaceId, deal }: Props)
   )
 }
 
-// Inner component holds state -- unmounts on close, resetting form
 function DealFormContent({ workspaceId, deal, onOpenChange }: Omit<Props, 'open'>) {
   const { t } = useTranslation('crm')
   const createDeal = useCreateDeal(workspaceId)
   const updateDeal = useUpdateDeal(workspaceId)
   const { data: contactsData } = useContacts(workspaceId, { page_size: 100 })
+  const { data: accountsData } = useAccounts(workspaceId, { page_size: 100 })
   const isEdit = !!deal
 
   const [title, setTitle] = useState(deal?.title ?? '')
   const [value, setValue] = useState(deal?.value?.toString() ?? '0')
   const [stage, setStage] = useState(deal?.stage ?? 'lead')
-  // Use 'none' sentinel to avoid Radix Select empty-string issues
+  const [probability, setProbability] = useState(deal?.probability?.toString() ?? '0')
+  const [expectedCloseDate, setExpectedCloseDate] = useState(deal?.expected_close_date ?? '')
   const [contactId, setContactId] = useState(deal?.contact_id ?? 'none')
+  const [accountId, setAccountId] = useState(deal?.account_id ?? 'none')
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -47,7 +50,10 @@ function DealFormContent({ workspaceId, deal, onOpenChange }: Omit<Props, 'open'
         title: title.trim(),
         value: parseFloat(value) || 0,
         stage,
+        probability: parseFloat(probability) || 0,
+        expected_close_date: expectedCloseDate || null,
         contact_id: contactId === 'none' ? null : contactId,
+        account_id: accountId === 'none' ? null : accountId,
       }
       if (isEdit) {
         await updateDeal.mutateAsync({ dealId: deal.id, ...payload })
@@ -84,24 +90,42 @@ function DealFormContent({ workspaceId, deal, onOpenChange }: Omit<Props, 'open'
             <Select value={stage} onValueChange={setStage}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                {DEAL_STAGES.map((s) => (
-                  <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
-                ))}
+                {DEAL_STAGES.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
         </div>
-        <div className="space-y-1.5">
-          <Label>{t('deals.contact')}</Label>
-          <Select value={contactId} onValueChange={setContactId}>
-            <SelectTrigger><SelectValue placeholder="No contact" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">No contact</SelectItem>
-              {(contactsData?.items ?? []).map((c) => (
-                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <Label htmlFor="deal-prob">Probability (%)</Label>
+            <Input id="deal-prob" type="number" min="0" max="100" value={probability} onChange={(e) => setProbability(e.target.value)} />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="deal-close">Expected Close</Label>
+            <Input id="deal-close" type="date" value={expectedCloseDate} onChange={(e) => setExpectedCloseDate(e.target.value)} />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <Label>{t('deals.contact')}</Label>
+            <Select value={contactId} onValueChange={setContactId}>
+              <SelectTrigger><SelectValue placeholder="No contact" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No contact</SelectItem>
+                {(contactsData?.items ?? []).map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label>Account</Label>
+            <Select value={accountId} onValueChange={setAccountId}>
+              <SelectTrigger><SelectValue placeholder="No account" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No account</SelectItem>
+                {(accountsData?.items ?? []).map((a) => <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         <div className="flex justify-end gap-2 pt-1">
           <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>{t('common:common.cancel')}</Button>

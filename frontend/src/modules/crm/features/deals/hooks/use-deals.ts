@@ -6,7 +6,11 @@ export interface Deal {
   title: string
   value: number
   stage: string
+  probability: number
+  expected_close_date: string | null
   contact_id: string | null
+  account_id: string | null
+  lead_id: string | null
   workspace_id: string
   created_at: string
   updated_at: string

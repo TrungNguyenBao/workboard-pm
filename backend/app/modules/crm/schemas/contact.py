@@ -9,6 +9,7 @@ class ContactCreate(BaseModel):
     email: EmailStr | None = None
     phone: str | None = Field(default=None, max_length=50)
     company: str | None = Field(default=None, max_length=255)
+    account_id: uuid.UUID | None = None
 
 
 class ContactUpdate(BaseModel):
@@ -16,6 +17,7 @@ class ContactUpdate(BaseModel):
     email: str | None = None
     phone: str | None = None
     company: str | None = None
+    account_id: uuid.UUID | None = None
 
 
 class ContactResponse(BaseModel):
@@ -24,6 +26,7 @@ class ContactResponse(BaseModel):
     email: EmailStr | None
     phone: str | None
     company: str | None
+    account_id: uuid.UUID | None
     workspace_id: uuid.UUID
     created_at: datetime
     updated_at: datetime

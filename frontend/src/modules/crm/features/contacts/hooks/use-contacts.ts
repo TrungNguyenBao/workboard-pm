@@ -7,6 +7,7 @@ export interface Contact {
   email: string | null
   phone: string | null
   company: string | null
+  account_id: string | null
   workspace_id: string
   created_at: string
   updated_at: string
