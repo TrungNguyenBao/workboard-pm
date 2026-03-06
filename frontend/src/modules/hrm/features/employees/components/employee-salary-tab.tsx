@@ -1,4 +1,5 @@
-import { HrmDataTable } from '../../shared/components/hrm-data-table'
+import { DataTable } from '@/shared/components/ui/data-table'
+import { toColumnDefs, type SimpleColumn } from '@/shared/components/ui/data-table-types'
 import { type SalaryHistory, useSalaryHistory } from '../hooks/use-salary-history'
 
 interface Props {
@@ -18,42 +19,23 @@ function formatChange(prev: number, next: number): React.ReactNode {
 }
 
 export function EmployeeSalaryTab({ workspaceId, employeeId }: Props) {
-  const { data } = useSalaryHistory(workspaceId, employeeId)
+  const { data, isLoading } = useSalaryHistory(workspaceId, employeeId)
 
-  const columns = [
-    {
-      key: 'effective_date',
-      label: 'Effective Date',
-      render: (r: SalaryHistory) => r.effective_date,
-    },
-    {
-      key: 'previous_amount',
-      label: 'Previous',
-      render: (r: SalaryHistory) => formatCurrency(r.previous_amount),
-    },
-    {
-      key: 'new_amount',
-      label: 'New',
-      render: (r: SalaryHistory) => formatCurrency(r.new_amount),
-    },
-    {
-      key: 'change',
-      label: 'Change',
-      render: (r: SalaryHistory) => formatChange(r.previous_amount, r.new_amount),
-    },
-    {
-      key: 'reason',
-      label: 'Reason',
-      render: (r: SalaryHistory) => r.reason,
-    },
+  const columns: SimpleColumn<SalaryHistory>[] = [
+    { key: 'effective_date', label: 'Effective Date', render: (r) => r.effective_date },
+    { key: 'previous_amount', label: 'Previous', render: (r) => formatCurrency(r.previous_amount) },
+    { key: 'new_amount', label: 'New', render: (r) => formatCurrency(r.new_amount) },
+    { key: 'change', label: 'Change', render: (r) => formatChange(r.previous_amount, r.new_amount) },
+    { key: 'reason', label: 'Reason', render: (r) => r.reason },
   ]
 
   return (
-    <HrmDataTable
-      columns={columns}
+    <DataTable
+      columns={toColumnDefs(columns)}
       data={data?.items ?? []}
       keyFn={(r) => r.id}
-      emptyMessage="No salary history"
+      isLoading={isLoading}
+      emptyTitle="No salary history"
     />
   )
 }

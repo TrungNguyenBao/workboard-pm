@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { UserPlus, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { Header } from '@/shared/components/shell/header'
 import { Button } from '@/shared/components/ui/button'
 import { Badge } from '@/shared/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar'
@@ -74,7 +73,6 @@ export default function MembersPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <Header title={t('members.title')} />
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-2xl mx-auto w-full pt-6 px-6 pb-12">
           <div className="flex items-center justify-between mb-4">
@@ -97,7 +95,7 @@ export default function MembersPage() {
                 const isSelf = m.user_id === currentUser?.id
                 const canManage = isAdmin && !isSelf
                 return (
-                  <div key={m.id} className="flex items-center gap-3 px-4 py-3 hover:bg-neutral-50">
+                  <div key={m.id} className="flex items-center gap-3 px-4 py-3 hover:bg-muted/50">
                     <Avatar className="h-8 w-8 flex-shrink-0">
                       <AvatarImage src={m.user_avatar_url ?? undefined} />
                       <AvatarFallback className="text-xs">
@@ -105,8 +103,8 @@ export default function MembersPage() {
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-neutral-900">{m.user_name}</p>
-                      <p className="text-xs text-neutral-400 truncate">{m.user_email}</p>
+                      <p className="text-sm font-medium text-foreground">{m.user_name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{m.user_email}</p>
                     </div>
                     {canManage ? (
                       <>

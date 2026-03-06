@@ -11,7 +11,7 @@ export function getAccessToken() {
 }
 
 const api: AxiosInstance = axios.create({
-  baseURL: '/api/v1',
+  baseURL: import.meta.env.VITE_API_URL ?? '/api/v1',
   withCredentials: true, // send HttpOnly refresh cookie
 })
 
@@ -34,7 +34,7 @@ api.interceptors.response.use(
       original._retry = true
       if (!refreshing) {
         refreshing = axios
-          .post<{ access_token: string }>('/api/v1/auth/refresh', null, { withCredentials: true })
+          .post<{ access_token: string }>(`${import.meta.env.VITE_API_URL ?? '/api/v1'}/auth/refresh`, null, { withCredentials: true })
           .then((r) => {
             const token = r.data.access_token
             setAccessToken(token)

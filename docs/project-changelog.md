@@ -5,6 +5,46 @@ Format: `## [version] — YYYY-MM-DD` with grouped entries.
 
 ---
 
+## [2.4.0] — 2026-03-05
+
+### Added — Full UI Overhaul (Phases 1-8)
+
+- Dark mode support across all pages and components
+- Dark mode toggle (System/Light/Dark) in shell header
+- Shared `DataTable` component with TanStack Table (sorting, selection, skeleton, empty state)
+- Shared `PageHeader`, `PaginationControls`, `Breadcrumb`, `EmptyState`, `SkeletonTable`, `KpiCard` components
+- Module dashboards for PMS, WMS, HRM, CRM with KPI cards and Recharts bar charts
+- Sidebar collapse-to-icons mode with Zustand-persisted state
+- Module switcher moved into sidebar (replaces header strip)
+- Breadcrumbs in shell header for all routes
+- `my-tasks-row.tsx` and `my-tasks-bucket.tsx` sub-components (split from my-tasks.tsx)
+- Entrance animations on auth pages (staggered slide-up-fade)
+- Dashboard routes: `/pms/dashboard`, `/wms/dashboard`, `/hrm/dashboard`, `/crm/dashboard`
+
+### Changed
+
+- Sidebar split from 421-line monolith into 6 focused files (sidebar-workspace-picker, sidebar-module-switcher, sidebar-navigation, sidebar-project-nav-item, sidebar-user-footer)
+- All shell components now use semantic CSS tokens (bg-background, bg-muted, text-foreground, etc.)
+- My Tasks page: loading skeleton + shared EmptyState
+- Project header simplified (removed duplicate search/bell now in shell header)
+- Goals page: uses shared EmptyState
+- All 11 WMS/HRM/CRM list pages migrated to shared DataTable + PageHeader + PaginationControls
+- Recharts charts use dark-compatible neutral colors
+- Full prefers-reduced-motion support added to index.css
+
+### Removed
+
+- 9 duplicate module-specific components: wms/hrm/crm-data-table, wms/hrm/crm-page-header, wms/hrm/crm-pagination
+- module-switcher.tsx (replaced by sidebar-module-switcher.tsx)
+- Hardcoded bg-white/bg-neutral-50/text-neutral-900 across 30+ components
+
+### New Dependencies
+
+- `@tanstack/react-table` — headless data table
+- `recharts` — charts for dashboards
+
+---
+
 ## [2.3.0] — 2026-03-04
 
 ### Added — Seed Demo Data Restructure & Extension

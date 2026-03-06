@@ -181,3 +181,29 @@ Restructured and extended seed script to populate all modules with realistic Vie
 | Verification: Run `make seed` end-to-end without errors | Done |
 | Verification: All modules populated with correct data | Done |
 | Verification: Seed script is idempotent (running twice produces same result) | Done |
+
+---
+
+## Phase 11 — Full UI Overhaul (Complete)
+
+Comprehensive frontend redesign with design system foundation, DRY component refactor, shell redesign, dark mode support, and module dashboards.
+
+| Item | Status |
+|---|---|
+| Frontend: Create shared `DataTable` component with TanStack Table (sorting, selection, skeleton, empty state) | Done |
+| Frontend: Create shared `PageHeader`, `PaginationControls`, `Breadcrumb`, `EmptyState`, `SkeletonTable`, `KpiCard` components | Done |
+| Frontend: Add dark mode toggle (System/Light/Dark) to shell header | Done |
+| Frontend: Add dark mode support across all pages and components | Done |
+| Frontend: Split 421-line sidebar into 6 focused files (workspace-picker, module-switcher, navigation, project-nav-item, user-footer) | Done |
+| Frontend: Move module switcher into sidebar (replace header strip) | Done |
+| Frontend: Add breadcrumbs to shell header for all routes | Done |
+| Frontend: Add sidebar collapse-to-icons mode with Zustand persistence | Done |
+| Frontend: Polish auth pages with entrance animations and dark mode support | Done |
+| Frontend: Update PMS module pages (my-tasks, project header, goals) with shared components and empty states | Done |
+| Frontend: Migrate all 11 WMS/HRM/CRM list pages to shared DataTable + PageHeader + PaginationControls | Done |
+| Frontend: Delete 9 duplicate module-specific components (wms/hrm/crm-data-table, page-header, pagination) | Done |
+| Frontend: Create module dashboard pages for PMS, WMS, HRM, CRM with KPI cards and Recharts charts | Done |
+| Frontend: Add new dashboard routes (`/pms/dashboard`, `/wms/dashboard`, `/hrm/dashboard`, `/crm/dashboard`) | Done |
+| Frontend: Add `prefers-reduced-motion` support to index.css | Done |
+| Dependencies: Install `@tanstack/react-table` for headless data table | Done |
+| Dependencies: Install `recharts` for dashboard charts | Done |

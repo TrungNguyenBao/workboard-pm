@@ -29,7 +29,7 @@ export function FilterBar({ priority, status, onPriority, onStatus }: Props) {
   ]
 
   return (
-    <div className="flex items-center gap-3 px-4 py-1.5 border-b border-border bg-white text-xs">
+    <div className="flex items-center gap-3 px-4 py-1.5 border-b border-border bg-background text-xs">
       <span className="text-neutral-400 font-medium">{t('filter.label')}</span>
 
       <div className="flex items-center gap-1">
@@ -41,7 +41,7 @@ export function FilterBar({ priority, status, onPriority, onStatus }: Props) {
               'rounded-full px-2.5 py-0.5 font-medium transition-colors',
               priority === p.value
                 ? p.color || 'bg-primary text-white'
-                : 'text-neutral-500 hover:bg-neutral-100',
+                : 'text-muted-foreground hover:bg-muted',
             )}
           >
             {p.label}
@@ -60,7 +60,7 @@ export function FilterBar({ priority, status, onPriority, onStatus }: Props) {
               'rounded-full px-2.5 py-0.5 font-medium transition-colors',
               status === s.value
                 ? 'bg-primary text-white'
-                : 'text-neutral-500 hover:bg-neutral-100',
+                : 'text-muted-foreground hover:bg-muted',
             )}
           >
             {s.label}

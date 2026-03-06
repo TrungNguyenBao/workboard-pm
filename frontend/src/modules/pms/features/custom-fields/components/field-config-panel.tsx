@@ -44,9 +44,9 @@ export function FieldConfigPanel({ projectId }: Props) {
           {fields.map((field) => (
             <div
               key={field.id}
-              className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-neutral-50 group"
+              className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-muted/50 group"
             >
-              <span className="flex-1 text-sm text-neutral-800 truncate">{field.name}</span>
+              <span className="flex-1 text-sm text-foreground truncate">{field.name}</span>
               {field.required && (
                 <span className="text-xs text-red-500 font-medium flex-shrink-0">Required</span>
               )}

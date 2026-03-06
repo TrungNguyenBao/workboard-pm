@@ -5,9 +5,10 @@ import { Badge } from '@/shared/components/ui/badge'
 import { Input } from '@/shared/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { toast } from '@/shared/components/ui/toast'
-import { HrmDataTable } from '../../shared/components/hrm-data-table'
-import { HrmPageHeader } from '../../shared/components/hrm-page-header'
-import { HrmPagination } from '../../shared/components/hrm-pagination'
+import { DataTable } from '@/shared/components/ui/data-table'
+import { toColumnDefs, type SimpleColumn } from '@/shared/components/ui/data-table-types'
+import { PageHeader } from '@/shared/components/ui/page-header'
+import { PaginationControls } from '@/shared/components/ui/pagination-controls'
 import { AttendanceFormDialog } from '../components/attendance-form-dialog'
 import { AttendanceSummaryCard } from '../components/attendance-summary-card'
 import { type AttendanceRecord, useAttendance, useAttendanceSummary, useDeleteAttendance } from '../hooks/use-attendance'
@@ -32,12 +33,12 @@ export default function AttendanceListPage() {
   const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId) ?? ''
   const [page, setPage] = useState(1)
   const [period, setPeriod] = useState(currentPeriod())
-  const [employeeIdFilter, setEmployeeIdFilter] = useState('')
+  const [employeeIdFilter] = useState('')
   const [showSummary, setShowSummary] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editRecord, setEditRecord] = useState<AttendanceRecord | null>(null)
 
-  const { data } = useAttendance(workspaceId, {
+  const { data, isLoading } = useAttendance(workspaceId, {
     period: period || undefined,
     employee_id: employeeIdFilter || undefined,
     page,
@@ -46,83 +47,45 @@ export default function AttendanceListPage() {
   const { data: summaries = [] } = useAttendanceSummary(workspaceId, period)
   const deleteRecord = useDeleteAttendance(workspaceId)
 
-  const columns = [
-    {
-      key: 'date',
-      label: 'Date',
-      render: (r: AttendanceRecord) => <span className="font-medium">{r.date}</span>,
+  const columns: SimpleColumn<AttendanceRecord>[] = [
+    { key: 'date', label: 'Date', render: (r) => <span className="font-medium">{r.date}</span> },
+    { key: 'employee_id', label: 'Employee ID', render: (r) => (
+      <span className="font-mono text-xs text-muted-foreground">{r.employee_id.slice(0, 8)}…</span>
+    )},
+    { key: 'check_in', label: 'Check In', render: (r) => r.check_in ?? '—' },
+    { key: 'check_out', label: 'Check Out', render: (r) => r.check_out ?? '—' },
+    { key: 'status', label: 'Status', render: (r) => (
+      <Badge variant="outline" className={STATUS_COLORS[r.status] ?? ''}>
+        {r.status.replace('_', ' ')}
+      </Badge>
+    )},
+    { key: 'total_hours', label: 'Hours', render: (r) => r.total_hours != null ? Number(r.total_hours).toFixed(1) : '—' },
+    { key: 'overtime_hours', label: 'OT', render: (r) => Number(r.overtime_hours) > 0
+      ? <span className="text-orange-600 font-medium">{Number(r.overtime_hours).toFixed(1)}</span>
+      : '—'
     },
-    {
-      key: 'employee_id',
-      label: 'Employee ID',
-      render: (r: AttendanceRecord) => <span className="font-mono text-xs text-muted-foreground">{r.employee_id.slice(0, 8)}…</span>,
-    },
-    {
-      key: 'check_in',
-      label: 'Check In',
-      render: (r: AttendanceRecord) => r.check_in ?? '—',
-    },
-    {
-      key: 'check_out',
-      label: 'Check Out',
-      render: (r: AttendanceRecord) => r.check_out ?? '—',
-    },
-    {
-      key: 'status',
-      label: 'Status',
-      render: (r: AttendanceRecord) => (
-        <Badge variant="outline" className={STATUS_COLORS[r.status] ?? ''}>
-          {r.status.replace('_', ' ')}
-        </Badge>
-      ),
-    },
-    {
-      key: 'total_hours',
-      label: 'Hours',
-      render: (r: AttendanceRecord) => r.total_hours != null ? Number(r.total_hours).toFixed(1) : '—',
-    },
-    {
-      key: 'overtime_hours',
-      label: 'OT',
-      render: (r: AttendanceRecord) => Number(r.overtime_hours) > 0
-        ? <span className="text-orange-600 font-medium">{Number(r.overtime_hours).toFixed(1)}</span>
-        : '—',
-    },
-    {
-      key: 'actions',
-      label: '',
-      className: 'w-20',
-      render: (r: AttendanceRecord) => (
-        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-          <button
-            className="p-1 text-neutral-400 hover:text-neutral-700"
-            onClick={() => { setEditRecord(r); setDialogOpen(true) }}
-          >
-            <Pencil className="h-3.5 w-3.5" />
-          </button>
-          <button
-            className="p-1 text-neutral-400 hover:text-red-600"
-            onClick={async () => {
-              if (window.confirm('Delete this attendance record?')) {
-                await deleteRecord.mutateAsync(r.id)
-                toast({ title: 'Attendance record deleted', variant: 'success' })
-              }
-            }}
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </button>
-        </div>
-      ),
-    },
+    { key: 'actions', label: '', className: 'w-20', render: (r) => (
+      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
+        <button className="p-1 text-neutral-400 hover:text-neutral-700" onClick={() => { setEditRecord(r); setDialogOpen(true) }}>
+          <Pencil className="h-3.5 w-3.5" />
+        </button>
+        <button className="p-1 text-neutral-400 hover:text-red-600" onClick={async () => {
+          if (window.confirm('Delete this attendance record?')) {
+            await deleteRecord.mutateAsync(r.id)
+            toast({ title: 'Attendance record deleted', variant: 'success' })
+          }
+        }}>
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
+      </div>
+    )},
   ]
 
   return (
     <div className="flex flex-col h-full">
-      <HrmPageHeader
+      <PageHeader
         title="Attendance"
         description="Track daily employee attendance records"
-        searchValue=""
-        onSearchChange={() => {}}
         onCreateClick={() => { setEditRecord(null); setDialogOpen(true) }}
         createLabel="New Record"
       >
@@ -132,10 +95,7 @@ export default function AttendanceListPage() {
           value={period}
           onChange={(e) => { setPeriod(e.target.value); setPage(1) }}
         />
-        <Select
-          value={showSummary ? 'summary' : 'list'}
-          onValueChange={(v) => setShowSummary(v === 'summary')}
-        >
+        <Select value={showSummary ? 'summary' : 'list'} onValueChange={(v) => setShowSummary(v === 'summary')}>
           <SelectTrigger className="w-32 h-8">
             <Clock className="h-3.5 w-3.5 mr-1" />
             <SelectValue />
@@ -145,7 +105,7 @@ export default function AttendanceListPage() {
             <SelectItem value="summary">Summary</SelectItem>
           </SelectContent>
         </Select>
-      </HrmPageHeader>
+      </PageHeader>
 
       {showSummary ? (
         <div className="p-4">
@@ -153,13 +113,14 @@ export default function AttendanceListPage() {
         </div>
       ) : (
         <>
-          <HrmDataTable
-            columns={columns}
+          <DataTable
+            columns={toColumnDefs(columns)}
             data={data?.items ?? []}
             keyFn={(r) => r.id}
-            emptyMessage="No attendance records found."
+            isLoading={isLoading}
+            emptyTitle="No attendance records found."
           />
-          <HrmPagination page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
+          <PaginationControls page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
         </>
       )}
 

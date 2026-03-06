@@ -44,7 +44,7 @@ export function InlineTaskInput({ projectId, sectionId, variant = 'card' }: Prop
     if (variant === 'row') {
       return (
         <button
-          className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50 transition-colors border-b border-border"
+          className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors border-b border-border"
           onClick={() => setOpen(true)}
         >
           <Plus className="h-3.5 w-3.5" />
@@ -67,7 +67,7 @@ export function InlineTaskInput({ projectId, sectionId, variant = 'card' }: Prop
 
   if (variant === 'row') {
     return (
-      <div className="flex items-center gap-2 px-4 py-2 border-b border-border bg-white">
+      <div className="flex items-center gap-2 px-4 py-2 border-b border-border bg-background">
         <div className="w-4 flex-shrink-0" />
         <input
           ref={inputRef}
@@ -97,7 +97,7 @@ export function InlineTaskInput({ projectId, sectionId, variant = 'card' }: Prop
 
   // card variant
   return (
-    <div className="rounded-md border border-primary/40 bg-white p-2 shadow-card">
+    <div className="rounded-md border border-primary/40 bg-card p-2 shadow-card">
       <input
         ref={inputRef}
         value={title}

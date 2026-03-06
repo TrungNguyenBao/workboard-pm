@@ -10,7 +10,8 @@ interface Props {
   onUpdate: (fields: Record<string, unknown>) => void
 }
 
-export function CustomFieldsSection({ projectId, taskId: _taskId, customFields, onUpdate }: Props) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function CustomFieldsSection({ projectId, taskId: _taskId, customFields, onUpdate }: Props) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const { t } = useTranslation('pms')
   const { data: definitions = [], isLoading } = useCustomFields(projectId)
   const values = customFields ?? {}

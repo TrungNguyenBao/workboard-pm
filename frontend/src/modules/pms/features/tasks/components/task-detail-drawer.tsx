@@ -201,7 +201,7 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
                     const val = e.currentTarget.textContent?.trim()
                     if (val && val !== task.title) updateTask.mutate({ title: val })
                   }}
-                  className="text-base font-semibold text-neutral-900 outline-none flex-1 cursor-text"
+                  className="text-base font-semibold text-foreground outline-none flex-1 cursor-text"
                 >
                   {task.title}
                 </SheetTitle>
@@ -226,7 +226,7 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
                     value={task.priority}
                     onValueChange={(v) => updateTask.mutate({ priority: v })}
                   >
-                    <SelectTrigger className="h-7 w-28 text-xs border-0 bg-neutral-100 hover:bg-neutral-200">
+                    <SelectTrigger className="h-7 w-28 text-xs border-0 bg-muted hover:bg-muted/80">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -247,7 +247,7 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
                         updateTask.mutate({ assignee_id: v === 'none' ? null : v })
                       }
                     >
-                      <SelectTrigger className="h-7 w-36 text-xs border-0 bg-neutral-100 hover:bg-neutral-200">
+                      <SelectTrigger className="h-7 w-36 text-xs border-0 bg-muted hover:bg-muted/80">
                         <SelectValue placeholder={t('task.assignee')} />
                       </SelectTrigger>
                       <SelectContent>
@@ -271,10 +271,10 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
                       updateTask.mutate({ due_date: e.target.value ? new Date(e.target.value).toISOString() : undefined })
                     }
                     className={cn(
-                      'text-xs bg-neutral-100 rounded px-2 py-1 border-0 outline-none',
+                      'text-xs bg-muted rounded px-2 py-1 border-0 outline-none',
                       task.due_date && new Date(task.due_date) < new Date() && task.status !== 'completed'
                         ? 'text-red-500 font-medium'
-                        : 'text-neutral-700',
+                        : 'text-foreground',
                     )}
                   />
                 </MetaRow>
@@ -291,7 +291,7 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
 
               {/* Description */}
               <div className="px-6 py-4 border-b border-border">
-                <p className="text-xs font-medium text-neutral-500 mb-2">{t('task.description')}</p>
+                <p className="text-xs font-medium text-muted-foreground mb-2">{t('task.description')}</p>
                 <div
                   contentEditable
                   suppressContentEditableWarning
@@ -308,7 +308,7 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
               {/* Tags */}
               {workspaceTags.length > 0 && (
                 <div className="px-6 py-4 border-b border-border">
-                  <p className="text-xs font-medium text-neutral-500 mb-2">Tags</p>
+                  <p className="text-xs font-medium text-muted-foreground mb-2">Tags</p>
                   <div className="flex flex-wrap gap-1.5">
                     {workspaceTags.map((tag) => {
                       const active = taskTags.some((t) => t.id === tag.id)
@@ -341,7 +341,7 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
               {/* Attachments */}
               <div className="px-6 py-4 border-b border-border">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs font-medium text-neutral-500">
+                  <p className="text-xs font-medium text-muted-foreground">
                     <Paperclip className="h-3.5 w-3.5 inline mr-1" />
                     Attachments {attachments.length > 0 && `(${attachments.length})`}
                   </p>
@@ -389,7 +389,7 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
 
               {/* Subtasks */}
               <div className="px-6 py-4 border-b border-border">
-                <p className="text-xs font-medium text-neutral-500 mb-2">
+                <p className="text-xs font-medium text-muted-foreground mb-2">
                   Subtasks {subtasks.length > 0 && `(${subtasks.length})`}
                 </p>
                 <div className="space-y-1 mb-2">
@@ -410,7 +410,7 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
                       if (e.key === 'Escape') setNewSubtask('')
                     }}
                     placeholder="Add subtask…"
-                    className="flex-1 text-sm bg-neutral-50 border border-border rounded px-2 py-1 outline-none focus:ring-2 focus:ring-primary/40"
+                    className="flex-1 text-sm bg-muted/50 border border-border rounded px-2 py-1 outline-none focus:ring-2 focus:ring-primary/40"
                   />
                   {newSubtask.trim() && (
                     <button
@@ -425,7 +425,7 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
 
               {/* Activity log */}
               <div className="px-6 py-4 border-b border-border">
-                <p className="text-xs font-medium text-neutral-500 mb-2">
+                <p className="text-xs font-medium text-muted-foreground mb-2">
                   <History className="h-3.5 w-3.5 inline mr-1" />
                   {t('task.activity')}
                 </p>
@@ -434,7 +434,7 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
 
               {/* Comments */}
               <div className="px-6 py-4">
-                <p className="text-xs font-medium text-neutral-500 mb-3">
+                <p className="text-xs font-medium text-muted-foreground mb-3">
                   <MessageSquare className="h-3.5 w-3.5 inline mr-1" />
                   {t('task.activity')} ({comments.length})
                 </p>
@@ -448,10 +448,10 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
                       </Avatar>
                       <div className="flex-1">
                         <div className="flex items-baseline gap-1.5 mb-0.5">
-                          <span className="text-xs font-medium text-neutral-700">{c.author_name}</span>
-                          <span className="text-xs text-neutral-400">{formatRelativeTime(c.created_at)}</span>
+                          <span className="text-xs font-medium text-foreground">{c.author_name}</span>
+                          <span className="text-xs text-muted-foreground">{formatRelativeTime(c.created_at)}</span>
                         </div>
-                        <p className="text-sm text-neutral-800">{c.body_text ?? c.body}</p>
+                        <p className="text-sm text-foreground">{c.body_text ?? c.body}</p>
                       </div>
                       <button
                         onClick={() => deleteComment.mutate(c.id)}
@@ -474,7 +474,7 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
                       onChange={(e) => setNewComment(e.target.value)}
                       placeholder="Leave a comment…"
                       rows={2}
-                      className="w-full resize-none rounded-sm border border-border bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/40"
+                      className="w-full resize-none rounded-sm border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/40"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey) {
                           e.preventDefault()

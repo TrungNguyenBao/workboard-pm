@@ -58,11 +58,11 @@ export function KeyboardShortcutsDialog({ open, onClose }: ShortcutsDialogProps)
               <div className="space-y-1.5">
                 {items.map(({ keys, label }) => (
                   <div key={label} className="flex items-center justify-between">
-                    <span className="text-sm text-neutral-700">{label}</span>
+                    <span className="text-sm text-foreground">{label}</span>
                     <div className="flex items-center gap-1">
                       {keys.map((k, i) => (
                         <span key={i} className="flex items-center gap-1">
-                          <kbd className="rounded border border-border bg-neutral-100 px-1.5 py-0.5 text-xs font-mono text-neutral-600 shadow-sm">
+                          <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 text-xs font-mono text-muted-foreground shadow-sm">
                             {k}
                           </kbd>
                           {i < keys.length - 1 && <span className="text-xs text-neutral-400">+</span>}

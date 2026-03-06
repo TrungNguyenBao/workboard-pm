@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Plus } from 'lucide-react'
+import { Plus, Target } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
+import { EmptyState } from '@/shared/components/ui/empty-state'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import { useGoals } from '../hooks/use-goals'
 import { GoalCard } from '../components/goal-card'
@@ -32,13 +33,16 @@ export default function GoalsListPage() {
     ? goals
     : goals.filter((g) => g.status === statusFilter)
 
+  const emptyMessage = statusFilter !== 'all'
+    ? t('goal.noGoalsFiltered', { status: STATUS_OPTIONS.find((o) => o.value === statusFilter)?.label })
+    : t('goal.noGoals')
+
   return (
     <div className="flex flex-col h-full">
-      {/* Header */}
       <div className="flex items-center justify-between px-8 py-5 border-b border-border">
         <div>
-          <h1 className="text-xl font-semibold text-neutral-900">{t('goal.title')}</h1>
-          <p className="text-sm text-neutral-500 mt-0.5">{t('goal.description')}</p>
+          <h1 className="text-xl font-semibold text-foreground">{t('goal.title')}</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">{t('goal.description')}</p>
         </div>
         <div className="flex items-center gap-3">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -58,59 +62,31 @@ export default function GoalsListPage() {
         </div>
       </div>
 
-      {/* Content */}
       <div className="flex-1 overflow-y-auto px-8 py-6">
         {!workspaceId ? (
-          <EmptyState message={t('goal.noWorkspace')} />
+          <EmptyState icon={<Target className="h-10 w-10" />} title={t('goal.noWorkspace')} />
         ) : isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-36 rounded-md border border-border bg-neutral-50 animate-pulse" />
+              <div key={i} className="h-36 rounded-md border border-border bg-muted animate-pulse" />
             ))}
           </div>
         ) : filtered.length === 0 ? (
           <EmptyState
-            message={
-              statusFilter !== 'all'
-                ? t('goal.noGoalsFiltered', { status: STATUS_OPTIONS.find((o) => o.value === statusFilter)?.label })
-                : t('goal.noGoals')
-            }
+            icon={<Target className="h-10 w-10" />}
+            title={emptyMessage}
           />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
             {filtered.map((goal) => (
-              <GoalCard
-                key={goal.id}
-                goal={goal}
-                onClick={() => setSelectedGoal(goal)}
-              />
+              <GoalCard key={goal.id} goal={goal} onClick={() => setSelectedGoal(goal)} />
             ))}
           </div>
         )}
       </div>
 
-      <CreateGoalDialog
-        open={createOpen}
-        onOpenChange={setCreateOpen}
-        workspaceId={workspaceId}
-      />
-
-      <GoalDetailDrawer
-        goal={selectedGoal}
-        workspaceId={workspaceId}
-        onClose={() => setSelectedGoal(null)}
-      />
-    </div>
-  )
-}
-
-function EmptyState({ message }: { message: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center py-20 text-center">
-      <div className="h-12 w-12 rounded-full bg-neutral-100 flex items-center justify-center mb-4">
-        <Plus className="h-6 w-6 text-neutral-400" />
-      </div>
-      <p className="text-sm text-neutral-500 max-w-xs">{message}</p>
+      <CreateGoalDialog open={createOpen} onOpenChange={setCreateOpen} workspaceId={workspaceId} />
+      <GoalDetailDrawer goal={selectedGoal} workspaceId={workspaceId} onClose={() => setSelectedGoal(null)} />
     </div>
   )
 }

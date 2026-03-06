@@ -82,7 +82,7 @@ export function NotificationBell() {
           >
             <div className="flex items-start gap-2 w-full">
               {!n.is_read && <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />}
-              <span className={`text-sm leading-tight flex-1 ${n.is_read ? 'text-neutral-500' : 'text-neutral-900 font-medium'}`}>
+              <span className={`text-sm leading-tight flex-1 ${n.is_read ? 'text-muted-foreground' : 'text-foreground font-medium'}`}>
                 {n.title}
               </span>
             </div>

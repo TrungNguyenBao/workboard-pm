@@ -54,10 +54,10 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <h1 className="text-xl font-semibold text-foreground mb-1">{t('auth.welcomeBack')}</h1>
-      <p className="text-sm text-muted-foreground mb-6">{t('auth.signInDescription')}</p>
+      <h1 className="text-xl font-semibold text-foreground mb-1 animate-slide-up-fade">{t('auth.welcomeBack')}</h1>
+      <p className="text-sm text-muted-foreground mb-6 animate-slide-up-fade delay-100">{t('auth.signInDescription')}</p>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 animate-slide-up-fade delay-200">
         <div className="space-y-1.5">
           <Label htmlFor="email">{t('auth.email')}</Label>
           <Input id="email" type="email" autoComplete="email" placeholder={t('auth.emailPlaceholder')} {...register('email')} />
@@ -99,7 +99,7 @@ export default function LoginPage() {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-muted-foreground">
+      <p className="mt-6 text-center text-sm text-muted-foreground animate-slide-up-fade delay-300">
         {t('auth.dontHaveAccount')}{' '}
         <Link to="/register" className="text-primary font-medium hover:underline">
           {t('auth.signUp')}

@@ -6,9 +6,10 @@ import { Badge } from '@/shared/components/ui/badge'
 import { Button } from '@/shared/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { toast } from '@/shared/components/ui/toast'
-import { HrmDataTable } from '../../shared/components/hrm-data-table'
-import { HrmPageHeader } from '../../shared/components/hrm-page-header'
-import { HrmPagination } from '../../shared/components/hrm-pagination'
+import { DataTable } from '@/shared/components/ui/data-table'
+import { toColumnDefs, type SimpleColumn } from '@/shared/components/ui/data-table-types'
+import { PageHeader } from '@/shared/components/ui/page-header'
+import { PaginationControls } from '@/shared/components/ui/pagination-controls'
 import { LeaveRequestFormDialog } from '../components/leave-request-form-dialog'
 import { LeaveTypeFormDialog } from '../components/leave-type-form-dialog'
 import {
@@ -40,7 +41,7 @@ export default function LeaveRequestsListPage() {
   const [editType, setEditType] = useState<LeaveType | null>(null)
 
   const { data: typesData } = useLeaveTypes(workspaceId)
-  const { data } = useLeaveRequests(workspaceId, {
+  const { data, isLoading } = useLeaveRequests(workspaceId, {
     status: statusFilter === 'all' ? undefined : statusFilter,
     page,
     page_size: PAGE_SIZE,
@@ -51,17 +52,17 @@ export default function LeaveRequestsListPage() {
   const deleteRequest = useDeleteLeaveRequest(workspaceId)
   const deleteType = useDeleteLeaveType(workspaceId)
 
-  const typeMap = new Map((typesData?.items ?? []).map((t) => [t.id, t.name]))
+  const typeMap = new Map((typesData?.items ?? []).map((lt) => [lt.id, lt.name]))
 
-  const columns = [
-    { key: 'leave_type', label: 'Type', render: (r: LeaveRequest) => typeMap.get(r.leave_type_id) ?? '-' },
-    { key: 'start_date', label: 'Start', render: (r: LeaveRequest) => r.start_date },
-    { key: 'end_date', label: 'End', render: (r: LeaveRequest) => r.end_date },
-    { key: 'days', label: 'Days', className: 'w-16', render: (r: LeaveRequest) => r.days },
+  const columns: SimpleColumn<LeaveRequest>[] = [
+    { key: 'leave_type', label: 'Type', render: (r) => typeMap.get(r.leave_type_id) ?? '-' },
+    { key: 'start_date', label: 'Start', render: (r) => r.start_date },
+    { key: 'end_date', label: 'End', render: (r) => r.end_date },
+    { key: 'days', label: 'Days', className: 'w-16', render: (r) => r.days },
     {
       key: 'status',
       label: t('common:common.status'),
-      render: (r: LeaveRequest) => (
+      render: (r) => (
         <Badge variant="outline" className={STATUS_COLORS[r.status] ?? ''}>
           {r.status}
         </Badge>
@@ -71,8 +72,8 @@ export default function LeaveRequestsListPage() {
       key: 'actions',
       label: '',
       className: 'w-28',
-      render: (r: LeaveRequest) => (
-        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+      render: (r) => (
+        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
           {r.status === 'pending' && (
             <>
               <button
@@ -115,11 +116,9 @@ export default function LeaveRequestsListPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <HrmPageHeader
+      <PageHeader
         title={t('leave.title')}
         description={t('leave.description')}
-        searchValue=""
-        onSearchChange={() => {}}
         onCreateClick={() => setRequestDialogOpen(true)}
         createLabel={t('leave.new')}
       >
@@ -135,13 +134,12 @@ export default function LeaveRequestsListPage() {
         <Button variant="outline" size="sm" onClick={() => { setEditType(null); setTypeDialogOpen(true) }}>
           Manage types
         </Button>
-      </HrmPageHeader>
+      </PageHeader>
 
-      {/* Leave types chips */}
       {(typesData?.items ?? []).length > 0 && (
-        <div className="flex flex-wrap gap-2 px-6 py-2 border-b border-border bg-neutral-50/50">
+        <div className="flex flex-wrap gap-2 px-6 py-2 border-b border-border bg-muted/30">
           {(typesData?.items ?? []).map((lt) => (
-            <div key={lt.id} className="flex items-center gap-1 text-xs bg-white border border-border rounded px-2 py-1">
+            <div key={lt.id} className="flex items-center gap-1 text-xs bg-card border border-border rounded px-2 py-1">
               <span>{lt.name} ({lt.days_per_year}d/yr)</span>
               <button className="text-neutral-400 hover:text-neutral-700" onClick={() => { setEditType(lt); setTypeDialogOpen(true) }}>
                 <Pencil className="h-3 w-3" />
@@ -162,13 +160,14 @@ export default function LeaveRequestsListPage() {
         </div>
       )}
 
-      <HrmDataTable
-        columns={columns}
+      <DataTable
+        columns={toColumnDefs(columns)}
         data={data?.items ?? []}
         keyFn={(r) => r.id}
-        emptyMessage={t('leave.empty')}
+        isLoading={isLoading}
+        emptyTitle={t('leave.empty')}
       />
-      <HrmPagination page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
+      <PaginationControls page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
 
       <LeaveRequestFormDialog open={requestDialogOpen} onOpenChange={setRequestDialogOpen} workspaceId={workspaceId} />
       <LeaveTypeFormDialog open={typeDialogOpen} onOpenChange={setTypeDialogOpen} workspaceId={workspaceId} leaveType={editType} />

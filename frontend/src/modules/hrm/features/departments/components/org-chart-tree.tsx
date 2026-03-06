@@ -16,7 +16,7 @@ function OrgChartNode({ node, depth }: NodeProps) {
     <div>
       <div
         className={cn(
-          'flex items-center gap-2 rounded-sm px-2 py-2 hover:bg-neutral-50 transition-colors',
+          'flex items-center gap-2 rounded-sm px-2 py-2 hover:bg-muted/50 transition-colors',
         )}
         style={{ paddingLeft: `${depth * 20 + 8}px` }}
       >
@@ -34,7 +34,7 @@ function OrgChartNode({ node, depth }: NodeProps) {
 
         <div className="flex flex-1 min-w-0 items-center gap-3">
           <div className="min-w-0">
-            <p className="text-sm font-medium text-neutral-900 truncate">{node.name}</p>
+            <p className="text-sm font-medium text-foreground truncate">{node.name}</p>
             {node.manager_name && (
               <p className="text-xs text-neutral-500 truncate">Manager: {node.manager_name}</p>
             )}

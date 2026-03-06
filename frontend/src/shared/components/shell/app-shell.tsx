@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import { Sidebar } from './sidebar'
+import { Header } from './header'
 import { KeyboardShortcutsDialog } from './keyboard-shortcuts-dialog'
-import { ModuleSwitcher } from './module-switcher'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import { useSSE } from '@/features/notifications/hooks/use-sse'
 import api from '@/shared/lib/api'
@@ -19,7 +19,6 @@ function WorkspaceBootstrapper({ children }: { children: React.ReactNode }) {
       try {
         let { data: workspaces } = await api.get<Workspace[]>('/workspaces')
 
-        // First-time user: seed a demo workspace automatically
         if (workspaces.length === 0) {
           const { data: demo } = await api.post<Workspace>('/workspaces/setup-demo')
           workspaces = [demo]
@@ -70,12 +69,10 @@ export function AppShell() {
   return (
     <WorkspaceBootstrapper>
       <SSEMount />
-      <div className="flex h-screen overflow-hidden bg-white">
+      <div className="flex h-screen overflow-hidden bg-background">
         <Sidebar />
-        <div className="flex flex-1 flex-col overflow-hidden">
-          <div className="flex items-center border-b border-border px-4 py-2">
-            <ModuleSwitcher />
-          </div>
+        <div className="flex flex-1 flex-col overflow-hidden min-w-0">
+          <Header />
           <main className="flex-1 overflow-y-auto">
             <Outlet />
           </main>

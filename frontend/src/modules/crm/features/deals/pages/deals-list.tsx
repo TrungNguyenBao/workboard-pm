@@ -5,16 +5,16 @@ import { useWorkspaceStore } from '@/stores/workspace.store'
 import { Badge } from '@/shared/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { toast } from '@/shared/components/ui/toast'
-import { CrmDataTable } from '../../shared/components/crm-data-table'
-import { CrmPageHeader } from '../../shared/components/crm-page-header'
-import { CrmPagination } from '../../shared/components/crm-pagination'
+import { DataTable } from '@/shared/components/ui/data-table'
+import { toColumnDefs, type SimpleColumn } from '@/shared/components/ui/data-table-types'
+import { PageHeader } from '@/shared/components/ui/page-header'
+import { PaginationControls } from '@/shared/components/ui/pagination-controls'
 import { DealFormDialog } from '../components/deal-form-dialog'
 import { type Deal, DEAL_STAGES, useDeals, useDeleteDeal } from '../hooks/use-deals'
 import { useContacts } from '../../contacts/hooks/use-contacts'
 
 const PAGE_SIZE = 20
 
-// Stage badge variant: closed_won gets default (primary), rest get secondary
 const STAGE_VARIANT: Record<string, 'default' | 'secondary'> = {
   closed_won: 'default',
 }
@@ -32,7 +32,7 @@ export default function DealsListPage() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editDeal, setEditDeal] = useState<Deal | null>(null)
 
-  const { data } = useDeals(workspaceId, {
+  const { data, isLoading } = useDeals(workspaceId, {
     search: search || undefined,
     stage: stage === 'all' ? undefined : stage,
     page,
@@ -41,29 +41,31 @@ export default function DealsListPage() {
   const { data: contactsData } = useContacts(workspaceId, { page_size: 100 })
   const deleteDeal = useDeleteDeal(workspaceId)
 
-  // Build contact id → name lookup map
   const contactMap = useMemo(() => {
     const map = new Map<string, string>()
     for (const c of contactsData?.items ?? []) map.set(c.id, c.name)
     return map
   }, [contactsData])
 
-  const columns = [
-    { key: 'title', label: t('deals.titleLabel'), render: (d: Deal) => <span className="font-medium">{d.title}</span> },
-    { key: 'value', label: t('deals.value'), render: (d: Deal) => formatCurrency(d.value) },
+  const columns: SimpleColumn<Deal>[] = [
+    { key: 'title', label: t('deals.titleLabel'), render: (d) => <span className="font-medium">{d.title}</span> },
+    { key: 'value', label: t('deals.value'), render: (d) => formatCurrency(d.value) },
     {
-      key: 'stage', label: t('deals.stage'),
-      render: (d: Deal) => (
+      key: 'stage',
+      label: t('deals.stage'),
+      render: (d) => (
         <Badge variant={STAGE_VARIANT[d.stage] ?? 'secondary'}>
           {DEAL_STAGES.find((s) => s.value === d.stage)?.label ?? d.stage}
         </Badge>
       ),
     },
-    { key: 'contact', label: t('deals.contact'), render: (d: Deal) => (d.contact_id ? contactMap.get(d.contact_id) ?? '-' : '-') },
+    { key: 'contact', label: t('deals.contact'), render: (d) => (d.contact_id ? contactMap.get(d.contact_id) ?? '-' : '-') },
     {
-      key: 'actions', label: '', className: 'w-20',
-      render: (d: Deal) => (
-        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+      key: 'actions',
+      label: '',
+      className: 'w-20',
+      render: (d) => (
+        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
           <button className="p-1 text-neutral-400 hover:text-neutral-700" onClick={() => { setEditDeal(d); setDialogOpen(true) }}>
             <Pencil className="h-3.5 w-3.5" />
           </button>
@@ -82,7 +84,7 @@ export default function DealsListPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <CrmPageHeader
+      <PageHeader
         title={t('deals.title')}
         description={t('deals.description')}
         searchValue={search}
@@ -99,9 +101,15 @@ export default function DealsListPage() {
             ))}
           </SelectContent>
         </Select>
-      </CrmPageHeader>
-      <CrmDataTable columns={columns} data={data?.items ?? []} keyFn={(d) => d.id} emptyMessage={t('deals.empty')} />
-      <CrmPagination page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
+      </PageHeader>
+      <DataTable
+        columns={toColumnDefs(columns)}
+        data={data?.items ?? []}
+        keyFn={(d) => d.id}
+        isLoading={isLoading}
+        emptyTitle={t('deals.empty')}
+      />
+      <PaginationControls page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
       <DealFormDialog open={dialogOpen} onOpenChange={setDialogOpen} workspaceId={workspaceId} deal={editDeal} />
     </div>
   )

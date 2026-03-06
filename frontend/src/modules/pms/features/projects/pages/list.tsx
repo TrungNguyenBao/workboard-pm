@@ -39,7 +39,7 @@ function TaskRow({ task, projectId, onOpen }: { task: Task; projectId: string; o
 
   return (
     <div
-      className={cn('flex items-center gap-3 px-4 py-2.5 border-b border-border hover:bg-neutral-50 group cursor-pointer', task.status === 'completed' && 'opacity-60')}
+      className={cn('flex items-center gap-3 px-4 py-2.5 border-b border-border hover:bg-muted/50 group cursor-pointer', task.status === 'completed' && 'opacity-60')}
       onClick={() => onOpen(task)}
     >
       <button
@@ -52,7 +52,7 @@ function TaskRow({ task, projectId, onOpen }: { task: Task; projectId: string; o
           <Circle className="h-4 w-4" />
         )}
       </button>
-      <span className={cn('flex-1 text-sm text-neutral-900 flex items-center gap-1', task.status === 'completed' && 'line-through')}>
+      <span className={cn('flex-1 text-sm text-foreground flex items-center gap-1', task.status === 'completed' && 'line-through')}>
         {task.title}
         {task.recurrence_rule && (
           <span className="text-neutral-400 flex-shrink-0" title={`Repeats ${task.recurrence_rule}`}>
@@ -115,11 +115,11 @@ function SectionGroup({ section, tasks, projectId, onOpenTask, filterPriority, f
   return (
     <div>
       <button
-        className="flex w-full items-center gap-2 px-4 py-2 bg-neutral-50 border-b border-border hover:bg-neutral-100 transition-colors"
+        className="flex w-full items-center gap-2 px-4 py-2 bg-muted/30 border-b border-border hover:bg-muted/60 transition-colors"
         onClick={() => setCollapsed((v) => !v)}
       >
         <ChevronRight className={cn('h-3.5 w-3.5 text-neutral-400 transition-transform', !collapsed && 'rotate-90')} />
-        <span className="text-sm font-medium text-neutral-700">{section.name}</span>
+        <span className="text-sm font-medium text-foreground">{section.name}</span>
         <span className="text-xs text-neutral-400">{sectionTasks.length}</span>
       </button>
       {!collapsed && (
@@ -166,7 +166,7 @@ export default function ListPage() {
           onStatus={setFilterStatus}
         />
         <div className="flex-1 overflow-y-auto">
-          <div className="flex items-center gap-3 px-4 py-2 border-b border-border bg-neutral-50 text-xs font-medium text-neutral-500 uppercase tracking-wide">
+          <div className="flex items-center gap-3 px-4 py-2 border-b border-border bg-muted/30 text-xs font-medium text-muted-foreground uppercase tracking-wide">
             <span className="w-4" />
             <span className="flex-1">Task</span>
             <div className="relative flex items-center">

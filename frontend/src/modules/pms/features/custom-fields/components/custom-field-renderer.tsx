@@ -10,7 +10,7 @@ interface Props {
 }
 
 function inputClass(extra = '') {
-  return `text-sm bg-neutral-50 border border-border rounded px-2 py-1 outline-none focus:ring-2 focus:ring-primary/40 w-full ${extra}`
+  return `text-sm bg-muted/50 border border-border rounded px-2 py-1 outline-none focus:ring-2 focus:ring-primary/40 w-full text-foreground ${extra}`
 }
 
 function TextRenderer({ value, onChange }: { value: unknown; onChange: (v: unknown) => void }) {
@@ -129,7 +129,7 @@ export function CustomFieldRenderer({ definition, value, onChange }: Props) {
     const opts = options ?? []
     return (
       <Select value={String(value ?? '')} onValueChange={(v) => onChange(v || null)}>
-        <SelectTrigger className="h-7 text-xs w-40 border-0 bg-neutral-100 hover:bg-neutral-200">
+        <SelectTrigger className="h-7 text-xs w-40 border-0 bg-muted hover:bg-muted/80">
           <SelectValue placeholder="Select…" />
         </SelectTrigger>
         <SelectContent>

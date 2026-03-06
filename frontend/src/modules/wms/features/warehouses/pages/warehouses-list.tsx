@@ -2,13 +2,16 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import { Badge } from '@/shared/components/ui/badge'
-import { WmsDataTable } from '../../shared/components/wms-data-table'
-import { WmsPageHeader } from '../../shared/components/wms-page-header'
-import { WmsPagination } from '../../shared/components/wms-pagination'
+import { DataTable } from '@/shared/components/ui/data-table'
+import { toColumnDefs, type SimpleColumn } from '@/shared/components/ui/data-table-types'
+import { PageHeader } from '@/shared/components/ui/page-header'
+import { PaginationControls } from '@/shared/components/ui/pagination-controls'
 import { WarehouseFormDialog } from '../components/warehouse-form-dialog'
 import { type Warehouse, useDeleteWarehouse, useWarehouses } from '../hooks/use-warehouses'
 import { toast } from '@/shared/components/ui/toast'
 import { Pencil, Trash2 } from 'lucide-react'
+
+const PAGE_SIZE = 20
 
 export default function WarehousesListPage() {
   const { t } = useTranslation('wms')
@@ -18,18 +21,18 @@ export default function WarehousesListPage() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editWarehouse, setEditWarehouse] = useState<Warehouse | null>(null)
 
-  const { data } = useWarehouses(workspaceId, { search: search || undefined, page })
+  const { data, isLoading } = useWarehouses(workspaceId, { search: search || undefined, page })
   const deleteWarehouse = useDeleteWarehouse(workspaceId)
 
-  const columns = [
-    { key: 'name', label: t('common:common.name'), render: (w: Warehouse) => <span className="font-medium">{w.name}</span> },
-    { key: 'location', label: 'Location', render: (w: Warehouse) => w.location ?? '—' },
-    { key: 'manager', label: 'Manager', render: (w: Warehouse) => w.manager_name ?? '—' },
-    { key: 'address', label: 'Address', render: (w: Warehouse) => w.address ?? '—' },
-    { key: 'status', label: t('common:common.status'), render: (w: Warehouse) => (
+  const columns: SimpleColumn<Warehouse>[] = [
+    { key: 'name', label: t('common:common.name'), render: (w) => <span className="font-medium">{w.name}</span> },
+    { key: 'location', label: 'Location', render: (w) => w.location ?? '—' },
+    { key: 'manager', label: 'Manager', render: (w) => w.manager_name ?? '—' },
+    { key: 'address', label: 'Address', render: (w) => w.address ?? '—' },
+    { key: 'status', label: t('common:common.status'), render: (w) => (
       <Badge variant={w.is_active ? 'default' : 'secondary'}>{w.is_active ? t('common:common.active') : t('common:common.inactive')}</Badge>
     )},
-    { key: 'actions', label: '', className: 'w-20', render: (w: Warehouse) => (
+    { key: 'actions', label: '', className: 'w-20', render: (w) => (
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
         <button className="p-1 text-neutral-400 hover:text-neutral-700" onClick={() => { setEditWarehouse(w); setDialogOpen(true) }}>
           <Pencil className="h-3.5 w-3.5" />
@@ -48,7 +51,7 @@ export default function WarehousesListPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <WmsPageHeader
+      <PageHeader
         title={t('warehouses.title')}
         description={t('warehouses.description')}
         searchValue={search}
@@ -57,8 +60,14 @@ export default function WarehousesListPage() {
         createLabel={t('warehouses.new')}
       />
 
-      <WmsDataTable columns={columns} data={data?.items ?? []} keyFn={(w) => w.id} emptyMessage={t('warehouses.empty')} />
-      <WmsPagination page={page} pageSize={20} total={data?.total ?? 0} onPageChange={setPage} />
+      <DataTable
+        columns={toColumnDefs(columns)}
+        data={data?.items ?? []}
+        keyFn={(w) => w.id}
+        isLoading={isLoading}
+        emptyTitle={t('warehouses.empty')}
+      />
+      <PaginationControls page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
 
       <WarehouseFormDialog
         open={dialogOpen}

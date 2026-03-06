@@ -98,7 +98,7 @@ export function CommandPalette({ open, onOpenChange }: Props) {
                     key={task.id}
                     value={task.title}
                     onSelect={() => select(() => navigate(`/pms/projects/${task.project_id}/board`))}
-                    className="flex items-center gap-2 px-2 py-1.5 rounded-xs text-sm text-neutral-700 cursor-pointer aria-selected:bg-neutral-100"
+                    className="flex items-center gap-2 px-2 py-1.5 rounded-xs text-sm text-foreground cursor-pointer aria-selected:bg-muted"
                   >
                     <CheckSquare className={`h-3.5 w-3.5 flex-shrink-0 ${task.status === 'completed' ? 'text-primary' : 'text-neutral-300'}`} />
                     <span className="flex-1 truncate">{task.title}</span>
@@ -117,7 +117,7 @@ export function CommandPalette({ open, onOpenChange }: Props) {
                       key={p.id}
                       value={p.name}
                       onSelect={() => select(() => navigate(`/pms/projects/${p.id}/board`))}
-                      className="flex items-center gap-2 px-2 py-1.5 rounded-xs text-sm text-neutral-700 cursor-pointer aria-selected:bg-neutral-100"
+                      className="flex items-center gap-2 px-2 py-1.5 rounded-xs text-sm text-foreground cursor-pointer aria-selected:bg-muted"
                     >
                       <span className="h-2 w-2 rounded-full flex-shrink-0" style={{ backgroundColor: p.color }} />
                       {p.name}
@@ -136,7 +136,7 @@ export function CommandPalette({ open, onOpenChange }: Props) {
                     key={n.path}
                     value={n.label}
                     onSelect={() => select(() => navigate(n.path))}
-                    className="flex items-center gap-2 px-2 py-1.5 rounded-xs text-sm text-neutral-700 cursor-pointer aria-selected:bg-neutral-100"
+                    className="flex items-center gap-2 px-2 py-1.5 rounded-xs text-sm text-foreground cursor-pointer aria-selected:bg-muted"
                   >
                     <CheckSquare className="h-4 w-4 text-neutral-400" />
                     {n.label}

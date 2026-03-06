@@ -62,7 +62,7 @@ export function GoalDetailDrawer({ goal, workspaceId, onClose }: Props) {
                     const val = e.currentTarget.textContent?.trim()
                     if (val && val !== goal.title) patch({ title: val })
                   }}
-                  className="text-base font-semibold text-neutral-900 outline-none flex-1 cursor-text"
+                  className="text-base font-semibold text-foreground outline-none flex-1 cursor-text"
                 >
                   {goal.title}
                 </SheetTitle>
@@ -81,7 +81,7 @@ export function GoalDetailDrawer({ goal, workspaceId, onClose }: Props) {
               <div className="px-6 py-4 space-y-3 border-b border-border">
                 <MetaRow label={t('common:common.status')}>
                   <Select value={goal.status} onValueChange={(v) => patch({ status: v })}>
-                    <SelectTrigger className="h-7 w-32 text-xs border-0 bg-neutral-100 hover:bg-neutral-200">
+                    <SelectTrigger className="h-7 w-32 text-xs border-0 bg-muted hover:bg-muted/80">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -96,7 +96,7 @@ export function GoalDetailDrawer({ goal, workspaceId, onClose }: Props) {
 
                 <MetaRow label="Owner">
                   <Select value={goal.owner_id} onValueChange={(v) => patch({ owner_id: v })}>
-                    <SelectTrigger className="h-7 w-36 text-xs border-0 bg-neutral-100 hover:bg-neutral-200">
+                    <SelectTrigger className="h-7 w-36 text-xs border-0 bg-muted hover:bg-muted/80">
                       <SelectValue placeholder="Select owner" />
                     </SelectTrigger>
                     <SelectContent>
@@ -112,7 +112,7 @@ export function GoalDetailDrawer({ goal, workspaceId, onClose }: Props) {
                     type="date"
                     defaultValue={goal.due_date ? goal.due_date.slice(0, 10) : ''}
                     onChange={(e) => patch({ due_date: e.target.value ? new Date(e.target.value).toISOString() : null })}
-                    className="text-xs bg-neutral-100 rounded px-2 py-1 border-0 outline-none"
+                    className="text-xs bg-muted rounded px-2 py-1 border-0 outline-none text-foreground"
                   />
                 </MetaRow>
 
@@ -135,7 +135,7 @@ export function GoalDetailDrawer({ goal, workspaceId, onClose }: Props) {
 
                 <MetaRow label="Progress">
                   <div className="flex items-center gap-2 flex-1">
-                    <div className="flex-1 h-1.5 rounded-full bg-neutral-100">
+                    <div className="flex-1 h-1.5 rounded-full bg-muted">
                       <div
                         className="h-1.5 rounded-full transition-all"
                         style={{ width: `${Math.min(100, goal.progress_value)}%`, backgroundColor: progressColor }}
@@ -149,7 +149,7 @@ export function GoalDetailDrawer({ goal, workspaceId, onClose }: Props) {
                           const v = parseFloat(e.target.value)
                           if (!isNaN(v)) patch({ progress_value: Math.min(100, Math.max(0, v)) })
                         }}
-                        className="w-14 text-xs bg-neutral-100 rounded px-2 py-1 border-0 outline-none text-right"
+                        className="w-14 text-xs bg-muted rounded px-2 py-1 border-0 outline-none text-right text-foreground"
                       />
                     ) : (
                       <span className="text-xs text-neutral-500 w-14 text-right">{Math.round(goal.progress_value)}%</span>

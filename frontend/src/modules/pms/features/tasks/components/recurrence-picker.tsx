@@ -47,7 +47,7 @@ export function RecurrencePicker({ rule, cronExpr, endDate, onChange }: Recurren
   return (
     <div className="flex flex-col gap-2">
       <Select value={currentRule} onValueChange={handleRuleChange}>
-        <SelectTrigger className="h-7 w-36 text-xs border-0 bg-neutral-100 hover:bg-neutral-200">
+        <SelectTrigger className="h-7 w-36 text-xs border-0 bg-muted hover:bg-muted/80">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -65,7 +65,7 @@ export function RecurrencePicker({ rule, cronExpr, endDate, onChange }: Recurren
           value={cronExpr ?? ''}
           onChange={(e) => handleCronChange(e.target.value)}
           placeholder="0 9 * * 1-5"
-          className="text-xs bg-neutral-100 rounded px-2 py-1 border-0 outline-none focus:ring-2 focus:ring-primary/40 w-36 font-mono"
+          className="text-xs bg-muted rounded px-2 py-1 border-0 outline-none focus:ring-2 focus:ring-primary/40 w-36 font-mono text-foreground"
         />
       )}
 
@@ -74,7 +74,7 @@ export function RecurrencePicker({ rule, cronExpr, endDate, onChange }: Recurren
           type="date"
           value={endDate ? endDate.slice(0, 10) : ''}
           onChange={(e) => handleEndDateChange(e.target.value)}
-          className="text-xs bg-neutral-100 rounded px-2 py-1 border-0 outline-none text-neutral-700"
+          className="text-xs bg-muted rounded px-2 py-1 border-0 outline-none text-foreground"
           title="End date (optional)"
         />
       )}

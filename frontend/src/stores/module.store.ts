@@ -12,10 +12,10 @@ interface ModuleInfo {
 }
 
 export const MODULES: ModuleInfo[] = [
-  { id: 'pms', name: 'Projects', description: 'Project Management', icon: 'ClipboardList', path: '/pms' },
-  { id: 'wms', name: 'Warehouse', description: 'Warehouse Management', icon: 'Warehouse', path: '/wms' },
-  { id: 'hrm', name: 'People', description: 'Human Resources', icon: 'Users', path: '/hrm' },
-  { id: 'crm', name: 'Sales', description: 'Customer Relations', icon: 'Handshake', path: '/crm' },
+  { id: 'pms', name: 'Projects', description: 'Project Management', icon: 'ClipboardList', path: '/pms/dashboard' },
+  { id: 'wms', name: 'Warehouse', description: 'Warehouse Management', icon: 'Warehouse', path: '/wms/dashboard' },
+  { id: 'hrm', name: 'People', description: 'Human Resources', icon: 'Users', path: '/hrm/dashboard' },
+  { id: 'crm', name: 'Sales', description: 'Customer Relations', icon: 'Handshake', path: '/crm/dashboard' },
 ]
 
 interface ModuleState {

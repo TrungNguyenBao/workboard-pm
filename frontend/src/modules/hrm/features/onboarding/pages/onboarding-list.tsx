@@ -3,11 +3,10 @@ import { useWorkspaceStore } from '@/stores/workspace.store'
 import { Button } from '@/shared/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { toast } from '@/shared/components/ui/toast'
-import { HrmPageHeader } from '../../shared/components/hrm-page-header'
+import { PageHeader } from '@/shared/components/ui/page-header'
 import { OnboardingChecklistItem } from '../components/onboarding-checklist-item'
-import { useOnboardingChecklists } from '../hooks/use-onboarding'
+import { useOnboardingChecklists, useGenerateDefaultChecklist } from '../hooks/use-onboarding'
 import { useEmployees } from '../../employees/hooks/use-employees'
-import { useGenerateDefaultChecklist } from '../hooks/use-onboarding'
 
 export default function OnboardingListPage() {
   const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId) ?? ''
@@ -21,25 +20,18 @@ export default function OnboardingListPage() {
   const generateChecklist = useGenerateDefaultChecklist(workspaceId)
 
   const items = data?.items ?? []
-
-  // Group by employee_id
   const groups = items.reduce<Record<string, typeof items>>((acc, item) => {
     if (!acc[item.employee_id]) acc[item.employee_id] = []
     acc[item.employee_id].push(item)
     return acc
   }, {})
-
   const empMap = new Map((empData?.items ?? []).map((e) => [e.id, e.name]))
 
   return (
     <div className="flex flex-col h-full">
-      <HrmPageHeader
+      <PageHeader
         title="Onboarding"
         description="Track employee onboarding tasks"
-        searchValue=""
-        onSearchChange={() => {}}
-        onCreateClick={() => {}}
-        createLabel=""
       >
         <Select value={employeeFilter} onValueChange={setEmployeeFilter}>
           <SelectTrigger className="w-44 h-8"><SelectValue placeholder="All employees" /></SelectTrigger>
@@ -51,10 +43,7 @@ export default function OnboardingListPage() {
           </SelectContent>
         </Select>
         {employeeFilter !== 'all' && (
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-8"
+          <Button size="sm" variant="outline" className="h-8"
             onClick={async () => {
               await generateChecklist.mutateAsync(employeeFilter)
               toast({ title: 'Default checklist generated', variant: 'success' })
@@ -64,7 +53,7 @@ export default function OnboardingListPage() {
             Generate Defaults
           </Button>
         )}
-      </HrmPageHeader>
+      </PageHeader>
 
       <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
         {Object.keys(groups).length === 0 ? (
@@ -78,11 +67,8 @@ export default function OnboardingListPage() {
                   <h3 className="text-sm font-semibold text-foreground">
                     {empMap.get(empId) ?? 'Unknown Employee'}
                   </h3>
-                  <span className="text-xs text-muted-foreground">
-                    {completed}/{empItems.length} completed
-                  </span>
+                  <span className="text-xs text-muted-foreground">{completed}/{empItems.length} completed</span>
                 </div>
-                {/* Group by category */}
                 {Array.from(new Set(empItems.map((i) => i.category ?? 'General'))).map((cat) => (
                   <div key={cat} className="mb-3">
                     <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1 px-3">{cat}</p>

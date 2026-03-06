@@ -5,9 +5,10 @@ import { useWorkspaceStore } from '@/stores/workspace.store'
 import { Badge } from '@/shared/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { toast } from '@/shared/components/ui/toast'
-import { HrmDataTable } from '../../shared/components/hrm-data-table'
-import { HrmPageHeader } from '../../shared/components/hrm-page-header'
-import { HrmPagination } from '../../shared/components/hrm-pagination'
+import { DataTable } from '@/shared/components/ui/data-table'
+import { toColumnDefs, type SimpleColumn } from '@/shared/components/ui/data-table-types'
+import { PageHeader } from '@/shared/components/ui/page-header'
+import { PaginationControls } from '@/shared/components/ui/pagination-controls'
 import { ResignationFormDialog } from '../components/resignation-form-dialog'
 import {
   type Resignation,
@@ -34,7 +35,7 @@ export default function OffboardingListPage() {
   const [dialogOpen, setDialogOpen] = useState(false)
 
   const { data: empData } = useEmployees(workspaceId, { page_size: 200 })
-  const { data } = useResignations(workspaceId, {
+  const { data, isLoading } = useResignations(workspaceId, {
     status: statusFilter === 'all' ? undefined : statusFilter,
     page,
     page_size: PAGE_SIZE,
@@ -42,68 +43,38 @@ export default function OffboardingListPage() {
 
   const approve = useApproveResignation(workspaceId)
   const reject = useRejectResignation(workspaceId)
-
   const empMap = new Map((empData?.items ?? []).map((e) => [e.id, e.name]))
 
-  const columns = [
-    {
-      key: 'employee',
-      label: 'Employee',
-      render: (r: Resignation) => empMap.get(r.employee_id) ?? r.employee_id.slice(0, 8),
-    },
-    { key: 'resignation_date', label: 'Resignation Date', render: (r: Resignation) => r.resignation_date },
-    { key: 'last_working_day', label: 'Last Working Day', render: (r: Resignation) => r.last_working_day },
-    {
-      key: 'status',
-      label: 'Status',
-      render: (r: Resignation) => (
-        <Badge variant="outline" className={STATUS_COLORS[r.status] ?? ''}>
-          {r.status}
-        </Badge>
-      ),
-    },
-    {
-      key: 'actions',
-      label: '',
-      className: 'w-20',
-      render: (r: Resignation) => (
-        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-          {r.status === 'pending' && (
-            <>
-              <button
-                className="p-1 text-green-500 hover:text-green-700"
-                title="Approve"
-                onClick={async () => {
-                  await approve.mutateAsync(r.id)
-                  toast({ title: 'Resignation approved', variant: 'success' })
-                }}
-              >
-                <Check className="h-3.5 w-3.5" />
-              </button>
-              <button
-                className="p-1 text-red-400 hover:text-red-600"
-                title="Reject"
-                onClick={async () => {
-                  await reject.mutateAsync(r.id)
-                  toast({ title: 'Resignation rejected', variant: 'success' })
-                }}
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </>
-          )}
-        </div>
-      ),
-    },
+  const columns: SimpleColumn<Resignation>[] = [
+    { key: 'employee', label: 'Employee', render: (r) => empMap.get(r.employee_id) ?? r.employee_id.slice(0, 8) },
+    { key: 'resignation_date', label: 'Resignation Date', render: (r) => r.resignation_date },
+    { key: 'last_working_day', label: 'Last Working Day', render: (r) => r.last_working_day },
+    { key: 'status', label: 'Status', render: (r) => (
+      <Badge variant="outline" className={STATUS_COLORS[r.status] ?? ''}>{r.status}</Badge>
+    )},
+    { key: 'actions', label: '', className: 'w-20', render: (r) => (
+      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
+        {r.status === 'pending' && (
+          <>
+            <button className="p-1 text-green-500 hover:text-green-700" title="Approve"
+              onClick={async () => { await approve.mutateAsync(r.id); toast({ title: 'Resignation approved', variant: 'success' }) }}>
+              <Check className="h-3.5 w-3.5" />
+            </button>
+            <button className="p-1 text-red-400 hover:text-red-600" title="Reject"
+              onClick={async () => { await reject.mutateAsync(r.id); toast({ title: 'Resignation rejected', variant: 'success' }) }}>
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </>
+        )}
+      </div>
+    )},
   ]
 
   return (
     <div className="flex flex-col h-full">
-      <HrmPageHeader
+      <PageHeader
         title="Offboarding"
         description="Manage employee resignations and offboarding"
-        searchValue=""
-        onSearchChange={() => {}}
         onCreateClick={() => setDialogOpen(true)}
         createLabel="New Resignation"
       >
@@ -117,16 +88,17 @@ export default function OffboardingListPage() {
             <SelectItem value="completed">Completed</SelectItem>
           </SelectContent>
         </Select>
-      </HrmPageHeader>
+      </PageHeader>
 
-      <HrmDataTable
-        columns={columns}
+      <DataTable
+        columns={toColumnDefs(columns)}
         data={data?.items ?? []}
         keyFn={(r) => r.id}
-        emptyMessage="No resignations found"
         onRowClick={(r) => navigate(`/hrm/offboarding/${r.id}`)}
+        isLoading={isLoading}
+        emptyTitle="No resignations found"
       />
-      <HrmPagination page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
+      <PaginationControls page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
 
       <ResignationFormDialog open={dialogOpen} onOpenChange={setDialogOpen} workspaceId={workspaceId} />
     </div>

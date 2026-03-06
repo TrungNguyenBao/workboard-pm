@@ -32,7 +32,7 @@ function CalendarDay({
   const isCurrentMonth = isSameMonth(date, currentMonth)
 
   return (
-    <div className={cn('min-h-[100px] p-1.5 border-b border-r border-border', !isCurrentMonth && 'bg-neutral-50')}>
+    <div className={cn('min-h-[100px] p-1.5 border-b border-r border-border', !isCurrentMonth && 'bg-muted/30')}>
       <span
         className={cn(
           'inline-flex h-6 w-6 items-center justify-center rounded-full text-xs',
@@ -49,7 +49,7 @@ function CalendarDay({
             className={cn(
               'truncate rounded px-1 py-0.5 text-xs cursor-pointer hover:opacity-80 transition-opacity',
               task.status === 'completed'
-                ? 'bg-neutral-100 text-neutral-400 line-through'
+                ? 'bg-muted text-muted-foreground line-through'
                 : PRIORITY_CHIP[task.priority] ?? PRIORITY_CHIP.none,
             )}
           >
@@ -106,7 +106,7 @@ export default function CalendarPage() {
         />
         <div className="flex-1 overflow-auto p-4">
           <div className="rounded-lg border border-border overflow-hidden">
-            <div className="grid grid-cols-7 border-b border-border bg-neutral-50">
+            <div className="grid grid-cols-7 border-b border-border bg-muted/30">
               {WEEKDAYS.map((d) => (
                 <div key={d} className="py-2 text-center text-xs font-medium text-neutral-500">{d}</div>
               ))}

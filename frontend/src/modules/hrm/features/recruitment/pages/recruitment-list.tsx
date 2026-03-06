@@ -4,9 +4,10 @@ import { useWorkspaceStore } from '@/stores/workspace.store'
 import { Badge } from '@/shared/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { toast } from '@/shared/components/ui/toast'
-import { HrmDataTable } from '../../shared/components/hrm-data-table'
-import { HrmPageHeader } from '../../shared/components/hrm-page-header'
-import { HrmPagination } from '../../shared/components/hrm-pagination'
+import { DataTable } from '@/shared/components/ui/data-table'
+import { toColumnDefs, type SimpleColumn } from '@/shared/components/ui/data-table-types'
+import { PageHeader } from '@/shared/components/ui/page-header'
+import { PaginationControls } from '@/shared/components/ui/pagination-controls'
 import { RecruitmentRequestFormDialog } from '../components/recruitment-request-form-dialog'
 import { type RecruitmentRequest, useRecruitmentRequests, useDeleteRecruitmentRequest } from '../hooks/use-recruitment-requests'
 import { useDepartments } from '../../departments/hooks/use-departments'
@@ -28,7 +29,7 @@ export default function RecruitmentListPage() {
   const [statusFilter, setStatusFilter] = useState('all')
   const [dialogOpen, setDialogOpen] = useState(false)
 
-  const { data } = useRecruitmentRequests(workspaceId, {
+  const { data, isLoading } = useRecruitmentRequests(workspaceId, {
     status: statusFilter === 'all' ? undefined : statusFilter,
     page,
     page_size: PAGE_SIZE,
@@ -42,44 +43,31 @@ export default function RecruitmentListPage() {
     !search || r.title.toLowerCase().includes(search.toLowerCase())
   )
 
-  const columns = [
-    { key: 'title', label: 'Title', render: (r: RecruitmentRequest) => (
-      <span className="font-medium text-foreground">{r.title}</span>
+  const columns: SimpleColumn<RecruitmentRequest>[] = [
+    { key: 'title', label: 'Title', render: (r) => <span className="font-medium text-foreground">{r.title}</span> },
+    { key: 'department', label: 'Department', render: (r) => deptMap.get(r.department_id) ?? '-' },
+    { key: 'quantity', label: 'Qty', className: 'w-14 text-center', render: (r) => r.quantity },
+    { key: 'deadline', label: 'Deadline', render: (r) => r.deadline ?? '—' },
+    { key: 'status', label: 'Status', render: (r) => (
+      <Badge variant="outline" className={STATUS_COLORS[r.status] ?? ''}>{r.status}</Badge>
     )},
-    { key: 'department', label: 'Department', render: (r: RecruitmentRequest) => deptMap.get(r.department_id) ?? '-' },
-    { key: 'quantity', label: 'Qty', className: 'w-14 text-center', render: (r: RecruitmentRequest) => r.quantity },
-    { key: 'deadline', label: 'Deadline', render: (r: RecruitmentRequest) => r.deadline ?? '—' },
-    {
-      key: 'status',
-      label: 'Status',
-      render: (r: RecruitmentRequest) => (
-        <Badge variant="outline" className={STATUS_COLORS[r.status] ?? ''}>{r.status}</Badge>
-      ),
-    },
-    {
-      key: 'actions',
-      label: '',
-      className: 'w-16',
-      render: (r: RecruitmentRequest) => (
-        <button
-          className="text-xs text-red-400 hover:text-red-600"
-          onClick={async (e) => {
-            e.stopPropagation()
-            if (window.confirm('Delete this recruitment request?')) {
-              await deleteRequest.mutateAsync(r.id)
-              toast({ title: 'Request deleted', variant: 'success' })
-            }
-          }}
-        >
-          Delete
-        </button>
-      ),
-    },
+    { key: 'actions', label: '', className: 'w-16', render: (r) => (
+      <button className="text-xs text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100"
+        onClick={async (e) => {
+          e.stopPropagation()
+          if (window.confirm('Delete this recruitment request?')) {
+            await deleteRequest.mutateAsync(r.id)
+            toast({ title: 'Request deleted', variant: 'success' })
+          }
+        }}>
+        Delete
+      </button>
+    )},
   ]
 
   return (
     <div className="flex flex-col h-full">
-      <HrmPageHeader
+      <PageHeader
         title="Recruitment"
         description="Manage open positions and candidate pipeline"
         searchValue={search}
@@ -97,16 +85,17 @@ export default function RecruitmentListPage() {
             <SelectItem value="cancelled">Cancelled</SelectItem>
           </SelectContent>
         </Select>
-      </HrmPageHeader>
+      </PageHeader>
 
-      <HrmDataTable
-        columns={columns}
+      <DataTable
+        columns={toColumnDefs(columns)}
         data={filtered}
         keyFn={(r) => r.id}
-        emptyMessage="No recruitment requests found"
         onRowClick={(r) => navigate(`/hrm/recruitment/${r.id}`)}
+        isLoading={isLoading}
+        emptyTitle="No recruitment requests found"
       />
-      <HrmPagination page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
+      <PaginationControls page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
 
       <RecruitmentRequestFormDialog open={dialogOpen} onOpenChange={setDialogOpen} workspaceId={workspaceId} />
     </div>

@@ -81,7 +81,7 @@ export function LinkTasksDialog({ open, onOpenChange, workspaceId, goalId, linke
                 return (
                   <label
                     key={t.id}
-                    className="flex items-center gap-3 rounded px-2 py-1.5 hover:bg-neutral-50 cursor-pointer"
+                    className="flex items-center gap-3 rounded px-2 py-1.5 hover:bg-muted/50 cursor-pointer"
                   >
                     <input
                       type="checkbox"
@@ -89,7 +89,7 @@ export function LinkTasksDialog({ open, onOpenChange, workspaceId, goalId, linke
                       onChange={() => toggle(t.id, isLinked)}
                       className="h-4 w-4 accent-primary"
                     />
-                    <span className="text-sm text-neutral-800 truncate flex-1">{t.title}</span>
+                    <span className="text-sm text-foreground truncate flex-1">{t.title}</span>
                     {t.status === 'completed' && (
                       <span className="text-xs text-green-600 flex-shrink-0">Done</span>
                     )}

@@ -31,7 +31,7 @@ export function GoalCard({ goal, onClick }: Props) {
   return (
     <button
       onClick={onClick}
-      className="group relative flex flex-col rounded-md border border-border bg-white p-4 text-left shadow-sm transition-shadow hover:shadow-md focus:outline-none w-full overflow-hidden"
+      className="group relative flex flex-col rounded-md border border-border bg-card p-4 text-left shadow-sm transition-shadow hover:shadow-md focus:outline-none w-full overflow-hidden"
     >
       {/* Left color bar */}
       <span
@@ -42,7 +42,7 @@ export function GoalCard({ goal, onClick }: Props) {
       <div className="pl-2">
         {/* Title + status badge */}
         <div className="flex items-start justify-between gap-2 mb-3">
-          <p className="text-sm font-semibold text-neutral-900 leading-snug line-clamp-2 flex-1">
+          <p className="text-sm font-semibold text-foreground leading-snug line-clamp-2 flex-1">
             {goal.title}
           </p>
           <span className={cn('flex-shrink-0 rounded-full px-2 py-0.5 text-xs font-medium', statusCfg.className)}>
@@ -52,11 +52,11 @@ export function GoalCard({ goal, onClick }: Props) {
 
         {/* Progress bar */}
         <div className="mb-3">
-          <div className="flex items-center justify-between text-xs text-neutral-500 mb-1">
+          <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
             <span>Progress</span>
-            <span className="font-medium text-neutral-700">{Math.round(goal.progress_value)}%</span>
+            <span className="font-medium text-foreground">{Math.round(goal.progress_value)}%</span>
           </div>
-          <div className="h-1.5 w-full rounded-full bg-neutral-100">
+          <div className="h-1.5 w-full rounded-full bg-muted">
             <div
               className="h-1.5 rounded-full transition-all"
               style={{ width: `${Math.min(100, goal.progress_value)}%`, backgroundColor: progressColor }}

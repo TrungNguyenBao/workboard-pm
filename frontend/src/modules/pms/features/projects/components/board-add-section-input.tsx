@@ -49,7 +49,7 @@ export function BoardAddSectionInput({ projectId, sections }: BoardAddSectionInp
           if (e.key === 'Escape') { setOpen(false); setName('') }
         }}
         placeholder={t('task.section')}
-        className="w-full rounded-md border border-border px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-primary/40 bg-white"
+        className="w-full rounded-md border border-border px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-primary/40 bg-background"
       />
       <div className="flex gap-1 mt-1.5">
         <Button size="sm" onClick={handleSubmit} disabled={!name.trim() || create.isPending}>

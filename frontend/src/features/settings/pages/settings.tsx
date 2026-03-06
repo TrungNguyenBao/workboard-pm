@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Header } from '@/shared/components/shell/header'
 import { Button } from '@/shared/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar'
@@ -48,7 +47,6 @@ export default function SettingsPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <Header title={t('settings.title')} />
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-lg mx-auto w-full pt-8 px-6 pb-12">
           {/* Avatar preview */}
@@ -58,14 +56,14 @@ export default function SettingsPage() {
               <AvatarFallback className="text-xl">{generateInitials(name || 'U')}</AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-semibold text-neutral-900">{name || user?.name}</p>
-              <p className="text-sm text-neutral-400">{user?.email}</p>
+              <p className="font-semibold text-foreground">{name || user?.name}</p>
+              <p className="text-sm text-muted-foreground">{user?.email}</p>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-neutral-700 block mb-1">{t('settings.name')}</label>
+              <label className="text-sm font-medium text-foreground block mb-1">{t('settings.name')}</label>
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -74,7 +72,7 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-neutral-700 block mb-1">{t('settings.avatarUrl')}</label>
+              <label className="text-sm font-medium text-foreground block mb-1">{t('settings.avatarUrl')}</label>
               <input
                 value={avatarUrl}
                 onChange={(e) => setAvatarUrl(e.target.value)}
@@ -84,16 +82,16 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-neutral-700 block mb-1">{t('settings.email')}</label>
+              <label className="text-sm font-medium text-foreground block mb-1">{t('settings.email')}</label>
               <input
                 value={user?.email ?? ''}
                 disabled
-                className="w-full rounded border border-border px-3 py-2 text-sm bg-neutral-50 text-neutral-400 cursor-not-allowed"
+                className="w-full rounded border border-border px-3 py-2 text-sm bg-muted text-muted-foreground cursor-not-allowed"
               />
             </div>
 
             <div>
-              <label className="text-sm font-medium text-neutral-700 block mb-1">{t('language.label')}</label>
+              <label className="text-sm font-medium text-foreground block mb-1">{t('language.label')}</label>
               <Select
                 value={i18n.language}
                 onValueChange={(lng) => {
@@ -112,10 +110,10 @@ export default function SettingsPage() {
             </div>
 
             <hr className="border-border" />
-            <p className="text-sm font-semibold text-neutral-700">{t('settings.changePassword')}</p>
+            <p className="text-sm font-semibold text-foreground">{t('settings.changePassword')}</p>
 
             <div>
-              <label className="text-sm font-medium text-neutral-700 block mb-1">{t('settings.currentPassword')}</label>
+              <label className="text-sm font-medium text-foreground block mb-1">{t('settings.currentPassword')}</label>
               <input
                 type="password"
                 value={currentPw}
@@ -125,7 +123,7 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-neutral-700 block mb-1">{t('settings.newPassword')}</label>
+              <label className="text-sm font-medium text-foreground block mb-1">{t('settings.newPassword')}</label>
               <input
                 type="password"
                 value={newPw}

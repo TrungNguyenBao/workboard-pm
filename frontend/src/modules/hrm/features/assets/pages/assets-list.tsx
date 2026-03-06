@@ -4,9 +4,10 @@ import { useWorkspaceStore } from '@/stores/workspace.store'
 import { Badge } from '@/shared/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { toast } from '@/shared/components/ui/toast'
-import { HrmDataTable } from '../../shared/components/hrm-data-table'
-import { HrmPageHeader } from '../../shared/components/hrm-page-header'
-import { HrmPagination } from '../../shared/components/hrm-pagination'
+import { DataTable } from '@/shared/components/ui/data-table'
+import { toColumnDefs, type SimpleColumn } from '@/shared/components/ui/data-table-types'
+import { PageHeader } from '@/shared/components/ui/page-header'
+import { PaginationControls } from '@/shared/components/ui/pagination-controls'
 import { AssetFormDialog } from '../components/asset-form-dialog'
 import { AssetAssignmentFormDialog } from '../components/asset-assignment-form-dialog'
 import { type Asset, useAssets, useDeleteAsset } from '../hooks/use-assets'
@@ -34,7 +35,7 @@ export default function AssetsListPage() {
   const [editAsset, setEditAsset] = useState<Asset | null>(null)
   const [assignAsset, setAssignAsset] = useState<Asset | null>(null)
 
-  const { data } = useAssets(workspaceId, {
+  const { data, isLoading } = useAssets(workspaceId, {
     status: statusFilter === 'all' ? undefined : statusFilter,
     search: search || undefined,
     page,
@@ -42,60 +43,39 @@ export default function AssetsListPage() {
   })
   const deleteAsset = useDeleteAsset(workspaceId)
 
-  const columns = [
-    { key: 'name', label: 'Name', render: (a: Asset) => <span className="font-medium">{a.name}</span> },
-    { key: 'category', label: 'Category', render: (a: Asset) => a.category ?? '—' },
-    { key: 'serial_number', label: 'Serial #', render: (a: Asset) => a.serial_number ?? '—' },
-    { key: 'purchase_value', label: 'Value', render: (a: Asset) => formatCurrency(a.purchase_value) },
-    {
-      key: 'status',
-      label: 'Status',
-      render: (a: Asset) => (
-        <Badge variant="outline" className={STATUS_COLORS[a.status] ?? ''}>
-          {a.status}
-        </Badge>
-      ),
-    },
-    {
-      key: 'actions',
-      label: '',
-      className: 'w-24',
-      render: (a: Asset) => (
-        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-          {a.status === 'available' && (
-            <button
-              className="p-1 text-neutral-400 hover:text-blue-600"
-              title="Assign"
-              onClick={() => setAssignAsset(a)}
-            >
-              <UserPlus className="h-3.5 w-3.5" />
-            </button>
-          )}
-          <button
-            className="p-1 text-neutral-400 hover:text-neutral-700"
-            onClick={() => { setEditAsset(a); setFormOpen(true) }}
-          >
-            <Pencil className="h-3.5 w-3.5" />
+  const columns: SimpleColumn<Asset>[] = [
+    { key: 'name', label: 'Name', render: (a) => <span className="font-medium">{a.name}</span> },
+    { key: 'category', label: 'Category', render: (a) => a.category ?? '—' },
+    { key: 'serial_number', label: 'Serial #', render: (a) => a.serial_number ?? '—' },
+    { key: 'purchase_value', label: 'Value', render: (a) => formatCurrency(a.purchase_value) },
+    { key: 'status', label: 'Status', render: (a) => (
+      <Badge variant="outline" className={STATUS_COLORS[a.status] ?? ''}>{a.status}</Badge>
+    )},
+    { key: 'actions', label: '', className: 'w-24', render: (a) => (
+      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
+        {a.status === 'available' && (
+          <button className="p-1 text-neutral-400 hover:text-blue-600" title="Assign" onClick={() => setAssignAsset(a)}>
+            <UserPlus className="h-3.5 w-3.5" />
           </button>
-          <button
-            className="p-1 text-neutral-400 hover:text-red-600"
-            onClick={async () => {
-              if (window.confirm('Delete this asset?')) {
-                await deleteAsset.mutateAsync(a.id)
-                toast({ title: 'Asset deleted', variant: 'success' })
-              }
-            }}
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </button>
-        </div>
-      ),
-    },
+        )}
+        <button className="p-1 text-neutral-400 hover:text-neutral-700" onClick={() => { setEditAsset(a); setFormOpen(true) }}>
+          <Pencil className="h-3.5 w-3.5" />
+        </button>
+        <button className="p-1 text-neutral-400 hover:text-red-600" onClick={async () => {
+          if (window.confirm('Delete this asset?')) {
+            await deleteAsset.mutateAsync(a.id)
+            toast({ title: 'Asset deleted', variant: 'success' })
+          }
+        }}>
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
+      </div>
+    )},
   ]
 
   return (
     <div className="flex flex-col h-full">
-      <HrmPageHeader
+      <PageHeader
         title="Assets"
         description="Track company assets and assignments"
         searchValue={search}
@@ -113,22 +93,18 @@ export default function AssetsListPage() {
             <SelectItem value="retired">Retired</SelectItem>
           </SelectContent>
         </Select>
-      </HrmPageHeader>
+      </PageHeader>
 
-      <HrmDataTable
-        columns={columns}
+      <DataTable
+        columns={toColumnDefs(columns)}
         data={data?.items ?? []}
         keyFn={(a) => a.id}
-        emptyMessage="No assets found"
+        isLoading={isLoading}
+        emptyTitle="No assets found"
       />
-      <HrmPagination page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
+      <PaginationControls page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
 
-      <AssetFormDialog
-        open={formOpen}
-        onOpenChange={setFormOpen}
-        workspaceId={workspaceId}
-        asset={editAsset}
-      />
+      <AssetFormDialog open={formOpen} onOpenChange={setFormOpen} workspaceId={workspaceId} asset={editAsset} />
       {assignAsset && (
         <AssetAssignmentFormDialog
           open={!!assignAsset}

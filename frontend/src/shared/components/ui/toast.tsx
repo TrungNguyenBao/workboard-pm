@@ -42,15 +42,15 @@ export function Toaster() {
           open
           onOpenChange={(open) => !open && remove(t.id)}
           className={cn(
-            'pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-md border p-4 shadow-popover bg-white',
+            'pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-md border p-4 shadow-popover bg-popover',
             t.variant === 'error' && 'border-red-200 bg-red-50',
             t.variant === 'success' && 'border-green-200 bg-green-50',
           )}
         >
           <div className="flex-1">
-            <ToastPrimitive.Title className="text-sm font-medium text-neutral-900">{t.title}</ToastPrimitive.Title>
+            <ToastPrimitive.Title className="text-sm font-medium text-foreground">{t.title}</ToastPrimitive.Title>
             {t.description && (
-              <ToastPrimitive.Description className="text-xs text-neutral-500 mt-0.5">{t.description}</ToastPrimitive.Description>
+              <ToastPrimitive.Description className="text-xs text-muted-foreground mt-0.5">{t.description}</ToastPrimitive.Description>
             )}
           </div>
           <ToastPrimitive.Close className="opacity-60 hover:opacity-100">

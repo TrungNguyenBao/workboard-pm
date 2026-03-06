@@ -20,11 +20,11 @@ export function AuthLayout({ children }: AuthLayoutProps) {
   return (
     <div className="flex min-h-screen">
       {/* Left branding panel — hidden on mobile */}
-      <div className="hidden lg:flex lg:w-[480px] xl:w-[520px] flex-col justify-between bg-gradient-to-br from-[#5E6AD2] to-[#4338CA] p-10 text-white">
+      <div className="hidden lg:flex lg:w-[480px] xl:w-[520px] flex-col justify-between bg-gradient-to-br from-[#5E6AD2] to-[#4338CA] dark:from-[#3B41A0] dark:to-[#2D2B8A] p-10 text-white">
         <div>
           {/* Logo */}
           <div className="flex items-center gap-3 mb-16">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm text-lg font-bold">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/20 dark:bg-white/10 backdrop-blur-sm text-lg font-bold">
               W
             </div>
             <span className="text-xl font-semibold tracking-tight">{t('app.name')}</span>
@@ -42,7 +42,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
           <ul className="space-y-4">
             {features.map(({ icon: Icon, text }) => (
               <li key={text} className="flex items-center gap-3">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-white/10">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-white/10 dark:bg-white/5">
                   <Icon size={16} className="text-white/90" />
                 </div>
                 <span className="text-sm text-white/85">{text}</span>

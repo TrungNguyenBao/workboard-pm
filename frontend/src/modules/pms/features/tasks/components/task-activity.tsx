@@ -55,14 +55,14 @@ export function TaskActivity({ taskId, projectId }: Props) {
       {entries.map((entry) => (
         <div key={entry.id} className="flex gap-2 items-start">
           <Avatar className="h-5 w-5 flex-shrink-0 mt-0.5">
-            <AvatarFallback className="text-[9px] bg-neutral-100 text-neutral-500">
+            <AvatarFallback className="text-[9px] bg-muted text-muted-foreground">
               {generateInitials(entry.actor_name)}
             </AvatarFallback>
           </Avatar>
-          <p className="text-xs text-neutral-500 leading-relaxed">
-            <span className="text-neutral-700 font-medium">{entry.actor_name}</span>{' '}
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            <span className="text-foreground font-medium">{entry.actor_name}</span>{' '}
             {describeAction(entry)}{' '}
-            <span className="text-neutral-400">{formatRelativeTime(entry.created_at)}</span>
+            <span className="text-muted-foreground/70">{formatRelativeTime(entry.created_at)}</span>
           </p>
         </div>
       ))}

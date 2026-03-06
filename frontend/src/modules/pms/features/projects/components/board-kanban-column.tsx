@@ -53,10 +53,10 @@ export function BoardKanbanColumn({ section, tasks, projectId, onOpenTask }: Boa
                 if (e.key === 'Enter') commitRename()
                 if (e.key === 'Escape') { setRenaming(false); setNameInput(section.name) }
               }}
-              className="text-sm font-medium text-neutral-700 bg-white border border-primary rounded px-1 outline-none w-full"
+              className="text-sm font-medium text-foreground bg-background border border-primary rounded px-1 outline-none w-full"
             />
           ) : (
-            <span className="text-sm font-medium text-neutral-700 truncate">{section.name}</span>
+            <span className="text-sm font-medium text-foreground truncate">{section.name}</span>
           )}
           <span className="text-xs text-neutral-400 flex-shrink-0">{tasks.length}</span>
         </div>
@@ -86,7 +86,7 @@ export function BoardKanbanColumn({ section, tasks, projectId, onOpenTask }: Boa
         </DropdownMenu>
       </div>
       <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
-        <div ref={setDroppableRef} className="min-h-[60px] space-y-2 rounded-md bg-neutral-50 p-2">
+        <div ref={setDroppableRef} className="min-h-[60px] space-y-2 rounded-md bg-muted/30 p-2">
           {tasks.length === 0 && (
             <p className="py-4 text-center text-xs text-neutral-400">No tasks</p>
           )}

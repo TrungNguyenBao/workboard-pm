@@ -3,9 +3,10 @@ import { useTranslation } from 'react-i18next'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import { toast } from '@/shared/components/ui/toast'
-import { CrmDataTable } from '../../shared/components/crm-data-table'
-import { CrmPageHeader } from '../../shared/components/crm-page-header'
-import { CrmPagination } from '../../shared/components/crm-pagination'
+import { DataTable } from '@/shared/components/ui/data-table'
+import { toColumnDefs, type SimpleColumn } from '@/shared/components/ui/data-table-types'
+import { PageHeader } from '@/shared/components/ui/page-header'
+import { PaginationControls } from '@/shared/components/ui/pagination-controls'
 import { ContactFormDialog } from '../components/contact-form-dialog'
 import { type Contact, useContacts, useDeleteContact } from '../hooks/use-contacts'
 
@@ -19,20 +20,20 @@ export default function ContactsListPage() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editContact, setEditContact] = useState<Contact | null>(null)
 
-  const { data } = useContacts(workspaceId, { search: search || undefined, page, page_size: PAGE_SIZE })
+  const { data, isLoading } = useContacts(workspaceId, { search: search || undefined, page, page_size: PAGE_SIZE })
   const deleteContact = useDeleteContact(workspaceId)
 
-  const columns = [
-    { key: 'name', label: t('contacts.name'), render: (c: Contact) => <span className="font-medium">{c.name}</span> },
-    { key: 'email', label: t('contacts.email'), render: (c: Contact) => c.email ?? '-' },
-    { key: 'phone', label: t('contacts.phone'), render: (c: Contact) => c.phone ?? '-' },
-    { key: 'company', label: t('contacts.company'), render: (c: Contact) => c.company ?? '-' },
+  const columns: SimpleColumn<Contact>[] = [
+    { key: 'name', label: t('contacts.name'), render: (c) => <span className="font-medium">{c.name}</span> },
+    { key: 'email', label: t('contacts.email'), render: (c) => c.email ?? '-' },
+    { key: 'phone', label: t('contacts.phone'), render: (c) => c.phone ?? '-' },
+    { key: 'company', label: t('contacts.company'), render: (c) => c.company ?? '-' },
     {
       key: 'actions',
       label: '',
       className: 'w-20',
-      render: (c: Contact) => (
-        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+      render: (c) => (
+        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
           <button
             className="p-1 text-neutral-400 hover:text-neutral-700"
             onClick={() => { setEditContact(c); setDialogOpen(true) }}
@@ -57,7 +58,7 @@ export default function ContactsListPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <CrmPageHeader
+      <PageHeader
         title={t('contacts.title')}
         description={t('contacts.description')}
         searchValue={search}
@@ -65,13 +66,14 @@ export default function ContactsListPage() {
         onCreateClick={() => { setEditContact(null); setDialogOpen(true) }}
         createLabel={t('contacts.new')}
       />
-      <CrmDataTable
-        columns={columns}
+      <DataTable
+        columns={toColumnDefs(columns)}
         data={data?.items ?? []}
         keyFn={(c) => c.id}
-        emptyMessage={t('contacts.empty')}
+        isLoading={isLoading}
+        emptyTitle={t('contacts.empty')}
       />
-      <CrmPagination page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
+      <PaginationControls page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
       <ContactFormDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}

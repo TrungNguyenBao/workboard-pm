@@ -41,7 +41,7 @@ export function TimelineGrid({ tasks, sections, dayWidth, timelineStart, timelin
   function toggleSection(id: string) {
     setCollapsed((prev) => {
       const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
+      if (next.has(id)) { next.delete(id) } else { next.add(id) }
       return next
     })
   }
@@ -50,8 +50,8 @@ export function TimelineGrid({ tasks, sections, dayWidth, timelineStart, timelin
     return (
       <div key={task.id} className="flex border-b border-border/50" style={{ height: ROW_HEIGHT }}>
         {/* Name cell — sticky on horizontal scroll */}
-        <div className="w-48 flex-shrink-0 sticky left-0 z-10 bg-white border-r border-border px-3 flex items-center">
-          <span className="truncate text-xs text-neutral-700">{task.title}</span>
+        <div className="w-48 flex-shrink-0 sticky left-0 z-10 bg-background border-r border-border px-3 flex items-center">
+          <span className="truncate text-xs text-foreground">{task.title}</span>
         </div>
         {/* Bar cell */}
         <div className="relative flex-shrink-0" style={{ width: totalWidth, height: ROW_HEIGHT }}>
@@ -75,15 +75,15 @@ export function TimelineGrid({ tasks, sections, dayWidth, timelineStart, timelin
           className="flex border-b border-border cursor-pointer select-none"
           onClick={() => toggleSection(sectionId ?? '__null')}
         >
-          <div className="w-48 flex-shrink-0 sticky left-0 z-10 bg-neutral-50 border-r border-border px-3 py-1.5 flex items-center gap-1">
+          <div className="w-48 flex-shrink-0 sticky left-0 z-10 bg-muted/30 border-r border-border px-3 py-1.5 flex items-center gap-1">
             {isCollapsed
               ? <ChevronRight className="h-3 w-3 text-neutral-400 flex-shrink-0" />
               : <ChevronDown className="h-3 w-3 text-neutral-400 flex-shrink-0" />
             }
-            <span className="text-xs font-medium text-neutral-600 truncate">{label}</span>
+            <span className="text-xs font-medium text-muted-foreground truncate">{label}</span>
             <span className="text-xs text-neutral-400 ml-1">({sectionTasks.length})</span>
           </div>
-          <div className="flex-shrink-0 bg-neutral-50" style={{ width: totalWidth }} />
+          <div className="flex-shrink-0 bg-muted/30" style={{ width: totalWidth }} />
         </div>
         {!isCollapsed && sectionTasks.map(renderTaskRow)}
       </div>
@@ -97,9 +97,9 @@ export function TimelineGrid({ tasks, sections, dayWidth, timelineStart, timelin
     <div className="flex-1 overflow-auto">
       <div style={{ minWidth: 192 + totalWidth }}>
         {/* Header — sticky on vertical scroll */}
-        <div className="flex sticky top-0 z-20 bg-white border-b border-border">
-          <div className="w-48 flex-shrink-0 sticky left-0 z-30 bg-white border-r border-border px-3 py-2">
-            <span className="text-xs font-medium text-neutral-500">Task</span>
+        <div className="flex sticky top-0 z-20 bg-background border-b border-border">
+          <div className="w-48 flex-shrink-0 sticky left-0 z-30 bg-background border-r border-border px-3 py-2">
+            <span className="text-xs font-medium text-muted-foreground">Task</span>
           </div>
           <div className="relative flex-shrink-0" style={{ width: totalWidth }}>
             {/* Month / day labels */}

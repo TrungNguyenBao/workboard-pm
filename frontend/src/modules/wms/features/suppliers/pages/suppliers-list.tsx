@@ -2,13 +2,16 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import { Badge } from '@/shared/components/ui/badge'
-import { WmsDataTable } from '../../shared/components/wms-data-table'
-import { WmsPageHeader } from '../../shared/components/wms-page-header'
-import { WmsPagination } from '../../shared/components/wms-pagination'
+import { DataTable } from '@/shared/components/ui/data-table'
+import { toColumnDefs, type SimpleColumn } from '@/shared/components/ui/data-table-types'
+import { PageHeader } from '@/shared/components/ui/page-header'
+import { PaginationControls } from '@/shared/components/ui/pagination-controls'
 import { SupplierFormDialog } from '../components/supplier-form-dialog'
 import { type Supplier, useDeleteSupplier, useSuppliers } from '../hooks/use-suppliers'
 import { toast } from '@/shared/components/ui/toast'
 import { Pencil, Trash2 } from 'lucide-react'
+
+const PAGE_SIZE = 20
 
 export default function SuppliersListPage() {
   const { t } = useTranslation('wms')
@@ -18,18 +21,18 @@ export default function SuppliersListPage() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editSupplier, setEditSupplier] = useState<Supplier | null>(null)
 
-  const { data } = useSuppliers(workspaceId, { search: search || undefined, page })
+  const { data, isLoading } = useSuppliers(workspaceId, { search: search || undefined, page })
   const deleteSupplier = useDeleteSupplier(workspaceId)
 
-  const columns = [
-    { key: 'name', label: t('common:common.name'), render: (s: Supplier) => <span className="font-medium">{s.name}</span> },
-    { key: 'email', label: t('common:common.email'), render: (s: Supplier) => s.contact_email ?? '—' },
-    { key: 'phone', label: t('common:common.phone'), render: (s: Supplier) => s.phone ?? '—' },
-    { key: 'address', label: 'Address', render: (s: Supplier) => s.address ?? '—' },
-    { key: 'status', label: t('common:common.status'), render: (s: Supplier) => (
+  const columns: SimpleColumn<Supplier>[] = [
+    { key: 'name', label: t('common:common.name'), render: (s) => <span className="font-medium">{s.name}</span> },
+    { key: 'email', label: t('common:common.email'), render: (s) => s.contact_email ?? '—' },
+    { key: 'phone', label: t('common:common.phone'), render: (s) => s.phone ?? '—' },
+    { key: 'address', label: 'Address', render: (s) => s.address ?? '—' },
+    { key: 'status', label: t('common:common.status'), render: (s) => (
       <Badge variant={s.is_active ? 'default' : 'secondary'}>{s.is_active ? t('common:common.active') : t('common:common.inactive')}</Badge>
     )},
-    { key: 'actions', label: '', className: 'w-20', render: (s: Supplier) => (
+    { key: 'actions', label: '', className: 'w-20', render: (s) => (
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
         <button className="p-1 text-neutral-400 hover:text-neutral-700" onClick={() => { setEditSupplier(s); setDialogOpen(true) }}>
           <Pencil className="h-3.5 w-3.5" />
@@ -48,7 +51,7 @@ export default function SuppliersListPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <WmsPageHeader
+      <PageHeader
         title={t('suppliers.title')}
         description={t('suppliers.description')}
         searchValue={search}
@@ -57,8 +60,14 @@ export default function SuppliersListPage() {
         createLabel={t('suppliers.new')}
       />
 
-      <WmsDataTable columns={columns} data={data?.items ?? []} keyFn={(s) => s.id} emptyMessage={t('suppliers.empty')} />
-      <WmsPagination page={page} pageSize={20} total={data?.total ?? 0} onPageChange={setPage} />
+      <DataTable
+        columns={toColumnDefs(columns)}
+        data={data?.items ?? []}
+        keyFn={(s) => s.id}
+        isLoading={isLoading}
+        emptyTitle={t('suppliers.empty')}
+      />
+      <PaginationControls page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
 
       <SupplierFormDialog
         open={dialogOpen}

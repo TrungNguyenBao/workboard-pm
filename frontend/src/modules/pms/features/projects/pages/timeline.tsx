@@ -75,7 +75,7 @@ export default function TimelinePage() {
                     key={z}
                     onClick={() => setZoom(z)}
                     className={`px-2.5 py-1 text-xs font-medium transition-colors ${
-                      zoom === z ? 'bg-primary text-white' : 'text-neutral-500 hover:text-neutral-800'
+                      zoom === z ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground'
                     }`}
                   >
                     {z === 'week' ? 'Weeks' : 'Months'}

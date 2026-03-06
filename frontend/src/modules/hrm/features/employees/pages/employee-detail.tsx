@@ -4,12 +4,13 @@ import { ArrowLeft } from 'lucide-react'
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/components/ui/button'
 import { useWorkspaceStore } from '@/stores/workspace.store'
-import { useEmployeeDetail, useUpdateEmployee } from '../hooks/use-employees'
+import { useEmployeeDetail } from '../hooks/use-employees'
 import { useLeaveRequests } from '../../leave/hooks/use-leave'
 import { EmployeeContractsTab } from '../components/employee-contracts-tab'
 import { EmployeeSalaryTab } from '../components/employee-salary-tab'
 import { EmployeeFormDialog } from '../components/employee-form-dialog'
-import { HrmDataTable } from '../../shared/components/hrm-data-table'
+import { DataTable } from '@/shared/components/ui/data-table'
+import { toColumnDefs, type SimpleColumn } from '@/shared/components/ui/data-table-types'
 import type { LeaveRequest } from '../../leave/hooks/use-leave'
 
 const TABS = ['Info', 'Contracts', 'Salary History', 'Leave'] as const
@@ -34,7 +35,6 @@ export default function EmployeeDetailPage() {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Header */}
       <div className="border-b border-border px-6 py-4">
         <button
           className="flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700 mb-3"
@@ -57,7 +57,6 @@ export default function EmployeeDetailPage() {
         </div>
       </div>
 
-      {/* Tabs nav */}
       <div className="border-b border-border px-6">
         <nav className="flex gap-0">
           {TABS.map((tab) => (
@@ -77,20 +76,11 @@ export default function EmployeeDetailPage() {
         </nav>
       </div>
 
-      {/* Tab content */}
       <div className="flex-1 overflow-auto p-6">
-        {activeTab === 'Info' && (
-          <InfoTab employee={employee} />
-        )}
-        {activeTab === 'Contracts' && (
-          <EmployeeContractsTab workspaceId={workspaceId} employeeId={employeeId} />
-        )}
-        {activeTab === 'Salary History' && (
-          <EmployeeSalaryTab workspaceId={workspaceId} employeeId={employeeId} />
-        )}
-        {activeTab === 'Leave' && (
-          <LeaveTab items={leaveData?.items ?? []} />
-        )}
+        {activeTab === 'Info' && <InfoTab employee={employee} />}
+        {activeTab === 'Contracts' && <EmployeeContractsTab workspaceId={workspaceId} employeeId={employeeId} />}
+        {activeTab === 'Salary History' && <EmployeeSalaryTab workspaceId={workspaceId} employeeId={employeeId} />}
+        {activeTab === 'Leave' && <LeaveTab items={leaveData?.items ?? []} />}
       </div>
 
       <EmployeeFormDialog
@@ -146,26 +136,22 @@ const LEAVE_STATUS_CLASSES: Record<string, string> = {
 }
 
 function LeaveTab({ items }: { items: LeaveRequest[] }) {
-  const columns = [
-    { key: 'start_date', label: 'Start', render: (r: LeaveRequest) => r.start_date },
-    { key: 'end_date', label: 'End', render: (r: LeaveRequest) => r.end_date },
-    { key: 'days', label: 'Days', render: (r: LeaveRequest) => r.days },
-    {
-      key: 'status',
-      label: 'Status',
-      render: (r: LeaveRequest) => (
-        <span className={cn('px-2 py-0.5 rounded text-xs font-medium capitalize', LEAVE_STATUS_CLASSES[r.status] ?? '')}>
-          {r.status}
-        </span>
-      ),
-    },
+  const columns: SimpleColumn<LeaveRequest>[] = [
+    { key: 'start_date', label: 'Start', render: (r) => r.start_date },
+    { key: 'end_date', label: 'End', render: (r) => r.end_date },
+    { key: 'days', label: 'Days', render: (r) => r.days },
+    { key: 'status', label: 'Status', render: (r) => (
+      <span className={cn('px-2 py-0.5 rounded text-xs font-medium capitalize', LEAVE_STATUS_CLASSES[r.status] ?? '')}>
+        {r.status}
+      </span>
+    )},
   ]
   return (
-    <HrmDataTable
-      columns={columns}
+    <DataTable
+      columns={toColumnDefs(columns)}
       data={items}
       keyFn={(r) => r.id}
-      emptyMessage="No leave requests"
+      emptyTitle="No leave requests"
     />
   )
 }

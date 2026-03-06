@@ -50,7 +50,7 @@ export function ReviewFeedbackForm({ workspaceId, reviewId, onSuccess }: Props) 
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 border rounded-lg p-4 bg-neutral-50/50">
+    <form onSubmit={handleSubmit} className="space-y-4 border rounded-lg p-4 bg-muted/30">
       <p className="text-sm font-medium">Add Feedback</p>
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">

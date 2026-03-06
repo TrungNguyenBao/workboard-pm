@@ -5,9 +5,10 @@ import { useWorkspaceStore } from '@/stores/workspace.store'
 import { Badge } from '@/shared/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { toast } from '@/shared/components/ui/toast'
-import { HrmDataTable } from '../../shared/components/hrm-data-table'
-import { HrmPageHeader } from '../../shared/components/hrm-page-header'
-import { HrmPagination } from '../../shared/components/hrm-pagination'
+import { DataTable } from '@/shared/components/ui/data-table'
+import { toColumnDefs, type SimpleColumn } from '@/shared/components/ui/data-table-types'
+import { PageHeader } from '@/shared/components/ui/page-header'
+import { PaginationControls } from '@/shared/components/ui/pagination-controls'
 import { PayrollFormDialog } from '../components/payroll-form-dialog'
 import { type PayrollRecord, usePayrollRecords, useDeletePayrollRecord } from '../hooks/use-payroll'
 
@@ -31,21 +32,21 @@ export default function PayrollListPage() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editRecord, setEditRecord] = useState<PayrollRecord | null>(null)
 
-  const { data } = usePayrollRecords(workspaceId, {
+  const { data, isLoading } = usePayrollRecords(workspaceId, {
     status: statusFilter === 'all' ? undefined : statusFilter,
     page,
     page_size: PAGE_SIZE,
   })
   const deleteRecord = useDeletePayrollRecord(workspaceId)
 
-  const columns = [
-    { key: 'period', label: 'Period', render: (r: PayrollRecord) => <span className="font-medium">{r.period}</span> },
-    { key: 'gross', label: 'Gross', render: (r: PayrollRecord) => formatCurrency(r.gross) },
-    { key: 'net', label: 'Net', render: (r: PayrollRecord) => formatCurrency(r.net) },
+  const columns: SimpleColumn<PayrollRecord>[] = [
+    { key: 'period', label: 'Period', render: (r) => <span className="font-medium">{r.period}</span> },
+    { key: 'gross', label: 'Gross', render: (r) => formatCurrency(r.gross) },
+    { key: 'net', label: 'Net', render: (r) => formatCurrency(r.net) },
     {
       key: 'status',
       label: t('common:common.status'),
-      render: (r: PayrollRecord) => (
+      render: (r) => (
         <Badge variant="outline" className={STATUS_COLORS[r.status] ?? ''}>
           {r.status}
         </Badge>
@@ -55,8 +56,8 @@ export default function PayrollListPage() {
       key: 'actions',
       label: '',
       className: 'w-20',
-      render: (r: PayrollRecord) => (
-        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+      render: (r) => (
+        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
           <button
             className="p-1 text-neutral-400 hover:text-neutral-700"
             onClick={() => { setEditRecord(r); setDialogOpen(true) }}
@@ -81,11 +82,9 @@ export default function PayrollListPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <HrmPageHeader
+      <PageHeader
         title={t('payroll.title')}
         description={t('payroll.description')}
-        searchValue=""
-        onSearchChange={() => {}}
         onCreateClick={() => { setEditRecord(null); setDialogOpen(true) }}
         createLabel={t('payroll.new')}
       >
@@ -98,14 +97,15 @@ export default function PayrollListPage() {
             <SelectItem value="paid">Paid</SelectItem>
           </SelectContent>
         </Select>
-      </HrmPageHeader>
-      <HrmDataTable
-        columns={columns}
+      </PageHeader>
+      <DataTable
+        columns={toColumnDefs(columns)}
         data={data?.items ?? []}
         keyFn={(r) => r.id}
-        emptyMessage={t('payroll.empty')}
+        isLoading={isLoading}
+        emptyTitle={t('payroll.empty')}
       />
-      <HrmPagination page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
+      <PaginationControls page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
       <PayrollFormDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}

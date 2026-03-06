@@ -4,9 +4,10 @@ import { useTranslation } from 'react-i18next'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import { toast } from '@/shared/components/ui/toast'
-import { HrmDataTable } from '../../shared/components/hrm-data-table'
-import { HrmPageHeader } from '../../shared/components/hrm-page-header'
-import { HrmPagination } from '../../shared/components/hrm-pagination'
+import { DataTable } from '@/shared/components/ui/data-table'
+import { toColumnDefs, type SimpleColumn } from '@/shared/components/ui/data-table-types'
+import { PageHeader } from '@/shared/components/ui/page-header'
+import { PaginationControls } from '@/shared/components/ui/pagination-controls'
 import { EmployeeFormDialog } from '../components/employee-form-dialog'
 import { type Employee, useEmployees, useDeleteEmployee } from '../hooks/use-employees'
 
@@ -21,24 +22,24 @@ export default function EmployeesListPage() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editEmployee, setEditEmployee] = useState<Employee | null>(null)
 
-  const { data } = useEmployees(workspaceId, { search: search || undefined, page, page_size: PAGE_SIZE })
+  const { data, isLoading } = useEmployees(workspaceId, { search: search || undefined, page, page_size: PAGE_SIZE })
   const deleteEmployee = useDeleteEmployee(workspaceId)
 
-  const columns = [
-    { key: 'name', label: t('employees.name'), render: (e: Employee) => <span className="font-medium">{e.name}</span> },
-    { key: 'email', label: t('employees.email'), render: (e: Employee) => e.email },
-    { key: 'position', label: t('employees.position'), render: (e: Employee) => e.position ?? '-' },
+  const columns: SimpleColumn<Employee>[] = [
+    { key: 'name', label: t('employees.name'), render: (e) => <span className="font-medium">{e.name}</span> },
+    { key: 'email', label: t('employees.email'), render: (e) => e.email },
+    { key: 'position', label: t('employees.position'), render: (e) => e.position ?? '-' },
     {
       key: 'hire_date',
       label: t('employees.hireDate'),
-      render: (e: Employee) => e.hire_date ? new Date(e.hire_date).toLocaleDateString() : '-',
+      render: (e) => e.hire_date ? new Date(e.hire_date).toLocaleDateString() : '-',
     },
     {
       key: 'actions',
       label: '',
       className: 'w-20',
-      render: (e: Employee) => (
-        <div className="flex items-center gap-1" onClick={(ev) => ev.stopPropagation()}>
+      render: (e) => (
+        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(ev) => ev.stopPropagation()}>
           <button
             className="p-1 text-neutral-400 hover:text-neutral-700"
             onClick={() => { setEditEmployee(e); setDialogOpen(true) }}
@@ -63,7 +64,7 @@ export default function EmployeesListPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <HrmPageHeader
+      <PageHeader
         title={t('employees.title')}
         description={t('employees.description')}
         searchValue={search}
@@ -71,14 +72,15 @@ export default function EmployeesListPage() {
         onCreateClick={() => { setEditEmployee(null); setDialogOpen(true) }}
         createLabel={t('employees.new')}
       />
-      <HrmDataTable
-        columns={columns}
+      <DataTable
+        columns={toColumnDefs(columns)}
         data={data?.items ?? []}
         keyFn={(e) => e.id}
         onRowClick={(e) => navigate(`/hrm/employees/${e.id}`)}
-        emptyMessage={t('employees.empty')}
+        isLoading={isLoading}
+        emptyTitle={t('employees.empty')}
       />
-      <HrmPagination page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
+      <PaginationControls page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
       <EmployeeFormDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}

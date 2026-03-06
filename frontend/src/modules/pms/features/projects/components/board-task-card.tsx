@@ -64,7 +64,7 @@ export function BoardTaskCard({ task, onOpen, projectId }: BoardTaskCardProps) {
       {...attributes}
       {...listeners}
       className={cn(
-        'group bg-white rounded-md border p-3 shadow-card cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow',
+        'group bg-card rounded-md border p-3 shadow-card cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow',
         isCompleted ? 'border-border opacity-60' : 'border-border',
       )}
     >
@@ -84,8 +84,8 @@ export function BoardTaskCard({ task, onOpen, projectId }: BoardTaskCardProps) {
           className={cn(
             'text-sm leading-snug cursor-pointer flex-1',
             isCompleted
-              ? 'line-through text-neutral-400'
-              : 'text-neutral-900 hover:text-primary',
+              ? 'line-through text-muted-foreground'
+              : 'text-foreground hover:text-primary',
           )}
           onClick={(e) => { e.stopPropagation(); onOpen?.(task) }}
         >

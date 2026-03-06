@@ -55,10 +55,10 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      <h1 className="text-xl font-semibold text-foreground mb-1">{t('auth.createAccount')}</h1>
-      <p className="text-sm text-muted-foreground mb-6">{t('auth.createAccountDescription')}</p>
+      <h1 className="text-xl font-semibold text-foreground mb-1 animate-slide-up-fade">{t('auth.createAccount')}</h1>
+      <p className="text-sm text-muted-foreground mb-6 animate-slide-up-fade delay-100">{t('auth.createAccountDescription')}</p>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 animate-slide-up-fade delay-200">
         <div className="space-y-1.5">
           <Label htmlFor="name">{t('auth.fullName')}</Label>
           <Input id="name" autoComplete="name" placeholder={t('auth.fullNamePlaceholder')} {...register('name')} />
@@ -106,7 +106,7 @@ export default function RegisterPage() {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-muted-foreground">
+      <p className="mt-6 text-center text-sm text-muted-foreground animate-slide-up-fade delay-300">
         {t('auth.alreadyHaveAccount')}{' '}
         <Link to="/login" className="text-primary font-medium hover:underline">
           {t('auth.signIn')}
