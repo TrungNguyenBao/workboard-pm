@@ -22,7 +22,11 @@ class Department(Base, TimestampMixin):
     )
 
     workspace: Mapped["Workspace"] = relationship()  # noqa: F821
-    employees: Mapped[list["Employee"]] = relationship(back_populates="department")  # noqa: F821
+    employees: Mapped[list["Employee"]] = relationship(
+        "Employee",
+        back_populates="department",
+        foreign_keys="[Employee.department_id]",
+    )  # noqa: F821
     parent: Mapped["Department | None"] = relationship(
         "Department",
         remote_side="Department.id",

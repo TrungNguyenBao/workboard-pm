@@ -1,6 +1,6 @@
 # A-ERP — System Architecture
 
-**Last updated:** 2026-03-03
+**Last updated:** 2026-03-07
 
 ---
 
@@ -409,6 +409,75 @@ A module switcher component in the shell allows navigation between modules.
 
 ---
 
+## CRM Module Workflow Operations (SOP)
+
+### Status Flow Management
+
+The CRM module implements state machines for managing entity statuses:
+
+**Lead Status Flow:**
+```
+prospect → qualified → contacted → proposal → negotiation → won | lost
+```
+
+**Deal Status Flow:**
+```
+lead → qualified → proposal → negotiation → closed_won | closed_lost
+```
+
+**Ticket Status Flow:**
+```
+open → in_progress → resolved | closed
+```
+
+Status transitions are validated via `status_flows.py` service to prevent invalid state changes.
+
+### Lead Workflows Service
+
+Lead management with duplicate detection, scoring, and distribution:
+
+| Function | Purpose |
+|---|---|
+| `detect_duplicate_leads()` | Find prospects with same email/company combo |
+| `calculate_lead_score()` | Auto-score based on activity, source, engagement |
+| `identify_stale_leads()` | Find leads untouched for 30+ days |
+| `distribute_round_robin()` | Assign leads fairly across team members |
+
+### Deal Workflows Service
+
+Deal pipeline management and close operations:
+
+| Function | Purpose |
+|---|---|
+| `validate_deal_stage()` | Enforce valid stage transitions |
+| `identify_stale_deals()` | Find deals stuck in negotiation for 60+ days |
+| `close_deal_won()` | Record successful close with amount + date |
+| `close_deal_lost()` | Record loss with reason + post-mortem |
+
+### Data Quality & Governance
+
+**Data Quality Service** — CRM health assessment:
+- Missing required fields (email, phone, company)
+- Orphaned deals (contact deleted)
+- Duplicate contact detection
+- Stale contact warnings (no activity for 90+ days)
+
+**Governance Service** — Policy compliance:
+- Alert on deals closed without approval
+- Flag contacts missing email
+- Warn on discrepancies (deal amount vs deal value)
+- Audit trail on sensitive field updates
+
+### CRM Analytics Enhancements
+
+**Date-Range Filtering:** Query deals, activities by date range (`date_from` / `date_to`).
+
+**Sales Funnel:** Deal count and value by stage (lead → qualified → proposal → negotiation → closed_won/lost).
+
+**Deal Velocity:** Days from creation to close by stage + average time in stage.
+
+---
+
 ## CRM Module API
 
 ### Contacts Endpoints
@@ -442,11 +511,31 @@ A module switcher component in the shell allows navigation between modules.
 - List response: `PaginatedResponse[DealResponse]` with `items`, `total`, `page`, `page_size`
 - **Deal stages** (frontend constant `DEAL_STAGES`): lead, qualified, proposal, negotiation, closed_won, closed_lost
 
+### Workflow Endpoints
+
+| Method | Endpoint | RBAC | Description |
+|---|---|---|---|
+| `POST` | `/crm/workflows/leads/distribute` | member+ | Round-robin distribute unassigned leads |
+| `GET` | `/crm/workflows/leads/stale` | guest+ | List leads untouched for 30+ days |
+| `POST` | `/crm/workflows/deals/{deal_id}/close` | member+ | Mark deal as won or lost with reason |
+| `GET` | `/crm/workflows/deals/stale` | guest+ | List deals stuck in negotiation for 60+ days |
+| `GET` | `/crm/workflows/accounts/follow-ups` | guest+ | List accounts due for contact |
+| `GET` | `/crm/workflows/data-quality/report` | member+ | CRM data health assessment |
+| `GET` | `/crm/workflows/governance/alerts` | member+ | Policy violations and compliance alerts |
+
+**Request/Response:**
+- `DistributeLeadsRequest`: `owner_ids` (list of user UUIDs to round-robin among)
+- `CloseDealRequest`: `outcome` ('won'/'lost'), `loss_reason` (optional, required if lost), `amount` (final deal amount)
+- `StaleDealResponse`: includes deal_id, title, stage, days_in_stage, velocity_warning (bool)
+- `DataQualityReport`: `total_contacts`, `missing_email_count`, `missing_phone_count`, `duplicate_warnings`, `stale_contacts_count`, `health_score` (0-100)
+- `GovernanceAlert`: `type` (e.g., 'unsigned_close', 'orphaned_deal', 'missing_required_field'), `entity_id`, `severity` ('warning'/'critical'), `message`
+
 ### Frontend Integration
 
-- **Shared components**: `crm-data-table`, `crm-page-header`, `crm-pagination`
+- **Shared components**: `crm-data-table`, `crm-page-header`, `crm-pagination`, `deal-close-dialog`, `lead-distribute-dialog`, `stale-deals-alert`, `sales-funnel-chart`
 - **Routes**: `/crm` redirects to `/crm/contacts`; sidebar shows CRM nav when `activeModule === 'crm'`
-- **State**: TanStack Query v5 hooks (`useContacts`, `useDeals`) + Zustand workspace store
+- **State**: TanStack Query v5 hooks (`useContacts`, `useDeals`, `useGovernanceAlerts`, `useDistributeLeads`, `useCloseDeal`) + Zustand workspace store
+- **Dashboard**: CRM dashboard displays governance alerts banner, sales funnel chart by stage, deal velocity KPI, health score badge
 - **Search**: client-side pagination + server-side ILIKE filtering
 
 ---

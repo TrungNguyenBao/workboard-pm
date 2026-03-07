@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="vi" data-lang="vi" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOP Hành chính Nhân sự — HRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--font-sans:'DM Sans',system-ui,-apple-system,sans-serif;--font-mono:'JetBrains Mono','Fira Code',monospace;--color-primary:#5E6AD2;--color-primary-hover:#4F55C4;--color-accent:#F28C38;--color-success:#22C55E;--color-warning:#F59E0B;--color-danger:#EF4444;--color-info:#38BDF8;--bg-page:#FFFFFF;--bg-surface:#F9F9FB;--bg-elevated:#FFFFFF;--border-default:#E4E4E7;--text-primary:#18181B;--text-secondary:#52525B;--text-tertiary:#A1A1AA;--radius-xs:4px;--radius-sm:6px;--radius-md:8px;--radius-lg:12px;--radius-full:9999px;--shadow-elevated:0 4px 12px rgba(0,0,0,.10);--sidebar-width:260px;--topbar-height:52px;--dur:150ms;}
+[data-theme="dark"]{--bg-page:#0F0F12;--bg-surface:#1A1A1F;--bg-elevated:#25252B;--border-default:rgba(255,255,255,.10);--text-primary:#FAFAFA;--text-secondary:#A1A1AA;--text-tertiary:#52525B;--color-primary:#6E78E8;--color-primary-hover:#7D87EE;--color-accent:#F5A05A;--color-success:#4ADE80;--color-warning:#FBB532;--color-danger:#F87171;--color-info:#7DD3FC;--shadow-elevated:0 4px 12px rgba(0,0,0,.40);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;font-size:14px;}
+body{font-family:var(--font-sans);font-size:14px;line-height:1.6;color:var(--text-primary);background:var(--bg-page);transition:background var(--dur) ease,color var(--dur) ease;}
+.topbar{position:fixed;top:0;left:0;right:0;height:var(--topbar-height);background:var(--bg-surface);border-bottom:1px solid var(--border-default);display:flex;align-items:center;padding:0 16px;gap:12px;z-index:100;}
+.topbar-brand{font-size:16px;font-weight:700;color:var(--color-primary);letter-spacing:-.3px;flex-shrink:0;}
+.topbar-brand span{color:var(--text-primary);font-weight:400;}
+.topbar-subtitle{font-size:12px;color:var(--text-tertiary);border-left:1px solid var(--border-default);padding-left:12px;margin-left:4px;}
+.topbar-spacer{flex:1;}
+.hamburger{display:none;background:none;border:none;cursor:pointer;color:var(--text-secondary);padding:6px;border-radius:var(--radius-sm);}
+.hamburger:hover{background:var(--bg-elevated);}
+.dark-toggle{background:none;border:1px solid var(--border-default);border-radius:var(--radius-sm);cursor:pointer;color:var(--text-secondary);padding:6px 10px;font-size:13px;font-family:var(--font-sans);display:flex;align-items:center;gap:6px;transition:background var(--dur) ease,border-color var(--dur) ease;}
+.dark-toggle:hover{background:var(--bg-elevated);border-color:var(--text-tertiary);}
+.sidebar{position:fixed;top:var(--topbar-height);left:0;width:var(--sidebar-width);height:calc(100vh - var(--topbar-height));background:var(--bg-surface);border-right:1px solid var(--border-default);overflow-y:auto;overflow-x:hidden;z-index:90;transition:transform var(--dur) ease;padding:16px 0 32px;}
+.sidebar::-webkit-scrollbar{width:4px;}.sidebar::-webkit-scrollbar-thumb{background:var(--border-default);border-radius:2px;}
+.sidebar-section{margin-bottom:8px;}
+.sidebar-section-header{display:flex;align-items:center;justify-content:space-between;padding:6px 16px;cursor:pointer;user-select:none;}
+.sidebar-section-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--text-tertiary);}
+.sidebar-chevron{color:var(--text-tertiary);transition:transform var(--dur) ease;}
+.sidebar-section.collapsed .sidebar-chevron{transform:rotate(-90deg);}
+.sidebar-section.collapsed .sidebar-section-items{display:none;}
+.sidebar-link{display:flex;align-items:center;gap:8px;padding:6px 16px 6px 24px;font-size:13px;color:var(--text-secondary);text-decoration:none;cursor:pointer;transition:background var(--dur) ease,color var(--dur) ease;border:none;background:none;width:100%;text-align:left;line-height:1.4;}
+.sidebar-link:hover{background:var(--bg-elevated);color:var(--text-primary);}
+.sidebar-link.active,.sidebar-link.spy-active{background:rgba(94,106,210,.10);color:var(--color-primary);font-weight:500;}
+[data-theme="dark"] .sidebar-link.active,[data-theme="dark"] .sidebar-link.spy-active{background:rgba(110,120,232,.15);}
+.sidebar-link-dot{width:5px;height:5px;border-radius:50%;background:var(--text-tertiary);flex-shrink:0;margin-left:4px;}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.40);z-index:89;}
+.main{margin-left:var(--sidebar-width);margin-top:var(--topbar-height);padding:40px 48px;max-width:calc(100% - var(--sidebar-width));min-height:calc(100vh - var(--topbar-height));}
+.content-area{max-width:820px;margin:0 auto;}
+h1{font-size:28px;font-weight:700;line-height:1.2;color:var(--text-primary);margin-bottom:8px;letter-spacing:-.4px;}
+h2{font-size:22px;font-weight:600;line-height:1.3;color:var(--text-primary);margin-top:52px;margin-bottom:16px;padding-top:20px;border-top:1px solid var(--border-default);letter-spacing:-.3px;}
+h2:first-child{margin-top:0;border-top:none;padding-top:0;}
+h3{font-size:16px;font-weight:600;line-height:1.4;color:var(--text-primary);margin-top:32px;margin-bottom:10px;}
+h4{font-size:14px;font-weight:600;color:var(--text-primary);margin-top:20px;margin-bottom:8px;}
+p{color:var(--text-secondary);margin-bottom:12px;line-height:1.7;}p:last-child{margin-bottom:0;}
+ul,ol{padding-left:20px;margin-bottom:12px;color:var(--text-secondary);}
+li{margin-bottom:4px;line-height:1.6;}li strong{color:var(--text-primary);}
+a{color:var(--color-primary);text-decoration:none;}a:hover{text-decoration:underline;}
+code{font-family:var(--font-mono);font-size:12px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-xs);padding:1px 5px;color:var(--color-primary);}
+[data-theme="dark"] code{background:var(--bg-elevated);}
+.page-header{margin-bottom:40px;padding-bottom:28px;border-bottom:1px solid var(--border-default);}
+.page-header-meta{font-size:13px;color:var(--text-tertiary);margin-top:8px;}
+.table-wrap{overflow-x:auto;margin-bottom:20px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;padding:8px 12px;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--text-tertiary);background:var(--bg-surface);border-bottom:1px solid var(--border-default);}
+td{padding:9px 12px;border-bottom:1px solid var(--border-default);color:var(--text-secondary);vertical-align:top;line-height:1.5;}
+td strong{color:var(--text-primary);}tr:last-child td{border-bottom:none;}tr:hover td{background:var(--bg-surface);}
+.callout{display:flex;gap:12px;padding:14px 16px;border-radius:var(--radius-md);margin:20px 0;border-left:3px solid;}
+.callout-icon{font-size:16px;line-height:1.5;flex-shrink:0;}
+.callout-body{flex:1;font-size:13px;line-height:1.6;}
+.callout-body strong{display:block;margin-bottom:2px;}
+.callout-body p{margin:0;font-size:13px;}
+.callout-tip{background:rgba(34,197,94,.07);border-color:var(--color-success);}
+.callout-tip .callout-body{color:#166534;}[data-theme="dark"] .callout-tip .callout-body{color:#86efac;}
+.callout-info{background:rgba(56,189,248,.07);border-color:var(--color-info);}
+.callout-info .callout-body{color:#075985;}[data-theme="dark"] .callout-info .callout-body{color:#7dd3fc;}
+.callout-warning{background:rgba(245,158,11,.07);border-color:var(--color-warning);}
+.callout-warning .callout-body{color:#92400e;}[data-theme="dark"] .callout-warning .callout-body{color:#fcd34d;}
+.callout-danger{background:rgba(239,68,68,.07);border-color:var(--color-danger);}
+.callout-danger .callout-body{color:#991B1B;}[data-theme="dark"] .callout-danger .callout-body{color:#fca5a5;}
+.callout-note{background:rgba(94,106,210,.07);border-color:var(--color-primary);}
+.callout-note .callout-body{color:#3730a3;}[data-theme="dark"] .callout-note .callout-body{color:#a5b4fc;}
+.back-to-top{position:fixed;bottom:28px;right:28px;width:40px;height:40px;background:var(--color-primary);color:#fff;border:none;border-radius:var(--radius-full);cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:var(--shadow-elevated);z-index:200;transition:background var(--dur) ease,transform var(--dur) ease;}
+.back-to-top:hover{background:var(--color-primary-hover);transform:translateY(-2px);}
+.back-to-top.visible{display:flex;}
+.section-intro{color:var(--text-secondary);font-size:14px;margin-bottom:24px;line-height:1.7;}
+.step-list{list-style:none;padding:0;counter-reset:step;}
+.step-list li{counter-increment:step;display:flex;gap:14px;margin-bottom:14px;align-items:flex-start;}
+.step-list li::before{content:counter(step);display:flex;align-items:center;justify-content:center;width:24px;height:24px;min-width:24px;background:var(--color-primary);color:#fff;border-radius:var(--radius-full);font-size:11px;font-weight:700;margin-top:2px;}
+.step-list li span{color:var(--text-secondary);font-size:14px;line-height:1.6;}
+.status-flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:16px 0;padding:14px 16px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-md);}
+.sp{display:inline-flex;align-items:center;padding:4px 10px;border-radius:var(--radius-full);font-size:11px;font-weight:600;font-family:var(--font-mono);letter-spacing:.3px;white-space:nowrap;}
+.sp-draft{background:rgba(161,161,170,.15);color:var(--text-secondary);border:1px solid var(--border-default);}
+.sp-blue{background:rgba(56,189,248,.12);color:#0284C7;border:1px solid rgba(56,189,248,.30);}
+.sp-green{background:rgba(34,197,94,.12);color:#15803D;border:1px solid rgba(34,197,94,.30);}
+.sp-amber{background:rgba(245,158,11,.12);color:#B45309;border:1px solid rgba(245,158,11,.30);}
+.sp-red{background:rgba(239,68,68,.12);color:#B91C1C;border:1px solid rgba(239,68,68,.30);}
+.sp-purple{background:rgba(94,106,210,.12);color:var(--color-primary);border:1px solid rgba(94,106,210,.30);}
+.sp-orange{background:rgba(242,140,56,.12);color:#C2410C;border:1px solid rgba(242,140,56,.30);}
+[data-theme="dark"] .sp-blue{color:#7DD3FC;}[data-theme="dark"] .sp-green{color:#4ADE80;}
+[data-theme="dark"] .sp-amber{color:#FBB532;}[data-theme="dark"] .sp-red{color:#F87171;}[data-theme="dark"] .sp-orange{color:#FB923C;}
+.flow-arr{color:var(--text-tertiary);font-size:14px;font-weight:700;padding:0 2px;}
+.roles-row{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 16px;}
+.role-tag{display:inline-flex;align-items:center;padding:3px 10px;background:rgba(94,106,210,.08);color:var(--color-primary);border-radius:var(--radius-full);font-size:12px;font-weight:500;}
+.feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:20px 0;}
+.feature-card{background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:16px;}
+.feature-card-title{font-weight:600;font-size:13px;color:var(--text-primary);margin-bottom:4px;}
+.feature-card-desc{font-size:12px;color:var(--text-secondary);line-height:1.5;}
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:20px 0;}
+.kpi-card{background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:16px 20px;display:flex;align-items:center;gap:14px;}
+.kpi-value{font-size:22px;font-weight:700;color:var(--color-primary);font-family:var(--font-mono);flex-shrink:0;}
+.kpi-label{font-size:12px;color:var(--text-secondary);line-height:1.4;}
+.golden-list{list-style:none;padding:0;}
+.golden-list li{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-md);margin-bottom:8px;}
+.gl-icon{color:var(--color-accent);font-size:16px;flex-shrink:0;margin-top:1px;}
+.gl-text{color:var(--text-secondary);font-size:13px;line-height:1.6;}
+.gl-text strong{color:var(--text-primary);}
+.module-tag{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 6px;border-radius:var(--radius-xs);margin-right:6px;vertical-align:middle;}
+.mod-org{background:rgba(94,106,210,.12);color:var(--color-primary);}
+.mod-recruit{background:rgba(56,189,248,.12);color:#0284C7;}
+.mod-cb{background:rgba(34,197,94,.12);color:#16A34A;}
+.mod-perf{background:rgba(245,158,11,.12);color:#D97706;}
+.mod-admin{background:rgba(242,140,56,.12);color:#C2410C;}
+.mod-off{background:rgba(239,68,68,.12);color:#DC2626;}
+[data-theme="dark"] .mod-recruit{color:#7DD3FC;}[data-theme="dark"] .mod-cb{color:#4ADE80;}
+[data-theme="dark"] .mod-perf{color:#FBB532;}[data-theme="dark"] .mod-admin{color:#FB923C;}[data-theme="dark"] .mod-off{color:#F87171;}
+html[data-lang="en"] .lang-vi{display:none;}
+html[data-lang="vi"] .lang-en{display:none;}
+.lang-toggle{display:flex;align-items:center;gap:2px;border:1px solid var(--border-default);border-radius:var(--radius-full);padding:2px;background:var(--bg-elevated);margin-left:4px;}
+.lang-toggle button{padding:2px 10px;border:none;border-radius:var(--radius-full);background:transparent;color:var(--text-secondary);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font-sans);transition:all var(--dur) ease;}
+.lang-toggle button.active{background:var(--color-primary);color:#fff;}
+@media(max-width:768px){.sidebar{transform:translateX(-100%);z-index:95;}.sidebar.open{transform:translateX(0);}.sidebar-overlay.open{display:block;}.hamburger{display:flex;}.topbar-subtitle{display:none;}.main{margin-left:0;max-width:100%;padding:24px 20px;}.feature-grid,.kpi-grid{grid-template-columns:1fr;}h1{font-size:22px;}h2{font-size:18px;}}
+@media print{.sidebar,.topbar,.back-to-top,.dark-toggle,.hamburger{display:none!important;}.main{margin:0;padding:20px;max-width:100%;}h2{page-break-before:always;}h2:first-child{page-break-before:avoid;}.callout{break-inside:avoid;}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <span class="topbar-brand">A-ERP <span>SOP</span></span>
+  <span class="topbar-subtitle lang-vi">Quy trình vận hành — Hành chính Nhân sự</span>
+  <span class="topbar-subtitle lang-en">Operations SOP — Human Resource Management</span>
+  <span class="topbar-spacer"></span>
+  <button class="dark-toggle" id="darkToggle">
+    <svg id="sunIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+    <svg id="moonIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <span id="darkToggleLabel">Dark</span>
+  </button>
+  <div class="lang-toggle">
+    <button id="langVi" class="active">VI</button>
+    <button id="langEn">EN</button>
+  </div>
+</header>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-section" id="sec-intro">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-intro')">
+      <span class="sidebar-section-title" data-vi="Giới thiệu" data-en="Introduction">Giới thiệu</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#tong-quan" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Tổng quan hệ thống" data-en="System Overview">Tổng quan hệ thống</span></a>
+      <a class="sidebar-link" href="#vai-tro" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Vai trò &amp; Trách nhiệm" data-en="Roles &amp; Responsibilities">Vai trò &amp; Trách nhiệm</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-org">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-org')">
+      <span class="sidebar-section-title" data-vi="Tổ chức &amp; Hồ sơ" data-en="Org &amp; Records">Tổ chức &amp; Hồ sơ</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#sop01" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 01 — Sơ đồ Tổ chức" data-en="SOP 01 — Org Chart">SOP 01 — Sơ đồ Tổ chức</span></a>
+      <a class="sidebar-link" href="#sop02" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 02 — Hồ sơ Nhân sự" data-en="SOP 02 — Employee Records">SOP 02 — Hồ sơ Nhân sự</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-recruit">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-recruit')">
+      <span class="sidebar-section-title" data-vi="Tuyển dụng" data-en="Recruitment">Tuyển dụng</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#sop03" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 03 — Yêu cầu Tuyển dụng" data-en="SOP 03 — Recruitment Request">SOP 03 — Yêu cầu Tuyển dụng</span></a>
+      <a class="sidebar-link" href="#sop04" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 04 — Pipeline Ứng viên" data-en="SOP 04 — Candidate Pipeline">SOP 04 — Pipeline Ứng viên</span></a>
+      <a class="sidebar-link" href="#sop05" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 05 — Offer &amp; Onboarding" data-en="SOP 05 — Offer &amp; Onboarding">SOP 05 — Offer &amp; Onboarding</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-cb">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-cb')">
+      <span class="sidebar-section-title" data-vi="Chấm công &amp; Lương" data-en="Attendance &amp; Payroll">Chấm công &amp; Lương</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#sop06" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 06 — Chấm công &amp; Nghỉ phép" data-en="SOP 06 — Attendance &amp; Leave">SOP 06 — Chấm công &amp; Nghỉ phép</span></a>
+      <a class="sidebar-link" href="#sop07" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 07 — Tính &amp; Chi lương" data-en="SOP 07 — Payroll">SOP 07 — Tính &amp; Chi lương</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-perf">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-perf')">
+      <span class="sidebar-section-title" data-vi="Đánh giá &amp; Đào tạo" data-en="Performance &amp; Training">Đánh giá &amp; Đào tạo</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#sop08" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 08 — KPI/OKR &amp; Đánh giá" data-en="SOP 08 — KPI/OKR &amp; Review">SOP 08 — KPI/OKR &amp; Đánh giá</span></a>
+      <a class="sidebar-link" href="#sop09" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 09 — Đào tạo &amp; Phát triển" data-en="SOP 09 — Training &amp; Development">SOP 09 — Đào tạo &amp; Phát triển</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-admin">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-admin')">
+      <span class="sidebar-section-title" data-vi="Hành chính" data-en="Admin">Hành chính</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#sop10" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 10 — Tài sản &amp; Mua sắm" data-en="SOP 10 — Assets &amp; Procurement">SOP 10 — Tài sản &amp; Mua sắm</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-off">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-off')">
+      <span class="sidebar-section-title" data-vi="Thôi việc" data-en="Offboarding">Thôi việc</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#sop11" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 11 — Quy trình Thôi việc" data-en="SOP 11 — Offboarding Process">SOP 11 — Quy trình Thôi việc</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-ref">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-ref')">
+      <span class="sidebar-section-title" data-vi="Tham chiếu" data-en="Reference">Tham chiếu</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#kpi" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="KPI vận hành" data-en="Operational KPIs">KPI vận hành</span></a>
+      <a class="sidebar-link" href="#role-summary" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Tổng hợp theo Vai trò" data-en="Summary by Role">Tổng hợp theo Vai trò</span></a>
+      <a class="sidebar-link" href="#nguyen-tac-vang" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Nguyên tắc vàng" data-en="Golden Principles">Nguyên tắc vàng</span></a>
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+<div class="content-area">
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="lang-vi">
+    <h1>SOP Hành chính Nhân sự</h1>
+    <p class="page-header-meta">Quản lý Tổ chức • Tuyển dụng • C&amp;B • Đánh giá • Đào tạo — Phiên bản 1.0</p>
+  </div>
+  <div class="lang-en">
+    <h1>HR Management SOP</h1>
+    <p class="page-header-meta">Organization • Recruitment • C&amp;B • Performance • Training — Version 1.0</p>
+  </div>
+</div>
+
+<!-- ===== OVERVIEW ===== -->
+<h2 id="tong-quan">
+  <span class="lang-vi">Tổng quan hệ thống</span>
+  <span class="lang-en">System Overview</span>
+</h2>
+<div class="lang-vi">
+  <p class="section-intro">Tài liệu này chuẩn hóa 100% quy trình nghiệp vụ HCNS trong doanh nghiệp — từ tuyển dụng, chấm công, tính lương, đánh giá hiệu suất đến quản lý tài sản và thôi việc.</p>
+  <div class="feature-grid">
+    <div class="feature-card"><div class="feature-card-title">Mục đích</div><div class="feature-card-desc">Chuẩn hóa quy trình HCNS, đảm bảo tính nhất quán, minh bạch và tuân thủ pháp luật lao động.</div></div>
+    <div class="feature-card"><div class="feature-card-title">Phạm vi áp dụng</div><div class="feature-card-desc">Quản lý tổ chức, tuyển dụng, chấm công, lương, đánh giá, đào tạo, tài sản và offboarding.</div></div>
+    <div class="feature-card"><div class="feature-card-title">Tích hợp hệ thống</div><div class="feature-card-desc">Module HRM tích hợp toàn diện với ERP. Phân quyền RBAC, phê duyệt online, self-service cho nhân viên.</div></div>
+    <div class="feature-card"><div class="feature-card-title">Nguyên tắc nền tảng</div><div class="feature-card-desc">Dữ liệu trên hệ thống = chính thức. Phê duyệt online bắt buộc. SLA 24h cho mọi yêu cầu.</div></div>
+  </div>
+</div>
+<div class="lang-en">
+  <p class="section-intro">This document standardizes 100% of HR administrative processes — from recruitment, attendance, payroll, performance review to asset management and offboarding.</p>
+  <div class="feature-grid">
+    <div class="feature-card"><div class="feature-card-title">Purpose</div><div class="feature-card-desc">Standardize all HR processes, ensuring consistency, transparency and compliance with labor law.</div></div>
+    <div class="feature-card"><div class="feature-card-title">Scope</div><div class="feature-card-desc">Organization management, recruitment, attendance, payroll, performance, training, assets and offboarding.</div></div>
+    <div class="feature-card"><div class="feature-card-title">System Integration</div><div class="feature-card-desc">HRM module fully integrated with ERP. RBAC access control, online approval workflows, employee self-service.</div></div>
+    <div class="feature-card"><div class="feature-card-title">Core Principles</div><div class="feature-card-desc">Data in system = official record. Online approval is mandatory. 24-hour SLA for all requests.</div></div>
+  </div>
+</div>
+
+<!-- ===== ROLES ===== -->
+<h2 id="vai-tro">
+  <span class="lang-vi">Vai trò &amp; Trách nhiệm</span>
+  <span class="lang-en">Roles &amp; Responsibilities</span>
+</h2>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Vai trò</span><span class="lang-en">Role</span></th>
+      <th><span class="lang-vi">Trách nhiệm chính</span><span class="lang-en">Main Responsibilities</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>HR Admin</strong></td>
+      <td><span class="lang-vi">Thực thi nghiệp vụ: cập nhật hồ sơ, chấm công, tính lương. Quản lý kho biểu mẫu và tài liệu nhân sự.</span><span class="lang-en">Execute operations: update records, attendance, payroll. Manage HR form library and documents.</span></td>
+    </tr>
+    <tr>
+      <td><strong>HR Manager</strong></td>
+      <td><span class="lang-vi">Kiểm soát và phê duyệt đề xuất tuyển dụng, đào tạo, lương. Giám sát tính tuân thủ quy trình.</span><span class="lang-en">Control and approve recruitment, training, payroll proposals. Monitor process compliance.</span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">Line Manager</span><span class="lang-en">Line Manager</span></strong></td>
+      <td><span class="lang-vi">Lập kế hoạch nhu cầu nhân sự, đề xuất tuyển dụng. Đánh giá KPI/OKR và phê duyệt nghỉ phép, tăng ca.</span><span class="lang-en">Plan headcount needs, create recruitment requests. Evaluate KPI/OKR and approve leave, overtime.</span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">Nhân viên</span><span class="lang-en">Employee</span></strong></td>
+      <td><span class="lang-vi">Tự quản lý thông tin cá nhân (Self-service). Gửi các yêu cầu phê duyệt: nghỉ phép, tăng ca, thanh toán.</span><span class="lang-en">Self-manage personal information. Submit approval requests: leave, overtime, reimbursements.</span></td>
+    </tr>
+    <tr>
+      <td><strong>CEO</strong></td>
+      <td><span class="lang-vi">Phê duyệt định biên nhân sự và ngân sách lớn. Theo dõi dashboard báo cáo chiến lược nhân sự.</span><span class="lang-en">Approve headcount plans and major budgets. Monitor strategic HR dashboard reports.</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ===== SOP 01 ===== -->
+<h2 id="sop01">
+  <span class="module-tag mod-org">Org</span>
+  <span class="lang-vi">SOP 01 — Thiết lập Sơ đồ Tổ chức (Org Chart)</span>
+  <span class="lang-en">SOP 01 — Set Up Organization Chart</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">HR Manager thiết lập và duy trì cơ cấu phòng ban, vị trí công việc và định biên nhân sự trên hệ thống.</p></div>
+<div class="lang-en"><p class="section-intro">HR Manager establishes and maintains department structure, job positions, and headcount planning in the system.</p></div>
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">HR Manager (thực hiện)</span><span class="lang-en">HR Manager (execute)</span></span>
+  <span class="role-tag"><span class="lang-vi">CEO (phê duyệt)</span><span class="lang-en">CEO (approve)</span></span>
+</div>
+<h4><span class="lang-vi">Luồng trạng thái</span><span class="lang-en">Status Flow</span></h4>
+<div class="status-flow">
+  <span class="sp sp-draft">DRAFT</span><span class="flow-arr">→</span>
+  <span class="sp sp-blue">PENDING_APPROVAL</span><span class="flow-arr">→</span>
+  <span class="sp sp-green">APPROVED</span><span class="flow-arr"> / </span><span class="sp sp-red">REJECTED</span>
+</div>
+<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Truy cập Org Chart</span><span class="lang-en">Access Org Chart</span></strong> — <span class="lang-vi">Vào <code>HRM &gt; Organization &gt; Departments</code> &gt; Tạo phòng ban mới hoặc chọn chỉnh sửa.</span><span class="lang-en">Go to <code>HRM &gt; Organization &gt; Departments</code> &gt; Create new department or select to edit.</span></span></li>
+  <li><span><strong><span class="lang-vi">Thiết lập Phòng ban</span><span class="lang-en">Set Up Department</span></strong> — <span class="lang-vi">Điền: Tên phòng ban, Mã phòng ban, Phòng ban cha (nếu có).</span><span class="lang-en">Fill in: Department name, department code, parent department (if applicable).</span></span></li>
+  <li><span><strong><span class="lang-vi">Định nghĩa vị trí &amp; Headcount</span><span class="lang-en">Define Positions &amp; Headcount</span></strong> — <span class="lang-vi">Tab <strong>Positions</strong> &gt; Thêm vị trí công việc &gt; Nhập định biên từng vị trí.</span><span class="lang-en">In <strong>Positions</strong> tab &gt; Add job positions &gt; Set headcount for each.</span></span></li>
+  <li><span><strong><span class="lang-vi">Gửi phê duyệt CEO</span><span class="lang-en">Submit for CEO Approval</span></strong> — <span class="lang-vi">Nhấn <strong>Submit</strong> &gt; Đề xuất gửi đến CEO phê duyệt.</span><span class="lang-en">Click <strong>Submit</strong> &gt; Proposal sent to CEO for approval.</span></span></li>
+  <li><span><strong><span class="lang-vi">Org Chart cập nhật</span><span class="lang-en">Org Chart Updated</span></strong> — <span class="lang-vi">Sau khi được duyệt, hệ thống tự động cập nhật Org Chart trực quan.</span><span class="lang-en">Once approved, system automatically updates the visual Org Chart.</span></span></li>
+</ol>
+<div class="callout callout-danger">
+  <span class="callout-icon">⚠</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Bắt buộc</span><span class="lang-en">Mandatory</span></strong>
+    <p><span class="lang-vi">Mọi thay đổi cơ cấu tổ chức BẮT BUỘC phải có phê duyệt từ CEO trước khi có hiệu lực. Không thực hiện thay đổi tắt quy trình.</span><span class="lang-en">All organizational changes MUST have CEO approval before taking effect. Never bypass the approval process.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 02 ===== -->
+<h2 id="sop02">
+  <span class="module-tag mod-org">Org</span>
+  <span class="lang-vi">SOP 02 — Cập nhật Hồ sơ Nhân sự</span>
+  <span class="lang-en">SOP 02 — Update Employee Records</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">HR Admin hoặc nhân viên (self-service) cập nhật thông tin cá nhân và tài liệu trong hồ sơ nhân sự.</p></div>
+<div class="lang-en"><p class="section-intro">HR Admin or employee (self-service) updates personal information and documents in the employee record.</p></div>
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">HR Admin</span><span class="lang-en">HR Admin</span></span>
+  <span class="role-tag"><span class="lang-vi">Nhân viên (self-service)</span><span class="lang-en">Employee (self-service)</span></span>
+</div>
+<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Mở hồ sơ nhân viên</span><span class="lang-en">Open Employee Profile</span></strong> — <span class="lang-vi">Vào <code>HRM &gt; Employees</code> &gt; Chọn hồ sơ &gt; Nhấn <strong>Chỉnh sửa</strong>.</span><span class="lang-en">Go to <code>HRM &gt; Employees</code> &gt; Select profile &gt; Click <strong>Edit</strong>.</span></span></li>
+  <li><span><strong><span class="lang-vi">Cập nhật thông tin</span><span class="lang-en">Update Information</span></strong> — <span class="lang-vi">Điền thông tin: Họ tên, Ngày sinh, Địa chỉ, CCCD, Tài khoản ngân hàng.</span><span class="lang-en">Fill in: Full name, date of birth, address, ID number, bank account.</span></span></li>
+  <li><span><strong><span class="lang-vi">Đính kèm tài liệu</span><span class="lang-en">Attach Documents</span></strong> — <span class="lang-vi">Tab <strong>Documents</strong> &gt; Upload giấy tờ scan (Hợp đồng, Bằng cấp, CCCD).</span><span class="lang-en">In <strong>Documents</strong> tab &gt; Upload scanned documents (Contract, Degree, ID card).</span></span></li>
+  <li><span><strong><span class="lang-vi">Lưu hồ sơ</span><span class="lang-en">Save Profile</span></strong> — <span class="lang-vi">Nhấn <strong>Lưu</strong>. Hệ thống ghi nhận lịch sử thay đổi.</span><span class="lang-en">Click <strong>Save</strong>. System logs change history automatically.</span></span></li>
+</ol>
+<div class="callout callout-info">
+  <span class="callout-icon">ℹ</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Phân quyền</span><span class="lang-en">Access Control</span></strong>
+    <p><span class="lang-vi">Thông tin Lương và Phụ cấp chỉ hiển thị cho HR Admin và HR Manager. Nhân viên tự cập nhật thông tin cá nhân qua Self-service nhưng KHÔNG thể sửa thông tin lương.</span><span class="lang-en">Salary and allowance information is only visible to HR Admin and HR Manager. Employees can update personal info via self-service but CANNOT edit salary data.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 03 ===== -->
+<h2 id="sop03">
+  <span class="module-tag mod-recruit">Recruit</span>
+  <span class="lang-vi">SOP 03 — Tạo Yêu cầu Tuyển dụng</span>
+  <span class="lang-en">SOP 03 — Create Recruitment Request</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">Line Manager tạo yêu cầu tuyển dụng khi phòng ban cần bổ sung nhân sự mới hoặc thay thế vị trí trống.</p></div>
+<div class="lang-en"><p class="section-intro">Line Manager creates a recruitment request when the department needs new headcount or a replacement hire.</p></div>
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">Line Manager (tạo)</span><span class="lang-en">Line Manager (create)</span></span>
+  <span class="role-tag"><span class="lang-vi">HR Manager (duyệt)</span><span class="lang-en">HR Manager (approve)</span></span>
+  <span class="role-tag"><span class="lang-vi">CEO (duyệt nếu cần)</span><span class="lang-en">CEO (approve if needed)</span></span>
+</div>
+<h4><span class="lang-vi">Luồng trạng thái</span><span class="lang-en">Status Flow</span></h4>
+<div class="status-flow">
+  <span class="sp sp-draft">DRAFT</span><span class="flow-arr">→</span>
+  <span class="sp sp-blue">SUBMITTED</span><span class="flow-arr">→</span>
+  <span class="sp sp-amber">HR_APPROVED</span><span class="flow-arr">→</span>
+  <span class="sp sp-green">CEO_APPROVED</span><span class="flow-arr"> / </span><span class="sp sp-red">REJECTED</span>
+</div>
+<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Tạo yêu cầu</span><span class="lang-en">Create Request</span></strong> — <span class="lang-vi">Vào <code>HRM &gt; Recruitment &gt; Requests</code> &gt; Nhấn <strong>Tạo yêu cầu mới</strong>.</span><span class="lang-en">Go to <code>HRM &gt; Recruitment &gt; Requests</code> &gt; Click <strong>New Request</strong>.</span></span></li>
+  <li><span><strong><span class="lang-vi">Điền thông tin</span><span class="lang-en">Fill In Details</span></strong> — <span class="lang-vi">Chọn vị trí, số lượng, phòng ban, mức lương đề xuất. Đính kèm JD nếu có.</span><span class="lang-en">Select position, quantity, department, proposed salary. Attach JD if available.</span></span></li>
+  <li><span><strong><span class="lang-vi">Nộp phê duyệt</span><span class="lang-en">Submit for Approval</span></strong> — <span class="lang-vi">Nhấn <strong>Submit</strong>. Yêu cầu chuyển qua HR Manager &gt; CEO.</span><span class="lang-en">Click <strong>Submit</strong>. Request routes to HR Manager &gt; CEO.</span></span></li>
+  <li><span><strong><span class="lang-vi">Theo dõi trạng thái</span><span class="lang-en">Track Status</span></strong> — <span class="lang-vi">Xem tiến trình phê duyệt tại <strong>My Requests</strong>.</span><span class="lang-en">View approval progress under <strong>My Requests</strong>.</span></span></li>
+</ol>
+<div class="callout callout-warning">
+  <span class="callout-icon">⚠</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Lưu ý</span><span class="lang-en">Important</span></strong>
+    <p><span class="lang-vi">Chỉ tạo yêu cầu khi vị trí đó đã có trong Org Chart và còn slot định biên trống. Nếu chưa có, thực hiện SOP 01 trước để bổ sung vị trí.</span><span class="lang-en">Only create a request if the position exists in the Org Chart with available headcount slots. If not, run SOP 01 first to add the position.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 04 ===== -->
+<h2 id="sop04">
+  <span class="module-tag mod-recruit">Recruit</span>
+  <span class="lang-vi">SOP 04 — Vận hành Pipeline Ứng viên &amp; Phỏng vấn</span>
+  <span class="lang-en">SOP 04 — Manage Candidate Pipeline &amp; Interviews</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">HR Admin vận hành quy trình tuyển dụng sau khi yêu cầu được phê duyệt: lọc hồ sơ, phỏng vấn và đánh giá ứng viên.</p></div>
+<div class="lang-en"><p class="section-intro">HR Admin manages the recruitment pipeline after the request is approved: screen CVs, conduct interviews, and evaluate candidates.</p></div>
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">HR Admin (vận hành)</span><span class="lang-en">HR Admin (operate)</span></span>
+  <span class="role-tag"><span class="lang-vi">Line Manager (phỏng vấn)</span><span class="lang-en">Line Manager (interview)</span></span>
+</div>
+<h4><span class="lang-vi">Luồng Pipeline</span><span class="lang-en">Pipeline Flow</span></h4>
+<div class="status-flow">
+  <span class="sp sp-draft">SCREENING</span><span class="flow-arr">→</span>
+  <span class="sp sp-blue">INTERVIEW</span><span class="flow-arr">→</span>
+  <span class="sp sp-amber">ASSESSMENT</span><span class="flow-arr">→</span>
+  <span class="sp sp-purple">OFFER</span><span class="flow-arr">→</span>
+  <span class="sp sp-green">HIRED</span><span class="flow-arr"> / </span><span class="sp sp-red">REJECTED</span>
+</div>
+<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Thêm ứng viên</span><span class="lang-en">Add Candidates</span></strong> — <span class="lang-vi">Vào <code>HRM &gt; Recruitment &gt; Pipeline</code> &gt; Chọn vị trí &gt; Nhấn <strong>Thêm ứng viên</strong> hoặc upload hàng loạt.</span><span class="lang-en">Go to <code>HRM &gt; Recruitment &gt; Pipeline</code> &gt; Select position &gt; Click <strong>Add Candidate</strong> or bulk upload CVs.</span></span></li>
+  <li><span><strong><span class="lang-vi">Kéo-thả qua Pipeline</span><span class="lang-en">Drag Through Pipeline</span></strong> — <span class="lang-vi">Kéo ứng viên qua các cột: Screening → Interview → Assessment → Offer.</span><span class="lang-en">Drag candidates across columns: Screening → Interview → Assessment → Offer.</span></span></li>
+  <li><span><strong><span class="lang-vi">Lên lịch phỏng vấn</span><span class="lang-en">Schedule Interviews</span></strong> — <span class="lang-vi">Tại giai đoạn Interview &gt; <strong>Lịch phỏng vấn</strong> &gt; Chọn ngày giờ, phòng, panel phỏng vấn.</span><span class="lang-en">In the Interview stage &gt; <strong>Schedule Interview</strong> &gt; Select date, room, and interview panel.</span></span></li>
+  <li><span><strong><span class="lang-vi">Điền Evaluation Form</span><span class="lang-en">Fill Evaluation Form</span></strong> — <span class="lang-vi">Sau phỏng vấn, điền <strong>Interview Evaluation Form</strong> cho từng ứng viên.</span><span class="lang-en">After interview, complete <strong>Interview Evaluation Form</strong> for each candidate.</span></span></li>
+  <li><span><strong><span class="lang-vi">Chuyển sang Offer</span><span class="lang-en">Move to Offer</span></strong> — <span class="lang-vi">Ứng viên đạt &gt; kéo sang cột <strong>Offer</strong>. Hệ thống tự gửi email thông báo.</span><span class="lang-en">Qualified candidate &gt; drag to <strong>Offer</strong> column. System auto-sends notification emails.</span></span></li>
+</ol>
+<div class="callout callout-tip">
+  <span class="callout-icon">✓</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Tự động hóa</span><span class="lang-en">Automation</span></strong>
+    <p><span class="lang-vi">Mỗi lần chuyển giai đoạn Pipeline, hệ thống tự động gửi email thông báo cho ứng viên và các bên liên quan. Không cần gửi thủ công.</span><span class="lang-en">Every pipeline stage transition automatically sends notification emails to candidates and stakeholders. No manual sending required.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 05 ===== -->
+<h2 id="sop05">
+  <span class="module-tag mod-recruit">Recruit</span>
+  <span class="lang-vi">SOP 05 — Gửi Offer &amp; Onboarding Nhân sự Mới</span>
+  <span class="lang-en">SOP 05 — Send Offer &amp; Onboard New Employee</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">HR Admin hoàn tất quy trình tuyển dụng bằng cách gửi thư mời làm việc và thực hiện quy trình tiếp nhận nhân viên mới.</p></div>
+<div class="lang-en"><p class="section-intro">HR Admin completes the recruitment process by sending the offer letter and executing the new employee onboarding process.</p></div>
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">HR Admin (thực hiện)</span><span class="lang-en">HR Admin (execute)</span></span>
+  <span class="role-tag"><span class="lang-vi">HR Manager (duyệt Offer)</span><span class="lang-en">HR Manager (approve Offer)</span></span>
+</div>
+<h4><span class="lang-vi">Luồng trạng thái</span><span class="lang-en">Status Flow</span></h4>
+<div class="status-flow">
+  <span class="sp sp-blue">OFFER_SENT</span><span class="flow-arr">→</span>
+  <span class="sp sp-green">ACCEPTED</span><span class="flow-arr">→</span>
+  <span class="sp sp-amber">ONBOARDING</span><span class="flow-arr">→</span>
+  <span class="sp sp-purple">ACTIVE</span>
+</div>
+<h4><span class="lang-vi">Phần A — Gửi Offer Letter</span><span class="lang-en">Part A — Send Offer Letter</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Tạo Offer Proposal</span><span class="lang-en">Create Offer Proposal</span></strong> — <span class="lang-vi">Tại Pipeline (Offer) &gt; Nhấn <strong>Tạo Offer Proposal</strong> &gt; Điền: Lương, Ngày bắt đầu, Loại hợp đồng, Phúc lợi.</span><span class="lang-en">In Pipeline (Offer) &gt; Click <strong>Create Offer Proposal</strong> &gt; Fill: Salary, Start date, Contract type, Benefits.</span></span></li>
+  <li><span><strong><span class="lang-vi">HR Manager phê duyệt</span><span class="lang-en">HR Manager Approves</span></strong> — <span class="lang-vi">Gửi Offer cho HR Manager duyệt trước khi gửi ứng viên.</span><span class="lang-en">Send Offer to HR Manager for approval before sending to candidate.</span></span></li>
+  <li><span><strong><span class="lang-vi">Gửi Offer Letter</span><span class="lang-en">Send Offer Letter</span></strong> — <span class="lang-vi">Sau khi duyệt, nhấn <strong>Gửi thư mời</strong> — hệ thống tự gửi email Offer Letter.</span><span class="lang-en">Once approved, click <strong>Send Offer</strong> — system auto-sends Offer Letter email to candidate.</span></span></li>
+</ol>
+<h4><span class="lang-vi">Phần B — Onboarding</span><span class="lang-en">Part B — Onboarding</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Bắt đầu Onboarding</span><span class="lang-en">Start Onboarding</span></strong> — <span class="lang-vi">Khi ứng viên xác nhận, nhấn <strong>Bắt đầu Onboarding</strong>. Hệ thống tạo mã NV và tài khoản hệ thống.</span><span class="lang-en">When candidate confirms, click <strong>Start Onboarding</strong>. System creates employee ID and system account.</span></span></li>
+  <li><span><strong><span class="lang-vi">Hoàn thành Checklist</span><span class="lang-en">Complete Checklist</span></strong> — <span class="lang-vi">Mở <strong>Onboarding Checklist</strong>: Bàn giao chỗ ngồi/thiết bị, đào tạo nội quy, ký hợp đồng, đăng ký BHXH.</span><span class="lang-en">Open <strong>Onboarding Checklist</strong>: Seat/device handover, policy training, contract signing, social insurance registration.</span></span></li>
+  <li><span><strong><span class="lang-vi">Hoàn tất Onboarding</span><span class="lang-en">Complete Onboarding</span></strong> — <span class="lang-vi">Đánh dấu tất cả mục &gt; Nhấn <strong>Hoàn tất</strong>. Hồ sơ chuyển sang trạng thái <code>ACTIVE</code>.</span><span class="lang-en">Check all items &gt; Click <strong>Complete</strong>. Employee record status changes to <code>ACTIVE</code>.</span></span></li>
+</ol>
+<div class="callout callout-warning">
+  <span class="callout-icon">⚠</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Thời hạn</span><span class="lang-en">Deadline</span></strong>
+    <p><span class="lang-vi">Toàn bộ Onboarding Checklist phải hoàn tất trong vòng 7 ngày làm việc kể từ ngày nhân viên bắt đầu.</span><span class="lang-en">The full Onboarding Checklist must be completed within 7 working days of the employee's start date.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 06 ===== -->
+<h2 id="sop06">
+  <span class="module-tag mod-cb">C&amp;B</span>
+  <span class="lang-vi">SOP 06 — Chấm công, Nghỉ phép &amp; Tăng ca</span>
+  <span class="lang-en">SOP 06 — Attendance, Leave &amp; Overtime</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">Nhân viên ghi nhận công hàng ngày và gửi yêu cầu nghỉ phép hoặc tăng ca qua hệ thống để Line Manager phê duyệt.</p></div>
+<div class="lang-en"><p class="section-intro">Employees record daily attendance and submit leave or overtime requests through the system for Line Manager approval.</p></div>
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">Nhân viên (gửi)</span><span class="lang-en">Employee (submit)</span></span>
+  <span class="role-tag"><span class="lang-vi">Line Manager (duyệt)</span><span class="lang-en">Line Manager (approve)</span></span>
+  <span class="role-tag"><span class="lang-vi">HR Admin (chốt bảng công)</span><span class="lang-en">HR Admin (finalize)</span></span>
+</div>
+<h4><span class="lang-vi">Luồng phê duyệt yêu cầu</span><span class="lang-en">Request Approval Flow</span></h4>
+<div class="status-flow">
+  <span class="sp sp-draft">DRAFT</span><span class="flow-arr">→</span>
+  <span class="sp sp-blue">SUBMITTED</span><span class="flow-arr">→</span>
+  <span class="sp sp-green">APPROVED</span><span class="flow-arr"> / </span><span class="sp sp-red">REJECTED</span>
+</div>
+<h4><span class="lang-vi">A — Chấm công hàng ngày</span><span class="lang-en">A — Daily Attendance</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Check-in / Check-out</span><span class="lang-en">Check-in / Check-out</span></strong> — <span class="lang-vi">Nhân viên quẹt thẻ máy chấm công hoặc check-in qua App di động.</span><span class="lang-en">Employee swipes card at time clock machine or checks in via mobile app.</span></span></li>
+  <li><span><strong><span class="lang-vi">Bổ sung công nếu quên</span><span class="lang-en">Supplement if Missed</span></strong> — <span class="lang-vi">Vào <code>HRM &gt; Attendance</code> &gt; <strong>Đề nghị bổ sung công</strong> &gt; Điền lý do &gt; Submit.</span><span class="lang-en">Go to <code>HRM &gt; Attendance</code> &gt; <strong>Request Attendance Correction</strong> &gt; Fill reason &gt; Submit.</span></span></li>
+</ol>
+<h4><span class="lang-vi">B — Yêu cầu Nghỉ phép</span><span class="lang-en">B — Leave Request</span></h4>
+<ol class="step-list">
+  <li><span><span class="lang-vi">Vào <code>HRM &gt; Leave</code> &gt; Nhấn <strong>Tạo đơn nghỉ phép</strong>.</span><span class="lang-en">Go to <code>HRM &gt; Leave</code> &gt; Click <strong>New Leave Request</strong>.</span></span></li>
+  <li><span><span class="lang-vi">Chọn loại phép: Phép năm, Phép không lương, Nghỉ ốm, Nghỉ thai sản...</span><span class="lang-en">Select leave type: Annual leave, Unpaid leave, Sick leave, Maternity leave...</span></span></li>
+  <li><span><span class="lang-vi">Chọn ngày (hệ thống tự tính số ngày) &gt; Nhập lý do &gt; <strong>Submit</strong>.</span><span class="lang-en">Select dates (system auto-calculates days) &gt; Enter reason &gt; <strong>Submit</strong>.</span></span></li>
+  <li><span><span class="lang-vi">Line Manager phê duyệt trực tuyến. Nhân viên nhận thông báo kết quả.</span><span class="lang-en">Line Manager approves online. Employee receives notification of the result.</span></span></li>
+</ol>
+<h4><span class="lang-vi">C — Yêu cầu Tăng ca</span><span class="lang-en">C — Overtime Request</span></h4>
+<ol class="step-list">
+  <li><span><span class="lang-vi">Vào <code>HRM &gt; Overtime</code> &gt; Nhấn <strong>Tạo đơn tăng ca</strong> &gt; Điền ngày, số giờ, lý do &gt; <strong>Submit</strong>.</span><span class="lang-en">Go to <code>HRM &gt; Overtime</code> &gt; Click <strong>New OT Request</strong> &gt; Fill date, hours, reason &gt; <strong>Submit</strong>.</span></span></li>
+  <li><span><span class="lang-vi">HR chốt bảng công vào ngày cuối cùng của tháng.</span><span class="lang-en">HR finalizes the attendance sheet on the last day of the month.</span></span></li>
+</ol>
+<div class="callout callout-note">
+  <span class="callout-icon">📋</span>
+  <div class="callout-body">
+    <strong>SLA</strong>
+    <p><span class="lang-vi">Mọi yêu cầu phê duyệt phải được xử lý trong vòng <strong>24 giờ</strong> làm việc. Quá hạn sẽ leo thang lên cấp trên.</span><span class="lang-en">All approval requests must be processed within <strong>24 business hours</strong>. Overdue requests escalate to the next level.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 07 ===== -->
+<h2 id="sop07">
+  <span class="module-tag mod-cb">C&amp;B</span>
+  <span class="lang-vi">SOP 07 — Tính Lương &amp; Chi trả Lương</span>
+  <span class="lang-en">SOP 07 — Payroll Calculation &amp; Disbursement</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">HR Admin tổng hợp bảng lương cuối tháng sau khi chốt bảng công, trình HR Manager và Kế toán phê duyệt trước khi phát hành phiếu lương.</p></div>
+<div class="lang-en"><p class="section-intro">HR Admin compiles the monthly payroll after attendance is finalized, submits to HR Manager and Accounting for approval before publishing pay slips.</p></div>
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">HR Admin (tổng hợp)</span><span class="lang-en">HR Admin (compile)</span></span>
+  <span class="role-tag"><span class="lang-vi">HR Manager (duyệt)</span><span class="lang-en">HR Manager (approve)</span></span>
+  <span class="role-tag"><span class="lang-vi">Kế toán (duyệt)</span><span class="lang-en">Accounting (approve)</span></span>
+</div>
+<h4><span class="lang-vi">Luồng trạng thái</span><span class="lang-en">Status Flow</span></h4>
+<div class="status-flow">
+  <span class="sp sp-draft">DRAFT</span><span class="flow-arr">→</span>
+  <span class="sp sp-blue">REVIEWED</span><span class="flow-arr">→</span>
+  <span class="sp sp-amber">APPROVED</span><span class="flow-arr">→</span>
+  <span class="sp sp-green">PUBLISHED</span>
+</div>
+<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Tạo bảng lương tháng</span><span class="lang-en">Create Monthly Payroll</span></strong> — <span class="lang-vi">Vào <code>HRM &gt; Payroll &gt; Monthly Payroll</code> &gt; <strong>Tạo bảng lương</strong> &gt; Chọn tháng/năm.</span><span class="lang-en">Go to <code>HRM &gt; Payroll &gt; Monthly Payroll</code> &gt; <strong>Create Payroll</strong> &gt; Select month/year.</span></span></li>
+  <li><span><strong><span class="lang-vi">Hệ thống tự tổng hợp</span><span class="lang-en">System Auto-Aggregates</span></strong> — <span class="lang-vi">Ngày công thực tế + Lương cơ bản + Phụ cấp + Tăng ca (×150%/200%/300%) − BHXH, BHYT, Thuế TNCN.</span><span class="lang-en">Actual workdays + Base salary + Allowances + OT (×150%/200%/300%) − Social insurance, health insurance, personal income tax.</span></span></li>
+  <li><span><strong><span class="lang-vi">Kiểm tra &amp; xuất nháp</span><span class="lang-en">Review &amp; Export Draft</span></strong> — <span class="lang-vi">HR Admin kiểm tra từng dòng &gt; Nhấn <strong>Xuất phiếu lương nháp</strong> để xem lại.</span><span class="lang-en">HR Admin reviews each line &gt; Click <strong>Export Draft Payslip</strong> to preview.</span></span></li>
+  <li><span><strong><span class="lang-vi">Gửi phê duyệt</span><span class="lang-en">Submit for Approval</span></strong> — <span class="lang-vi">Gửi bảng lương cho HR Manager và Kế toán phê duyệt đồng thời.</span><span class="lang-en">Send payroll to HR Manager and Accounting for simultaneous approval.</span></span></li>
+  <li><span><strong><span class="lang-vi">Phát hành Phiếu lương</span><span class="lang-en">Publish Pay Slips</span></strong> — <span class="lang-vi">Sau khi duyệt, nhấn <strong>Phát hành</strong> — hệ thống tự gửi Payslip cho từng nhân viên qua email/app.</span><span class="lang-en">Once approved, click <strong>Publish</strong> — system auto-sends payslip to each employee via email/app.</span></span></li>
+</ol>
+<div class="callout callout-danger">
+  <span class="callout-icon">⚠</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Chất lượng</span><span class="lang-en">Quality Standard</span></strong>
+    <p><span class="lang-vi">Sai sót tính lương phải dưới <strong>1%</strong>. Nếu phát hiện sai, HR Admin chỉnh sửa và gửi duyệt lại trước khi phát hành. Không phát hành khi chưa được phê duyệt đầy đủ.</span><span class="lang-en">Payroll error rate must be below <strong>1%</strong>. If an error is found, HR Admin corrects and re-submits for approval before publishing. Never publish without full approval.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 08 ===== -->
+<h2 id="sop08">
+  <span class="module-tag mod-perf">Performance</span>
+  <span class="lang-vi">SOP 08 — Thiết lập KPI/OKR &amp; Đánh giá Hiệu suất</span>
+  <span class="lang-en">SOP 08 — Set Up KPI/OKR &amp; Performance Review</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">Line Manager và nhân viên cùng thiết lập mục tiêu đầu kỳ, theo dõi tiến độ, và thực hiện đánh giá tổng kết cuối kỳ.</p></div>
+<div class="lang-en"><p class="section-intro">Line Manager and employee jointly set goals at the start of a period, track progress, and conduct a final performance review at period end.</p></div>
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">Line Manager (đánh giá)</span><span class="lang-en">Line Manager (evaluate)</span></span>
+  <span class="role-tag"><span class="lang-vi">Nhân viên (tự đánh giá)</span><span class="lang-en">Employee (self-assess)</span></span>
+</div>
+<h4><span class="lang-vi">Luồng trạng thái</span><span class="lang-en">Status Flow</span></h4>
+<div class="status-flow">
+  <span class="sp sp-blue">SETUP</span><span class="flow-arr">→</span>
+  <span class="sp sp-amber">IN_PROGRESS</span><span class="flow-arr">→</span>
+  <span class="sp sp-purple">REVIEW</span><span class="flow-arr">→</span>
+  <span class="sp sp-green">COMPLETED</span>
+</div>
+<h4><span class="lang-vi">A — Thiết lập mục tiêu (Đầu kỳ)</span><span class="lang-en">A — Set Goals (Period Start)</span></h4>
+<ol class="step-list">
+  <li><span><span class="lang-vi">Vào <code>HRM &gt; Performance &gt; KPI Setup</code> &gt; <strong>Tạo KPI mới</strong> cho nhân viên hoặc theo phòng ban.</span><span class="lang-en">Go to <code>HRM &gt; Performance &gt; KPI Setup</code> &gt; <strong>Create KPI</strong> for employee or by department.</span></span></li>
+  <li><span><span class="lang-vi">Điền: Tên mục tiêu, Chỉ số đo lường, Trọng số (%), Mức kỳ vọng.</span><span class="lang-en">Fill in: Goal name, measurement metric, weight (%), target level.</span></span></li>
+  <li><span><span class="lang-vi">Gửi nhân viên xác nhận và cam kết mục tiêu.</span><span class="lang-en">Send to employee for confirmation and goal commitment.</span></span></li>
+</ol>
+<h4><span class="lang-vi">B — Theo dõi &amp; Phản hồi (Giữa kỳ)</span><span class="lang-en">B — Track &amp; Feedback (Mid-Period)</span></h4>
+<ol class="step-list">
+  <li><span><span class="lang-vi">Nhân viên cập nhật tiến độ tại <strong>My Performance</strong>.</span><span class="lang-en">Employee updates progress under <strong>My Performance</strong>.</span></span></li>
+  <li><span><span class="lang-vi">Line Manager ghi nhận phản hồi định kỳ (360 feedback).</span><span class="lang-en">Line Manager records periodic feedback (360 feedback).</span></span></li>
+</ol>
+<h4><span class="lang-vi">C — Đánh giá tổng kết (Cuối kỳ)</span><span class="lang-en">C — Final Review (Period End)</span></h4>
+<ol class="step-list">
+  <li><span><span class="lang-vi">Vào <code>Performance &gt; Reviews</code> &gt; Chọn nhân viên &gt; Điền <strong>Performance Review Form</strong>: Điểm KPI, Nhận xét tổng quan.</span><span class="lang-en">Go to <code>Performance &gt; Reviews</code> &gt; Select employee &gt; Fill <strong>Performance Review Form</strong>: KPI scores, overall comments.</span></span></li>
+  <li><span><span class="lang-vi">Nhấn <strong>Submit</strong>. Kết quả liên kết với quyết định tăng lương, thưởng, thăng chức và Career Path.</span><span class="lang-en">Click <strong>Submit</strong>. Results link to salary increase, bonus, promotion decisions, and Career Path.</span></span></li>
+</ol>
+
+<!-- ===== SOP 09 ===== -->
+<h2 id="sop09">
+  <span class="module-tag mod-perf">Performance</span>
+  <span class="lang-vi">SOP 09 — Đào tạo &amp; Phát triển Nhân sự</span>
+  <span class="lang-en">SOP 09 — Training &amp; Employee Development</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">HR lập kế hoạch và triển khai các chương trình đào tạo. Kết quả cập nhật tự động vào Career Path của nhân viên.</p></div>
+<div class="lang-en"><p class="section-intro">HR plans and deploys training programs. Results automatically update the employee's Career Path.</p></div>
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">HR Admin (tổ chức)</span><span class="lang-en">HR Admin (organize)</span></span>
+  <span class="role-tag"><span class="lang-vi">HR Manager (duyệt ngân sách)</span><span class="lang-en">HR Manager (approve budget)</span></span>
+</div>
+<h4><span class="lang-vi">Luồng trạng thái</span><span class="lang-en">Status Flow</span></h4>
+<div class="status-flow">
+  <span class="sp sp-draft">PLANNED</span><span class="flow-arr">→</span>
+  <span class="sp sp-blue">APPROVED</span><span class="flow-arr">→</span>
+  <span class="sp sp-amber">IN_PROGRESS</span><span class="flow-arr">→</span>
+  <span class="sp sp-green">COMPLETED</span>
+</div>
+<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Tạo chương trình đào tạo</span><span class="lang-en">Create Training Program</span></strong> — <span class="lang-vi">Vào <code>HRM &gt; Training</code> &gt; <strong>Tạo chương trình mới</strong> &gt; Điền: Tên, Mục tiêu, Thời gian, Giảng viên, Ngân sách.</span><span class="lang-en">Go to <code>HRM &gt; Training</code> &gt; <strong>Create Program</strong> &gt; Fill: Name, Goals, Duration, Trainer, Budget.</span></span></li>
+  <li><span><strong><span class="lang-vi">Thêm học viên</span><span class="lang-en">Add Participants</span></strong> — <span class="lang-vi">Thêm danh sách học viên: chọn nhân viên cụ thể hoặc toàn bộ phòng ban.</span><span class="lang-en">Add participant list: select specific employees or entire departments.</span></span></li>
+  <li><span><strong><span class="lang-vi">Duyệt ngân sách</span><span class="lang-en">Budget Approval</span></strong> — <span class="lang-vi">Gửi cho HR Manager phê duyệt ngân sách. Sau khi duyệt, nhấn <strong>Triển khai</strong>.</span><span class="lang-en">Submit to HR Manager for budget approval. Once approved, click <strong>Deploy</strong>.</span></span></li>
+  <li><span><strong><span class="lang-vi">Cập nhật kết quả</span><span class="lang-en">Update Results</span></strong> — <span class="lang-vi">Sau khóa học, nhập kết quả đánh giá tại <strong>Training Results</strong>. Kết quả tự động cập nhật vào <strong>Career Path</strong>.</span><span class="lang-en">After training, enter results under <strong>Training Results</strong>. Results auto-update the employee's <strong>Career Path</strong>.</span></span></li>
+</ol>
+
+<!-- ===== SOP 10 ===== -->
+<h2 id="sop10">
+  <span class="module-tag mod-admin">Admin</span>
+  <span class="lang-vi">SOP 10 — Quản lý Tài sản &amp; Mua sắm Nội bộ</span>
+  <span class="lang-en">SOP 10 — Asset Management &amp; Internal Procurement</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">HR/Hành chính quản lý toàn bộ vòng đời tài sản công ty và xử lý các đề xuất mua sắm nội bộ theo luồng phê duyệt.</p></div>
+<div class="lang-en"><p class="section-intro">HR/Admin manages the full lifecycle of company assets and processes internal procurement requests through the approval workflow.</p></div>
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">HR Admin / Hành chính</span><span class="lang-en">HR Admin / Admin Staff</span></span>
+  <span class="role-tag"><span class="lang-vi">Line Manager → CEO (phê duyệt)</span><span class="lang-en">Line Manager → CEO (approve)</span></span>
+</div>
+<h4><span class="lang-vi">A — Cấp phát Tài sản cho Nhân viên</span><span class="lang-en">A — Asset Allocation to Employee</span></h4>
+<ol class="step-list">
+  <li><span><span class="lang-vi">Vào <code>HRM &gt; Assets</code> &gt; <strong>Cấp phát tài sản</strong> &gt; Chọn nhân viên và tài sản từ kho.</span><span class="lang-en">Go to <code>HRM &gt; Assets</code> &gt; <strong>Allocate Asset</strong> &gt; Select employee and asset from inventory.</span></span></li>
+  <li><span><span class="lang-vi">Điền <strong>Asset Allocation Form</strong>: Ngày bàn giao, tình trạng tài sản. Nhân viên xác nhận trên hệ thống.</span><span class="lang-en">Fill <strong>Asset Allocation Form</strong>: Handover date, asset condition. Employee confirms in the system.</span></span></li>
+</ol>
+<h4><span class="lang-vi">B — Mua sắm Nội bộ</span><span class="lang-en">B — Internal Procurement</span></h4>
+<ol class="step-list">
+  <li><span><span class="lang-vi">Nhân viên vào <code>HRM &gt; Procurement</code> &gt; <strong>Tạo đề xuất mua sắm</strong> &gt; Điền: Hàng hóa, Số lượng, Lý do, Ngân sách.</span><span class="lang-en">Employee goes to <code>HRM &gt; Procurement</code> &gt; <strong>Create Purchase Request</strong> &gt; Fill: Item, Qty, Reason, Budget.</span></span></li>
+  <li><span><span class="lang-vi">Đề xuất đi qua luồng: <strong>Line Manager</strong> → <strong>HR Admin</strong> → <strong>CEO</strong> (nếu vượt ngưỡng ngân sách).</span><span class="lang-en">Request routes through: <strong>Line Manager</strong> → <strong>HR Admin</strong> → <strong>CEO</strong> (if over budget threshold).</span></span></li>
+  <li><span><span class="lang-vi">Sau khi duyệt, HR Admin cập nhật trạng thái thanh toán và lưu chứng từ.</span><span class="lang-en">Once approved, HR Admin updates payment status and archives documents.</span></span></li>
+</ol>
+<h4><span class="lang-vi">C — Kiểm kê Tài sản</span><span class="lang-en">C — Asset Inventory</span></h4>
+<ol class="step-list">
+  <li><span><span class="lang-vi">HR Admin tạo <strong>Phiếu kiểm kê</strong> định kỳ &gt; Đối chiếu thực tế với danh mục hệ thống.</span><span class="lang-en">HR Admin creates periodic <strong>Inventory Check</strong> &gt; Compare physical assets with system records.</span></span></li>
+  <li><span><span class="lang-vi">Cập nhật tình trạng: Đang sử dụng, Hỏng, Mất, Thanh lý. Lịch bảo trì nhắc tự động.</span><span class="lang-en">Update status: In Use, Defective, Lost, Disposed. Maintenance schedule auto-reminds.</span></span></li>
+</ol>
+
+<!-- ===== SOP 11 ===== -->
+<h2 id="sop11">
+  <span class="module-tag mod-off">Offboarding</span>
+  <span class="lang-vi">SOP 11 — Quy trình Thôi việc (Offboarding)</span>
+  <span class="lang-en">SOP 11 — Offboarding Process</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">Quy trình xử lý toàn diện khi nhân viên thôi việc — từ nộp đơn nghỉ, bàn giao công việc đến chốt lương và đóng tài khoản.</p></div>
+<div class="lang-en"><p class="section-intro">Comprehensive process for employee departures — from resignation submission through work handover to final payroll and account closure.</p></div>
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">Nhân viên (nộp đơn)</span><span class="lang-en">Employee (submit)</span></span>
+  <span class="role-tag"><span class="lang-vi">Line Manager (duyệt)</span><span class="lang-en">Line Manager (approve)</span></span>
+  <span class="role-tag"><span class="lang-vi">HR Admin (thực hiện)</span><span class="lang-en">HR Admin (execute)</span></span>
+</div>
+<h4><span class="lang-vi">Luồng trạng thái</span><span class="lang-en">Status Flow</span></h4>
+<div class="status-flow">
+  <span class="sp sp-blue">SUBMITTED</span><span class="flow-arr">→</span>
+  <span class="sp sp-amber">APPROVED</span><span class="flow-arr">→</span>
+  <span class="sp sp-purple">HANDOVER</span><span class="flow-arr">→</span>
+  <span class="sp sp-orange">EXIT_INTERVIEW</span><span class="flow-arr">→</span>
+  <span class="sp sp-green">COMPLETED</span>
+</div>
+<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Nộp đơn nghỉ việc</span><span class="lang-en">Submit Resignation</span></strong> — <span class="lang-vi">Nhân viên vào <code>HRM &gt; Offboarding</code> &gt; <strong>Nộp đơn nghỉ việc</strong> &gt; Điền lý do, ngày nghỉ đề xuất &gt; Submit.</span><span class="lang-en">Employee goes to <code>HRM &gt; Offboarding</code> &gt; <strong>Submit Resignation</strong> &gt; Fill reason, proposed last date &gt; Submit.</span></span></li>
+  <li><span><strong><span class="lang-vi">Phê duyệt &amp; xác định Last Working Day</span><span class="lang-en">Approve &amp; Set Last Working Day</span></strong> — <span class="lang-vi">Line Manager và HR Manager phê duyệt. Hệ thống xác định chính thức ngày làm việc cuối.</span><span class="lang-en">Line Manager and HR Manager approve. System officially sets the Last Working Day.</span></span></li>
+  <li><span><strong><span class="lang-vi">Bàn giao công việc</span><span class="lang-en">Work Handover</span></strong> — <span class="lang-vi">Nhân viên điền <strong>Handover Form</strong>: bàn giao tài liệu, tài sản công ty, quyền truy cập hệ thống.</span><span class="lang-en">Employee fills <strong>Handover Form</strong>: hand over documents, company assets, and system access.</span></span></li>
+  <li><span><strong><span class="lang-vi">Exit Interview</span><span class="lang-en">Exit Interview</span></strong> — <span class="lang-vi">HR Admin tạo <strong>Exit Interview Form</strong> &gt; Mời nhân viên khảo sát lý do nghỉ việc.</span><span class="lang-en">HR Admin creates <strong>Exit Interview Form</strong> &gt; Invite employee to share departure reasons.</span></span></li>
+  <li><span><strong><span class="lang-vi">Chốt lương cuối</span><span class="lang-en">Final Payroll</span></strong> — <span class="lang-vi">HR tính lương ngày công còn lại, số ngày phép chưa nghỉ, thưởng (nếu có).</span><span class="lang-en">HR calculates remaining workdays, unused leave balance, and bonus (if applicable).</span></span></li>
+  <li><span><strong><span class="lang-vi">Đóng tài khoản &amp; Hoàn tất</span><span class="lang-en">Close Accounts &amp; Finalize</span></strong> — <span class="lang-vi">Vô hiệu hóa email, VPN, tài khoản hệ thống. Nhấn <strong>Hoàn tất Offboarding</strong>. Hồ sơ chuyển sang <code>Inactive</code>.</span><span class="lang-en">Deactivate email, VPN, system accounts. Click <strong>Complete Offboarding</strong>. Record changes to <code>Inactive</code>.</span></span></li>
+</ol>
+<div class="callout callout-warning">
+  <span class="callout-icon">⚠</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Thời hạn</span><span class="lang-en">Deadline</span></strong>
+    <p><span class="lang-vi">Toàn bộ Offboarding phải hoàn tất trước hoặc đúng Ngày làm việc cuối cùng. Dữ liệu Exit Interview được lưu để phân tích tỷ lệ nghỉ việc.</span><span class="lang-en">All offboarding tasks must be completed by or on the Last Working Day. Exit Interview data is retained for attrition analysis.</span></p>
+  </div>
+</div>
+
+<!-- ===== KPI ===== -->
+<h2 id="kpi">
+  <span class="lang-vi">KPI Vận hành</span>
+  <span class="lang-en">Operational KPIs</span>
+</h2>
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-value">100%</div>
+    <div class="kpi-label"><span class="lang-vi">Hồ sơ nhân sự được số hóa</span><span class="lang-en">Employee records digitized</span></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">100%</div>
+    <div class="kpi-label"><span class="lang-vi">Yêu cầu nghỉ phép / tăng ca phê duyệt online</span><span class="lang-en">Leave / OT requests approved online</span></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">&lt;1%</div>
+    <div class="kpi-label"><span class="lang-vi">Sai sót tính lương</span><span class="lang-en">Payroll error rate</span></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">−50%</div>
+    <div class="kpi-label"><span class="lang-vi">Thời gian xử lý Onboarding/Offboarding so với quy trình cũ</span><span class="lang-en">Onboarding/Offboarding processing time vs. old process</span></div>
+  </div>
+</div>
+
+<!-- ===== ROLE SUMMARY ===== -->
+<h2 id="role-summary">
+  <span class="lang-vi">Tổng hợp theo Vai trò</span>
+  <span class="lang-en">Summary by Role</span>
+</h2>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Vai trò</span><span class="lang-en">Role</span></th>
+      <th><span class="lang-vi">Các SOP thường sử dụng</span><span class="lang-en">Frequently Used SOPs</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong><span class="lang-vi">Nhân viên</span><span class="lang-en">Employee</span></strong></td>
+      <td><span class="lang-vi">SOP 02 (Hồ sơ), SOP 06 (Chấm công/Nghỉ phép), SOP 08 (KPI tự đánh giá), SOP 11 (Thôi việc)</span><span class="lang-en">SOP 02 (Records), SOP 06 (Attendance/Leave), SOP 08 (KPI self-review), SOP 11 (Offboarding)</span></td>
+    </tr>
+    <tr>
+      <td><strong>Line Manager</strong></td>
+      <td><span class="lang-vi">SOP 03 (Tuyển dụng), SOP 06 (Duyệt phép/tăng ca), SOP 08 (Đánh giá KPI nhóm)</span><span class="lang-en">SOP 03 (Recruitment), SOP 06 (Approve leave/OT), SOP 08 (Team KPI review)</span></td>
+    </tr>
+    <tr>
+      <td><strong>HR Admin</strong></td>
+      <td><span class="lang-vi">Tất cả SOP 01–11</span><span class="lang-en">All SOPs 01–11</span></td>
+    </tr>
+    <tr>
+      <td><strong>HR Manager</strong></td>
+      <td><span class="lang-vi">SOP 01 (Org Chart), SOP 04–05 (Pipeline/Offer), SOP 07 (Lương), SOP 09 (Đào tạo)</span><span class="lang-en">SOP 01 (Org Chart), SOP 04–05 (Pipeline/Offer), SOP 07 (Payroll), SOP 09 (Training)</span></td>
+    </tr>
+    <tr>
+      <td><strong>CEO</strong></td>
+      <td><span class="lang-vi">SOP 01 (Duyệt cơ cấu), SOP 03 (Duyệt tuyển dụng), SOP 10 (Duyệt mua sắm lớn)</span><span class="lang-en">SOP 01 (Approve structure), SOP 03 (Approve recruitment), SOP 10 (Approve major purchases)</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ===== GOLDEN PRINCIPLES ===== -->
+<h2 id="nguyen-tac-vang">
+  <span class="lang-vi">Nguyên tắc Vàng</span>
+  <span class="lang-en">Golden Principles</span>
+</h2>
+<ul class="golden-list">
+  <li>
+    <span class="gl-icon">★</span>
+    <span class="gl-text"><strong><span class="lang-vi">Sự thật duy nhất</span><span class="lang-en">Single Source of Truth</span></strong> — <span class="lang-vi">Mọi dữ liệu nhân sự chỉ được coi là chính thức khi đã tồn tại trên hệ thống.</span><span class="lang-en">HR data is only official when it exists in the system. External records are not recognized.</span></span>
+  </li>
+  <li>
+    <span class="gl-icon">★</span>
+    <span class="gl-text"><strong><span class="lang-vi">Phê duyệt Online</span><span class="lang-en">Online Approval Only</span></strong> — <span class="lang-vi">Không chấp nhận phê duyệt bằng giấy hoặc miệng cho các quy trình đã được số hóa.</span><span class="lang-en">Paper or verbal approvals are not accepted for digitized processes.</span></span>
+  </li>
+  <li>
+    <span class="gl-icon">★</span>
+    <span class="gl-text"><strong><span class="lang-vi">Tuân thủ SLA 24h</span><span class="lang-en">24-Hour SLA Compliance</span></strong> — <span class="lang-vi">Mọi yêu cầu phê duyệt phải được xử lý trong vòng 24 giờ làm việc. Quá hạn sẽ leo thang tự động.</span><span class="lang-en">All approval requests must be processed within 24 business hours. Overdue requests auto-escalate.</span></span>
+  </li>
+  <li>
+    <span class="gl-icon">★</span>
+    <span class="gl-text"><strong><span class="lang-vi">Bảo mật RBAC</span><span class="lang-en">RBAC Security</span></strong> — <span class="lang-vi">Tuân thủ nghiêm ngặt quyền truy cập theo vai trò. Không chia sẻ thông tin ngoài phạm vi được phép.</span><span class="lang-en">Strictly enforce role-based access control. Do not share information outside your authorized scope.</span></span>
+  </li>
+</ul>
+
+</div>
+</main>
+<button class="back-to-top" id="backToTop">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+<script>
+// Dark mode toggle
+(function(){
+  var html = document.documentElement;
+  var toggle = document.getElementById('darkToggle');
+  var sunIcon = document.getElementById('sunIcon');
+  var moonIcon = document.getElementById('moonIcon');
+  var label = document.getElementById('darkToggleLabel');
+  function applyTheme(dark){
+    html.setAttribute('data-theme', dark ? 'dark' : 'light');
+    sunIcon.style.display = dark ? 'none' : '';
+    moonIcon.style.display = dark ? '' : 'none';
+    label.textContent = dark ? 'Light' : 'Dark';
+  }
+  var stored = localStorage.getItem('aerpTheme');
+  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(stored ? stored === 'dark' : prefersDark);
+  toggle.addEventListener('click', function(){
+    var nowDark = html.getAttribute('data-theme') !== 'dark';
+    applyTheme(nowDark);
+    localStorage.setItem('aerpTheme', nowDark ? 'dark' : 'light');
+  });
+})();
+
+// Sidebar collapse
+function toggleSection(id){
+  var sec = document.getElementById(id);
+  if(sec) sec.classList.toggle('collapsed');
+}
+
+// Mobile sidebar
+var sidebar = document.getElementById('sidebar');
+var overlay = document.getElementById('sidebarOverlay');
+var hamburger = document.getElementById('hamburgerBtn');
+function openSidebar(){ sidebar.classList.add('open'); overlay.classList.add('open'); }
+function closeSidebar(){ sidebar.classList.remove('open'); overlay.classList.remove('open'); }
+function closeSidebarMobile(){ if(window.innerWidth < 768) closeSidebar(); }
+if(hamburger) hamburger.addEventListener('click', function(){ sidebar.classList.contains('open') ? closeSidebar() : openSidebar(); });
+if(overlay) overlay.addEventListener('click', closeSidebar);
+
+// Back to top
+var btt = document.getElementById('backToTop');
+window.addEventListener('scroll', function(){ btt.classList.toggle('visible', window.scrollY > 400); }, {passive:true});
+btt.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+
+// ScrollSpy
+(function(){
+  var headings = document.querySelectorAll('h2[id], h3[id]');
+  var links = document.querySelectorAll('.sidebar-link');
+  var linkMap = {};
+  links.forEach(function(link){
+    var href = link.getAttribute('href');
+    if(href && href.startsWith('#')) linkMap[href.slice(1)] = link;
+  });
+  var current = null;
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        if(current) current.classList.remove('active','spy-active');
+        var link = linkMap[entry.target.id];
+        if(link){ link.classList.add('active','spy-active'); current = link;
+          var sidebarEl = document.getElementById('sidebar');
+          var linkTop = link.offsetTop;
+          if(linkTop < sidebarEl.scrollTop || linkTop > sidebarEl.scrollTop + sidebarEl.clientHeight - 60){
+            sidebarEl.scrollTo({top: linkTop - 80, behavior:'smooth'});
+          }
+        }
+      }
+    });
+  }, {rootMargin:'-60px 0px -70% 0px', threshold:0});
+  headings.forEach(function(h){ observer.observe(h); });
+})();
+
+// Smooth scroll
+document.querySelectorAll('.sidebar-link[href^="#"]').forEach(function(link){
+  link.addEventListener('click', function(e){
+    e.preventDefault();
+    var id = this.getAttribute('href').slice(1);
+    var target = document.getElementById(id);
+    if(target){
+      var top = target.getBoundingClientRect().top + window.scrollY - 72;
+      window.scrollTo({top:top, behavior:'smooth'});
+    }
+  });
+});
+
+// Language toggle
+function setLang(lang){
+  document.documentElement.setAttribute('data-lang', lang);
+  document.documentElement.setAttribute('lang', lang === 'vi' ? 'vi' : 'en');
+  localStorage.setItem('sop-lang', lang);
+  var enBtn = document.getElementById('langEn');
+  var viBtn = document.getElementById('langVi');
+  if(enBtn) enBtn.classList.toggle('active', lang === 'en');
+  if(viBtn) viBtn.classList.toggle('active', lang === 'vi');
+  document.querySelectorAll('[data-en][data-vi]').forEach(function(el){
+    el.textContent = el.getAttribute('data-' + lang) || el.getAttribute('data-en');
+  });
+}
+document.getElementById('langEn').addEventListener('click', function(){ setLang('en'); });
+document.getElementById('langVi').addEventListener('click', function(){ setLang('vi'); });
+(function(){
+  var saved = localStorage.getItem('sop-lang');
+  if(saved) setLang(saved); else setLang('vi');
+})();
+</script>
+</body>
+</html>

@@ -62,11 +62,29 @@ async def get_deal(
 
 
 async def update_deal(
-    db: AsyncSession, deal_id: uuid.UUID, workspace_id: uuid.UUID, data: DealUpdate
+    db: AsyncSession,
+    deal_id: uuid.UUID,
+    workspace_id: uuid.UUID,
+    data: DealUpdate,
+    user_id: uuid.UUID | None = None,
 ) -> Deal:
+    from app.modules.crm.services.deal_workflows import validate_stage_change
+
     deal = await get_deal(db, deal_id, workspace_id)
-    for field, value in data.model_dump(exclude_none=True).items():
+    updates = data.model_dump(exclude_none=True)
+
+    if "stage" in updates and updates["stage"] != deal.stage:
+        validate_stage_change(deal.stage, updates["stage"])
+        # Enforce expected_close_date for advanced stages
+        past_proposal = updates["stage"] in ("negotiation", "closed_won", "closed_lost")
+        if past_proposal and not deal.expected_close_date and not updates.get("expected_close_date"):
+            from fastapi import HTTPException
+            raise HTTPException(400, "expected_close_date required for this stage")
+
+    for field, value in updates.items():
         setattr(deal, field, value)
+    if user_id:
+        deal.last_updated_by = user_id
     await db.commit()
     await db.refresh(deal)
     return deal

@@ -57,7 +57,8 @@ async def get_campaign(db: AsyncSession, campaign_id: uuid.UUID, workspace_id: u
 
 
 async def get_campaign_stats(db: AsyncSession, campaign_id: uuid.UUID, workspace_id: uuid.UUID) -> dict:
-    """Get lead count and conversion stats for a campaign."""
+    """Get lead count, conversion stats, and ROI for a campaign."""
+    from app.modules.crm.models.deal import Deal
     from app.modules.crm.models.lead import Lead
 
     campaign = await get_campaign(db, campaign_id, workspace_id)
@@ -68,11 +69,25 @@ async def get_campaign_stats(db: AsyncSession, campaign_id: uuid.UUID, workspace
         select(func.count(Lead.id)).where(Lead.campaign_id == campaign_id, Lead.status == "opportunity")
     ) or 0
 
+    # Revenue attribution: campaign → leads → deals(closed_won)
+    won_deal_value = await db.scalar(
+        select(func.coalesce(func.sum(Deal.value), 0.0)).where(
+            Deal.lead_id.in_(select(Lead.id).where(Lead.campaign_id == campaign_id)),
+            Deal.stage == "closed_won",
+        )
+    ) or 0.0
+
+    cost_per_lead = (campaign.actual_cost / total_leads) if total_leads > 0 else 0
+    roi = ((won_deal_value - campaign.actual_cost) / campaign.actual_cost * 100) if campaign.actual_cost > 0 else 0
+
     return {
         "campaign": campaign,
         "total_leads": total_leads,
         "converted_leads": converted_leads,
-        "conversion_rate": (converted_leads / total_leads * 100) if total_leads > 0 else 0,
+        "conversion_rate": round((converted_leads / total_leads * 100) if total_leads > 0 else 0, 1),
+        "won_deal_value": won_deal_value,
+        "cost_per_lead": round(cost_per_lead, 2),
+        "roi_percent": round(roi, 1),
     }
 
 

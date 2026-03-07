@@ -7,6 +7,7 @@ import { DealCard } from '../components/deal-card'
 const STAGE_COLORS: Record<string, string> = {
   lead: '#A1A1AA',
   qualified: '#38BDF8',
+  needs_analysis: '#6366F1',
   proposal: '#818CF8',
   negotiation: '#F59E0B',
   closed_won: '#22C55E',

@@ -39,6 +39,7 @@ function DealFormContent({ workspaceId, deal, onOpenChange }: Omit<Props, 'open'
   const [stage, setStage] = useState(deal?.stage ?? 'lead')
   const [probability, setProbability] = useState(deal?.probability?.toString() ?? '0')
   const [expectedCloseDate, setExpectedCloseDate] = useState(deal?.expected_close_date ?? '')
+  const [lossReason, setLossReason] = useState(deal?.loss_reason ?? '')
   const [contactId, setContactId] = useState(deal?.contact_id ?? 'none')
   const [accountId, setAccountId] = useState(deal?.account_id ?? 'none')
 
@@ -52,6 +53,7 @@ function DealFormContent({ workspaceId, deal, onOpenChange }: Omit<Props, 'open'
         stage,
         probability: parseFloat(probability) || 0,
         expected_close_date: expectedCloseDate || null,
+        loss_reason: stage === 'closed_lost' ? (lossReason.trim() || null) : null,
         contact_id: contactId === 'none' ? null : contactId,
         account_id: accountId === 'none' ? null : accountId,
       }
@@ -105,6 +107,12 @@ function DealFormContent({ workspaceId, deal, onOpenChange }: Omit<Props, 'open'
             <Input id="deal-close" type="date" value={expectedCloseDate} onChange={(e) => setExpectedCloseDate(e.target.value)} />
           </div>
         </div>
+        {stage === 'closed_lost' && (
+          <div className="space-y-1.5">
+            <Label htmlFor="deal-loss-reason">Loss Reason</Label>
+            <Input id="deal-loss-reason" value={lossReason} onChange={(e) => setLossReason(e.target.value)} placeholder="Why was this deal lost?" />
+          </div>
+        )}
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <Label>{t('deals.contact')}</Label>

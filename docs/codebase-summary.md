@@ -1,7 +1,7 @@
 # A-ERP Codebase Summary
 
-**Last generated:** 2026-03-03
-**Based on commit:** Latest HRM implementation
+**Last generated:** 2026-03-07
+**Based on commit:** CRM SOP Workflow Operations implementation (Phase 12)
 
 ---
 
@@ -44,7 +44,7 @@ backend/
 │   │   ├── pms/                         # Project Management System (complete)
 │   │   ├── wms/                         # Warehouse Management System (complete)
 │   │   ├── hrm/                         # Human Resource Management (complete)
-│   │   └── crm/                         # Customer Relationship Management (complete)
+│   │   └── crm/                         # Customer Relationship Management (complete, with SOP workflows)
 │   ├── agents/                          # Agent orchestration layer
 │   │   ├── base.py                      # Abstract BaseAgent
 │   │   ├── registry.py                  # Agent registration + lookup
@@ -129,6 +129,45 @@ modules/wms/
 │   ├── inventory_item.py
 │   └── pagination.py    # PaginatedResponse[T] generic schema
 └── dependencies/        # (empty for WMS; used by PMS for project-level RBAC)
+```
+
+**Example: CRM Module (with SOP Workflows)**
+
+```
+modules/crm/
+├── router.py                   # Aggregates contacts, deals, workflows routers
+├── routers/
+│   ├── contacts.py             → GET/POST /crm/contacts, /{id}, PATCH/{id}, DELETE/{id}
+│   ├── deals.py                → GET/POST /crm/deals, /{id}, PATCH/{id}, DELETE/{id}
+│   ├── workflows.py            → POST /crm/workflows/leads/distribute, GET /stale, POST /deals/{id}/close, etc.
+│   ├── analytics.py            → GET /crm/analytics/* (sales funnel, deal velocity, date-range queries)
+│   └── activities.py           → GET/POST /crm/activities (activity log)
+├── services/
+│   ├── contact.py              # Contact CRUD, enrichment, duplicate detection
+│   ├── deal.py                 # Deal CRUD, stage validation, audit trail
+│   ├── activity.py             # Activity creation, timestamp sync
+│   ├── ticket.py               # Ticket CRUD, status flow validation
+│   ├── campaign.py             # Campaign tracking, ROI calculation
+│   ├── account.py              # Account health score, follow-up scheduling
+│   ├── lead_workflows.py       # Duplicate detection, scoring, stale ID, round-robin distribution
+│   ├── deal_workflows.py       # Stage validation, stale detection, close operations
+│   ├── status_flows.py         # State machine definitions (Lead, Deal, Ticket)
+│   ├── data_quality.py         # CRM health assessment, missing fields, orphans
+│   ├── governance.py           # Policy alerts, compliance checks, audit
+│   └── crm_analytics.py        # Sales funnel, deal velocity, trend analysis
+├── models/
+│   ├── contact.py              # Contact ORM (workspace-scoped)
+│   ├── deal.py                 # Deal ORM (with workflow fields)
+│   ├── activity.py             # Activity ORM (timestamps, next actions)
+│   ├── ticket.py               # Ticket ORM (status flow, resolution tracking)
+│   └── account.py              # Account ORM (health score, follow-ups)
+├── schemas/
+│   ├── contact.py              # ContactCreate, ContactResponse
+│   ├── deal.py                 # DealCreate, DealResponse
+│   ├── workflows.py            # DistributeLeadsRequest, CloseDealRequest, etc.
+│   ├── analytics.py            # SalesFunnel, DealVelocity responses
+│   └── pagination.py           # PaginatedResponse[T]
+└── dependencies/               # (empty; CRM uses workspace-level RBAC)
 ```
 
 ### Key Backend Patterns
@@ -396,8 +435,11 @@ modules/wms/features/products/
 
 | Table | Key Columns | Purpose |
 |-------|-------------|---------|
-| `contacts` | id, workspace_id, name, email, phone, company | Contact registry |
-| `deals` | id, workspace_id, contact_id, title, value, stage | Sales pipeline |
+| `contacts` | id, workspace_id, name, email, phone, company, contacted_at, last_activity_date, assigned_at, owner_id, health_score | Contact registry + workflow tracking |
+| `deals` | id, workspace_id, contact_id, title, value, stage, loss_reason, closed_at, last_updated_by, outcome, source_deal_id | Sales pipeline + close tracking |
+| `activities` | id, workspace_id, contact_id, deal_id, type, next_action_date | Activity log with scheduling |
+| `tickets` | id, workspace_id, contact_id, title, status, resolved_at, resolution_notes | Support ticket workflow |
+| `accounts` | id, workspace_id, company_id, health_score, next_follow_up_date | Account-level tracking |
 
 ---
 
@@ -447,8 +489,23 @@ All HRM endpoints use offset-based pagination (`?limit=20&offset=0`) with shared
 
 ### CRM Routes
 
+**Contacts & Deals:**
 - `GET/POST /api/v1/crm/workspaces/{id}/contacts` — Contact CRUD (paginated)
-- `GET/POST /api/v1/crm/workspaces/{id}/deals` — Deal CRUD (paginated)
+- `GET/POST /api/v1/crm/workspaces/{id}/deals` — Deal CRUD (paginated, with audit trail)
+
+**Workflows (SOP Operations):**
+- `POST /api/v1/crm/workflows/leads/distribute` — Round-robin distribute unassigned leads
+- `GET /api/v1/crm/workflows/leads/stale` — List leads untouched for 30+ days
+- `POST /api/v1/crm/workflows/deals/{id}/close` — Close deal (won/lost with reason)
+- `GET /api/v1/crm/workflows/deals/stale` — List deals stuck in negotiation 60+ days
+- `GET /api/v1/crm/workflows/accounts/follow-ups` — List accounts due for contact
+- `GET /api/v1/crm/workflows/data-quality/report` — CRM data health assessment
+- `GET /api/v1/crm/workflows/governance/alerts` — Policy violations + compliance alerts
+
+**Analytics:**
+- `GET /api/v1/crm/analytics/sales-funnel?date_from=&date_to=` — Deal count/value by stage
+- `GET /api/v1/crm/analytics/deal-velocity` — Days in stage, avg cycle time
+- `GET /api/v1/crm/analytics/campaigns/{id}/roi` — Campaign ROI calculation
 
 ---
 
@@ -581,13 +638,18 @@ make format         # ruff format + prettier
 - **Phase 7:** Complete (A-ERP restructure, WMS full CRUD, Agent layer, MCP protocol)
 - **Phase 8:** Complete (HRM full implementation — departments, employees, leave, payroll)
 - **Phase 9:** Complete (CRM full implementation — contacts, deals, pagination/search/filtering)
+- **Phase 10:** Complete (Seed demo data — modular architecture, all modules populated)
+- **Phase 11:** Complete (Full UI overhaul — design system, shared components, dark mode, dashboards)
+- **Phase 12:** Complete (CRM SOP workflows — status flows, lead/deal management, data quality, governance)
 
 **Next Steps:**
 - E2E test coverage (Playwright)
 - MinIO / S3 for file attachments
 - Email delivery (ARQ background job)
 - Multi-instance support (Redis Pub/Sub upgrade)
-- Advanced reporting and analytics dashboards
+- Advanced reporting dashboards (custom metrics, KPI tracking)
+- Webhook integrations for external systems
+- Public API with API key authentication
 
 ---
 

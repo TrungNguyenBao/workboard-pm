@@ -11,6 +11,21 @@ from app.modules.crm.schemas.activity import ActivityCreate, ActivityUpdate
 async def create_activity(db: AsyncSession, workspace_id: uuid.UUID, data: ActivityCreate) -> Activity:
     activity = Activity(workspace_id=workspace_id, **data.model_dump())
     db.add(activity)
+
+    # Auto-update deal.last_activity_date (SOP 05)
+    if activity.deal_id:
+        from app.modules.crm.models.deal import Deal
+        deal = await db.get(Deal, activity.deal_id)
+        if deal and deal.workspace_id == workspace_id:
+            deal.last_activity_date = activity.date
+
+    # Auto-update lead.contacted_at on first activity (SOP 02)
+    if activity.lead_id:
+        from app.modules.crm.models.lead import Lead
+        lead = await db.get(Lead, activity.lead_id)
+        if lead and lead.workspace_id == workspace_id and not lead.contacted_at:
+            lead.contacted_at = activity.date
+
     await db.commit()
     await db.refresh(activity)
     return activity

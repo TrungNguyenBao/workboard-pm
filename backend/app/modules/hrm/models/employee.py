@@ -21,6 +21,10 @@ class Employee(Base, TimestampMixin):
     workspace_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("workspaces.id"), index=True)
 
     user: Mapped["User | None"] = relationship()  # noqa: F821
-    department: Mapped["Department | None"] = relationship(back_populates="employees")  # noqa: F821
+    department: Mapped["Department | None"] = relationship(
+        "Department",
+        back_populates="employees",
+        foreign_keys="[Employee.department_id]",
+    )  # noqa: F821
     workspace: Mapped["Workspace"] = relationship()  # noqa: F821
     contracts: Mapped[list["Contract"]] = relationship(back_populates="employee", cascade="all, delete-orphan")  # noqa: F821

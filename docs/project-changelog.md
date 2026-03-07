@@ -123,6 +123,31 @@ Format: `## [version] — YYYY-MM-DD` with grouped entries.
 
 ## [Unreleased]
 
+### Added — CRM SOP Workflow Operations (Phases 1-4)
+
+**Phase 1: Models/Schemas/Migration**
+- **New CRM Fields** — 15 new workflow fields added to CRM models: `contacted_at`, `assigned_at`, `last_activity_date`, `loss_reason`, `closed_at`, `owner_id`, `last_updated_by`, `outcome`, `next_action_date`, `resolved_at`, `resolution_notes`, `source_deal_id`, `next_follow_up_date`, `health_score` across Lead, Deal, Activity, Ticket, Account entities.
+- **Status Flow Management** — New `status_flows.py` service with transition maps for Lead (`prospect→qualified→contacted→proposal→negotiation→won/lost`), Deal (similar pipeline), and Ticket (`open→in_progress→resolved/closed`) status flows.
+- **Migration 0017** — `0017_crm_sop_workflow_fields.py` adds all workflow fields to CRM tables with proper indexing and constraints.
+
+**Phase 2: Backend Service Logic**
+- **New Workflow Services** — 4 new services: `lead_workflows.py` (duplicate detection, lead scoring, stale lead identification, round-robin distribution), `deal_workflows.py` (stage validation, stale deal alerts, close operations for won/lost), `data_quality.py` (CRM data health assessment), `governance.py` (policy alerts and compliance).
+- **Enhanced Services** — 7 services updated with new capabilities: `lead.py` (duplicate warning, auto-scoring on create, status flow validation), `deal.py` (stage validation, audit trail tracking), `activity.py` (auto-update timestamps on related entities), `ticket.py` (status flow validation, auto-timestamp resolution), `campaign.py` (ROI calculation from deals), `account.py` (health score computation, follow-up list), `crm_analytics.py` (date range filtering, sales funnel, deal velocity metrics).
+
+**Phase 3: Backend Router Updates**
+- **New Workflows Router** — `/crm/workflows` with 7 endpoints: `POST /leads/distribute` (round-robin assignment), `GET /leads/stale` (leads without contact for 30+ days), `POST /deals/{id}/close` (mark won/lost), `GET /deals/stale` (deals in negotiation stage for 60+ days), `GET /accounts/follow-ups` (accounts due for contact), `GET /data-quality/report` (CRM data health), `GET /governance/alerts` (policy violations).
+- **Enhanced Routers** — `leads.py` adds duplicate warning header in list response, `deals.py` tracks `last_updated_by` on mutations, `analytics.py` adds `date_from`/`date_to` query params for date-range filtering.
+
+**Phase 4: Frontend Updates**
+- **New Components** — 5 new feature components: `deal-close-dialog` (select win/loss + reason), `lead-distribute-dialog` (preview + confirm round-robin distribution), `stale-deals-alert` (banner alert with count), `sales-funnel-chart` (Recharts visualization by stage), `use-governance-alerts` hook.
+- **Updated Hooks** — 5 hooks enhanced with new fields + 4 new query/mutation hooks (useDistributeLeads, useCloseDeal, useStaleDealList, useGovernanceAlerts).
+- **Dashboard Enhancement** — CRM dashboard now displays governance alerts, sales funnel chart, and deal velocity KPI.
+- **Forms Updated** — Deal card shows stale indicator, deal form includes `loss_reason` field, ticket form includes `resolution_notes`, account detail shows health score badge.
+
+---
+
+## [Unreleased]
+
 ### Added — CRM Module Full Implementation
 
 - **CRM Backend Enhancements** — Paginated endpoints for contacts and deals. Contact list: search by name/email/company. Deal list: filter by stage and contact_id, search by title. All responses include `created_at` and `updated_at` timestamps. Admin role required for delete operations (guest=read, member=write, admin=delete).

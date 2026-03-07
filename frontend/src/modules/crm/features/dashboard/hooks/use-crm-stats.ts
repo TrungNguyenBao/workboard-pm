@@ -20,6 +20,13 @@ export interface CrmAnalytics {
   total_campaign_budget: number
   total_campaign_cost: number
   open_tickets: number
+  sales_funnel?: {
+    total_leads: number
+    qualified: number
+    opportunity: number
+    closed_won: number
+  }
+  deal_velocity_days?: number
 }
 
 interface StageBar { name: string; count: number }
@@ -61,5 +68,8 @@ export function useCrmStats() {
     openTickets: analytics?.open_tickets ?? 0,
   }
 
-  return { stats, stageBars, leadSourceBars, isLoading: analyticsQuery.isLoading }
+  const funnel = analytics?.sales_funnel ?? { total_leads: 0, qualified: 0, opportunity: 0, closed_won: 0 }
+  const dealVelocityDays = analytics?.deal_velocity_days ?? 0
+
+  return { stats, stageBars, leadSourceBars, funnel, dealVelocityDays, isLoading: analyticsQuery.isLoading }
 }

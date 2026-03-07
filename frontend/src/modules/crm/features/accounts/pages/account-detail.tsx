@@ -38,7 +38,15 @@ export default function AccountDetailPage() {
           <h2 className="text-xl font-semibold flex items-center gap-2">
             <Building2 className="h-5 w-5" /> {account.name}
           </h2>
-          <p className="text-sm text-muted-foreground">{account.industry ?? 'No industry'} &middot; {account.status}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-sm text-muted-foreground">{account.industry ?? 'No industry'} &middot; {account.status}</p>
+            <HealthBadge score={account.health_score ?? 100} />
+            {account.next_follow_up_date && (
+              <span className={`text-xs px-2 py-0.5 rounded ${new Date(account.next_follow_up_date) <= new Date() ? 'bg-red-500/10 text-red-500' : 'bg-muted text-muted-foreground'}`}>
+                Follow-up: {account.next_follow_up_date}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -133,6 +141,11 @@ function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string
       <div><p className="text-xs text-muted-foreground">{label}</p><p className="text-lg font-semibold">{value}</p></div>
     </div>
   )
+}
+
+function HealthBadge({ score }: { score: number }) {
+  const color = score > 70 ? 'bg-green-500/10 text-green-600' : score > 40 ? 'bg-amber-500/10 text-amber-600' : 'bg-red-500/10 text-red-600'
+  return <span className={`text-xs font-medium px-2 py-0.5 rounded ${color}`}>Health: {score}</span>
 }
 
 function EmptyText({ children }: { children: React.ReactNode }) {

@@ -8,12 +8,25 @@ from app.modules.crm.models.lead import Lead
 from app.modules.crm.schemas.lead import LeadCreate, LeadUpdate
 
 
-async def create_lead(db: AsyncSession, workspace_id: uuid.UUID, data: LeadCreate) -> Lead:
+async def create_lead(
+    db: AsyncSession, workspace_id: uuid.UUID, data: LeadCreate
+) -> tuple[Lead, str | None]:
+    """Create lead with duplicate check and auto-scoring. Returns (lead, warning)."""
+    from app.modules.crm.services.lead_workflows import calculate_lead_score, check_lead_duplicates
+
+    duplicates = await check_lead_duplicates(db, workspace_id, data.email, data.phone)
+    warning = None
+    if duplicates:
+        names = ", ".join(d.name for d in duplicates[:3])
+        warning = f"Potential duplicates found: {names}"
+
     lead = Lead(workspace_id=workspace_id, **data.model_dump())
+    if lead.score == 0:
+        lead.score = calculate_lead_score(lead)
     db.add(lead)
     await db.commit()
     await db.refresh(lead)
-    return lead
+    return lead, warning
 
 
 async def list_leads(
@@ -64,8 +77,20 @@ async def get_lead(db: AsyncSession, lead_id: uuid.UUID, workspace_id: uuid.UUID
 async def update_lead(
     db: AsyncSession, lead_id: uuid.UUID, workspace_id: uuid.UUID, data: LeadUpdate
 ) -> Lead:
+    from app.modules.crm.services.status_flows import LEAD_STATUS_TRANSITIONS, validate_transition
+
     lead = await get_lead(db, lead_id, workspace_id)
-    for field, value in data.model_dump(exclude_none=True).items():
+    updates = data.model_dump(exclude_none=True)
+
+    if "status" in updates and updates["status"] != lead.status:
+        if not validate_transition(LEAD_STATUS_TRANSITIONS, lead.status, updates["status"]):
+            allowed = LEAD_STATUS_TRANSITIONS.get(lead.status, [])
+            raise HTTPException(
+                status_code=400,
+                detail=f"Cannot transition from '{lead.status}' to '{updates['status']}'. Allowed: {allowed}",
+            )
+
+    for field, value in updates.items():
         setattr(lead, field, value)
     await db.commit()
     await db.refresh(lead)
@@ -82,13 +107,21 @@ async def convert_lead_to_opportunity(
     db: AsyncSession, lead_id: uuid.UUID, workspace_id: uuid.UUID
 ) -> "Deal":  # noqa: F821
     from app.modules.crm.models.deal import Deal
+    from app.modules.crm.services.lead_workflows import calculate_lead_score
 
     lead = await get_lead(db, lead_id, workspace_id)
+    if lead.status != "qualified":
+        raise HTTPException(status_code=400, detail="Only qualified leads can be converted")
+
+    score = lead.score or calculate_lead_score(lead)
+    prob_map = {"website": 0.3, "ads": 0.2, "form": 0.35, "referral": 0.4, "manual": 0.15}
     deal = Deal(
         title=f"Opportunity: {lead.name}",
-        value=0.0,
+        value=float(score * 100),
         stage="qualified",
+        probability=prob_map.get(lead.source, 0.2),
         lead_id=lead.id,
+        contact_id=None,
         workspace_id=workspace_id,
     )
     db.add(deal)

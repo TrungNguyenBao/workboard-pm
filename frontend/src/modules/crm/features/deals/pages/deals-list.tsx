@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Pencil, Trash2 } from 'lucide-react'
+import { Pencil, Trash2, CheckCircle2 } from 'lucide-react'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import { Badge } from '@/shared/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
@@ -10,6 +10,7 @@ import { toColumnDefs, type SimpleColumn } from '@/shared/components/ui/data-tab
 import { PageHeader } from '@/shared/components/ui/page-header'
 import { PaginationControls } from '@/shared/components/ui/pagination-controls'
 import { DealFormDialog } from '../components/deal-form-dialog'
+import { DealCloseDialog } from '../components/deal-close-dialog'
 import { type Deal, DEAL_STAGES, useDeals, useDeleteDeal } from '../hooks/use-deals'
 import { useContacts } from '../../contacts/hooks/use-contacts'
 
@@ -31,6 +32,7 @@ export default function DealsListPage() {
   const [page, setPage] = useState(1)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editDeal, setEditDeal] = useState<Deal | null>(null)
+  const [closeDeal, setCloseDeal] = useState<Deal | null>(null)
 
   const { data, isLoading } = useDeals(workspaceId, {
     search: search || undefined,
@@ -66,6 +68,11 @@ export default function DealsListPage() {
       className: 'w-20',
       render: (d) => (
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
+          {!d.stage.startsWith('closed_') && (
+            <button className="p-1 text-neutral-400 hover:text-green-600" title="Close deal" onClick={() => setCloseDeal(d)}>
+              <CheckCircle2 className="h-3.5 w-3.5" />
+            </button>
+          )}
           <button className="p-1 text-neutral-400 hover:text-neutral-700" onClick={() => { setEditDeal(d); setDialogOpen(true) }}>
             <Pencil className="h-3.5 w-3.5" />
           </button>
@@ -111,6 +118,15 @@ export default function DealsListPage() {
       />
       <PaginationControls page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
       <DealFormDialog open={dialogOpen} onOpenChange={setDialogOpen} workspaceId={workspaceId} deal={editDeal} />
+      {closeDeal && (
+        <DealCloseDialog
+          dealId={closeDeal.id}
+          dealTitle={closeDeal.title}
+          open={!!closeDeal}
+          onOpenChange={(v) => { if (!v) setCloseDeal(null) }}
+          workspaceId={workspaceId}
+        />
+      )}
     </div>
   )
 }

@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="vi" data-lang="vi" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOP Vận hành — Mua hàng, Kho &amp; Bảo hành</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--font-sans:'DM Sans',system-ui,-apple-system,sans-serif;--font-mono:'JetBrains Mono','Fira Code',monospace;--color-primary:#5E6AD2;--color-primary-hover:#4F55C4;--color-accent:#F28C38;--color-success:#22C55E;--color-warning:#F59E0B;--color-danger:#EF4444;--color-info:#38BDF8;--bg-page:#FFFFFF;--bg-surface:#F9F9FB;--bg-elevated:#FFFFFF;--border-default:#E4E4E7;--text-primary:#18181B;--text-secondary:#52525B;--text-tertiary:#A1A1AA;--radius-xs:4px;--radius-sm:6px;--radius-md:8px;--radius-lg:12px;--radius-full:9999px;--shadow-elevated:0 4px 12px rgba(0,0,0,.10);--sidebar-width:260px;--topbar-height:52px;--dur:150ms;}
+[data-theme="dark"]{--bg-page:#0F0F12;--bg-surface:#1A1A1F;--bg-elevated:#25252B;--border-default:rgba(255,255,255,.10);--text-primary:#FAFAFA;--text-secondary:#A1A1AA;--text-tertiary:#52525B;--color-primary:#6E78E8;--color-primary-hover:#7D87EE;--color-accent:#F5A05A;--color-success:#4ADE80;--color-warning:#FBB532;--color-danger:#F87171;--color-info:#7DD3FC;--shadow-elevated:0 4px 12px rgba(0,0,0,.40);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;font-size:14px;}
+body{font-family:var(--font-sans);font-size:14px;line-height:1.6;color:var(--text-primary);background:var(--bg-page);transition:background var(--dur) ease,color var(--dur) ease;}
+.topbar{position:fixed;top:0;left:0;right:0;height:var(--topbar-height);background:var(--bg-surface);border-bottom:1px solid var(--border-default);display:flex;align-items:center;padding:0 16px;gap:12px;z-index:100;}
+.topbar-brand{font-size:16px;font-weight:700;color:var(--color-primary);letter-spacing:-.3px;flex-shrink:0;}
+.topbar-brand span{color:var(--text-primary);font-weight:400;}
+.topbar-subtitle{font-size:12px;color:var(--text-tertiary);border-left:1px solid var(--border-default);padding-left:12px;margin-left:4px;}
+.topbar-spacer{flex:1;}
+.hamburger{display:none;background:none;border:none;cursor:pointer;color:var(--text-secondary);padding:6px;border-radius:var(--radius-sm);}
+.hamburger:hover{background:var(--bg-elevated);}
+.dark-toggle{background:none;border:1px solid var(--border-default);border-radius:var(--radius-sm);cursor:pointer;color:var(--text-secondary);padding:6px 10px;font-size:13px;font-family:var(--font-sans);display:flex;align-items:center;gap:6px;transition:background var(--dur) ease,border-color var(--dur) ease;}
+.dark-toggle:hover{background:var(--bg-elevated);border-color:var(--text-tertiary);}
+.sidebar{position:fixed;top:var(--topbar-height);left:0;width:var(--sidebar-width);height:calc(100vh - var(--topbar-height));background:var(--bg-surface);border-right:1px solid var(--border-default);overflow-y:auto;overflow-x:hidden;z-index:90;transition:transform var(--dur) ease;padding:16px 0 32px;}
+.sidebar::-webkit-scrollbar{width:4px;}.sidebar::-webkit-scrollbar-thumb{background:var(--border-default);border-radius:2px;}
+.sidebar-section{margin-bottom:8px;}
+.sidebar-section-header{display:flex;align-items:center;justify-content:space-between;padding:6px 16px;cursor:pointer;user-select:none;}
+.sidebar-section-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--text-tertiary);}
+.sidebar-chevron{color:var(--text-tertiary);transition:transform var(--dur) ease;}
+.sidebar-section.collapsed .sidebar-chevron{transform:rotate(-90deg);}
+.sidebar-section.collapsed .sidebar-section-items{display:none;}
+.sidebar-link{display:flex;align-items:center;gap:8px;padding:6px 16px 6px 24px;font-size:13px;color:var(--text-secondary);text-decoration:none;cursor:pointer;transition:background var(--dur) ease,color var(--dur) ease;border:none;background:none;width:100%;text-align:left;line-height:1.4;}
+.sidebar-link:hover{background:var(--bg-elevated);color:var(--text-primary);}
+.sidebar-link.active,.sidebar-link.spy-active{background:rgba(94,106,210,.10);color:var(--color-primary);font-weight:500;}
+[data-theme="dark"] .sidebar-link.active,[data-theme="dark"] .sidebar-link.spy-active{background:rgba(110,120,232,.15);}
+.sidebar-link-dot{width:5px;height:5px;border-radius:50%;background:var(--text-tertiary);flex-shrink:0;margin-left:4px;}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.40);z-index:89;}
+.main{margin-left:var(--sidebar-width);margin-top:var(--topbar-height);padding:40px 48px;max-width:calc(100% - var(--sidebar-width));min-height:calc(100vh - var(--topbar-height));}
+.content-area{max-width:820px;margin:0 auto;}
+h1{font-size:28px;font-weight:700;line-height:1.2;color:var(--text-primary);margin-bottom:8px;letter-spacing:-.4px;}
+h2{font-size:22px;font-weight:600;line-height:1.3;color:var(--text-primary);margin-top:52px;margin-bottom:16px;padding-top:20px;border-top:1px solid var(--border-default);letter-spacing:-.3px;}
+h2:first-child{margin-top:0;border-top:none;padding-top:0;}
+h3{font-size:16px;font-weight:600;line-height:1.4;color:var(--text-primary);margin-top:32px;margin-bottom:10px;}
+h4{font-size:14px;font-weight:600;color:var(--text-primary);margin-top:20px;margin-bottom:8px;}
+p{color:var(--text-secondary);margin-bottom:12px;line-height:1.7;}p:last-child{margin-bottom:0;}
+ul,ol{padding-left:20px;margin-bottom:12px;color:var(--text-secondary);}
+li{margin-bottom:4px;line-height:1.6;}li strong{color:var(--text-primary);}
+a{color:var(--color-primary);text-decoration:none;}a:hover{text-decoration:underline;}
+code{font-family:var(--font-mono);font-size:12px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-xs);padding:1px 5px;color:var(--color-primary);}
+[data-theme="dark"] code{background:var(--bg-elevated);}
+.page-header{margin-bottom:40px;padding-bottom:28px;border-bottom:1px solid var(--border-default);}
+.page-header-meta{font-size:13px;color:var(--text-tertiary);margin-top:8px;}
+.table-wrap{overflow-x:auto;margin-bottom:20px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;padding:8px 12px;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--text-tertiary);background:var(--bg-surface);border-bottom:1px solid var(--border-default);}
+td{padding:9px 12px;border-bottom:1px solid var(--border-default);color:var(--text-secondary);vertical-align:top;line-height:1.5;}
+td strong{color:var(--text-primary);}tr:last-child td{border-bottom:none;}tr:hover td{background:var(--bg-surface);}
+.callout{display:flex;gap:12px;padding:14px 16px;border-radius:var(--radius-md);margin:20px 0;border-left:3px solid;}
+.callout-icon{font-size:16px;line-height:1.5;flex-shrink:0;}
+.callout-body{flex:1;font-size:13px;line-height:1.6;}
+.callout-body strong{display:block;margin-bottom:2px;}
+.callout-body p{margin:0;font-size:13px;}
+.callout-tip{background:rgba(34,197,94,.07);border-color:var(--color-success);}
+.callout-tip .callout-body{color:#166534;}[data-theme="dark"] .callout-tip .callout-body{color:#86efac;}
+.callout-info{background:rgba(56,189,248,.07);border-color:var(--color-info);}
+.callout-info .callout-body{color:#075985;}[data-theme="dark"] .callout-info .callout-body{color:#7dd3fc;}
+.callout-warning{background:rgba(245,158,11,.07);border-color:var(--color-warning);}
+.callout-warning .callout-body{color:#92400e;}[data-theme="dark"] .callout-warning .callout-body{color:#fcd34d;}
+.callout-danger{background:rgba(239,68,68,.07);border-color:var(--color-danger);}
+.callout-danger .callout-body{color:#991B1B;}[data-theme="dark"] .callout-danger .callout-body{color:#fca5a5;}
+.callout-note{background:rgba(94,106,210,.07);border-color:var(--color-primary);}
+.callout-note .callout-body{color:#3730a3;}[data-theme="dark"] .callout-note .callout-body{color:#a5b4fc;}
+.back-to-top{position:fixed;bottom:28px;right:28px;width:40px;height:40px;background:var(--color-primary);color:#fff;border:none;border-radius:var(--radius-full);cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:var(--shadow-elevated);z-index:200;transition:background var(--dur) ease,transform var(--dur) ease;}
+.back-to-top:hover{background:var(--color-primary-hover);transform:translateY(-2px);}
+.back-to-top.visible{display:flex;}
+.section-intro{color:var(--text-secondary);font-size:14px;margin-bottom:24px;line-height:1.7;}
+.step-list{list-style:none;padding:0;counter-reset:step;}
+.step-list li{counter-increment:step;display:flex;gap:14px;margin-bottom:14px;align-items:flex-start;}
+.step-list li::before{content:counter(step);display:flex;align-items:center;justify-content:center;width:24px;height:24px;min-width:24px;background:var(--color-primary);color:#fff;border-radius:var(--radius-full);font-size:11px;font-weight:700;margin-top:2px;}
+.step-list li span{color:var(--text-secondary);font-size:14px;line-height:1.6;}
+.status-flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:16px 0;padding:14px 16px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-md);}
+.sp{display:inline-flex;align-items:center;padding:4px 10px;border-radius:var(--radius-full);font-size:11px;font-weight:600;font-family:var(--font-mono);letter-spacing:.3px;white-space:nowrap;}
+.sp-draft{background:rgba(161,161,170,.15);color:var(--text-secondary);border:1px solid var(--border-default);}
+.sp-blue{background:rgba(56,189,248,.12);color:#0284C7;border:1px solid rgba(56,189,248,.30);}
+.sp-green{background:rgba(34,197,94,.12);color:#15803D;border:1px solid rgba(34,197,94,.30);}
+.sp-amber{background:rgba(245,158,11,.12);color:#B45309;border:1px solid rgba(245,158,11,.30);}
+.sp-red{background:rgba(239,68,68,.12);color:#B91C1C;border:1px solid rgba(239,68,68,.30);}
+.sp-purple{background:rgba(94,106,210,.12);color:var(--color-primary);border:1px solid rgba(94,106,210,.30);}
+.sp-orange{background:rgba(242,140,56,.12);color:#C2410C;border:1px solid rgba(242,140,56,.30);}
+[data-theme="dark"] .sp-blue{color:#7DD3FC;}[data-theme="dark"] .sp-green{color:#4ADE80;}
+[data-theme="dark"] .sp-amber{color:#FBB532;}[data-theme="dark"] .sp-red{color:#F87171;}[data-theme="dark"] .sp-orange{color:#FB923C;}
+.flow-arr{color:var(--text-tertiary);font-size:14px;font-weight:700;padding:0 2px;}
+.roles-row{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 16px;}
+.role-tag{display:inline-flex;align-items:center;padding:3px 10px;background:rgba(94,106,210,.08);color:var(--color-primary);border-radius:var(--radius-full);font-size:12px;font-weight:500;}
+.device-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin:16px 0;}
+.device-item{padding:8px 10px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-sm);text-align:center;font-size:11px;font-family:var(--font-mono);font-weight:500;color:var(--text-secondary);}
+.feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:20px 0;}
+.feature-card{background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:16px;}
+.feature-card-title{font-weight:600;font-size:13px;color:var(--text-primary);margin-bottom:4px;}
+.feature-card-desc{font-size:12px;color:var(--text-secondary);line-height:1.5;}
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:20px 0;}
+.kpi-card{background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:16px 20px;display:flex;align-items:center;gap:14px;}
+.kpi-value{font-size:22px;font-weight:700;color:var(--color-primary);font-family:var(--font-mono);flex-shrink:0;}
+.kpi-label{font-size:12px;color:var(--text-secondary);line-height:1.4;}
+.golden-list{list-style:none;padding:0;}
+.golden-list li{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-md);margin-bottom:8px;}
+.gl-icon{color:var(--color-accent);font-size:16px;flex-shrink:0;margin-top:1px;}
+.gl-text{color:var(--text-secondary);font-size:13px;line-height:1.6;}
+.gl-text strong{color:var(--text-primary);}
+.module-tag{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 6px;border-radius:var(--radius-xs);margin-right:6px;vertical-align:middle;}
+.mod-proc{background:rgba(94,106,210,.12);color:var(--color-primary);}
+.mod-wh{background:rgba(34,197,94,.12);color:#16A34A;}
+.mod-warr{background:rgba(245,158,11,.12);color:#D97706;}
+.mod-life{background:rgba(239,68,68,.12);color:#DC2626;}
+[data-theme="dark"] .mod-wh{color:#4ADE80;}[data-theme="dark"] .mod-warr{color:#FBB532;}[data-theme="dark"] .mod-life{color:#F87171;}
+html[data-lang="en"] .lang-vi{display:none;}
+html[data-lang="vi"] .lang-en{display:none;}
+.lang-toggle{display:flex;align-items:center;gap:2px;border:1px solid var(--border-default);border-radius:var(--radius-full);padding:2px;background:var(--bg-elevated);margin-left:4px;}
+.lang-toggle button{padding:2px 10px;border:none;border-radius:var(--radius-full);background:transparent;color:var(--text-secondary);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font-sans);transition:all var(--dur) ease;}
+.lang-toggle button.active{background:var(--color-primary);color:#fff;}
+@media(max-width:768px){.sidebar{transform:translateX(-100%);z-index:95;}.sidebar.open{transform:translateX(0);}.sidebar-overlay.open{display:block;}.hamburger{display:flex;}.topbar-subtitle{display:none;}.main{margin-left:0;max-width:100%;padding:24px 20px;}.feature-grid,.kpi-grid{grid-template-columns:1fr;}h1{font-size:22px;}h2{font-size:18px;}}
+@media print{.sidebar,.topbar,.back-to-top,.dark-toggle,.hamburger{display:none!important;}.main{margin:0;padding:20px;max-width:100%;}h2{page-break-before:always;}h2:first-child{page-break-before:avoid;}.callout{break-inside:avoid;}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <span class="topbar-brand">A-ERP <span>SOP</span></span>
+  <span class="topbar-subtitle lang-vi">Quy trình vận hành — Mua hàng, Kho &amp; Bảo hành</span>
+  <span class="topbar-subtitle lang-en">Operations SOP — Procurement, Warehouse &amp; Warranty</span>
+  <span class="topbar-spacer"></span>
+  <button class="dark-toggle" id="darkToggle">
+    <svg id="sunIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+    <svg id="moonIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <span id="darkToggleLabel">Dark</span>
+  </button>
+  <div class="lang-toggle">
+    <button id="langVi" class="active">VI</button>
+    <button id="langEn">EN</button>
+  </div>
+</header>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-section" id="sec-intro">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-intro')">
+      <span class="sidebar-section-title" data-vi="Giới thiệu" data-en="Introduction">Giới thiệu</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#tong-quan" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Tổng quan hệ thống" data-en="System Overview">Tổng quan hệ thống</span></a>
+      <a class="sidebar-link" href="#phan-loai-hang" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Phân loại hàng hóa" data-en="Goods Classification">Phân loại hàng hóa</span></a>
+      <a class="sidebar-link" href="#vai-tro" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Vai trò &amp; Trách nhiệm" data-en="Roles &amp; Responsibilities">Vai trò &amp; Trách nhiệm</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-proc">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-proc')">
+      <span class="sidebar-section-title" data-vi="Mua hàng" data-en="Procurement">Mua hàng</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#sop01" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 01 — Tạo Purchase Request" data-en="SOP 01 — Create Purchase Request">SOP 01 — Tạo Purchase Request</span></a>
+      <a class="sidebar-link" href="#sop02" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 02 — Tạo Purchase Order" data-en="SOP 02 — Create Purchase Order">SOP 02 — Tạo Purchase Order</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-wh">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-wh')">
+      <span class="sidebar-section-title" data-vi="Nhập Xuất Kho" data-en="Warehouse Ops">Nhập Xuất Kho</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#sop03" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 03 — Nhập kho thiết bị Serial" data-en="SOP 03 — Serial Device Inbound">SOP 03 — Nhập kho Serial</span></a>
+      <a class="sidebar-link" href="#sop04" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 04 — Nhập kho phụ kiện" data-en="SOP 04 — Accessory Inbound">SOP 04 — Nhập kho phụ kiện</span></a>
+      <a class="sidebar-link" href="#sop05" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 05 — Reservation dự án" data-en="SOP 05 — Project Reservation">SOP 05 — Reservation dự án</span></a>
+      <a class="sidebar-link" href="#sop06" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 06 — Xuất kho thiết bị Serial" data-en="SOP 06 — Serial Device Outbound">SOP 06 — Xuất kho Serial</span></a>
+      <a class="sidebar-link" href="#sop07" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 07 — Xuất kho phụ kiện" data-en="SOP 07 — Accessory Outbound">SOP 07 — Xuất kho phụ kiện</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-ops">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-ops')">
+      <span class="sidebar-section-title" data-vi="Triển khai &amp; Bảo hành" data-en="Deploy &amp; Warranty">Triển khai &amp; Bảo hành</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#sop08" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 08 — Triển khai &amp; Device Lifecycle" data-en="SOP 08 — Deploy &amp; Device Lifecycle">SOP 08 — Triển khai &amp; Lifecycle</span></a>
+      <a class="sidebar-link" href="#sop09" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 09 — Bảo hành &amp; Bảo trì" data-en="SOP 09 — Warranty &amp; Maintenance">SOP 09 — Bảo hành &amp; Bảo trì</span></a>
+      <a class="sidebar-link" href="#sop10" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 10 — Kiểm soát &amp; Audit" data-en="SOP 10 — Control &amp; Audit">SOP 10 — Kiểm soát &amp; Audit</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-ref">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-ref')">
+      <span class="sidebar-section-title" data-vi="Tham chiếu" data-en="Reference">Tham chiếu</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#kpi" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="KPI vận hành" data-en="Operational KPIs">KPI vận hành</span></a>
+      <a class="sidebar-link" href="#nguyen-tac-vang" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Nguyên tắc vàng" data-en="Golden Principles">Nguyên tắc vàng</span></a>
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+<div class="content-area">
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="lang-vi">
+    <h1>SOP Vận hành Nội bộ</h1>
+    <p class="page-header-meta">Mua hàng • Kho hàng • Bảo hành — Công ty Camera AI — Phiên bản 1.0</p>
+  </div>
+  <div class="lang-en">
+    <h1>Internal Operations SOP</h1>
+    <p class="page-header-meta">Procurement • Warehouse • Warranty — AI Camera Company — Version 1.0</p>
+  </div>
+</div>
+
+<!-- ===== SECTION: OVERVIEW ===== -->
+<h2 id="tong-quan">
+  <span class="lang-vi">Tổng quan hệ thống</span>
+  <span class="lang-en">System Overview</span>
+</h2>
+
+<div class="lang-vi">
+  <p class="section-intro">Tài liệu này chuẩn hóa cách làm việc giữa các bộ phận: Mua hàng – Kho – Kỹ thuật – PM – Bảo hành. Áp dụng cho toàn bộ thiết bị Camera AI, NVR và phụ kiện.</p>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-card-title">Mục đích</div>
+      <div class="feature-card-desc">Kiểm soát 100% thiết bị theo serial, tránh thất thoát, nhầm lẫn, tồn kho ảo. Làm căn cứ đào tạo nhân sự mới và audit nội bộ.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">Phạm vi áp dụng</div>
+      <div class="feature-card-desc">Thiết bị quản lý theo Serial (Camera AI, NVR, Server AI), phụ kiện không serial (dây, adapter, phụ kiện tiêu hao), toàn bộ kho của công ty.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">Tích hợp hệ thống</div>
+      <div class="feature-card-desc">Module ERP độc lập: Procurement, Warehouse, Device Lifecycle, Warranty. Thiết kế event-based inventory — tồn kho = SUM(inventory_transaction).</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">Nguyên tắc nền tảng</div>
+      <div class="feature-card-desc">Không update tồn trực tiếp. Serial luôn UNIQUE. Không cho xóa chứng từ — chỉ CANCEL hoặc REVERSE.</div>
+    </div>
+  </div>
+</div>
+<div class="lang-en">
+  <p class="section-intro">This document standardizes working procedures across departments: Procurement – Warehouse – Engineering – PM – Warranty. Applies to all AI Camera, NVR devices and accessories.</p>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-card-title">Purpose</div>
+      <div class="feature-card-desc">100% device control by serial number, preventing loss, confusion and phantom inventory. Serves as a basis for staff training and internal audits.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">Scope</div>
+      <div class="feature-card-desc">Serial-tracked devices (AI Camera, NVR, AI Server), non-serial accessories (cables, adapters, consumables), all company warehouses.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">System Integration</div>
+      <div class="feature-card-desc">Independent ERP modules: Procurement, Warehouse, Device Lifecycle, Warranty. Event-based inventory design — stock = SUM(inventory_transaction).</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">Core Principles</div>
+      <div class="feature-card-desc">No direct stock updates. Serial always UNIQUE. No document deletion — CANCEL or REVERSE only.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION: GOODS CLASSIFICATION ===== -->
+<h2 id="phan-loai-hang">
+  <span class="lang-vi">Phân loại hàng hóa</span>
+  <span class="lang-en">Goods Classification</span>
+</h2>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Loại</span><span class="lang-en">Type</span></th>
+      <th><span class="lang-vi">Sản phẩm</span><span class="lang-en">Products</span></th>
+      <th><span class="lang-vi">Quản lý</span><span class="lang-en">Management</span></th>
+      <th><span class="lang-vi">Bắt buộc</span><span class="lang-en">Required</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong><span class="lang-vi">Thiết bị chính (Serial-based)</span><span class="lang-en">Main Devices (Serial-based)</span></strong></td>
+      <td><span class="lang-vi">Camera AI, NVR, Server AI</span><span class="lang-en">AI Camera, NVR, AI Server</span></td>
+      <td><span class="lang-vi">Theo từng serial riêng biệt</span><span class="lang-en">Per individual serial number</span></td>
+      <td><span style="color:var(--color-success);font-weight:600;">&#10003; Scan serial</span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">Phụ kiện (Non-serial)</span><span class="lang-en">Accessories (Non-serial)</span></strong></td>
+      <td><span class="lang-vi">Dây cáp, Adapter, Chân đế, Phụ kiện tiêu hao</span><span class="lang-en">Cables, Adapters, Mounts, Consumables</span></td>
+      <td><span class="lang-vi">Theo số lượng</span><span class="lang-en">By quantity</span></td>
+      <td><span style="color:var(--text-tertiary);">&#8212; <span class="lang-vi">Số lượng</span><span class="lang-en">Qty only</span></span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout callout-info">
+  <span class="callout-icon">&#8505;</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Phân biệt rõ</span><span class="lang-en">Key Distinction</span></strong>
+    <p><span class="lang-vi">Thiết bị chính tạo <code>device_instance</code> riêng cho mỗi serial. Phụ kiện không tạo <code>device_instance</code> — chỉ cộng/trừ số lượng.</span><span class="lang-en">Main devices create a <code>device_instance</code> per serial. Accessories do NOT create <code>device_instance</code> — quantity only.</span></p>
+  </div>
+</div>
+
+<!-- ===== SECTION: ROLES ===== -->
+<h2 id="vai-tro">
+  <span class="lang-vi">Vai trò &amp; Trách nhiệm</span>
+  <span class="lang-en">Roles &amp; Responsibilities</span>
+</h2>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Vai trò</span><span class="lang-en">Role</span></th>
+      <th><span class="lang-vi">Trách nhiệm chính</span><span class="lang-en">Main Responsibilities</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong><span class="lang-vi">Phòng Mua hàng</span><span class="lang-en">Procurement Dept</span></strong></td>
+      <td><span class="lang-vi">Tạo PR, PO đúng nhu cầu. Gắn PO với Project (nếu có). Theo dõi tiến độ giao hàng.</span><span class="lang-en">Create accurate PR and PO. Link PO to Project if applicable. Track delivery progress.</span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">Thủ kho</span><span class="lang-en">Warehouse Keeper</span></strong></td>
+      <td><span class="lang-vi">Nhận hàng, kiểm tra, scan serial. Không hoàn tất GRN khi chưa đủ serial. Không cho xuất kho sai quy trình.</span><span class="lang-en">Receive goods, inspect, scan serials. Do not complete GRN with missing serials. Prevent unauthorized outbound.</span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">Project Manager (PM)</span><span class="lang-en">Project Manager (PM)</span></strong></td>
+      <td><span class="lang-vi">Tạo yêu cầu mua theo dự án. Thực hiện reservation thiết bị. Theo dõi thiết bị theo project.</span><span class="lang-en">Create project-based purchase requests. Perform device reservations. Track devices per project.</span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">Kỹ thuật triển khai</span><span class="lang-en">Deployment Engineer</span></strong></td>
+      <td><span class="lang-vi">Nhận thiết bị đúng serial. Cập nhật trạng thái lắp đặt &amp; kích hoạt AI.</span><span class="lang-en">Receive devices by serial. Update installation and AI activation status.</span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">Bộ phận Bảo hành</span><span class="lang-en">Warranty Dept</span></strong></td>
+      <td><span class="lang-vi">Tiếp nhận thiết bị lỗi. Tạo ticket bảo hành. Cập nhật kết quả xử lý.</span><span class="lang-en">Accept defective devices. Create warranty tickets. Update resolution results.</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ===== SOP 01 ===== -->
+<h2 id="sop01">
+  <span class="module-tag mod-proc">Procurement</span>
+  <span class="lang-vi">SOP 01 — Tạo Purchase Request (PR)</span>
+  <span class="lang-en">SOP 01 — Create Purchase Request (PR)</span>
+</h2>
+
+<div class="lang-vi">
+  <p class="section-intro">PM hoặc Kỹ thuật tạo PR khi có dự án mới cần thiết bị hoặc tồn kho dưới mức an toàn.</p>
+</div>
+<div class="lang-en">
+  <p class="section-intro">PM or Engineering creates a PR when a new project requires devices or stock falls below safety level.</p>
+</div>
+
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">PM / Kỹ thuật</span><span class="lang-en">PM / Engineering</span></span>
+  <span class="role-tag"><span class="lang-vi">Phòng Mua hàng (duyệt)</span><span class="lang-en">Procurement (approve)</span></span>
+</div>
+
+<h4><span class="lang-vi">Luồng trạng thái PR</span><span class="lang-en">PR Status Flow</span></h4>
+<div class="status-flow">
+  <span class="sp sp-draft">DRAFT</span>
+  <span class="flow-arr">&#8594;</span>
+  <span class="sp sp-blue">SUBMITTED</span>
+  <span class="flow-arr">&#8594;</span>
+  <span class="sp sp-green">APPROVED</span>
+  <span class="flow-arr"> / </span>
+  <span class="sp sp-red">REJECTED</span>
+</div>
+
+<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Xác định nhu cầu</span><span class="lang-en">Identify Need</span></strong> — <span class="lang-vi">Dự án mới cần thiết bị, hoặc tồn kho dưới ngưỡng an toàn.</span><span class="lang-en">New project requires devices, or stock is below safety threshold.</span></span></li>
+  <li><span><strong><span class="lang-vi">Tạo PR trên hệ thống</span><span class="lang-en">Create PR in System</span></strong> — <span class="lang-vi">Nhập: model thiết bị, số lượng, gắn Project nếu có.</span><span class="lang-en">Enter: device model, quantity, link to Project if applicable.</span></span></li>
+  <li><span><strong><span class="lang-vi">Nộp PR (SUBMIT)</span><span class="lang-en">Submit PR</span></strong> — <span class="lang-vi">Chuyển trạng thái sang SUBMITTED để yêu cầu phê duyệt.</span><span class="lang-en">Change status to SUBMITTED to request approval.</span></span></li>
+  <li><span><strong><span class="lang-vi">Phòng mua hàng xét duyệt</span><span class="lang-en">Procurement Reviews</span></strong> — <span class="lang-vi">APPROVED (tiếp tục tạo PO) hoặc REJECTED (gửi lý do).</span><span class="lang-en">APPROVED (proceed to PO) or REJECTED (with reason).</span></span></li>
+</ol>
+
+<div class="callout callout-warning">
+  <span class="callout-icon">&#9888;</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Lưu ý quan trọng</span><span class="lang-en">Important Notes</span></strong>
+    <p><span class="lang-vi">PR <strong>KHÔNG</strong> làm thay đổi tồn kho. PR chỉ là yêu cầu mua — chưa có hàng thực. PR phải có model thiết bị, số lượng và project (nếu có).</span><span class="lang-en">PR does <strong>NOT</strong> affect inventory. PR is only a purchase request — no physical goods yet. PR must include device model, quantity, and project (if applicable).</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 02 ===== -->
+<h2 id="sop02">
+  <span class="module-tag mod-proc">Procurement</span>
+  <span class="lang-vi">SOP 02 — Tạo Purchase Order (PO)</span>
+  <span class="lang-en">SOP 02 — Create Purchase Order (PO)</span>
+</h2>
+
+<div class="lang-vi">
+  <p class="section-intro">Phòng mua hàng tạo PO từ PR đã được duyệt. PO phải được phê duyệt trước khi gửi nhà cung cấp (NCC).</p>
+</div>
+<div class="lang-en">
+  <p class="section-intro">Procurement creates a PO from an approved PR. PO must be approved before sending to the supplier.</p>
+</div>
+
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">Phòng Mua hàng</span><span class="lang-en">Procurement Dept</span></span>
+  <span class="role-tag"><span class="lang-vi">Ban Giám Đốc (duyệt)</span><span class="lang-en">Management (approve)</span></span>
+</div>
+
+<h4><span class="lang-vi">Luồng trạng thái PO</span><span class="lang-en">PO Status Flow</span></h4>
+<div class="status-flow">
+  <span class="sp sp-draft">DRAFT</span>
+  <span class="flow-arr">&#8594;</span>
+  <span class="sp sp-green">APPROVED</span>
+  <span class="flow-arr">&#8594;</span>
+  <span class="sp sp-blue">SENT</span>
+  <span class="flow-arr">&#8594;</span>
+  <span class="sp sp-amber">PARTIALLY_RECEIVED</span>
+  <span class="flow-arr">&#8594;</span>
+  <span class="sp sp-purple">CLOSED</span>
+</div>
+
+<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Tạo PO từ PR</span><span class="lang-en">Create PO from PR</span></strong> — <span class="lang-vi">Chọn PR đã APPROVED, tạo PO liên kết. Có thể tạo PO trực tiếp nếu không có PR.</span><span class="lang-en">Select an APPROVED PR and create linked PO. Can create PO directly without PR if needed.</span></span></li>
+  <li><span><strong><span class="lang-vi">Nhập thông tin NCC &amp; điều kiện</span><span class="lang-en">Enter Supplier &amp; Terms</span></strong> — <span class="lang-vi">Chọn nhà cung cấp, điều kiện thanh toán, ngày giao hàng dự kiến.</span><span class="lang-en">Select supplier, payment terms, expected delivery date.</span></span></li>
+  <li><span><strong><span class="lang-vi">Phê duyệt PO</span><span class="lang-en">Approve PO</span></strong> — <span class="lang-vi">PO phải được duyệt (APPROVED) trước khi gửi NCC.</span><span class="lang-en">PO must be approved before sending to supplier.</span></span></li>
+  <li><span><strong><span class="lang-vi">Gửi NCC (SENT)</span><span class="lang-en">Send to Supplier</span></strong> — <span class="lang-vi">Chuyển trạng thái SENT, theo dõi tiến độ giao hàng.</span><span class="lang-en">Change status to SENT, track delivery progress.</span></span></li>
+  <li><span><strong><span class="lang-vi">Nhận hàng từng phần</span><span class="lang-en">Partial Receipt</span></strong> — <span class="lang-vi">Nếu nhận từng phần: PARTIALLY_RECEIVED. Khi nhận đủ: CLOSED.</span><span class="lang-en">If partial delivery: PARTIALLY_RECEIVED. When fully received: CLOSED.</span></span></li>
+</ol>
+
+<div class="callout callout-warning">
+  <span class="callout-icon">&#9888;</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Lưu ý</span><span class="lang-en">Important</span></strong>
+    <p><span class="lang-vi">PO <strong>KHÔNG</strong> làm tăng tồn kho. Tồn kho chỉ tăng sau khi GRN được COMPLETED.</span><span class="lang-en">PO does <strong>NOT</strong> increase inventory. Inventory only increases after GRN is COMPLETED.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 03 ===== -->
+<h2 id="sop03">
+  <span class="module-tag mod-wh">Warehouse</span>
+  <span class="lang-vi">SOP 03 — Nhập kho Thiết bị có Serial</span>
+  <span class="lang-en">SOP 03 — Serial Device Goods Receipt</span>
+</h2>
+
+<div class="lang-vi">
+  <p class="section-intro">Quy trình nhập kho cho thiết bị có serial (Camera AI, NVR). Bắt buộc scan từng serial. Không được COMPLETE nếu thiếu serial.</p>
+</div>
+<div class="lang-en">
+  <p class="section-intro">Inbound process for serial-tracked devices (AI Camera, NVR). Mandatory individual serial scanning. Cannot COMPLETE if serials are missing.</p>
+</div>
+
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">Thủ kho</span><span class="lang-en">Warehouse Keeper</span></span>
+  <span class="role-tag"><span class="lang-vi">Phòng Mua hàng (PO)</span><span class="lang-en">Procurement (PO)</span></span>
+</div>
+
+<h4><span class="lang-vi">Luồng trạng thái GRN</span><span class="lang-en">GRN Status Flow</span></h4>
+<div class="status-flow">
+  <span class="sp sp-draft">DRAFT</span>
+  <span class="flow-arr">&#8594;</span>
+  <span class="sp sp-blue">RECEIVING</span>
+  <span class="flow-arr">&#8594;</span>
+  <span class="sp sp-green">COMPLETED</span>
+  <span class="flow-arr"> / </span>
+  <span class="sp sp-red">CANCELLED</span>
+</div>
+
+<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Nhận hàng vật lý từ NCC</span><span class="lang-en">Receive Physical Goods from Supplier</span></strong> — <span class="lang-vi">Kiểm tra kiện hàng, số lượng thùng trước khi nhận.</span><span class="lang-en">Inspect packages and box count before acceptance.</span></span></li>
+  <li><span><strong><span class="lang-vi">Tạo GRN trên hệ thống — trạng thái RECEIVING</span><span class="lang-en">Create GRN — Status RECEIVING</span></strong> — <span class="lang-vi">Liên kết GRN với PO tương ứng.</span><span class="lang-en">Link GRN to the corresponding PO.</span></span></li>
+  <li><span><strong><span class="lang-vi">Scan từng serial vào hệ thống</span><span class="lang-en">Scan Each Serial into System</span></strong> — <span class="lang-vi">Quét mã barcode/QR từng thiết bị. Hệ thống kiểm tra serial UNIQUE và chưa tồn tại.</span><span class="lang-en">Scan barcode/QR of each device. System validates UNIQUE serial not previously recorded.</span></span></li>
+  <li><span><strong><span class="lang-vi">Đối chiếu đủ số lượng</span><span class="lang-en">Verify Count</span></strong> — <span class="lang-vi">Số serial scan phải = số lượng dự kiến trong PO.</span><span class="lang-en">Scanned serial count must equal expected quantity in PO.</span></span></li>
+  <li><span><strong><span class="lang-vi">Chuyển GRN sang COMPLETED</span><span class="lang-en">Change GRN to COMPLETED</span></strong> — <span class="lang-vi">Chỉ được COMPLETE khi số serial đủ. Hệ thống khóa chỉnh sửa.</span><span class="lang-en">Can only COMPLETE when serial count is sufficient. System locks for editing.</span></span></li>
+  <li><span><strong><span class="lang-vi">Hệ thống tự sinh tồn kho</span><span class="lang-en">System Auto-generates Inventory</span></strong> — <span class="lang-vi">Mỗi serial tạo 1 <code>device_instance</code> và <code>inventory_transaction +1</code>. Trạng thái thiết bị: IN_STOCK.</span><span class="lang-en">Each serial creates 1 <code>device_instance</code> and <code>inventory_transaction +1</code>. Device status: IN_STOCK.</span></span></li>
+</ol>
+
+<div class="callout callout-danger">
+  <span class="callout-icon">&#128683;</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Cấm tuyệt đối</span><span class="lang-en">Strictly Prohibited</span></strong>
+    <p><span class="lang-vi">Không cho COMPLETE nếu số serial &lt; expected quantity. Không sửa/xóa serial sau khi GRN đã COMPLETED. Không cho xuất kho khi còn GRN ở trạng thái RECEIVING.</span><span class="lang-en">Cannot COMPLETE if serial count &lt; expected quantity. Cannot edit/delete serials after GRN is COMPLETED. Cannot outbound while GRN is in RECEIVING status.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 04 ===== -->
+<h2 id="sop04">
+  <span class="module-tag mod-wh">Warehouse</span>
+  <span class="lang-vi">SOP 04 — Nhập kho Phụ kiện (Non-serial)</span>
+  <span class="lang-en">SOP 04 — Accessory Goods Receipt (Non-serial)</span>
+</h2>
+
+<div class="lang-vi">
+  <p class="section-intro">Quy trình nhập kho phụ kiện (dây cáp, adapter, chân đế, phụ kiện tiêu hao). Quản lý theo số lượng, không cần serial.</p>
+</div>
+<div class="lang-en">
+  <p class="section-intro">Inbound process for accessories (cables, adapters, mounts, consumables). Managed by quantity, no serial required.</p>
+</div>
+
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">Thủ kho</span><span class="lang-en">Warehouse Keeper</span></span>
+</div>
+
+<h4><span class="lang-vi">Luồng trạng thái</span><span class="lang-en">Status Flow</span></h4>
+<div class="status-flow">
+  <span class="sp sp-draft">DRAFT</span>
+  <span class="flow-arr">&#8594;</span>
+  <span class="sp sp-blue">RECEIVING</span>
+  <span class="flow-arr">&#8594;</span>
+  <span class="sp sp-green">COMPLETED</span>
+</div>
+
+<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Nhận hàng vật lý</span><span class="lang-en">Receive Physical Goods</span></strong> — <span class="lang-vi">Kiểm tra số lượng, tình trạng hàng.</span><span class="lang-en">Inspect quantity and condition of goods.</span></span></li>
+  <li><span><strong><span class="lang-vi">Tạo GRN và nhập số lượng</span><span class="lang-en">Create GRN and Enter Quantity</span></strong> — <span class="lang-vi">Chọn SKU phụ kiện, nhập số lượng thực nhận.</span><span class="lang-en">Select accessory SKU, enter actual received quantity.</span></span></li>
+  <li><span><strong><span class="lang-vi">Hoàn tất GRN (COMPLETE)</span><span class="lang-en">Complete GRN</span></strong> — <span class="lang-vi">Chuyển sang COMPLETED.</span><span class="lang-en">Change to COMPLETED.</span></span></li>
+  <li><span><strong><span class="lang-vi">Hệ thống cộng tồn kho</span><span class="lang-en">System Updates Inventory</span></strong> — <span class="lang-vi"><code>inventory_transaction +quantity</code>. Không tạo <code>device_instance</code>.</span><span class="lang-en"><code>inventory_transaction +quantity</code>. No <code>device_instance</code> created.</span></span></li>
+</ol>
+
+<div class="callout callout-tip">
+  <span class="callout-icon">&#10003;</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Phụ kiện chỉ quản lý theo số lượng</span><span class="lang-en">Accessories: Quantity Only</span></strong>
+    <p><span class="lang-vi">Không tạo <code>device_instance</code>. Tồn kho = tổng số lượng từ các transaction. Quy trình đơn giản hơn thiết bị serial.</span><span class="lang-en">No <code>device_instance</code> created. Stock = total quantity from transactions. Simpler process than serial devices.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 05 ===== -->
+<h2 id="sop05">
+  <span class="module-tag mod-wh">Warehouse</span>
+  <span class="lang-vi">SOP 05 — Reservation Thiết bị theo Dự án</span>
+  <span class="lang-en">SOP 05 — Device Reservation by Project</span>
+</h2>
+
+<div class="lang-vi">
+  <p class="section-intro">PM giữ thiết bị cho dự án trước khi xuất kho, đảm bảo thiết bị không bị cấp phát sai dự án khác.</p>
+</div>
+<div class="lang-en">
+  <p class="section-intro">PM reserves devices for a project before outbound, ensuring devices are not allocated to another project by mistake.</p>
+</div>
+
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">Project Manager</span><span class="lang-en">Project Manager</span></span>
+  <span class="role-tag"><span class="lang-vi">Thủ kho (xác nhận)</span><span class="lang-en">Warehouse Keeper (confirm)</span></span>
+</div>
+
+<h4><span class="lang-vi">Luồng trạng thái thiết bị</span><span class="lang-en">Device Status Flow</span></h4>
+<div class="status-flow">
+  <span class="sp sp-green">IN_STOCK</span>
+  <span class="flow-arr">&#8594;</span>
+  <span class="sp sp-amber">RESERVED</span>
+  <span class="flow-arr">&#8594;</span>
+  <span class="lang-vi" style="font-size:12px;color:var(--text-tertiary);">(xuất kho khi cần)</span>
+  <span class="lang-en" style="font-size:12px;color:var(--text-tertiary);">(outbound when needed)</span>
+</div>
+
+<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">PM xác định nhu cầu thiết bị</span><span class="lang-en">PM Identifies Device Need</span></strong> — <span class="lang-vi">Xác định loại thiết bị, số lượng, thời điểm cần.</span><span class="lang-en">Determine device type, quantity, and required date.</span></span></li>
+  <li><span><strong><span class="lang-vi">Tạo Reservation trên hệ thống</span><span class="lang-en">Create Reservation in System</span></strong> — <span class="lang-vi">Chọn project, chọn serial cụ thể hoặc chỉ định số lượng.</span><span class="lang-en">Select project, choose specific serials or specify quantity.</span></span></li>
+  <li><span><strong><span class="lang-vi">Hệ thống chuyển trạng thái</span><span class="lang-en">System Updates Status</span></strong> — <span class="lang-vi">Thiết bị: <code>IN_STOCK → RESERVED</code>. Gán Project ID vào device_instance.</span><span class="lang-en">Device: <code>IN_STOCK → RESERVED</code>. Project ID assigned to device_instance.</span></span></li>
+  <li><span><strong><span class="lang-vi">Theo dõi reservation</span><span class="lang-en">Monitor Reservation</span></strong> — <span class="lang-vi">Thiết bị RESERVED chỉ được xuất cho đúng project đó.</span><span class="lang-en">RESERVED device can only be outbounded to that specific project.</span></span></li>
+</ol>
+
+<div class="callout callout-note">
+  <span class="callout-icon">&#128216;</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Reservation không làm giảm tồn kho</span><span class="lang-en">Reservation Does Not Reduce Stock</span></strong>
+    <p><span class="lang-vi">Tồn kho vẫn được ghi nhận như cũ — chỉ có trạng thái thiết bị thay đổi. Tồn chỉ giảm khi xuất kho thực sự (Outbound Order hoàn tất). Mục đích: ngăn thiết bị bị cấp phát sai cho dự án khác.</span><span class="lang-en">Inventory quantity remains unchanged — only device status changes. Stock decreases only on actual outbound (Outbound Order completed). Purpose: prevent devices from being dispatched to the wrong project.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 06 ===== -->
+<h2 id="sop06">
+  <span class="module-tag mod-wh">Warehouse</span>
+  <span class="lang-vi">SOP 06 — Xuất kho Thiết bị có Serial</span>
+  <span class="lang-en">SOP 06 — Serial Device Outbound</span>
+</h2>
+
+<div class="lang-vi">
+  <p class="section-intro">Xuất thiết bị có serial theo dự án, POC, nội bộ hoặc bảo trì. Chỉ được xuất khi thiết bị ở trạng thái IN_STOCK hoặc RESERVED.</p>
+</div>
+<div class="lang-en">
+  <p class="section-intro">Outbound of serial-tracked devices for project, POC, internal use or maintenance. Only allowed when device is IN_STOCK or RESERVED.</p>
+</div>
+
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">Thủ kho</span><span class="lang-en">Warehouse Keeper</span></span>
+  <span class="role-tag"><span class="lang-vi">PM / Kỹ thuật</span><span class="lang-en">PM / Engineering</span></span>
+</div>
+
+<h4><span class="lang-vi">Các loại xuất kho</span><span class="lang-en">Outbound Types</span></h4>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin:14px 0;">
+  <span style="padding:6px 12px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-md);font-size:12px;font-family:var(--font-mono);">PROJECT_OUT</span>
+  <span style="padding:6px 12px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-md);font-size:12px;font-family:var(--font-mono);">POC_OUT</span>
+  <span style="padding:6px 12px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-md);font-size:12px;font-family:var(--font-mono);">INTERNAL_USE</span>
+  <span style="padding:6px 12px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-md);font-size:12px;font-family:var(--font-mono);">PARTNER_LOAN_OUT</span>
+  <span style="padding:6px 12px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-md);font-size:12px;font-family:var(--font-mono);">MAINTENANCE_OUT</span>
+</div>
+
+<h4><span class="lang-vi">Luồng xuất kho</span><span class="lang-en">Outbound Flow</span></h4>
+<div class="status-flow">
+  <span class="sp sp-amber">RESERVED</span>
+  <span class="flow-arr"> / </span>
+  <span class="sp sp-green">IN_STOCK</span>
+  <span class="flow-arr">&#8594;</span>
+  <span class="sp sp-blue">Outbound Order</span>
+  <span class="flow-arr">&#8594;</span>
+  <span class="sp sp-purple">Scan Serial</span>
+  <span class="flow-arr">&#8594;</span>
+  <span class="sp sp-orange">DEPLOYED / POC / INTERNAL</span>
+</div>
+
+<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Tạo Outbound Order</span><span class="lang-en">Create Outbound Order</span></strong> — <span class="lang-vi">Chọn loại xuất, project/mục đích đầu ra.</span><span class="lang-en">Select outbound type and destination project/purpose.</span></span></li>
+  <li><span><strong><span class="lang-vi">Scan serial khi xuất</span><span class="lang-en">Scan Serial at Outbound</span></strong> — <span class="lang-vi">Quét mã barcode từng thiết bị. Hệ thống xác nhận trạng thái IN_STOCK hoặc RESERVED.</span><span class="lang-en">Scan barcode of each device. System confirms IN_STOCK or RESERVED status.</span></span></li>
+  <li><span><strong><span class="lang-vi">Hệ thống trừ tồn kho</span><span class="lang-en">System Deducts Inventory</span></strong> — <span class="lang-vi"><code>inventory_transaction -1</code> cho mỗi serial xuất.</span><span class="lang-en"><code>inventory_transaction -1</code> for each outbound serial.</span></span></li>
+  <li><span><strong><span class="lang-vi">Cập nhật trạng thái thiết bị</span><span class="lang-en">Update Device Status</span></strong> — <span class="lang-vi">Xuất dự án: DEPLOYED. Xuất POC: POC. Xuất nội bộ: INTERNAL_USE.</span><span class="lang-en">Project outbound: DEPLOYED. POC outbound: POC. Internal outbound: INTERNAL_USE.</span></span></li>
+</ol>
+
+<div class="callout callout-danger">
+  <span class="callout-icon">&#128683;</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Quy tắc bắt buộc</span><span class="lang-en">Mandatory Rules</span></strong>
+    <p><span class="lang-vi">Chỉ xuất khi device.status = <code>IN_STOCK</code> hoặc <code>RESERVED</code>. Không cho xuất khi GRN chưa hoàn tất. Không xuất thiết bị RESERVED cho project khác.</span><span class="lang-en">Only outbound when device.status = <code>IN_STOCK</code> or <code>RESERVED</code>. Cannot outbound while GRN is incomplete. Cannot outbound RESERVED device to a different project.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 07 ===== -->
+<h2 id="sop07">
+  <span class="module-tag mod-wh">Warehouse</span>
+  <span class="lang-vi">SOP 07 — Xuất kho Phụ kiện (Non-serial)</span>
+  <span class="lang-en">SOP 07 — Accessory Outbound (Non-serial)</span>
+</h2>
+
+<div class="lang-vi">
+  <p class="section-intro">Xuất phụ kiện theo số lượng, không cần scan serial. Áp dụng cho dây cáp, adapter, chân đế và phụ kiện tiêu hao.</p>
+</div>
+<div class="lang-en">
+  <p class="section-intro">Outbound accessories by quantity, no serial scan required. Applies to cables, adapters, mounts and consumable accessories.</p>
+</div>
+
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">Thủ kho</span><span class="lang-en">Warehouse Keeper</span></span>
+  <span class="role-tag"><span class="lang-vi">PM / Kỹ thuật (yêu cầu)</span><span class="lang-en">PM / Engineering (request)</span></span>
+</div>
+
+<h4><span class="lang-vi">Các loại xuất</span><span class="lang-en">Outbound Types</span></h4>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Loại xuất</span><span class="lang-en">Type</span></th>
+      <th><span class="lang-vi">Mục đích</span><span class="lang-en">Purpose</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>PROJECT_OUT</code></td><td><span class="lang-vi">Xuất theo dự án</span><span class="lang-en">Project outbound</span></td></tr>
+    <tr><td><code>POC_OUT</code></td><td><span class="lang-vi">Xuất POC (demo khách hàng)</span><span class="lang-en">POC outbound (client demo)</span></td></tr>
+    <tr><td><code>INTERNAL_USE</code></td><td><span class="lang-vi">Dùng nội bộ</span><span class="lang-en">Internal use</span></td></tr>
+    <tr><td><code>PARTNER_LOAN_OUT</code></td><td><span class="lang-vi">Mượn đối tác</span><span class="lang-en">Partner loan</span></td></tr>
+    <tr><td><code>MAINTENANCE_OUT</code></td><td><span class="lang-vi">Xuất đi bảo trì</span><span class="lang-en">Maintenance outbound</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Tạo Outbound Order cho phụ kiện</span><span class="lang-en">Create Accessory Outbound Order</span></strong> — <span class="lang-vi">Chọn loại xuất và SKU phụ kiện.</span><span class="lang-en">Select outbound type and accessory SKU.</span></span></li>
+  <li><span><strong><span class="lang-vi">Nhập số lượng xuất</span><span class="lang-en">Enter Outbound Quantity</span></strong> — <span class="lang-vi">Hệ thống kiểm tra số lượng xuất &le; tồn hiện tại.</span><span class="lang-en">System validates outbound quantity &le; current stock.</span></span></li>
+  <li><span><strong><span class="lang-vi">Xác nhận xuất kho</span><span class="lang-en">Confirm Outbound</span></strong> — <span class="lang-vi">Thủ kho xác nhận, giao hàng vật lý.</span><span class="lang-en">Warehouse keeper confirms, delivers physical goods.</span></span></li>
+  <li><span><strong><span class="lang-vi">Hệ thống trừ số lượng</span><span class="lang-en">System Deducts Quantity</span></strong> — <span class="lang-vi"><code>inventory_transaction -quantity</code>.</span><span class="lang-en"><code>inventory_transaction -quantity</code>.</span></span></li>
+  <li><span><strong><span class="lang-vi">Ghi nhận audit log</span><span class="lang-en">Record Audit Log</span></strong> — <span class="lang-vi">Mọi xuất kho được ghi vào audit log với người thực hiện và thời gian.</span><span class="lang-en">All outbound transactions recorded in audit log with user and timestamp.</span></span></li>
+</ol>
+
+<div class="callout callout-warning">
+  <span class="callout-icon">&#9888;</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Không cho phép tồn kho âm</span><span class="lang-en">Negative Stock Not Allowed</span></strong>
+    <p><span class="lang-vi">Hệ thống tự chặn khi số lượng xuất > tồn hiện tại. Không được bypass kiểm tra này.</span><span class="lang-en">System automatically blocks when outbound quantity exceeds current stock. This check cannot be bypassed.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 08 ===== -->
+<h2 id="sop08">
+  <span class="module-tag mod-life">Lifecycle</span>
+  <span class="lang-vi">SOP 08 — Triển khai &amp; Device Lifecycle</span>
+  <span class="lang-en">SOP 08 — Deployment &amp; Device Lifecycle</span>
+</h2>
+
+<div class="lang-vi">
+  <p class="section-intro">Quy trình lắp đặt thiết bị tại site khách hàng và kích hoạt AI. Mọi thay đổi trạng thái phải được lưu vào <code>device_status_history</code>.</p>
+</div>
+<div class="lang-en">
+  <p class="section-intro">Process for device installation at client site and AI activation. All status changes must be saved to <code>device_status_history</code>.</p>
+</div>
+
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">Kỹ thuật triển khai</span><span class="lang-en">Deployment Engineer</span></span>
+  <span class="role-tag"><span class="lang-vi">Project Manager</span><span class="lang-en">Project Manager</span></span>
+</div>
+
+<h4><span class="lang-vi">Vòng đời thiết bị (Device Lifecycle)</span><span class="lang-en">Device Lifecycle Status</span></h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin:16px 0;">
+  <div style="padding:8px 10px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-sm);text-align:center;font-size:11px;font-family:var(--font-mono);font-weight:500;color:var(--text-secondary);">IN_STOCK</div>
+  <div style="padding:8px 10px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:var(--radius-sm);text-align:center;font-size:11px;font-family:var(--font-mono);font-weight:500;color:#B45309;">RESERVED</div>
+  <div style="padding:8px 10px;background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25);border-radius:var(--radius-sm);text-align:center;font-size:11px;font-family:var(--font-mono);font-weight:500;color:#0284C7;">DEPLOYED</div>
+  <div style="padding:8px 10px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:var(--radius-sm);text-align:center;font-size:11px;font-family:var(--font-mono);font-weight:500;color:#15803D;">ACTIVATED</div>
+  <div style="padding:8px 10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--radius-sm);text-align:center;font-size:11px;font-family:var(--font-mono);font-weight:500;color:#B91C1C;">MAINTENANCE</div>
+  <div style="padding:8px 10px;background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25);border-radius:var(--radius-sm);text-align:center;font-size:11px;font-family:var(--font-mono);font-weight:500;color:#0284C7;">POC</div>
+  <div style="padding:8px 10px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-sm);text-align:center;font-size:11px;font-family:var(--font-mono);font-weight:500;color:var(--text-secondary);">INTERNAL_USE</div>
+  <div style="padding:8px 10px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-sm);text-align:center;font-size:11px;font-family:var(--font-mono);font-weight:500;color:var(--text-secondary);">BORROWED</div>
+  <div style="padding:8px 10px;background:rgba(161,161,170,.12);border:1px solid var(--border-default);border-radius:var(--radius-sm);text-align:center;font-size:11px;font-family:var(--font-mono);font-weight:500;color:var(--text-tertiary);">RETIRED</div>
+</div>
+
+<h4><span class="lang-vi">8.1 — Lắp đặt (Installation)</span><span class="lang-en">8.1 — Installation</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Nhận thiết bị từ kho</span><span class="lang-en">Receive Device from Warehouse</span></strong> — <span class="lang-vi">Kỹ thuật xác nhận đúng serial theo Outbound Order.</span><span class="lang-en">Engineer confirms correct serial per Outbound Order.</span></span></li>
+  <li><span><strong><span class="lang-vi">Lắp đặt tại site</span><span class="lang-en">Install at Site</span></strong> — <span class="lang-vi">Lắp đặt thiết bị theo đúng vị trí, cấu hình cơ bản.</span><span class="lang-en">Install device at the designated location, configure basics.</span></span></li>
+  <li><span><strong><span class="lang-vi">Cập nhật thông tin lắp đặt</span><span class="lang-en">Update Installation Info</span></strong> — <span class="lang-vi">Cập nhật: Site (vị trí), ngày lắp, trạng thái = <code>DEPLOYED</code>.</span><span class="lang-en">Update: Site (location), installation date, status = <code>DEPLOYED</code>.</span></span></li>
+</ol>
+
+<h4><span class="lang-vi">8.2 — Kích hoạt AI (AI Activation)</span><span class="lang-en">8.2 — AI Activation</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Cài firmware và cấu hình AI</span><span class="lang-en">Install Firmware &amp; Configure AI</span></strong> — <span class="lang-vi">Flash firmware phiên bản mới nhất, cấu hình model AI phù hợp dự án.</span><span class="lang-en">Flash latest firmware, configure AI model appropriate for project.</span></span></li>
+  <li><span><strong><span class="lang-vi">Nhập thông tin license AI</span><span class="lang-en">Enter AI License Info</span></strong> — <span class="lang-vi">Gắn license key vào thiết bị theo serial.</span><span class="lang-en">Assign license key to device by serial.</span></span></li>
+  <li><span><strong><span class="lang-vi">Cập nhật trạng thái ACTIVATED</span><span class="lang-en">Update Status to ACTIVATED</span></strong> — <span class="lang-vi">Trạng thái: <code>DEPLOYED → ACTIVATED</code>. Ghi nhận phiên bản firmware và license.</span><span class="lang-en">Status: <code>DEPLOYED → ACTIVATED</code>. Record firmware version and license.</span></span></li>
+</ol>
+
+<div class="callout callout-note">
+  <span class="callout-icon">&#8505;</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Ghi nhận lịch sử</span><span class="lang-en">History Recording</span></strong>
+    <p><span class="lang-vi">Mọi thay đổi trạng thái phải lưu vào <code>device_status_history</code>. Không xóa serial — chỉ thay đổi trạng thái. Serial là danh tính vĩnh viễn của thiết bị.</span><span class="lang-en">All status changes must be saved to <code>device_status_history</code>. Never delete serials — only change status. Serial is the permanent identity of the device.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 09 ===== -->
+<h2 id="sop09">
+  <span class="module-tag mod-warr">Warranty</span>
+  <span class="lang-vi">SOP 09 — Bảo hành &amp; Bảo trì</span>
+  <span class="lang-en">SOP 09 — Warranty &amp; Maintenance</span>
+</h2>
+
+<div class="lang-vi">
+  <p class="section-intro">Quy trình tiếp nhận, xử lý thiết bị lỗi và cập nhật kết quả. Mội ticket bảo hành gắn với serial cụ thể.</p>
+</div>
+<div class="lang-en">
+  <p class="section-intro">Process for receiving, handling defective devices and updating results. Every warranty ticket is linked to a specific serial.</p>
+</div>
+
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">Bộ phận Bảo hành</span><span class="lang-en">Warranty Dept</span></span>
+  <span class="role-tag"><span class="lang-vi">Kỹ thuật</span><span class="lang-en">Engineering</span></span>
+  <span class="role-tag"><span class="lang-vi">Thủ kho</span><span class="lang-en">Warehouse Keeper</span></span>
+</div>
+
+<h4><span class="lang-vi">Luồng bảo hành</span><span class="lang-en">Warranty Flow</span></h4>
+<div class="status-flow">
+  <span class="sp sp-blue">DEPLOYED / ACTIVATED</span>
+  <span class="flow-arr">&#8594;</span>
+  <span class="sp sp-red">MAINTENANCE</span>
+  <span class="flow-arr">&#8594;</span>
+  <span class="sp sp-green">Sửa được → DEPLOYED</span>
+  <span class="flow-arr"> / </span>
+  <span class="sp sp-draft">Không sửa được → RETIRED</span>
+</div>
+
+<h4><span class="lang-vi">9.1 — Tiếp nhận bảo hành</span><span class="lang-en">9.1 — Warranty Intake</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Tiếp nhận lỗi từ dự án / khách hàng</span><span class="lang-en">Receive Fault Report from Project / Client</span></strong> — <span class="lang-vi">Xác định serial bị lỗi, mô tả lỗi.</span><span class="lang-en">Identify faulty serial, describe the fault.</span></span></li>
+  <li><span><strong><span class="lang-vi">Tạo Warranty Ticket theo serial</span><span class="lang-en">Create Warranty Ticket by Serial</span></strong> — <span class="lang-vi">Ghi nhận: serial, mô tả lỗi, ngày bắt đầu bảo hành.</span><span class="lang-en">Record: serial, fault description, warranty start date.</span></span></li>
+  <li><span><strong><span class="lang-vi">Cập nhật trạng thái = MAINTENANCE</span><span class="lang-en">Update Status = MAINTENANCE</span></strong> — <span class="lang-vi">Thiết bị chuyển sang MAINTENANCE trong khi xử lý.</span><span class="lang-en">Device moves to MAINTENANCE while being processed.</span></span></li>
+</ol>
+
+<h4><span class="lang-vi">9.2 — Xử lý &amp; Kết quả</span><span class="lang-en">9.2 — Processing &amp; Outcome</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Sửa chữa thiết bị</span><span class="lang-en">Repair Device</span></strong> — <span class="lang-vi">Kỹ thuật sửa, kiểm tra lại.</span><span class="lang-en">Engineering repairs and retests device.</span></span></li>
+  <li><span><strong><span class="lang-vi">Nếu sửa được — trả lại dự án</span><span class="lang-en">If Repaired — Return to Project</span></strong> — <span class="lang-vi">Cập nhật trạng thái: <code>MAINTENANCE → DEPLOYED</code>. Ghi kết quả vào ticket.</span><span class="lang-en">Update status: <code>MAINTENANCE → DEPLOYED</code>. Record result in ticket.</span></span></li>
+  <li><span><strong><span class="lang-vi">Nếu không sửa được — đổi thiết bị</span><span class="lang-en">If Cannot Repair — Replace Device</span></strong> — <span class="lang-vi">Serial cũ → RETIRED. Xuất serial mới từ kho (SOP 06). Gắn serial mới vào project.</span><span class="lang-en">Old serial → RETIRED. Outbound new serial from warehouse (SOP 06). Assign new serial to project.</span></span></li>
+  <li><span><strong><span class="lang-vi">Lưu lịch sử lỗi</span><span class="lang-en">Save Error History</span></strong> — <span class="lang-vi">Ghi nhận lịch sử lỗi vào device_instance để theo dõi tỷ lệ lỗi theo model.</span><span class="lang-en">Record error history in device_instance to track fault rate by model.</span></span></li>
+</ol>
+
+<div class="callout callout-danger">
+  <span class="callout-icon">&#128683;</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Quy tắc bảo hành</span><span class="lang-en">Warranty Rules</span></strong>
+    <p><span class="lang-vi">Serial cũ phải chuyển RETIRED trước khi gán serial mới. Không nhập lại tồn bán mới nếu là hàng bảo hành. Ghi nhận ngày bắt đầu bảo hành bắt buộc.</span><span class="lang-en">Old serial must be RETIRED before assigning new serial. Do not re-stock warranty replacement as new inventory. Recording warranty start date is mandatory.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 10 ===== -->
+<h2 id="sop10">
+  <span class="module-tag mod-proc">Control</span>
+  <span class="lang-vi">SOP 10 — Kiểm soát &amp; Audit</span>
+  <span class="lang-en">SOP 10 — Control &amp; Audit</span>
+</h2>
+
+<div class="lang-vi">
+  <p class="section-intro">Quy tắc kiểm soát nội bộ đảm bảo tính toàn vẹn của hệ thống. Áp dụng cho mọi thao tác trên toàn bộ các SOP.</p>
+</div>
+<div class="lang-en">
+  <p class="section-intro">Internal control rules to ensure system integrity. Applies to all operations across all SOPs.</p>
+</div>
+
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">Tất cả vai trò</span><span class="lang-en">All Roles</span></span>
+  <span class="role-tag"><span class="lang-vi">Quản lý / Auditor</span><span class="lang-en">Management / Auditor</span></span>
+</div>
+
+<h4><span class="lang-vi">Quy tắc kiểm soát</span><span class="lang-en">Control Rules</span></h4>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Quy tắc</span><span class="lang-en">Rule</span></th>
+      <th><span class="lang-vi">Mô tả</span><span class="lang-en">Description</span></th>
+      <th><span class="lang-vi">Thực hiện</span><span class="lang-en">Enforcement</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong><span class="lang-vi">Audit log mọi thao tác</span><span class="lang-en">Audit log all operations</span></strong></td>
+      <td><span class="lang-vi">Mọi tạo/sửa/COMPLETE/CANCEL được ghi lại với user và timestamp</span><span class="lang-en">Every create/edit/COMPLETE/CANCEL is logged with user and timestamp</span></td>
+      <td><span style="color:var(--color-success);">&#10003; <span class="lang-vi">Tự động</span><span class="lang-en">Automatic</span></span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">Không xóa chứng từ</span><span class="lang-en">No document deletion</span></strong></td>
+      <td><span class="lang-vi">Chỉ CANCEL hoặc REVERSE. Xóa vĩnh viễn bị vô hiệu hóa</span><span class="lang-en">Only CANCEL or REVERSE. Permanent deletion is disabled</span></td>
+      <td><span style="color:var(--color-success);">&#10003; <span class="lang-vi">Hệ thống chặn</span><span class="lang-en">System enforced</span></span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">Lock GRN sau COMPLETED</span><span class="lang-en">Lock GRN after COMPLETED</span></strong></td>
+      <td><span class="lang-vi">GRN COMPLETED không cho phép sửa serial hay số lượng</span><span class="lang-en">COMPLETED GRN cannot edit serials or quantities</span></td>
+      <td><span style="color:var(--color-success);">&#10003; <span class="lang-vi">Hệ thống chặn</span><span class="lang-en">System enforced</span></span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">Cảnh báo GRN quá hạn</span><span class="lang-en">GRN Overdue Alert</span></strong></td>
+      <td><span class="lang-vi">GRN ở trạng thái RECEIVING quá 48h — cảnh báo tự động</span><span class="lang-en">GRN in RECEIVING status over 48h — automatic alert</span></td>
+      <td><span style="color:var(--color-warning);">&#9888; <span class="lang-vi">Alert hệ thống</span><span class="lang-en">System alert</span></span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">Chặn xuất sai</span><span class="lang-en">Block wrong outbound</span></strong></td>
+      <td><span class="lang-vi">Không xuất khi GRN chưa COMPLETED. Không xuất thiết bị RESERVED sai project</span><span class="lang-en">Cannot outbound while GRN incomplete. Cannot outbound RESERVED device to wrong project</span></td>
+      <td><span style="color:var(--color-success);">&#10003; <span class="lang-vi">Hệ thống chặn</span><span class="lang-en">System enforced</span></span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">Phân quyền theo role</span><span class="lang-en">Role-based Permissions</span></strong></td>
+      <td><span class="lang-vi">Mỗi role chỉ thực hiện được các thao tác trong phạm vi cho phép</span><span class="lang-en">Each role can only perform operations within their permitted scope</span></td>
+      <td><span style="color:var(--color-success);">&#10003; <span class="lang-vi">RBAC hệ thống</span><span class="lang-en">System RBAC</span></span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout callout-info">
+  <span class="callout-icon">&#8505;</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Nguyên tắc Inventory</span><span class="lang-en">Inventory Principles</span></strong>
+    <p><span class="lang-vi">(1) Không update tồn trực tiếp. (2) Tồn = SUM(inventory_transaction). (3) Serial luôn UNIQUE. (4) Không cho xóa chứng từ – chỉ CANCEL hoặc REVERSE. (5) Phân biệt rõ serial và non-serial logic.</span><span class="lang-en">(1) No direct stock updates. (2) Stock = SUM(inventory_transaction). (3) Serial is always UNIQUE. (4) No document deletion – CANCEL or REVERSE only. (5) Clearly distinguish serial and non-serial logic.</span></p>
+  </div>
+</div>
+
+<!-- ===== KPI ===== -->
+<h2 id="kpi">
+  <span class="lang-vi">KPI Vận hành</span>
+  <span class="lang-en">Operational KPIs</span>
+</h2>
+
+<div class="lang-vi"><p class="section-intro">Các chỉ số hiệu suất chính để đánh giá chất lượng vận hành kho và bảo hành.</p></div>
+<div class="lang-en"><p class="section-intro">Key performance indicators to evaluate warehouse and warranty operations quality.</p></div>
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-value">&lt;1%</div>
+    <div class="kpi-label">
+      <strong><span class="lang-vi">Sai lệch tồn kho</span><span class="lang-en">Inventory Variance</span></strong><br>
+      <span class="lang-vi">Chỉnh lệch giữa tồn thực tế và hệ thống phải dưới 1%</span>
+      <span class="lang-en">Variance between physical and system stock must stay below 1%</span>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">100%</div>
+    <div class="kpi-label">
+      <strong><span class="lang-vi">Serial tracking</span><span class="lang-en">Serial Tracking</span></strong><br>
+      <span class="lang-vi">100% thiết bị chính phải có serial hợp lệ trong hệ thống</span>
+      <span class="lang-en">100% of main devices must have valid serials in the system</span>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">0</div>
+    <div class="kpi-label">
+      <strong><span class="lang-vi">Tồn kho âm</span><span class="lang-en">Negative Stock</span></strong><br>
+      <span class="lang-vi">Không được phép tồn kho âm bất kỳ mặt hàng nào</span>
+      <span class="lang-en">No negative stock allowed for any item at any time</span>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">0</div>
+    <div class="kpi-label">
+      <strong><span class="lang-vi">Xuất sai project</span><span class="lang-en">Wrong-Project Dispatch</span></strong><br>
+      <span class="lang-vi">Không xuất thiết bị RESERVED cho sai dự án</span>
+      <span class="lang-en">No RESERVED device dispatched to wrong project</span>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">&lt;1s</div>
+    <div class="kpi-label">
+      <strong><span class="lang-vi">Tra cứu serial</span><span class="lang-en">Serial Lookup</span></strong><br>
+      <span class="lang-vi">Thời gian tra cứu lịch sử bất kỳ serial dưới 1 giây</span>
+      <span class="lang-en">Time to look up history of any serial must be under 1 second</span>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">48h</div>
+    <div class="kpi-label">
+      <strong><span class="lang-vi">GRN RECEIVING tối đa</span><span class="lang-en">Max GRN RECEIVING Time</span></strong><br>
+      <span class="lang-vi">GRN không được nhập RECEIVING quá 48 giờ mà chưa COMPLETE</span>
+      <span class="lang-en">GRN must not remain in RECEIVING status for more than 48 hours</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== GOLDEN PRINCIPLES ===== -->
+<h2 id="nguyen-tac-vang">
+  <span class="lang-vi">Nguyên tắc Vàng</span>
+  <span class="lang-en">Golden Principles</span>
+</h2>
+
+<div class="lang-vi"><p class="section-intro">Các nguyên tắc cốt lõi định hướng toàn bộ hệ thống vận hành. Mọi thao tác phải tuân theo các nguyên tắc này.</p></div>
+<div class="lang-en"><p class="section-intro">Core principles guiding the entire operations system. All operations must follow these principles.</p></div>
+
+<ul class="golden-list">
+  <li>
+    <span class="gl-icon">&#10022;</span>
+    <span class="gl-text">
+      <strong><span class="lang-vi">Serial là danh tính duy nhất của thiết bị</span><span class="lang-en">Serial is the unique identity of a device</span></strong><br>
+      <span class="lang-vi">Mỗi Camera AI, NVR có một serial riêng biệt. Serial không được trung lập, không được xóa. Tra cứu theo serial là cách duy nhất để biết vị trí và trạng thái thiết bị.</span>
+      <span class="lang-en">Each AI Camera, NVR has one unique serial. Serials cannot be duplicated or deleted. Serial lookup is the only way to know device location and status.</span>
+    </span>
+  </li>
+  <li>
+    <span class="gl-icon">&#10022;</span>
+    <span class="gl-text">
+      <strong><span class="lang-vi">Tồn kho chỉ sinh từ transaction</span><span class="lang-en">Inventory only comes from transactions</span></strong><br>
+      <span class="lang-vi">Không ai được phép sửa số tồn kho trực tiếp. Tồn = SUM(inventory_transaction). Mọi thay đổi tồn đều có dấu vết trong hệ thống.</span>
+      <span class="lang-en">Nobody is allowed to directly edit stock numbers. Stock = SUM(inventory_transaction). Every stock change leaves a traceable record in the system.</span>
+    </span>
+  </li>
+  <li>
+    <span class="gl-icon">&#10022;</span>
+    <span class="gl-text">
+      <strong><span class="lang-vi">Chứng từ ≠ Tồn kho</span><span class="lang-en">Documents ≠ Inventory</span></strong><br>
+      <span class="lang-vi">Tạo PR, PO không làm thay đổi tồn. Chỉ khi GRN COMPLETED mới sinh tồn. Chỉ khi Outbound Order hoàn tất mới trừ tồn.</span>
+      <span class="lang-en">Creating PR, PO does not change inventory. Only GRN COMPLETED generates stock. Only completed Outbound Orders deduct stock.</span>
+    </span>
+  </li>
+  <li>
+    <span class="gl-icon">&#10022;</span>
+    <span class="gl-text">
+      <strong><span class="lang-vi">Thiết bị ≠ Phụ kiện</span><span class="lang-en">Devices ≠ Accessories</span></strong><br>
+      <span class="lang-vi">Thiết bị chính (Camera AI, NVR) quản lý theo serial — có vòng đời riêng. Phụ kiện quản lý theo số lượng — không có device_instance. Hai loại này có logic khác nhau hoàn toàn.</span>
+      <span class="lang-en">Main devices (AI Camera, NVR) managed by serial — have their own lifecycle. Accessories managed by quantity — no device_instance. These two types have completely different logic.</span>
+    </span>
+  </li>
+  <li>
+    <span class="gl-icon">&#10022;</span>
+    <span class="gl-text">
+      <strong><span class="lang-vi">Mọi thao tác đều có dấu vết</span><span class="lang-en">Every operation leaves a trace</span></strong><br>
+      <span class="lang-vi">Audit log bắt buộc cho mọi hành động. Không có thao tác ẩn. Mọi thay đổi trạng thái thiết bị được ghi vào device_status_history.</span>
+      <span class="lang-en">Audit log is mandatory for every action. No hidden operations. Every device status change is recorded in device_status_history.</span>
+    </span>
+  </li>
+</ul>
+
+</div><!-- .content-area -->
+</main>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<script>
+// Dark Mode
+(function(){
+  var html = document.documentElement;
+  var toggle = document.getElementById('darkToggle');
+  var sunIcon = document.getElementById('sunIcon');
+  var moonIcon = document.getElementById('moonIcon');
+  var label = document.getElementById('darkToggleLabel');
+  function applyTheme(dark){
+    html.setAttribute('data-theme', dark ? 'dark' : 'light');
+    sunIcon.style.display = dark ? 'none' : '';
+    moonIcon.style.display = dark ? '' : 'none';
+    label.textContent = dark ? 'Light' : 'Dark';
+  }
+  var stored = localStorage.getItem('aerpTheme');
+  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(stored ? stored === 'dark' : prefersDark);
+  toggle.addEventListener('click', function(){
+    var nowDark = html.getAttribute('data-theme') !== 'dark';
+    applyTheme(nowDark);
+    localStorage.setItem('aerpTheme', nowDark ? 'dark' : 'light');
+  });
+})();
+
+// Sidebar collapse
+function toggleSection(id){
+  var sec = document.getElementById(id);
+  if(sec) sec.classList.toggle('collapsed');
+}
+
+// Mobile sidebar
+var sidebar = document.getElementById('sidebar');
+var overlay = document.getElementById('sidebarOverlay');
+var hamburger = document.getElementById('hamburgerBtn');
+function openSidebar(){ sidebar.classList.add('open'); overlay.classList.add('open'); }
+function closeSidebar(){ sidebar.classList.remove('open'); overlay.classList.remove('open'); }
+function closeSidebarMobile(){ if(window.innerWidth < 768) closeSidebar(); }
+if(hamburger) hamburger.addEventListener('click', function(){ sidebar.classList.contains('open') ? closeSidebar() : openSidebar(); });
+if(overlay) overlay.addEventListener('click', closeSidebar);
+
+// Back to top
+var btt = document.getElementById('backToTop');
+window.addEventListener('scroll', function(){ btt.classList.toggle('visible', window.scrollY > 400); }, {passive:true});
+btt.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+
+// ScrollSpy
+(function(){
+  var headings = document.querySelectorAll('h2[id], h3[id]');
+  var links = document.querySelectorAll('.sidebar-link');
+  var linkMap = {};
+  links.forEach(function(link){
+    var href = link.getAttribute('href');
+    if(href && href.startsWith('#')) linkMap[href.slice(1)] = link;
+  });
+  var current = null;
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        if(current) current.classList.remove('active','spy-active');
+        var link = linkMap[entry.target.id];
+        if(link){ link.classList.add('active','spy-active'); current = link;
+          var sidebarEl = document.getElementById('sidebar');
+          var linkTop = link.offsetTop;
+          if(linkTop < sidebarEl.scrollTop || linkTop > sidebarEl.scrollTop + sidebarEl.clientHeight - 60){
+            sidebarEl.scrollTo({top: linkTop - 80, behavior:'smooth'});
+          }
+        }
+      }
+    });
+  }, {rootMargin:'-60px 0px -70% 0px', threshold:0});
+  headings.forEach(function(h){ observer.observe(h); });
+})();
+
+// Smooth scroll
+document.querySelectorAll('.sidebar-link[href^="#"]').forEach(function(link){
+  link.addEventListener('click', function(e){
+    e.preventDefault();
+    var id = this.getAttribute('href').slice(1);
+    var target = document.getElementById(id);
+    if(target){
+      var top = target.getBoundingClientRect().top + window.scrollY - 72;
+      window.scrollTo({top:top, behavior:'smooth'});
+    }
+  });
+});
+
+// Language toggle
+function setLang(lang){
+  document.documentElement.setAttribute('data-lang', lang);
+  document.documentElement.setAttribute('lang', lang === 'vi' ? 'vi' : 'en');
+  localStorage.setItem('sop-lang', lang);
+  var enBtn = document.getElementById('langEn');
+  var viBtn = document.getElementById('langVi');
+  if(enBtn) enBtn.classList.toggle('active', lang === 'en');
+  if(viBtn) viBtn.classList.toggle('active', lang === 'vi');
+  document.querySelectorAll('[data-en][data-vi]').forEach(function(el){
+    el.textContent = el.getAttribute('data-' + lang) || el.getAttribute('data-en');
+  });
+}
+document.getElementById('langEn').addEventListener('click', function(){ setLang('en'); });
+document.getElementById('langVi').addEventListener('click', function(){ setLang('vi'); });
+(function(){
+  var saved = localStorage.getItem('sop-lang');
+  if(saved) setLang(saved); else setLang('vi');
+})();
+</script>
+</body>
+</html>

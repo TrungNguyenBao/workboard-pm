@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
@@ -67,8 +68,25 @@ async def get_ticket(db: AsyncSession, ticket_id: uuid.UUID, workspace_id: uuid.
 async def update_ticket(
     db: AsyncSession, ticket_id: uuid.UUID, workspace_id: uuid.UUID, data: TicketUpdate
 ) -> Ticket:
+    from app.modules.crm.services.status_flows import TICKET_STATUS_TRANSITIONS, validate_transition
+
     ticket = await get_ticket(db, ticket_id, workspace_id)
-    for field, value in data.model_dump(exclude_none=True).items():
+    updates = data.model_dump(exclude_none=True)
+
+    if "status" in updates and updates["status"] != ticket.status:
+        if not validate_transition(TICKET_STATUS_TRANSITIONS, ticket.status, updates["status"]):
+            allowed = TICKET_STATUS_TRANSITIONS.get(ticket.status, [])
+            raise HTTPException(
+                status_code=400,
+                detail=f"Cannot transition from '{ticket.status}' to '{updates['status']}'. Allowed: {allowed}",
+            )
+        now = datetime.utcnow()
+        if updates["status"] == "resolved":
+            ticket.resolved_at = now
+        elif updates["status"] == "closed":
+            ticket.closed_at = now
+
+    for field, value in updates.items():
         setattr(ticket, field, value)
     await db.commit()
     await db.refresh(ticket)

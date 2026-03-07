@@ -26,6 +26,7 @@ class TicketUpdate(BaseModel):
     contact_id: uuid.UUID | None = None
     account_id: uuid.UUID | None = None
     assigned_to: uuid.UUID | None = None
+    resolution_notes: str | None = None
 
 
 class TicketResponse(BaseModel):
@@ -34,6 +35,9 @@ class TicketResponse(BaseModel):
     description: str | None
     priority: str
     status: str
+    resolved_at: datetime | None
+    closed_at: datetime | None
+    resolution_notes: str | None
     contact_id: uuid.UUID | None
     account_id: uuid.UUID | None
     assigned_to: uuid.UUID | None

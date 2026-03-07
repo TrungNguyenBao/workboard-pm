@@ -7,6 +7,8 @@ export interface Activity {
   subject: string
   notes: string | null
   date: string
+  outcome: string | null
+  next_action_date: string | null
   owner_id: string | null
   contact_id: string | null
   deal_id: string | null

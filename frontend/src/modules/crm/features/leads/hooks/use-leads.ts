@@ -11,6 +11,8 @@ export interface Lead {
   score: number
   owner_id: string | null
   campaign_id: string | null
+  contacted_at: string | null
+  assigned_at: string | null
   workspace_id: string
   created_at: string
   updated_at: string
@@ -96,5 +98,23 @@ export function useConvertLead(workspaceId: string) {
       qc.invalidateQueries({ queryKey: ['crm-leads', workspaceId] })
       qc.invalidateQueries({ queryKey: ['crm-deals', workspaceId] })
     },
+  })
+}
+
+export function useDistributeLeads(workspaceId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () =>
+      api.post(`${base(workspaceId)}/distribute`).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['crm-leads', workspaceId] }),
+  })
+}
+
+export function useStaleLeads(workspaceId: string, hours = 48) {
+  return useQuery({
+    queryKey: ['crm-leads-stale', workspaceId, hours],
+    queryFn: () =>
+      api.get(`${base(workspaceId)}/stale`, { params: { hours } }).then((r) => r.data),
+    enabled: !!workspaceId,
   })
 }

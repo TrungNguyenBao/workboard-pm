@@ -13,6 +13,7 @@ class DealCreate(BaseModel):
     contact_id: uuid.UUID | None = None
     account_id: uuid.UUID | None = None
     lead_id: uuid.UUID | None = None
+    owner_id: uuid.UUID | None = None
 
 
 class DealUpdate(BaseModel):
@@ -24,6 +25,8 @@ class DealUpdate(BaseModel):
     contact_id: uuid.UUID | None = None
     account_id: uuid.UUID | None = None
     lead_id: uuid.UUID | None = None
+    owner_id: uuid.UUID | None = None
+    loss_reason: str | None = None
 
 
 class DealResponse(BaseModel):
@@ -33,6 +36,11 @@ class DealResponse(BaseModel):
     stage: str
     probability: float
     expected_close_date: date | None
+    last_activity_date: datetime | None
+    loss_reason: str | None
+    closed_at: datetime | None
+    owner_id: uuid.UUID | None
+    last_updated_by: uuid.UUID | None
     contact_id: uuid.UUID | None
     account_id: uuid.UUID | None
     lead_id: uuid.UUID | None

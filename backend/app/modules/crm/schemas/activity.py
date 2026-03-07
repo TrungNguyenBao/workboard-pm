@@ -12,6 +12,8 @@ class ActivityCreate(BaseModel):
     subject: str = Field(min_length=1, max_length=255)
     notes: str | None = None
     date: datetime
+    outcome: str | None = None
+    next_action_date: datetime | None = None
     owner_id: uuid.UUID | None = None
     contact_id: uuid.UUID | None = None
     deal_id: uuid.UUID | None = None
@@ -23,6 +25,8 @@ class ActivityUpdate(BaseModel):
     subject: str | None = Field(default=None, max_length=255)
     notes: str | None = None
     date: datetime | None = None
+    outcome: str | None = None
+    next_action_date: datetime | None = None
     owner_id: uuid.UUID | None = None
     contact_id: uuid.UUID | None = None
     deal_id: uuid.UUID | None = None
@@ -35,6 +39,8 @@ class ActivityResponse(BaseModel):
     subject: str
     notes: str | None
     date: datetime
+    outcome: str | None
+    next_action_date: datetime | None
     owner_id: uuid.UUID | None
     contact_id: uuid.UUID | None
     deal_id: uuid.UUID | None

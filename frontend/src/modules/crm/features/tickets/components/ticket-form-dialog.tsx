@@ -36,6 +36,7 @@ function TicketFormContent({ workspaceId, ticket, onOpenChange }: Omit<Props, 'o
   const [description, setDescription] = useState(ticket?.description ?? '')
   const [priority, setPriority] = useState(ticket?.priority ?? 'medium')
   const [status, setStatus] = useState(ticket?.status ?? 'open')
+  const [resolutionNotes, setResolutionNotes] = useState(ticket?.resolution_notes ?? '')
   const [contactId, setContactId] = useState(ticket?.contact_id ?? 'none')
   const [accountId, setAccountId] = useState(ticket?.account_id ?? 'none')
 
@@ -48,6 +49,7 @@ function TicketFormContent({ workspaceId, ticket, onOpenChange }: Omit<Props, 'o
         description: description.trim() || null,
         priority,
         status,
+        resolution_notes: (status === 'resolved' || status === 'closed') ? (resolutionNotes.trim() || null) : undefined,
         contact_id: contactId === 'none' ? null : contactId,
         account_id: accountId === 'none' ? null : accountId,
       }
@@ -100,6 +102,12 @@ function TicketFormContent({ workspaceId, ticket, onOpenChange }: Omit<Props, 'o
             </Select>
           </div>
         </div>
+        {(status === 'resolved' || status === 'closed') && (
+          <div className="space-y-1.5">
+            <Label htmlFor="ticket-resolution">Resolution Notes</Label>
+            <Input id="ticket-resolution" value={resolutionNotes} onChange={(e) => setResolutionNotes(e.target.value)} placeholder="How was this resolved?" />
+          </div>
+        )}
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <Label>Contact</Label>

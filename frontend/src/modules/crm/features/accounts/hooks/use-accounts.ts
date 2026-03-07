@@ -9,6 +9,9 @@ export interface Account {
   status: string
   website: string | null
   address: string | null
+  source_deal_id: string | null
+  next_follow_up_date: string | null
+  health_score: number
   workspace_id: string
   created_at: string
   updated_at: string
@@ -79,5 +82,14 @@ export function useDeleteAccount(workspaceId: string) {
   return useMutation({
     mutationFn: (accountId: string) => api.delete(`${base(workspaceId)}/${accountId}`),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['crm-accounts', workspaceId] }),
+  })
+}
+
+export function useAccountFollowUps(workspaceId: string) {
+  return useQuery({
+    queryKey: ['crm-account-followups', workspaceId],
+    queryFn: () =>
+      api.get(`/crm/workspaces/${workspaceId}/accounts/follow-ups`).then((r) => r.data),
+    enabled: !!workspaceId,
   })
 }

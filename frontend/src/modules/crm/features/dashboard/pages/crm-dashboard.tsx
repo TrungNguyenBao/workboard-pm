@@ -2,10 +2,14 @@ import { Award, DollarSign, Target, TrendingUp, Users, Users2, Activity, Ticket 
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid, Cell, PieChart, Pie } from 'recharts'
 import { KpiCard } from '@/shared/components/ui/kpi-card'
 import { useCrmStats } from '../hooks/use-crm-stats'
+import { useGovernanceAlerts } from '../hooks/use-governance-alerts'
+import { StaleDealsAlert } from '../components/stale-deals-alert'
+import { SalesFunnelChart } from '../components/sales-funnel-chart'
 
 const STAGE_COLORS: Record<string, string> = {
   Lead: '#A1A1AA',
   Qualified: '#38BDF8',
+  'Needs Analysis': '#6366F1',
   Proposal: '#818CF8',
   Negotiation: '#F59E0B',
   'Closed Won': '#22C55E',
@@ -21,7 +25,9 @@ function formatCurrency(value: number) {
 }
 
 export default function CrmDashboardPage() {
-  const { stats, stageBars, leadSourceBars, isLoading } = useCrmStats()
+  const { stats, stageBars, leadSourceBars, funnel, dealVelocityDays, isLoading } = useCrmStats()
+  const { data: govAlerts } = useGovernanceAlerts()
+  // govAlerts may be undefined for non-admin users (403) — handled gracefully
 
   if (isLoading) {
     return (
@@ -52,6 +58,9 @@ export default function CrmDashboardPage() {
         <KpiCard label="Lead Conversion" value={`${stats.leadConversionRate}%`} icon={<Activity className="h-5 w-5" />} />
         <KpiCard label="Open Tickets" value={stats.openTickets} icon={<Ticket className="h-5 w-5" />} />
       </div>
+
+      {/* Governance Alerts */}
+      {govAlerts && <StaleDealsAlert alerts={govAlerts} />}
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -98,6 +107,16 @@ export default function CrmDashboardPage() {
               </PieChart>
             </ResponsiveContainer>
           )}
+        </div>
+      </div>
+
+      {/* Funnel + Velocity */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <SalesFunnelChart funnel={funnel} />
+        <div className="border border-border rounded-lg p-4 bg-card flex flex-col items-center justify-center">
+          <p className="text-sm font-medium text-foreground mb-2">Deal Velocity</p>
+          <p className="text-4xl font-bold text-foreground">{dealVelocityDays}</p>
+          <p className="text-xs text-muted-foreground mt-1">avg days to close</p>
         </div>
       </div>
 

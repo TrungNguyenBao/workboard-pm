@@ -1,4 +1,5 @@
 import uuid
+from datetime import date, datetime, timedelta
 
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
@@ -104,3 +105,54 @@ async def delete_account(db: AsyncSession, account_id: uuid.UUID, workspace_id: 
     account = await get_account(db, account_id, workspace_id)
     await db.delete(account)
     await db.commit()
+
+
+async def calculate_health_score(
+    db: AsyncSession, account_id: uuid.UUID, workspace_id: uuid.UUID
+) -> int:
+    """Calculate account health: 0-100 based on activity, tickets, revenue."""
+    from app.modules.crm.models.activity import Activity
+    from app.modules.crm.models.contact import Contact
+    from app.modules.crm.models.ticket import Ticket
+
+    score = 100
+    open_tickets = await db.scalar(
+        select(func.count(Ticket.id)).where(
+            Ticket.account_id == account_id,
+            Ticket.status.in_(["open", "in_progress"]),
+        )
+    ) or 0
+    score -= min(open_tickets * 10, 30)
+
+    cutoff = datetime.utcnow() - timedelta(days=90)
+    recent_activities = await db.scalar(
+        select(func.count(Activity.id)).where(
+            Activity.workspace_id == workspace_id,
+            Activity.contact_id.in_(
+                select(Contact.id).where(Contact.account_id == account_id)
+            ),
+            Activity.date > cutoff,
+        )
+    ) or 0
+    if recent_activities == 0:
+        score -= 30
+
+    account = await get_account(db, account_id, workspace_id)
+    if account.total_revenue > 10000:
+        score += 10
+
+    return max(0, min(score, 100))
+
+
+async def get_accounts_needing_follow_up(
+    db: AsyncSession, workspace_id: uuid.UUID
+) -> list[Account]:
+    """Accounts with next_follow_up_date <= today."""
+    today = date.today()
+    q = select(Account).where(
+        Account.workspace_id == workspace_id,
+        Account.next_follow_up_date <= today,
+        Account.status == "active",
+    )
+    result = await db.scalars(q)
+    return list(result.all())

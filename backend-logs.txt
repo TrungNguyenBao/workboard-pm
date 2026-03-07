@@ -1,505 +1,31 @@
-   Building workboard-backend @ file:///app
-Downloading ruff (10.6MiB)
- Downloaded ruff
-      Built workboard-backend @ file:///app
-warning: Failed to hardlink files; falling back to full copy. This may lead to degraded performance.
-         If the cache and target directories are on different filesystems, hardlinking may not be supported.
-         If this is intentional, set `export UV_LINK_MODE=copy` or use `--link-mode=copy` to suppress this warning.
-Installed 7 packages in 24ms
-INFO:     Will watch for changes in these directories: ['/app']
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [34] using WatchFiles
-INFO:     Started server process [36]
+INFO:     Started parent process [7]
+INFO:     Started server process [9]
 INFO:     Waiting for application startup.
+{"environment": "production", "database_host": "postgres:5432/workboard", "redis": "redis://redis:6379", "cors_origins": ["http://localhost", "http://localhost:80"], "log_level": "INFO", "rate_limiting": true, "event": "WorkBoard starting", "level": "info", "logger": "app.main", "timestamp": "2026-03-06T08:43:15.244072Z"}
 INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'app/models/activity-log.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [36]
-WARNING:  WatchFiles detected changes in 'app/schemas/activity-log.py'. Reloading...
-INFO:     Started server process [39]
+INFO:     Started server process [10]
 INFO:     Waiting for application startup.
+{"environment": "production", "database_host": "postgres:5432/workboard", "redis": "redis://redis:6379", "cors_origins": ["http://localhost", "http://localhost:80"], "log_level": "INFO", "rate_limiting": true, "event": "WorkBoard starting", "level": "info", "logger": "app.main", "timestamp": "2026-03-06T08:43:15.258444Z"}
 INFO:     Application startup complete.
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [39]
-INFO:     Started server process [41]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'app/services/activity-log.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [41]
-INFO:     Started server process [43]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'app/models/activity_log.py', 'app/models/activity-log.py', 'app/services/activity_log.py', 'app/schemas/activity-log.py', 'app/schemas/activity_log.py', 'app/services/activity-log.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [43]
-INFO:     Started server process [45]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'alembic/versions/0002_add_activity_log.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [45]
-INFO:     Started server process [47]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'app/api/v1/routers/activity.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [47]
-WARNING:  WatchFiles detected changes in 'app/models/__init__.py'. Reloading...
-INFO:     Started server process [49]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [49]
-WARNING:  WatchFiles detected changes in 'app/api/v1/router.py'. Reloading...
-INFO:     Started server process [51]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [51]
-WARNING:  WatchFiles detected changes in 'app/api/v1/router.py'. Reloading...
-INFO:     Started server process [53]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [53]
-INFO:     Started server process [55]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'app/services/task.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [55]
-INFO:     Started server process [57]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'app/services/task.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [57]
-INFO:     Started server process [59]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'app/services/task.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [59]
-INFO:     Started server process [61]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'app/services/task.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [61]
-INFO:     Started server process [63]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'app/api/v1/routers/tasks.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [63]
-WARNING:  WatchFiles detected changes in 'app/api/v1/routers/tasks.py'. Reloading...
-INFO:     Started server process [65]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [65]
-WARNING:  WatchFiles detected changes in 'app/services/comment.py'. Reloading...
-INFO:     Started server process [67]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [67]
-INFO:     Started server process [69]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'app/services/comment.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [69]
-WARNING:  WatchFiles detected changes in 'app/services/project.py'. Reloading...
-INFO:     Started server process [71]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [71]
-WARNING:  WatchFiles detected changes in 'app/services/project.py'. Reloading...
-INFO:     Started server process [73]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [73]
-INFO:     Started server process [75]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     172.19.0.1:39162 - "GET /api/v1/health HTTP/1.1" 200 OK
-2026-02-27 02:06:06,189 INFO sqlalchemy.engine.Engine select pg_catalog.version()
-2026-02-27 02:06:06,194 INFO sqlalchemy.engine.Engine [raw sql] ()
-2026-02-27 02:06:06,202 INFO sqlalchemy.engine.Engine select current_schema()
-2026-02-27 02:06:06,203 INFO sqlalchemy.engine.Engine [raw sql] ()
-2026-02-27 02:06:06,205 INFO sqlalchemy.engine.Engine show standard_conforming_strings
-2026-02-27 02:06:06,205 INFO sqlalchemy.engine.Engine [raw sql] ()
-2026-02-27 02:06:06,208 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:06:06,307 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.name, users.hashed_password, users.avatar_url, users.is_active, users.created_at, users.updated_at 
-FROM users 
-WHERE users.email = $1::VARCHAR
-2026-02-27 02:06:06,309 INFO sqlalchemy.engine.Engine [generated in 0.00044s] ('alice@example.com',)
-2026-02-27 02:06:06,315 INFO sqlalchemy.engine.Engine ROLLBACK
-INFO:     172.19.0.1:42068 - "POST /api/v1/auth/login HTTP/1.1" 401 Unauthorized
-2026-02-27 02:06:26,973 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:06:26,974 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.name, users.hashed_password, users.avatar_url, users.is_active, users.created_at, users.updated_at 
-FROM users 
-WHERE users.email = $1::VARCHAR
-2026-02-27 02:06:26,974 INFO sqlalchemy.engine.Engine [cached since 20.67s ago] ('demo@workboard.dev',)
-2026-02-27 02:06:27,197 INFO sqlalchemy.engine.Engine ROLLBACK
-INFO:     172.19.0.1:37994 - "POST /api/v1/auth/login HTTP/1.1" 401 Unauthorized
-2026-02-27 02:06:27,239 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:06:27,239 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.name, users.hashed_password, users.avatar_url, users.is_active, users.created_at, users.updated_at 
-FROM users 
-WHERE users.email = $1::VARCHAR
-2026-02-27 02:06:27,239 INFO sqlalchemy.engine.Engine [cached since 20.93s ago] ('demo@workboard.dev',)
-2026-02-27 02:06:27,454 INFO sqlalchemy.engine.Engine ROLLBACK
-INFO:     172.19.0.1:38006 - "POST /api/v1/auth/login HTTP/1.1" 401 Unauthorized
-2026-02-27 02:06:32,633 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:06:32,633 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.name, users.hashed_password, users.avatar_url, users.is_active, users.created_at, users.updated_at 
-FROM users 
-WHERE users.email = $1::VARCHAR
-2026-02-27 02:06:32,633 INFO sqlalchemy.engine.Engine [cached since 26.33s ago] ('demo@workboard.dev',)
-2026-02-27 02:06:32,847 INFO sqlalchemy.engine.Engine ROLLBACK
-INFO:     172.19.0.1:38010 - "POST /api/v1/auth/login HTTP/1.1" 401 Unauthorized
-INFO:     172.19.0.1:36978 - "POST /api/v1/auth/register HTTP/1.1" 422 Unprocessable Entity
-2026-02-27 02:06:43,288 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:06:43,288 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.name, users.hashed_password, users.avatar_url, users.is_active, users.created_at, users.updated_at 
-FROM users 
-WHERE users.email = $1::VARCHAR
-2026-02-27 02:06:43,289 INFO sqlalchemy.engine.Engine [cached since 36.98s ago] ('test@activity.dev',)
-2026-02-27 02:06:43,513 INFO sqlalchemy.engine.Engine INSERT INTO users (id, email, name, hashed_password, avatar_url, is_active) VALUES ($1::UUID, $2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR, $6::BOOLEAN) RETURNING users.created_at, users.updated_at
-2026-02-27 02:06:43,513 INFO sqlalchemy.engine.Engine [generated in 0.00061s] (UUID('4613701a-185e-40ad-9db9-24be4e711e8d'), 'test@activity.dev', 'Test User', '$2b$12$UskFXps9J1il6dxyQpuXAeLUlaTHJBmt1CwH0nAYV1Pg9YYN0ZWSG', None, True)
-2026-02-27 02:06:43,516 INFO sqlalchemy.engine.Engine COMMIT
-2026-02-27 02:06:43,519 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:06:43,521 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.name, users.hashed_password, users.avatar_url, users.is_active, users.created_at, users.updated_at 
-FROM users 
-WHERE users.id = $1::UUID
-2026-02-27 02:06:43,521 INFO sqlalchemy.engine.Engine [generated in 0.00019s] (UUID('4613701a-185e-40ad-9db9-24be4e711e8d'),)
-2026-02-27 02:06:43,523 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.name, users.hashed_password, users.avatar_url, users.is_active, users.created_at, users.updated_at 
-FROM users 
-WHERE users.email = $1::VARCHAR
-2026-02-27 02:06:43,523 INFO sqlalchemy.engine.Engine [cached since 37.22s ago] ('test@activity.dev',)
-2026-02-27 02:06:43,741 INFO sqlalchemy.engine.Engine INSERT INTO refresh_tokens (id, user_id, token_hash, family, is_revoked, expires_at) VALUES ($1::UUID, $2::UUID, $3::VARCHAR, $4::VARCHAR, $5::BOOLEAN, $6::TIMESTAMP WITH TIME ZONE) RETURNING refresh_tokens.created_at
-2026-02-27 02:06:43,741 INFO sqlalchemy.engine.Engine [generated in 0.00019s] (UUID('0485e41a-126e-4c56-b39e-2a328cc36bf2'), UUID('4613701a-185e-40ad-9db9-24be4e711e8d'), '4581692101014d05533273344972c25518a3cec2b9d0c49fb392eff29a3e7d5e', 'NW6cM_oon-nP8bA8W0ecgZCObS-eVQ_6zIx6gFgvqfA', False, datetime.datetime(2026, 3, 29, 2, 6, 43, 740235, tzinfo=datetime.timezone.utc))
-2026-02-27 02:06:43,746 INFO sqlalchemy.engine.Engine COMMIT
-INFO:     172.19.0.1:36990 - "POST /api/v1/auth/register HTTP/1.1" 201 Created
-2026-02-27 02:06:53,438 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:06:53,438 INFO sqlalchemy.engine.Engine SELECT users.id AS users_id, users.email AS users_email, users.name AS users_name, users.hashed_password AS users_hashed_password, users.avatar_url AS users_avatar_url, users.is_active AS users_is_active, users.created_at AS users_created_at, users.updated_at AS users_updated_at 
-FROM users 
-WHERE users.id = $1::UUID
-2026-02-27 02:06:53,438 INFO sqlalchemy.engine.Engine [generated in 0.00015s] (UUID('4613701a-185e-40ad-9db9-24be4e711e8d'),)
-2026-02-27 02:06:53,442 INFO sqlalchemy.engine.Engine SELECT workspaces.id, workspaces.name, workspaces.slug, workspaces.owner_id, workspaces.created_at, workspaces.updated_at 
-FROM workspaces 
-WHERE workspaces.slug = $1::VARCHAR
-2026-02-27 02:06:53,442 INFO sqlalchemy.engine.Engine [generated in 0.00016s] ('activity-test',)
-2026-02-27 02:06:53,446 INFO sqlalchemy.engine.Engine INSERT INTO workspaces (id, name, slug, owner_id) VALUES ($1::UUID, $2::VARCHAR, $3::VARCHAR, $4::UUID) RETURNING workspaces.created_at, workspaces.updated_at
-2026-02-27 02:06:53,446 INFO sqlalchemy.engine.Engine [generated in 0.00024s] (UUID('614147b6-4274-4ea1-90fa-91af9bbcd945'), 'Activity Test', 'activity-test', UUID('4613701a-185e-40ad-9db9-24be4e711e8d'))
-2026-02-27 02:06:53,450 INFO sqlalchemy.engine.Engine INSERT INTO workspace_memberships (id, workspace_id, user_id, role, invite_token) VALUES ($1::UUID, $2::UUID, $3::UUID, $4::VARCHAR, $5::VARCHAR) RETURNING workspace_memberships.created_at, workspace_memberships.updated_at
-2026-02-27 02:06:53,450 INFO sqlalchemy.engine.Engine [generated in 0.00030s] (UUID('fe6c1306-38a5-430c-a60a-78f1ce55a050'), UUID('614147b6-4274-4ea1-90fa-91af9bbcd945'), UUID('4613701a-185e-40ad-9db9-24be4e711e8d'), 'admin', None)
-2026-02-27 02:06:53,453 INFO sqlalchemy.engine.Engine COMMIT
-2026-02-27 02:06:53,455 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:06:53,456 INFO sqlalchemy.engine.Engine SELECT workspaces.id, workspaces.name, workspaces.slug, workspaces.owner_id, workspaces.created_at, workspaces.updated_at 
-FROM workspaces 
-WHERE workspaces.id = $1::UUID
-2026-02-27 02:06:53,456 INFO sqlalchemy.engine.Engine [generated in 0.00016s] (UUID('614147b6-4274-4ea1-90fa-91af9bbcd945'),)
-INFO:     172.19.0.1:50228 - "POST /api/v1/workspaces HTTP/1.1" 201 Created
-2026-02-27 02:06:53,459 INFO sqlalchemy.engine.Engine ROLLBACK
-2026-02-27 02:06:53,802 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:06:53,802 INFO sqlalchemy.engine.Engine SELECT users.id AS users_id, users.email AS users_email, users.name AS users_name, users.hashed_password AS users_hashed_password, users.avatar_url AS users_avatar_url, users.is_active AS users_is_active, users.created_at AS users_created_at, users.updated_at AS users_updated_at 
-FROM users 
-WHERE users.id = $1::UUID
-2026-02-27 02:06:53,802 INFO sqlalchemy.engine.Engine [cached since 0.3637s ago] (UUID('4613701a-185e-40ad-9db9-24be4e711e8d'),)
-2026-02-27 02:06:53,807 INFO sqlalchemy.engine.Engine SELECT workspace_memberships.id, workspace_memberships.workspace_id, workspace_memberships.user_id, workspace_memberships.role, workspace_memberships.invite_token, workspace_memberships.created_at, workspace_memberships.updated_at 
-FROM workspace_memberships 
-WHERE workspace_memberships.workspace_id = $1::UUID AND workspace_memberships.user_id = $2::UUID
-2026-02-27 02:06:53,807 INFO sqlalchemy.engine.Engine [generated in 0.00019s] (UUID('614147b6-4274-4ea1-90fa-91af9bbcd945'), UUID('4613701a-185e-40ad-9db9-24be4e711e8d'))
-2026-02-27 02:06:53,810 INFO sqlalchemy.engine.Engine INSERT INTO projects (id, workspace_id, team_id, owner_id, name, description, color, icon, visibility, is_archived, deleted_at) VALUES ($1::UUID, $2::UUID, $3::UUID, $4::UUID, $5::VARCHAR, $6::VARCHAR, $7::VARCHAR, $8::VARCHAR, $9::VARCHAR, $10::BOOLEAN, $11::TIMESTAMP WITH TIME ZONE) RETURNING projects.created_at, projects.updated_at
-2026-02-27 02:06:53,810 INFO sqlalchemy.engine.Engine [generated in 0.00020s] (UUID('ee9261fd-6f86-4937-b392-5ae046764726'), UUID('614147b6-4274-4ea1-90fa-91af9bbcd945'), None, UUID('4613701a-185e-40ad-9db9-24be4e711e8d'), 'Test Project', None, '#5E6AD2', None, 'team', False, None)
-2026-02-27 02:06:53,816 INFO sqlalchemy.engine.Engine INSERT INTO project_memberships (id, project_id, user_id, role) VALUES ($1::UUID, $2::UUID, $3::UUID, $4::VARCHAR) RETURNING project_memberships.created_at, project_memberships.updated_at
-2026-02-27 02:06:53,816 INFO sqlalchemy.engine.Engine [generated in 0.00023s] (UUID('8fffb31c-c3ff-42cb-a757-43c5db7ad827'), UUID('ee9261fd-6f86-4937-b392-5ae046764726'), UUID('4613701a-185e-40ad-9db9-24be4e711e8d'), 'owner')
-2026-02-27 02:06:53,821 INFO sqlalchemy.engine.Engine INSERT INTO sections (id, project_id, name, color, position, deleted_at) VALUES ($1::UUID, $2::UUID, $3::VARCHAR, $4::VARCHAR, $5::FLOAT, $6::TIMESTAMP WITH TIME ZONE), ($7::UUID, $8::UUID, $9::VARCHAR, $10::VARCHAR, $11::FLOAT, $12::TIMESTAMP WITH TIME ZONE), ($13::UUID, $14::UUID, $15::VARCHAR, $16::VARCHAR, $17::FLOAT, $18::TIMESTAMP WITH TIME ZONE) RETURNING sections.created_at, sections.updated_at, sections.id
-2026-02-27 02:06:53,821 INFO sqlalchemy.engine.Engine [generated in 0.00022s (insertmanyvalues) 1/1 (ordered)] (UUID('665feae7-09c9-4f05-a366-86f705938cfa'), UUID('ee9261fd-6f86-4937-b392-5ae046764726'), 'To Do', None, 65536.0, None, UUID('288a9de4-a021-4ebc-8432-70259b70cf2a'), UUID('ee9261fd-6f86-4937-b392-5ae046764726'), 'In Progress', None, 131072.0, None, UUID('23893fba-cc17-4ce7-9f24-b65ec90be237'), UUID('ee9261fd-6f86-4937-b392-5ae046764726'), 'Done', None, 196608.0, None)
-2026-02-27 02:06:53,827 INFO sqlalchemy.engine.Engine COMMIT
-2026-02-27 02:06:53,829 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:06:53,830 INFO sqlalchemy.engine.Engine SELECT projects.id, projects.workspace_id, projects.team_id, projects.owner_id, projects.name, projects.description, projects.color, projects.icon, projects.visibility, projects.is_archived, projects.created_at, projects.updated_at, projects.deleted_at 
-FROM projects 
-WHERE projects.id = $1::UUID
-2026-02-27 02:06:53,830 INFO sqlalchemy.engine.Engine [generated in 0.00017s] (UUID('ee9261fd-6f86-4937-b392-5ae046764726'),)
-2026-02-27 02:06:53,833 INFO sqlalchemy.engine.Engine INSERT INTO activity_logs (id, workspace_id, project_id, entity_type, entity_id, actor_id, action, changes) VALUES ($1::UUID, $2::UUID, $3::UUID, $4::VARCHAR, $5::UUID, $6::UUID, $7::VARCHAR, $8::JSONB) RETURNING activity_logs.created_at, activity_logs.updated_at
-2026-02-27 02:06:53,833 INFO sqlalchemy.engine.Engine [generated in 0.00029s] (UUID('91d9b438-44ba-4fd4-9591-20ef70b42f66'), UUID('614147b6-4274-4ea1-90fa-91af9bbcd945'), UUID('ee9261fd-6f86-4937-b392-5ae046764726'), 'project', UUID('ee9261fd-6f86-4937-b392-5ae046764726'), UUID('4613701a-185e-40ad-9db9-24be4e711e8d'), 'created', 'null')
-2026-02-27 02:06:53,839 INFO sqlalchemy.engine.Engine COMMIT
-2026-02-27 02:06:53,841 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:06:53,842 INFO sqlalchemy.engine.Engine SELECT activity_logs.id, activity_logs.workspace_id, activity_logs.project_id, activity_logs.entity_type, activity_logs.entity_id, activity_logs.actor_id, activity_logs.action, activity_logs.changes, activity_logs.created_at, activity_logs.updated_at 
-FROM activity_logs 
-WHERE activity_logs.id = $1::UUID
-2026-02-27 02:06:53,842 INFO sqlalchemy.engine.Engine [generated in 0.00023s] (UUID('91d9b438-44ba-4fd4-9591-20ef70b42f66'),)
-INFO:     172.19.0.1:50244 - "POST /api/v1/workspaces/614147b6-4274-4ea1-90fa-91af9bbcd945/projects HTTP/1.1" 201 Created
-2026-02-27 02:06:53,845 INFO sqlalchemy.engine.Engine ROLLBACK
-2026-02-27 02:07:10,665 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:07:10,666 INFO sqlalchemy.engine.Engine SELECT users.id AS users_id, users.email AS users_email, users.name AS users_name, users.hashed_password AS users_hashed_password, users.avatar_url AS users_avatar_url, users.is_active AS users_is_active, users.created_at AS users_created_at, users.updated_at AS users_updated_at 
-FROM users 
-WHERE users.id = $1::UUID
-2026-02-27 02:07:10,666 INFO sqlalchemy.engine.Engine [cached since 17.23s ago] (UUID('4613701a-185e-40ad-9db9-24be4e711e8d'),)
-2026-02-27 02:07:10,670 INFO sqlalchemy.engine.Engine SELECT projects.id AS projects_id, projects.workspace_id AS projects_workspace_id, projects.team_id AS projects_team_id, projects.owner_id AS projects_owner_id, projects.name AS projects_name, projects.description AS projects_description, projects.color AS projects_color, projects.icon AS projects_icon, projects.visibility AS projects_visibility, projects.is_archived AS projects_is_archived, projects.created_at AS projects_created_at, projects.updated_at AS projects_updated_at, projects.deleted_at AS projects_deleted_at 
-FROM projects 
-WHERE projects.id = $1::UUID
-2026-02-27 02:07:10,671 INFO sqlalchemy.engine.Engine [generated in 0.00026s] (UUID('ee9261fd-6f86-4937-b392-5ae046764726'),)
-2026-02-27 02:07:10,673 INFO sqlalchemy.engine.Engine SELECT workspace_memberships.id, workspace_memberships.workspace_id, workspace_memberships.user_id, workspace_memberships.role, workspace_memberships.invite_token, workspace_memberships.created_at, workspace_memberships.updated_at 
-FROM workspace_memberships 
-WHERE workspace_memberships.workspace_id = $1::UUID AND workspace_memberships.user_id = $2::UUID
-2026-02-27 02:07:10,673 INFO sqlalchemy.engine.Engine [cached since 16.87s ago] (UUID('614147b6-4274-4ea1-90fa-91af9bbcd945'), UUID('4613701a-185e-40ad-9db9-24be4e711e8d'))
-2026-02-27 02:07:10,678 INFO sqlalchemy.engine.Engine SELECT max(tasks.position) AS max_1 
-FROM tasks 
-WHERE tasks.project_id = $1::UUID AND tasks.section_id IS NULL AND tasks.deleted_at IS NULL
-2026-02-27 02:07:10,678 INFO sqlalchemy.engine.Engine [generated in 0.00020s] (UUID('ee9261fd-6f86-4937-b392-5ae046764726'),)
-2026-02-27 02:07:10,693 INFO sqlalchemy.engine.Engine INSERT INTO tasks (id, project_id, section_id, assignee_id, created_by_id, parent_id, title, description, status, priority, position, due_date, completed_at, search_vector, deleted_at) VALUES ($1::UUID, $2::UUID, $3::UUID, $4::UUID, $5::UUID, $6::UUID, $7::VARCHAR, $8::VARCHAR, $9::VARCHAR, $10::VARCHAR, $11::FLOAT, $12::TIMESTAMP WITH TIME ZONE, $13::TIMESTAMP WITH TIME ZONE, $14, $15::TIMESTAMP WITH TIME ZONE) RETURNING tasks.created_at, tasks.updated_at
-2026-02-27 02:07:10,693 INFO sqlalchemy.engine.Engine [generated in 0.00025s] (UUID('567248ed-01a8-4b34-952f-d41ed532777c'), UUID('ee9261fd-6f86-4937-b392-5ae046764726'), None, None, UUID('4613701a-185e-40ad-9db9-24be4e711e8d'), None, 'Test activity logging', None, 'incomplete', 'none', 65536.0, None, None, None, None)
-2026-02-27 02:07:10,723 INFO sqlalchemy.engine.Engine INSERT INTO task_followers (task_id, user_id) VALUES ($1::UUID, $2::UUID)
-2026-02-27 02:07:10,724 INFO sqlalchemy.engine.Engine [generated in 0.00021s] (UUID('567248ed-01a8-4b34-952f-d41ed532777c'), UUID('4613701a-185e-40ad-9db9-24be4e711e8d'))
-2026-02-27 02:07:10,727 INFO sqlalchemy.engine.Engine COMMIT
-2026-02-27 02:07:10,730 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:07:10,731 INFO sqlalchemy.engine.Engine SELECT tasks.id, tasks.project_id, tasks.section_id, tasks.assignee_id, tasks.created_by_id, tasks.parent_id, tasks.title, tasks.description, tasks.status, tasks.priority, tasks.position, tasks.due_date, tasks.completed_at, tasks.search_vector, tasks.created_at, tasks.updated_at, tasks.deleted_at 
-FROM tasks 
-WHERE tasks.id = $1::UUID
-2026-02-27 02:07:10,731 INFO sqlalchemy.engine.Engine [generated in 0.00019s] (UUID('567248ed-01a8-4b34-952f-d41ed532777c'),)
-2026-02-27 02:07:10,735 INFO sqlalchemy.engine.Engine SELECT projects.workspace_id 
-FROM projects 
-WHERE projects.id = $1::UUID
-2026-02-27 02:07:10,735 INFO sqlalchemy.engine.Engine [generated in 0.00017s] (UUID('ee9261fd-6f86-4937-b392-5ae046764726'),)
-2026-02-27 02:07:10,737 INFO sqlalchemy.engine.Engine INSERT INTO activity_logs (id, workspace_id, project_id, entity_type, entity_id, actor_id, action, changes) VALUES ($1::UUID, $2::UUID, $3::UUID, $4::VARCHAR, $5::UUID, $6::UUID, $7::VARCHAR, $8::JSONB) RETURNING activity_logs.created_at, activity_logs.updated_at
-2026-02-27 02:07:10,737 INFO sqlalchemy.engine.Engine [cached since 16.91s ago] (UUID('fd2d0ec2-a3e3-458f-89aa-e4bb5492af04'), UUID('614147b6-4274-4ea1-90fa-91af9bbcd945'), UUID('ee9261fd-6f86-4937-b392-5ae046764726'), 'task', UUID('567248ed-01a8-4b34-952f-d41ed532777c'), UUID('4613701a-185e-40ad-9db9-24be4e711e8d'), 'created', 'null')
-2026-02-27 02:07:10,738 INFO sqlalchemy.engine.Engine COMMIT
-2026-02-27 02:07:10,740 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:07:10,740 INFO sqlalchemy.engine.Engine SELECT activity_logs.id, activity_logs.workspace_id, activity_logs.project_id, activity_logs.entity_type, activity_logs.entity_id, activity_logs.actor_id, activity_logs.action, activity_logs.changes, activity_logs.created_at, activity_logs.updated_at 
-FROM activity_logs 
-WHERE activity_logs.id = $1::UUID
-2026-02-27 02:07:10,741 INFO sqlalchemy.engine.Engine [cached since 16.9s ago] (UUID('fd2d0ec2-a3e3-458f-89aa-e4bb5492af04'),)
-INFO:     172.19.0.1:42996 - "POST /api/v1/projects/ee9261fd-6f86-4937-b392-5ae046764726/tasks HTTP/1.1" 201 Created
-2026-02-27 02:07:10,743 INFO sqlalchemy.engine.Engine ROLLBACK
-2026-02-27 02:07:11,142 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:07:11,143 INFO sqlalchemy.engine.Engine SELECT users.id AS users_id, users.email AS users_email, users.name AS users_name, users.hashed_password AS users_hashed_password, users.avatar_url AS users_avatar_url, users.is_active AS users_is_active, users.created_at AS users_created_at, users.updated_at AS users_updated_at 
-FROM users 
-WHERE users.id = $1::UUID
-2026-02-27 02:07:11,143 INFO sqlalchemy.engine.Engine [cached since 17.71s ago] (UUID('4613701a-185e-40ad-9db9-24be4e711e8d'),)
-2026-02-27 02:07:11,146 INFO sqlalchemy.engine.Engine SELECT projects.id AS projects_id, projects.workspace_id AS projects_workspace_id, projects.team_id AS projects_team_id, projects.owner_id AS projects_owner_id, projects.name AS projects_name, projects.description AS projects_description, projects.color AS projects_color, projects.icon AS projects_icon, projects.visibility AS projects_visibility, projects.is_archived AS projects_is_archived, projects.created_at AS projects_created_at, projects.updated_at AS projects_updated_at, projects.deleted_at AS projects_deleted_at 
-FROM projects 
-WHERE projects.id = $1::UUID
-2026-02-27 02:07:11,146 INFO sqlalchemy.engine.Engine [cached since 0.4757s ago] (UUID('ee9261fd-6f86-4937-b392-5ae046764726'),)
-2026-02-27 02:07:11,147 INFO sqlalchemy.engine.Engine SELECT workspace_memberships.id, workspace_memberships.workspace_id, workspace_memberships.user_id, workspace_memberships.role, workspace_memberships.invite_token, workspace_memberships.created_at, workspace_memberships.updated_at 
-FROM workspace_memberships 
-WHERE workspace_memberships.workspace_id = $1::UUID AND workspace_memberships.user_id = $2::UUID
-2026-02-27 02:07:11,148 INFO sqlalchemy.engine.Engine [cached since 17.34s ago] (UUID('614147b6-4274-4ea1-90fa-91af9bbcd945'), UUID('4613701a-185e-40ad-9db9-24be4e711e8d'))
-2026-02-27 02:07:11,152 INFO sqlalchemy.engine.Engine SELECT tasks.id AS tasks_id, tasks.project_id AS tasks_project_id, tasks.section_id AS tasks_section_id, tasks.assignee_id AS tasks_assignee_id, tasks.created_by_id AS tasks_created_by_id, tasks.parent_id AS tasks_parent_id, tasks.title AS tasks_title, tasks.description AS tasks_description, tasks.status AS tasks_status, tasks.priority AS tasks_priority, tasks.position AS tasks_position, tasks.due_date AS tasks_due_date, tasks.completed_at AS tasks_completed_at, tasks.search_vector AS tasks_search_vector, tasks.created_at AS tasks_created_at, tasks.updated_at AS tasks_updated_at, tasks.deleted_at AS tasks_deleted_at 
-FROM tasks 
-WHERE tasks.id = $1::UUID
-2026-02-27 02:07:11,152 INFO sqlalchemy.engine.Engine [generated in 0.00020s] (UUID('567248ed-01a8-4b34-952f-d41ed532777c'),)
-2026-02-27 02:07:11,159 INFO sqlalchemy.engine.Engine SELECT task_tags.task_id AS task_tags_task_id, task_tags.tag_id AS task_tags_tag_id 
-FROM task_tags 
-WHERE task_tags.task_id IN ($1::UUID)
-2026-02-27 02:07:11,159 INFO sqlalchemy.engine.Engine [generated in 0.00029s] (UUID('567248ed-01a8-4b34-952f-d41ed532777c'),)
-2026-02-27 02:07:11,163 INFO sqlalchemy.engine.Engine UPDATE tasks SET priority=$1::VARCHAR, updated_at=now() WHERE tasks.id = $2::UUID
-2026-02-27 02:07:11,163 INFO sqlalchemy.engine.Engine [generated in 0.00019s] ('high', UUID('567248ed-01a8-4b34-952f-d41ed532777c'))
-2026-02-27 02:07:11,165 INFO sqlalchemy.engine.Engine COMMIT
-2026-02-27 02:07:11,167 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:07:11,168 INFO sqlalchemy.engine.Engine SELECT tasks.id, tasks.project_id, tasks.section_id, tasks.assignee_id, tasks.created_by_id, tasks.parent_id, tasks.title, tasks.description, tasks.status, tasks.priority, tasks.position, tasks.due_date, tasks.completed_at, tasks.search_vector, tasks.created_at, tasks.updated_at, tasks.deleted_at 
-FROM tasks 
-WHERE tasks.id = $1::UUID
-2026-02-27 02:07:11,168 INFO sqlalchemy.engine.Engine [generated in 0.00016s] (UUID('567248ed-01a8-4b34-952f-d41ed532777c'),)
-2026-02-27 02:07:11,170 INFO sqlalchemy.engine.Engine SELECT task_tags.task_id AS task_tags_task_id, task_tags.tag_id AS task_tags_tag_id 
-FROM task_tags 
-WHERE $1::UUID = task_tags.task_id
-2026-02-27 02:07:11,170 INFO sqlalchemy.engine.Engine [generated in 0.00017s] (UUID('567248ed-01a8-4b34-952f-d41ed532777c'),)
-2026-02-27 02:07:11,172 INFO sqlalchemy.engine.Engine SELECT projects.workspace_id 
-FROM projects 
-WHERE projects.id = $1::UUID
-2026-02-27 02:07:11,172 INFO sqlalchemy.engine.Engine [cached since 0.4371s ago] (UUID('ee9261fd-6f86-4937-b392-5ae046764726'),)
-2026-02-27 02:07:11,173 INFO sqlalchemy.engine.Engine INSERT INTO activity_logs (id, workspace_id, project_id, entity_type, entity_id, actor_id, action, changes) VALUES ($1::UUID, $2::UUID, $3::UUID, $4::VARCHAR, $5::UUID, $6::UUID, $7::VARCHAR, $8::JSONB) RETURNING activity_logs.created_at, activity_logs.updated_at
-2026-02-27 02:07:11,173 INFO sqlalchemy.engine.Engine [cached since 17.34s ago] (UUID('7216f5bd-283b-448d-b076-0d3bf5be002b'), UUID('614147b6-4274-4ea1-90fa-91af9bbcd945'), UUID('ee9261fd-6f86-4937-b392-5ae046764726'), 'task', UUID('567248ed-01a8-4b34-952f-d41ed532777c'), UUID('4613701a-185e-40ad-9db9-24be4e711e8d'), 'updated', '{"field": "priority", "old": "none", "new": "high"}')
-2026-02-27 02:07:11,174 INFO sqlalchemy.engine.Engine COMMIT
-2026-02-27 02:07:11,175 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:07:11,176 INFO sqlalchemy.engine.Engine SELECT activity_logs.id, activity_logs.workspace_id, activity_logs.project_id, activity_logs.entity_type, activity_logs.entity_id, activity_logs.actor_id, activity_logs.action, activity_logs.changes, activity_logs.created_at, activity_logs.updated_at 
-FROM activity_logs 
-WHERE activity_logs.id = $1::UUID
-2026-02-27 02:07:11,176 INFO sqlalchemy.engine.Engine [cached since 17.34s ago] (UUID('7216f5bd-283b-448d-b076-0d3bf5be002b'),)
-INFO:     172.19.0.1:43006 - "PATCH /api/v1/projects/ee9261fd-6f86-4937-b392-5ae046764726/tasks/567248ed-01a8-4b34-952f-d41ed532777c HTTP/1.1" 200 OK
-2026-02-27 02:07:11,177 INFO sqlalchemy.engine.Engine ROLLBACK
-2026-02-27 02:07:11,389 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:07:11,390 INFO sqlalchemy.engine.Engine SELECT users.id AS users_id, users.email AS users_email, users.name AS users_name, users.hashed_password AS users_hashed_password, users.avatar_url AS users_avatar_url, users.is_active AS users_is_active, users.created_at AS users_created_at, users.updated_at AS users_updated_at 
-FROM users 
-WHERE users.id = $1::UUID
-2026-02-27 02:07:11,390 INFO sqlalchemy.engine.Engine [cached since 17.95s ago] (UUID('4613701a-185e-40ad-9db9-24be4e711e8d'),)
-2026-02-27 02:07:11,391 INFO sqlalchemy.engine.Engine SELECT projects.id AS projects_id, projects.workspace_id AS projects_workspace_id, projects.team_id AS projects_team_id, projects.owner_id AS projects_owner_id, projects.name AS projects_name, projects.description AS projects_description, projects.color AS projects_color, projects.icon AS projects_icon, projects.visibility AS projects_visibility, projects.is_archived AS projects_is_archived, projects.created_at AS projects_created_at, projects.updated_at AS projects_updated_at, projects.deleted_at AS projects_deleted_at 
-FROM projects 
-WHERE projects.id = $1::UUID
-2026-02-27 02:07:11,391 INFO sqlalchemy.engine.Engine [cached since 0.721s ago] (UUID('ee9261fd-6f86-4937-b392-5ae046764726'),)
-2026-02-27 02:07:11,392 INFO sqlalchemy.engine.Engine SELECT workspace_memberships.id, workspace_memberships.workspace_id, workspace_memberships.user_id, workspace_memberships.role, workspace_memberships.invite_token, workspace_memberships.created_at, workspace_memberships.updated_at 
-FROM workspace_memberships 
-WHERE workspace_memberships.workspace_id = $1::UUID AND workspace_memberships.user_id = $2::UUID
-2026-02-27 02:07:11,392 INFO sqlalchemy.engine.Engine [cached since 17.59s ago] (UUID('614147b6-4274-4ea1-90fa-91af9bbcd945'), UUID('4613701a-185e-40ad-9db9-24be4e711e8d'))
-2026-02-27 02:07:11,394 INFO sqlalchemy.engine.Engine SELECT tasks.id AS tasks_id, tasks.project_id AS tasks_project_id, tasks.section_id AS tasks_section_id, tasks.assignee_id AS tasks_assignee_id, tasks.created_by_id AS tasks_created_by_id, tasks.parent_id AS tasks_parent_id, tasks.title AS tasks_title, tasks.description AS tasks_description, tasks.status AS tasks_status, tasks.priority AS tasks_priority, tasks.position AS tasks_position, tasks.due_date AS tasks_due_date, tasks.completed_at AS tasks_completed_at, tasks.search_vector AS tasks_search_vector, tasks.created_at AS tasks_created_at, tasks.updated_at AS tasks_updated_at, tasks.deleted_at AS tasks_deleted_at 
-FROM tasks 
-WHERE tasks.id = $1::UUID
-2026-02-27 02:07:11,394 INFO sqlalchemy.engine.Engine [cached since 0.2419s ago] (UUID('567248ed-01a8-4b34-952f-d41ed532777c'),)
-2026-02-27 02:07:11,396 INFO sqlalchemy.engine.Engine SELECT task_tags.task_id AS task_tags_task_id, task_tags.tag_id AS task_tags_tag_id 
-FROM task_tags 
-WHERE task_tags.task_id IN ($1::UUID)
-2026-02-27 02:07:11,396 INFO sqlalchemy.engine.Engine [cached since 0.2379s ago] (UUID('567248ed-01a8-4b34-952f-d41ed532777c'),)
-2026-02-27 02:07:11,398 INFO sqlalchemy.engine.Engine UPDATE tasks SET status=$1::VARCHAR, completed_at=$2::TIMESTAMP WITH TIME ZONE, updated_at=now() WHERE tasks.id = $3::UUID
-2026-02-27 02:07:11,398 INFO sqlalchemy.engine.Engine [generated in 0.00019s] ('completed', datetime.datetime(2026, 2, 27, 2, 7, 11, 397898, tzinfo=datetime.timezone.utc), UUID('567248ed-01a8-4b34-952f-d41ed532777c'))
-2026-02-27 02:07:11,400 INFO sqlalchemy.engine.Engine COMMIT
-2026-02-27 02:07:11,403 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:07:11,403 INFO sqlalchemy.engine.Engine SELECT tasks.id, tasks.project_id, tasks.section_id, tasks.assignee_id, tasks.created_by_id, tasks.parent_id, tasks.title, tasks.description, tasks.status, tasks.priority, tasks.position, tasks.due_date, tasks.completed_at, tasks.search_vector, tasks.created_at, tasks.updated_at, tasks.deleted_at 
-FROM tasks 
-WHERE tasks.id = $1::UUID
-2026-02-27 02:07:11,403 INFO sqlalchemy.engine.Engine [cached since 0.2354s ago] (UUID('567248ed-01a8-4b34-952f-d41ed532777c'),)
-2026-02-27 02:07:11,404 INFO sqlalchemy.engine.Engine SELECT task_tags.task_id AS task_tags_task_id, task_tags.tag_id AS task_tags_tag_id 
-FROM task_tags 
-WHERE $1::UUID = task_tags.task_id
-2026-02-27 02:07:11,404 INFO sqlalchemy.engine.Engine [cached since 0.2342s ago] (UUID('567248ed-01a8-4b34-952f-d41ed532777c'),)
-2026-02-27 02:07:11,405 INFO sqlalchemy.engine.Engine SELECT projects.workspace_id 
-FROM projects 
-WHERE projects.id = $1::UUID
-2026-02-27 02:07:11,406 INFO sqlalchemy.engine.Engine [cached since 0.6709s ago] (UUID('ee9261fd-6f86-4937-b392-5ae046764726'),)
-2026-02-27 02:07:11,407 INFO sqlalchemy.engine.Engine INSERT INTO activity_logs (id, workspace_id, project_id, entity_type, entity_id, actor_id, action, changes) VALUES ($1::UUID, $2::UUID, $3::UUID, $4::VARCHAR, $5::UUID, $6::UUID, $7::VARCHAR, $8::JSONB) RETURNING activity_logs.created_at, activity_logs.updated_at
-2026-02-27 02:07:11,407 INFO sqlalchemy.engine.Engine [cached since 17.58s ago] (UUID('be1ffd81-be2b-4291-9ade-e028b677ae2f'), UUID('614147b6-4274-4ea1-90fa-91af9bbcd945'), UUID('ee9261fd-6f86-4937-b392-5ae046764726'), 'task', UUID('567248ed-01a8-4b34-952f-d41ed532777c'), UUID('4613701a-185e-40ad-9db9-24be4e711e8d'), 'completed', '{"field": "status", "old": "incomplete", "new": "completed"}')
-2026-02-27 02:07:11,408 INFO sqlalchemy.engine.Engine COMMIT
-2026-02-27 02:07:11,409 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:07:11,410 INFO sqlalchemy.engine.Engine SELECT activity_logs.id, activity_logs.workspace_id, activity_logs.project_id, activity_logs.entity_type, activity_logs.entity_id, activity_logs.actor_id, activity_logs.action, activity_logs.changes, activity_logs.created_at, activity_logs.updated_at 
-FROM activity_logs 
-WHERE activity_logs.id = $1::UUID
-2026-02-27 02:07:11,410 INFO sqlalchemy.engine.Engine [cached since 17.57s ago] (UUID('be1ffd81-be2b-4291-9ade-e028b677ae2f'),)
-INFO:     172.19.0.1:43022 - "PATCH /api/v1/projects/ee9261fd-6f86-4937-b392-5ae046764726/tasks/567248ed-01a8-4b34-952f-d41ed532777c HTTP/1.1" 200 OK
-2026-02-27 02:07:11,411 INFO sqlalchemy.engine.Engine ROLLBACK
-2026-02-27 02:07:11,754 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:07:11,754 INFO sqlalchemy.engine.Engine SELECT users.id AS users_id, users.email AS users_email, users.name AS users_name, users.hashed_password AS users_hashed_password, users.avatar_url AS users_avatar_url, users.is_active AS users_is_active, users.created_at AS users_created_at, users.updated_at AS users_updated_at 
-FROM users 
-WHERE users.id = $1::UUID
-2026-02-27 02:07:11,754 INFO sqlalchemy.engine.Engine [cached since 18.32s ago] (UUID('4613701a-185e-40ad-9db9-24be4e711e8d'),)
-2026-02-27 02:07:11,756 INFO sqlalchemy.engine.Engine SELECT projects.id AS projects_id, projects.workspace_id AS projects_workspace_id, projects.team_id AS projects_team_id, projects.owner_id AS projects_owner_id, projects.name AS projects_name, projects.description AS projects_description, projects.color AS projects_color, projects.icon AS projects_icon, projects.visibility AS projects_visibility, projects.is_archived AS projects_is_archived, projects.created_at AS projects_created_at, projects.updated_at AS projects_updated_at, projects.deleted_at AS projects_deleted_at 
-FROM projects 
-WHERE projects.id = $1::UUID
-2026-02-27 02:07:11,756 INFO sqlalchemy.engine.Engine [cached since 1.086s ago] (UUID('ee9261fd-6f86-4937-b392-5ae046764726'),)
-2026-02-27 02:07:11,758 INFO sqlalchemy.engine.Engine SELECT workspace_memberships.id, workspace_memberships.workspace_id, workspace_memberships.user_id, workspace_memberships.role, workspace_memberships.invite_token, workspace_memberships.created_at, workspace_memberships.updated_at 
-FROM workspace_memberships 
-WHERE workspace_memberships.workspace_id = $1::UUID AND workspace_memberships.user_id = $2::UUID
-2026-02-27 02:07:11,758 INFO sqlalchemy.engine.Engine [cached since 17.95s ago] (UUID('614147b6-4274-4ea1-90fa-91af9bbcd945'), UUID('4613701a-185e-40ad-9db9-24be4e711e8d'))
-2026-02-27 02:07:11,763 INFO sqlalchemy.engine.Engine SELECT activity_logs.id, activity_logs.workspace_id, activity_logs.project_id, activity_logs.entity_type, activity_logs.entity_id, activity_logs.actor_id, activity_logs.action, activity_logs.changes, activity_logs.created_at, activity_logs.updated_at 
-FROM activity_logs 
-WHERE activity_logs.project_id = $1::UUID ORDER BY activity_logs.created_at DESC 
- LIMIT $2::INTEGER
-2026-02-27 02:07:11,763 INFO sqlalchemy.engine.Engine [generated in 0.00048s] (UUID('ee9261fd-6f86-4937-b392-5ae046764726'), 10)
-2026-02-27 02:07:11,771 INFO sqlalchemy.engine.Engine SELECT users.id AS users_id, users.email AS users_email, users.name AS users_name, users.hashed_password AS users_hashed_password, users.avatar_url AS users_avatar_url, users.is_active AS users_is_active, users.created_at AS users_created_at, users.updated_at AS users_updated_at 
-FROM users 
-WHERE users.id IN ($1::UUID)
-2026-02-27 02:07:11,771 INFO sqlalchemy.engine.Engine [generated in 0.00020s] (UUID('4613701a-185e-40ad-9db9-24be4e711e8d'),)
-INFO:     172.19.0.1:43026 - "GET /api/v1/projects/ee9261fd-6f86-4937-b392-5ae046764726/activity?limit=10 HTTP/1.1" 200 OK
-2026-02-27 02:07:11,775 INFO sqlalchemy.engine.Engine ROLLBACK
-2026-02-27 02:07:12,118 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:07:12,118 INFO sqlalchemy.engine.Engine SELECT users.id AS users_id, users.email AS users_email, users.name AS users_name, users.hashed_password AS users_hashed_password, users.avatar_url AS users_avatar_url, users.is_active AS users_is_active, users.created_at AS users_created_at, users.updated_at AS users_updated_at 
-FROM users 
-WHERE users.id = $1::UUID
-2026-02-27 02:07:12,119 INFO sqlalchemy.engine.Engine [cached since 18.68s ago] (UUID('4613701a-185e-40ad-9db9-24be4e711e8d'),)
-2026-02-27 02:07:12,121 INFO sqlalchemy.engine.Engine SELECT projects.id AS projects_id, projects.workspace_id AS projects_workspace_id, projects.team_id AS projects_team_id, projects.owner_id AS projects_owner_id, projects.name AS projects_name, projects.description AS projects_description, projects.color AS projects_color, projects.icon AS projects_icon, projects.visibility AS projects_visibility, projects.is_archived AS projects_is_archived, projects.created_at AS projects_created_at, projects.updated_at AS projects_updated_at, projects.deleted_at AS projects_deleted_at 
-FROM projects 
-WHERE projects.id = $1::UUID
-2026-02-27 02:07:12,121 INFO sqlalchemy.engine.Engine [cached since 1.45s ago] (UUID('ee9261fd-6f86-4937-b392-5ae046764726'),)
-2026-02-27 02:07:12,122 INFO sqlalchemy.engine.Engine SELECT workspace_memberships.id, workspace_memberships.workspace_id, workspace_memberships.user_id, workspace_memberships.role, workspace_memberships.invite_token, workspace_memberships.created_at, workspace_memberships.updated_at 
-FROM workspace_memberships 
-WHERE workspace_memberships.workspace_id = $1::UUID AND workspace_memberships.user_id = $2::UUID
-2026-02-27 02:07:12,123 INFO sqlalchemy.engine.Engine [cached since 18.32s ago] (UUID('614147b6-4274-4ea1-90fa-91af9bbcd945'), UUID('4613701a-185e-40ad-9db9-24be4e711e8d'))
-2026-02-27 02:07:12,125 INFO sqlalchemy.engine.Engine SELECT activity_logs.id, activity_logs.workspace_id, activity_logs.project_id, activity_logs.entity_type, activity_logs.entity_id, activity_logs.actor_id, activity_logs.action, activity_logs.changes, activity_logs.created_at, activity_logs.updated_at 
-FROM activity_logs 
-WHERE activity_logs.entity_type = $1::VARCHAR AND activity_logs.entity_id = $2::UUID ORDER BY activity_logs.created_at DESC 
- LIMIT $3::INTEGER
-2026-02-27 02:07:12,125 INFO sqlalchemy.engine.Engine [generated in 0.00022s] ('task', UUID('567248ed-01a8-4b34-952f-d41ed532777c'), 10)
-2026-02-27 02:07:12,127 INFO sqlalchemy.engine.Engine SELECT users.id AS users_id, users.email AS users_email, users.name AS users_name, users.hashed_password AS users_hashed_password, users.avatar_url AS users_avatar_url, users.is_active AS users_is_active, users.created_at AS users_created_at, users.updated_at AS users_updated_at 
-FROM users 
-WHERE users.id IN ($1::UUID)
-2026-02-27 02:07:12,127 INFO sqlalchemy.engine.Engine [cached since 0.3558s ago] (UUID('4613701a-185e-40ad-9db9-24be4e711e8d'),)
-INFO:     172.19.0.1:43034 - "GET /api/v1/projects/ee9261fd-6f86-4937-b392-5ae046764726/tasks/567248ed-01a8-4b34-952f-d41ed532777c/activity?limit=10 HTTP/1.1" 200 OK
-2026-02-27 02:07:12,129 INFO sqlalchemy.engine.Engine ROLLBACK
-2026-02-27 02:09:00,093 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:09:00,094 INFO sqlalchemy.engine.Engine SELECT users.id AS users_id, users.email AS users_email, users.name AS users_name, users.hashed_password AS users_hashed_password, users.avatar_url AS users_avatar_url, users.is_active AS users_is_active, users.created_at AS users_created_at, users.updated_at AS users_updated_at 
-FROM users 
-WHERE users.id = $1::UUID
-2026-02-27 02:09:00,094 INFO sqlalchemy.engine.Engine [cached since 126.7s ago] (UUID('4613701a-185e-40ad-9db9-24be4e711e8d'),)
-2026-02-27 02:09:00,097 INFO sqlalchemy.engine.Engine SELECT projects.id AS projects_id, projects.workspace_id AS projects_workspace_id, projects.team_id AS projects_team_id, projects.owner_id AS projects_owner_id, projects.name AS projects_name, projects.description AS projects_description, projects.color AS projects_color, projects.icon AS projects_icon, projects.visibility AS projects_visibility, projects.is_archived AS projects_is_archived, projects.created_at AS projects_created_at, projects.updated_at AS projects_updated_at, projects.deleted_at AS projects_deleted_at 
-FROM projects 
-WHERE projects.id = $1::UUID
-2026-02-27 02:09:00,097 INFO sqlalchemy.engine.Engine [cached since 109.5s ago] (UUID('ee9261fd-6f86-4937-b392-5ae046764726'),)
-2026-02-27 02:09:00,099 INFO sqlalchemy.engine.Engine SELECT workspace_memberships.id, workspace_memberships.workspace_id, workspace_memberships.user_id, workspace_memberships.role, workspace_memberships.invite_token, workspace_memberships.created_at, workspace_memberships.updated_at 
-FROM workspace_memberships 
-WHERE workspace_memberships.workspace_id = $1::UUID AND workspace_memberships.user_id = $2::UUID
-2026-02-27 02:09:00,099 INFO sqlalchemy.engine.Engine [cached since 126.3s ago] (UUID('614147b6-4274-4ea1-90fa-91af9bbcd945'), UUID('4613701a-185e-40ad-9db9-24be4e711e8d'))
-2026-02-27 02:09:00,102 INFO sqlalchemy.engine.Engine INSERT INTO comments (id, task_id, author_id, body, body_text, deleted_at) VALUES ($1::UUID, $2::UUID, $3::UUID, $4::VARCHAR, $5::VARCHAR, $6::TIMESTAMP WITH TIME ZONE) RETURNING comments.created_at, comments.updated_at
-2026-02-27 02:09:00,103 INFO sqlalchemy.engine.Engine [generated in 0.00029s] (UUID('f94ef325-415c-41c0-a5f3-3ac6d9f136b3'), UUID('567248ed-01a8-4b34-952f-d41ed532777c'), UUID('4613701a-185e-40ad-9db9-24be4e711e8d'), 'This is a test comment for activity tracking', 'This is a test comment for activity tracking', None)
-2026-02-27 02:09:00,108 INFO sqlalchemy.engine.Engine COMMIT
-2026-02-27 02:09:00,111 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:09:00,112 INFO sqlalchemy.engine.Engine SELECT comments.id, comments.task_id, comments.author_id, comments.body, comments.body_text, comments.created_at, comments.updated_at, comments.deleted_at 
-FROM comments 
-WHERE comments.id = $1::UUID
-2026-02-27 02:09:00,112 INFO sqlalchemy.engine.Engine [generated in 0.00029s] (UUID('f94ef325-415c-41c0-a5f3-3ac6d9f136b3'),)
-2026-02-27 02:09:00,115 INFO sqlalchemy.engine.Engine SELECT tasks.project_id 
-FROM tasks 
-WHERE tasks.id = $1::UUID
-2026-02-27 02:09:00,115 INFO sqlalchemy.engine.Engine [generated in 0.00023s] (UUID('567248ed-01a8-4b34-952f-d41ed532777c'),)
-2026-02-27 02:09:00,117 INFO sqlalchemy.engine.Engine SELECT projects.workspace_id 
-FROM projects 
-WHERE projects.id = $1::UUID
-2026-02-27 02:09:00,117 INFO sqlalchemy.engine.Engine [cached since 109.4s ago] (UUID('ee9261fd-6f86-4937-b392-5ae046764726'),)
-2026-02-27 02:09:00,120 INFO sqlalchemy.engine.Engine SELECT task_followers.task_id, task_followers.user_id 
-FROM task_followers 
-WHERE task_followers.task_id = $1::UUID AND task_followers.user_id != $2::UUID
-2026-02-27 02:09:00,120 INFO sqlalchemy.engine.Engine [generated in 0.00037s] (UUID('567248ed-01a8-4b34-952f-d41ed532777c'), UUID('4613701a-185e-40ad-9db9-24be4e711e8d'))
-2026-02-27 02:09:00,123 INFO sqlalchemy.engine.Engine INSERT INTO activity_logs (id, workspace_id, project_id, entity_type, entity_id, actor_id, action, changes) VALUES ($1::UUID, $2::UUID, $3::UUID, $4::VARCHAR, $5::UUID, $6::UUID, $7::VARCHAR, $8::JSONB) RETURNING activity_logs.created_at, activity_logs.updated_at
-2026-02-27 02:09:00,123 INFO sqlalchemy.engine.Engine [cached since 126.3s ago] (UUID('650c3273-df45-4b6a-890d-77ff17e7866a'), UUID('614147b6-4274-4ea1-90fa-91af9bbcd945'), UUID('ee9261fd-6f86-4937-b392-5ae046764726'), 'task', UUID('567248ed-01a8-4b34-952f-d41ed532777c'), UUID('4613701a-185e-40ad-9db9-24be4e711e8d'), 'commented', 'null')
-2026-02-27 02:09:00,125 INFO sqlalchemy.engine.Engine COMMIT
-2026-02-27 02:09:00,127 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:09:00,127 INFO sqlalchemy.engine.Engine SELECT activity_logs.id, activity_logs.workspace_id, activity_logs.project_id, activity_logs.entity_type, activity_logs.entity_id, activity_logs.actor_id, activity_logs.action, activity_logs.changes, activity_logs.created_at, activity_logs.updated_at 
-FROM activity_logs 
-WHERE activity_logs.id = $1::UUID
-2026-02-27 02:09:00,127 INFO sqlalchemy.engine.Engine [cached since 126.3s ago] (UUID('650c3273-df45-4b6a-890d-77ff17e7866a'),)
-2026-02-27 02:09:00,130 INFO sqlalchemy.engine.Engine ROLLBACK
-INFO:     172.19.0.1:39076 - "POST /api/v1/projects/ee9261fd-6f86-4937-b392-5ae046764726/tasks/567248ed-01a8-4b34-952f-d41ed532777c/comments HTTP/1.1" 500 Internal Server Error
+{"method": "POST", "path": "/api/v1/auth/refresh", "status": 401, "duration_ms": 89.19, "event": "request", "level": "info", "logger": "app.main", "timestamp": "2026-03-06T08:44:33.510168Z"}
+{"method": "POST", "path": "/api/v1/auth/refresh", "status": 401, "duration_ms": 1.21, "event": "request", "level": "info", "logger": "app.main", "timestamp": "2026-03-06T08:44:33.622768Z"}
 ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 2434, in _determine_joins
+    self.primaryjoin = join_condition(
+                       ^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/util.py", line 121, in join_condition
+    return Join._join_condition(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/selectable.py", line 1441, in _join_condition
+    cls._joincond_trim_constraints(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/selectable.py", line 1586, in _joincond_trim_constraints
+    raise exc.AmbiguousForeignKeysError(
+sqlalchemy.exc.AmbiguousForeignKeysError: Can't determine join between 'departments' and 'employees'; tables have more than one foreign key constraint relationship between them. Please specify the 'onclause' of this join explicitly.
+
+The above exception was the direct cause of the following exception:
+
 Traceback (most recent call last):
   File "/app/.venv/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 416, in run_asgi
     result = await app(  # type: ignore[func-returns-value]
@@ -515,7 +41,26 @@ Traceback (most recent call last):
     raise exc
   File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
     await self.app(scope, receive, _send)
-  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 87, in __call__
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 191, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+                                   ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/_utils.py", line 87, in collapse_excgroups
+    raise exc
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 193, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/main.py", line 61, in log_requests
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 168, in call_next
+    raise app_exc from app_exc.__cause__ or app_exc.__context__
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 95, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 153, in simple_response
     await self.app(scope, receive, send)
   File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
@@ -540,79 +85,413 @@ Traceback (most recent call last):
   File "/app/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 105, in app
     response = await f(request)
                ^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 461, in app
-    content = await serialize_response(
-              ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 285, in serialize_response
-    raise ResponseValidationError(
-fastapi.exceptions.ResponseValidationError: 2 validation errors:
-  {'type': 'missing', 'loc': ('response', 'author_name'), 'msg': 'Field required', 'input': <app.models.comment.Comment object at 0x736b84b4be00>}
-  {'type': 'missing', 'loc': ('response', 'author_avatar_url'), 'msg': 'Field required', 'input': <app.models.comment.Comment object at 0x736b84b4be00>}
+  File "/app/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 431, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 313, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/slowapi/extension.py", line 734, in async_wrapper
+    response = await func(*args, **kwargs)  # type: ignore
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/api/v1/routers/auth.py", line 52, in login
+    _, access_token, raw_refresh = await login_user(db, data.email, data.password)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/services/auth.py", line 38, in login_user
+    user = await db.scalar(select(User).where(User.email == email))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/ext/asyncio/session.py", line 505, in scalar
+    return await greenlet_spawn(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 203, in greenlet_spawn
+    result = context.switch(value)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2399, in scalar
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2249, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1633, in _execute_clauseelement
+    compiled_sql, extracted_params, cache_hit = elem._compile_w_cache(
+                                                ^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 716, in _compile_w_cache
+    compiled_sql = self._compiler(
+                   ^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 324, in _compiler
+    return dialect.statement_compiler(dialect, self, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/compiler.py", line 1461, in __init__
+    Compiled.__init__(self, dialect, statement, **kwargs)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/compiler.py", line 901, in __init__
+    self.string = self.process(self.statement, **compile_kwargs)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/compiler.py", line 947, in process
+    return obj._compiler_dispatch(self, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/visitors.py", line 138, in _compiler_dispatch
+    return meth(self, **kw)  # type: ignore  # noqa: E501
+           ^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/compiler.py", line 4807, in visit_select
+    compile_state = select_stmt._compile_state_factory(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/base.py", line 775, in create_for_statement
+    return klass.create_for_statement(statement, compiler, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 447, in create_for_statement
+    return cls._create_orm_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 1175, in _create_orm_context
+    _QueryEntity.to_compile_state(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 2628, in to_compile_state
+    _MapperEntity(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 2708, in __init__
+    entity._post_inspect
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 1235, in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+                                           ^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2733, in _post_inspect
+    self._check_configure()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2410, in _check_configure
+    _configure_registries({self.registry}, cascade=True)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4227, in _configure_registries
+    _do_configure_registries(registries, cascade)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4268, in _do_configure_registries
+    mapper._post_configure_properties()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2427, in _post_configure_properties
+    prop.init()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/interfaces.py", line 595, in init
+    self.do_init()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 1657, in do_init
+    self._setup_join_conditions()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 1895, in _setup_join_conditions
+    self._join_condition = jc = JoinCondition(
+                                ^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 2321, in __init__
+    self._determine_joins()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 2478, in _determine_joins
+    raise sa_exc.AmbiguousForeignKeysError(
+sqlalchemy.exc.AmbiguousForeignKeysError: Could not determine join condition between parent/child tables on relationship Department.employees - there are multiple foreign key paths linking the tables.  Specify the 'foreign_keys' argument, providing a list of those columns which should be counted as containing a foreign key reference to the parent table.
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 2434, in _determine_joins
+    self.primaryjoin = join_condition(
+                       ^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/util.py", line 121, in join_condition
+    return Join._join_condition(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/selectable.py", line 1441, in _join_condition
+    cls._joincond_trim_constraints(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/selectable.py", line 1586, in _joincond_trim_constraints
+    raise exc.AmbiguousForeignKeysError(
+sqlalchemy.exc.AmbiguousForeignKeysError: Can't determine join between 'departments' and 'employees'; tables have more than one foreign key constraint relationship between them. Please specify the 'onclause' of this join explicitly.
 
-  File "/app/app/api/v1/routers/comments.py", line 16, in create
-    POST /api/v1/projects/{project_id}/tasks/{task_id}/comments
-2026-02-27 02:09:00,201 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-02-27 02:09:00,202 INFO sqlalchemy.engine.Engine SELECT users.id AS users_id, users.email AS users_email, users.name AS users_name, users.hashed_password AS users_hashed_password, users.avatar_url AS users_avatar_url, users.is_active AS users_is_active, users.created_at AS users_created_at, users.updated_at AS users_updated_at 
-FROM users 
-WHERE users.id = $1::UUID
-2026-02-27 02:09:00,202 INFO sqlalchemy.engine.Engine [cached since 126.8s ago] (UUID('4613701a-185e-40ad-9db9-24be4e711e8d'),)
-2026-02-27 02:09:00,204 INFO sqlalchemy.engine.Engine SELECT projects.id AS projects_id, projects.workspace_id AS projects_workspace_id, projects.team_id AS projects_team_id, projects.owner_id AS projects_owner_id, projects.name AS projects_name, projects.description AS projects_description, projects.color AS projects_color, projects.icon AS projects_icon, projects.visibility AS projects_visibility, projects.is_archived AS projects_is_archived, projects.created_at AS projects_created_at, projects.updated_at AS projects_updated_at, projects.deleted_at AS projects_deleted_at 
-FROM projects 
-WHERE projects.id = $1::UUID
-2026-02-27 02:09:00,204 INFO sqlalchemy.engine.Engine [cached since 109.6s ago] (UUID('ee9261fd-6f86-4937-b392-5ae046764726'),)
-2026-02-27 02:09:00,205 INFO sqlalchemy.engine.Engine SELECT workspace_memberships.id, workspace_memberships.workspace_id, workspace_memberships.user_id, workspace_memberships.role, workspace_memberships.invite_token, workspace_memberships.created_at, workspace_memberships.updated_at 
-FROM workspace_memberships 
-WHERE workspace_memberships.workspace_id = $1::UUID AND workspace_memberships.user_id = $2::UUID
-2026-02-27 02:09:00,205 INFO sqlalchemy.engine.Engine [cached since 126.4s ago] (UUID('614147b6-4274-4ea1-90fa-91af9bbcd945'), UUID('4613701a-185e-40ad-9db9-24be4e711e8d'))
-2026-02-27 02:09:00,207 INFO sqlalchemy.engine.Engine SELECT activity_logs.id, activity_logs.workspace_id, activity_logs.project_id, activity_logs.entity_type, activity_logs.entity_id, activity_logs.actor_id, activity_logs.action, activity_logs.changes, activity_logs.created_at, activity_logs.updated_at 
-FROM activity_logs 
-WHERE activity_logs.entity_type = $1::VARCHAR AND activity_logs.entity_id = $2::UUID ORDER BY activity_logs.created_at DESC 
- LIMIT $3::INTEGER
-2026-02-27 02:09:00,207 INFO sqlalchemy.engine.Engine [cached since 108.1s ago] ('task', UUID('567248ed-01a8-4b34-952f-d41ed532777c'), 10)
-2026-02-27 02:09:00,209 INFO sqlalchemy.engine.Engine SELECT users.id AS users_id, users.email AS users_email, users.name AS users_name, users.hashed_password AS users_hashed_password, users.avatar_url AS users_avatar_url, users.is_active AS users_is_active, users.created_at AS users_created_at, users.updated_at AS users_updated_at 
-FROM users 
-WHERE users.id IN ($1::UUID)
-2026-02-27 02:09:00,209 INFO sqlalchemy.engine.Engine [cached since 108.5s ago] (UUID('4613701a-185e-40ad-9db9-24be4e711e8d'),)
-INFO:     172.19.0.1:39084 - "GET /api/v1/projects/ee9261fd-6f86-4937-b392-5ae046764726/tasks/567248ed-01a8-4b34-952f-d41ed532777c/activity?limit=10 HTTP/1.1" 200 OK
-2026-02-27 02:09:00,211 INFO sqlalchemy.engine.Engine ROLLBACK
-WARNING:  WatchFiles detected changes in 'app/services/comment.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [75]
-INFO:     Started server process [115]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'app/schemas/comment.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [115]
-INFO:     Started server process [117]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [117]
-INFO:     Stopping reloader process [34]
-INFO:     Will watch for changes in these directories: ['/app']
-INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [9] using WatchFiles
-INFO:     Started server process [11]
-INFO:     Waiting for application startup.
-[2m2026-02-27T08:44:35.730561Z[0m [[32m[1minfo     [0m] [1mWorkBoard starting            [0m [[0m[1m[34mapp.main[0m][0m [36mcors_origins[0m=[35m['http://localhost:5173'][0m [36mdatabase_host[0m=[35mpostgres:5432/workboard[0m [36menvironment[0m=[35mdevelopment[0m [36mlog_level[0m=[35mINFO[0m [36mrate_limiting[0m=[35mTrue[0m [36mredis[0m=[35mredis://redis:6379[0m
-INFO:     Application startup complete.
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [11]
-INFO:     Stopping reloader process [9]
-INFO:     Will watch for changes in these directories: ['/app']
-INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [9] using WatchFiles
-INFO:     Started server process [11]
-INFO:     Waiting for application startup.
-[2m2026-02-27T08:52:30.719389Z[0m [[32m[1minfo     [0m] [1mWorkBoard starting            [0m [[0m[1m[34mapp.main[0m][0m [36mcors_origins[0m=[35m['http://localhost:5173'][0m [36mdatabase_host[0m=[35mpostgres:5432/workboard[0m [36menvironment[0m=[35mdevelopment[0m [36mlog_level[0m=[35mINFO[0m [36mrate_limiting[0m=[35mTrue[0m [36mredis[0m=[35mredis://redis:6379[0m
-INFO:     Application startup complete.
-[2m2026-02-27T08:53:37.816676Z[0m [[32m[1minfo     [0m] [1mrequest                       [0m [[0m[1m[34mapp.main[0m][0m [36mduration_ms[0m=[35m13.94[0m [36mmethod[0m=[35mPOST[0m [36mpath[0m=[35m/api/v1/auth/register[0m [36mstatus[0m=[35m422[0m
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/.venv/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/fastapi/applications.py", line 1160, in __call__
+    await super().__call__(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/applications.py", line 107, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 191, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+                                   ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/_utils.py", line 87, in collapse_excgroups
+    raise exc
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 193, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/main.py", line 61, in log_requests
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 168, in call_next
+    raise app_exc from app_exc.__cause__ or app_exc.__context__
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 95, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 153, in simple_response
+    await self.app(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/app/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/app/.venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 119, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/app/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/app/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 105, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 431, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 313, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/slowapi/extension.py", line 734, in async_wrapper
+    response = await func(*args, **kwargs)  # type: ignore
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/api/v1/routers/auth.py", line 52, in login
+    _, access_token, raw_refresh = await login_user(db, data.email, data.password)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/services/auth.py", line 38, in login_user
+    user = await db.scalar(select(User).where(User.email == email))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/ext/asyncio/session.py", line 505, in scalar
+    return await greenlet_spawn(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 203, in greenlet_spawn
+    result = context.switch(value)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2399, in scalar
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2249, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1633, in _execute_clauseelement
+    compiled_sql, extracted_params, cache_hit = elem._compile_w_cache(
+                                                ^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 716, in _compile_w_cache
+    compiled_sql = self._compiler(
+                   ^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 324, in _compiler
+    return dialect.statement_compiler(dialect, self, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/compiler.py", line 1461, in __init__
+    Compiled.__init__(self, dialect, statement, **kwargs)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/compiler.py", line 901, in __init__
+    self.string = self.process(self.statement, **compile_kwargs)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/compiler.py", line 947, in process
+    return obj._compiler_dispatch(self, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/visitors.py", line 138, in _compiler_dispatch
+    return meth(self, **kw)  # type: ignore  # noqa: E501
+           ^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/compiler.py", line 4807, in visit_select
+    compile_state = select_stmt._compile_state_factory(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/base.py", line 775, in create_for_statement
+    return klass.create_for_statement(statement, compiler, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 447, in create_for_statement
+    return cls._create_orm_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 1175, in _create_orm_context
+    _QueryEntity.to_compile_state(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 2628, in to_compile_state
+    _MapperEntity(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 2708, in __init__
+    entity._post_inspect
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 1235, in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+                                           ^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2733, in _post_inspect
+    self._check_configure()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2410, in _check_configure
+    _configure_registries({self.registry}, cascade=True)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4227, in _configure_registries
+    _do_configure_registries(registries, cascade)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4268, in _do_configure_registries
+    mapper._post_configure_properties()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2427, in _post_configure_properties
+    prop.init()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/interfaces.py", line 595, in init
+    self.do_init()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 1657, in do_init
+    self._setup_join_conditions()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 1895, in _setup_join_conditions
+    self._join_condition = jc = JoinCondition(
+                                ^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 2321, in __init__
+    self._determine_joins()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 2478, in _determine_joins
+    raise sa_exc.AmbiguousForeignKeysError(
+sqlalchemy.exc.AmbiguousForeignKeysError: Could not determine join condition between parent/child tables on relationship Department.employees - there are multiple foreign key paths linking the tables.  Specify the 'foreign_keys' argument, providing a list of those columns which should be counted as containing a foreign key reference to the parent table.
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/app/.venv/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/fastapi/applications.py", line 1160, in __call__
+    await super().__call__(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/applications.py", line 107, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 191, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+                                   ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/_utils.py", line 87, in collapse_excgroups
+    raise exc
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 193, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/main.py", line 61, in log_requests
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 168, in call_next
+    raise app_exc from app_exc.__cause__ or app_exc.__context__
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 95, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 153, in simple_response
+    await self.app(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/app/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/app/.venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 119, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/app/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/app/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 105, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 431, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 313, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/slowapi/extension.py", line 734, in async_wrapper
+    response = await func(*args, **kwargs)  # type: ignore
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/api/v1/routers/auth.py", line 52, in login
+    _, access_token, raw_refresh = await login_user(db, data.email, data.password)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/services/auth.py", line 38, in login_user
+    user = await db.scalar(select(User).where(User.email == email))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/ext/asyncio/session.py", line 505, in scalar
+    return await greenlet_spawn(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 190, in greenlet_spawn
+    result = context.switch(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2399, in scalar
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2249, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1633, in _execute_clauseelement
+    compiled_sql, extracted_params, cache_hit = elem._compile_w_cache(
+                                                ^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 716, in _compile_w_cache
+    compiled_sql = self._compiler(
+                   ^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 324, in _compiler
+    return dialect.statement_compiler(dialect, self, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/compiler.py", line 1461, in __init__
+    Compiled.__init__(self, dialect, statement, **kwargs)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/compiler.py", line 901, in __init__
+    self.string = self.process(self.statement, **compile_kwargs)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/compiler.py", line 947, in process
+    return obj._compiler_dispatch(self, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/visitors.py", line 138, in _compiler_dispatch
+    return meth(self, **kw)  # type: ignore  # noqa: E501
+           ^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/compiler.py", line 4807, in visit_select
+    compile_state = select_stmt._compile_state_factory(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/base.py", line 775, in create_for_statement
+    return klass.create_for_statement(statement, compiler, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 447, in create_for_statement
+    return cls._create_orm_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 1175, in _create_orm_context
+    _QueryEntity.to_compile_state(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 2628, in to_compile_state
+    _MapperEntity(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 2708, in __init__
+    entity._post_inspect
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 1235, in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+                                           ^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2733, in _post_inspect
+    self._check_configure()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2410, in _check_configure
+    _configure_registries({self.registry}, cascade=True)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4227, in _configure_registries
+    _do_configure_registries(registries, cascade)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4264, in _do_configure_registries
+    raise e
+sqlalchemy.exc.InvalidRequestError: One or more mappers failed to initialize - can't proceed with initialization of other mappers. Triggering mapper: 'Mapper[Department(departments)]'. Original exception was: Could not determine join condition between parent/child tables on relationship Department.employees - there are multiple foreign key paths linking the tables.  Specify the 'foreign_keys' argument, providing a list of those columns which should be counted as containing a foreign key reference to the parent table.

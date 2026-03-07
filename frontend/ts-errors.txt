@@ -1,0 +1,8 @@
+src/modules/hrm/features/attendance/pages/attendance-list.tsx(35,28): error TS6133: 'setEmployeeIdFilter' is declared but its value is never read.
+src/modules/hrm/features/employees/pages/employee-detail.tsx(7,29): error TS6133: 'useUpdateEmployee' is declared but its value is never read.
+src/modules/hrm/features/performance/pages/kpi-list.tsx(41,24): error TS6133: 'setPeriodFilter' is declared but its value is never read.
+src/modules/hrm/features/training/pages/training-list.tsx(5,1): error TS6133: 'Button' is declared but its value is never read.
+src/shared/components/shell/sidebar-module-switcher.tsx(6,74): error TS2307: Cannot find module '@/shared/components/ui/tooltip' or its corresponding type declarations.
+src/shared/components/shell/sidebar-navigation.tsx(10,74): error TS2307: Cannot find module '@/shared/components/ui/tooltip' or its corresponding type declarations.
+src/shared/components/shell/sidebar-project-nav-item.tsx(8,74): error TS2307: Cannot find module '@/shared/components/ui/tooltip' or its corresponding type declarations.
+src/shared/components/shell/sidebar-workspace-picker.tsx(8,74): error TS2307: Cannot find module '@/shared/components/ui/tooltip' or its corresponding type declarations.

@@ -1,6 +1,6 @@
 # A-ERP — Development Roadmap
 
-**Last updated:** 2026-03-03
+**Last updated:** 2026-03-07
 
 ---
 
@@ -207,3 +207,42 @@ Comprehensive frontend redesign with design system foundation, DRY component ref
 | Frontend: Add `prefers-reduced-motion` support to index.css | Done |
 | Dependencies: Install `@tanstack/react-table` for headless data table | Done |
 | Dependencies: Install `recharts` for dashboard charts | Done |
+
+---
+
+## Phase 12 — CRM SOP Workflow Operations (Complete)
+
+Complete CRM workflow capabilities with lead/deal management, status flows, data quality, and governance.
+
+| Item | Status |
+|---|---|
+| Backend: Add 15 CRM workflow fields (contacted_at, assigned_at, last_activity_date, loss_reason, closed_at, owner_id, last_updated_by, outcome, next_action_date, resolved_at, resolution_notes, source_deal_id, next_follow_up_date, health_score) | Done |
+| Backend: Create status_flows.py with Lead, Deal, Ticket transition maps | Done |
+| Backend: Create Alembic migration 0017_crm_sop_workflow_fields.py | Done |
+| Backend: Create lead_workflows.py service (duplicate detection, scoring, stale identification, distribution) | Done |
+| Backend: Create deal_workflows.py service (stage validation, stale alerts, close operations) | Done |
+| Backend: Create data_quality.py service (CRM data health assessment) | Done |
+| Backend: Create governance.py service (policy alerts and compliance) | Done |
+| Backend: Enhance lead.py service (duplicate warning, auto-scoring, status flow validation) | Done |
+| Backend: Enhance deal.py service (stage validation, audit trail tracking) | Done |
+| Backend: Enhance activity.py service (auto-timestamp updates) | Done |
+| Backend: Enhance ticket.py service (status flow validation, auto-timestamps) | Done |
+| Backend: Enhance campaign.py service (ROI calculation) | Done |
+| Backend: Enhance account.py service (health score, follow-up list) | Done |
+| Backend: Enhance crm_analytics.py service (date-range filtering, sales funnel, deal velocity) | Done |
+| Backend: Create workflows router with 7 endpoints (distribute, stale leads, close deal, stale deals, follow-ups, data quality, governance alerts) | Done |
+| Backend: Enhance leads.py router (duplicate warning header) | Done |
+| Backend: Enhance deals.py router (audit trail tracking) | Done |
+| Backend: Enhance analytics.py router (date_from/date_to params) | Done |
+| Frontend: Create deal-close-dialog component | Done |
+| Frontend: Create lead-distribute-dialog component | Done |
+| Frontend: Create stale-deals-alert component | Done |
+| Frontend: Create sales-funnel-chart component | Done |
+| Frontend: Create use-governance-alerts hook | Done |
+| Frontend: Update 5 hooks with new fields | Done |
+| Frontend: Create 4 new query/mutation hooks | Done |
+| Frontend: Enhance CRM dashboard with governance alerts, sales funnel, deal velocity | Done |
+| Frontend: Update deal card with stale indicator | Done |
+| Frontend: Update deal form with loss_reason field | Done |
+| Frontend: Update ticket form with resolution_notes field | Done |
+| Frontend: Update account detail with health score badge | Done |

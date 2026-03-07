@@ -28,6 +28,7 @@ class LeadUpdate(BaseModel):
     score: int | None = None
     owner_id: uuid.UUID | None = None
     campaign_id: uuid.UUID | None = None
+    contacted_at: datetime | None = None
 
 
 class LeadResponse(BaseModel):
@@ -40,6 +41,8 @@ class LeadResponse(BaseModel):
     score: int
     owner_id: uuid.UUID | None
     campaign_id: uuid.UUID | None
+    contacted_at: datetime | None
+    assigned_at: datetime | None
     workspace_id: uuid.UUID
     created_at: datetime
     updated_at: datetime

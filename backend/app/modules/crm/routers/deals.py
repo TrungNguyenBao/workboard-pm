@@ -75,7 +75,7 @@ async def update(
     current_user: User = Depends(require_workspace_role("member")),
     db: AsyncSession = Depends(get_db),
 ):
-    return await update_deal(db, deal_id, workspace_id, data)
+    return await update_deal(db, deal_id, workspace_id, data, user_id=current_user.id)
 
 
 @router.delete(

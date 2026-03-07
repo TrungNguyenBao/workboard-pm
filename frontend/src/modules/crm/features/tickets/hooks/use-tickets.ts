@@ -10,6 +10,9 @@ export interface Ticket {
   contact_id: string | null
   account_id: string | null
   assigned_to: string | null
+  resolved_at: string | null
+  closed_at: string | null
+  resolution_notes: string | null
   workspace_id: string
   created_at: string
   updated_at: string

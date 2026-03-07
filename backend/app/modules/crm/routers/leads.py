@@ -32,7 +32,16 @@ async def create(
     current_user: User = Depends(require_workspace_role("member")),
     db: AsyncSession = Depends(get_db),
 ):
-    return await create_lead(db, workspace_id, data)
+    from fastapi.responses import JSONResponse
+
+    lead, warning = await create_lead(db, workspace_id, data)
+    response = JSONResponse(
+        content=LeadResponse.model_validate(lead).model_dump(mode="json"),
+        status_code=status.HTTP_201_CREATED,
+    )
+    if warning:
+        response.headers["X-Duplicate-Warning"] = warning
+    return response
 
 
 @router.get(

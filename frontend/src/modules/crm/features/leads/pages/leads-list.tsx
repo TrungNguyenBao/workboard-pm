@@ -11,6 +11,7 @@ import { PageHeader } from '@/shared/components/ui/page-header'
 import { PaginationControls } from '@/shared/components/ui/pagination-controls'
 import { LeadFormDialog } from '../components/lead-form-dialog'
 import { LeadConvertDialog } from '../components/lead-convert-dialog'
+import { LeadDistributeDialog } from '../components/lead-distribute-dialog'
 import { type Lead, LEAD_STATUSES, LEAD_SOURCES, useLeads, useDeleteLead } from '../hooks/use-leads'
 
 const PAGE_SIZE = 20
@@ -32,6 +33,7 @@ export default function LeadsListPage() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editLead, setEditLead] = useState<Lead | null>(null)
   const [convertLead, setConvertLead] = useState<Lead | null>(null)
+  const [distributeOpen, setDistributeOpen] = useState(false)
 
   const { data, isLoading } = useLeads(workspaceId, {
     search: search || undefined,
@@ -86,6 +88,12 @@ export default function LeadsListPage() {
         onCreateClick={() => { setEditLead(null); setDialogOpen(true) }}
         createLabel="New Lead"
       >
+        <button
+          className="inline-flex items-center h-8 px-3 text-xs font-medium rounded-md border border-border bg-card hover:bg-muted"
+          onClick={() => setDistributeOpen(true)}
+        >
+          Distribute
+        </button>
         <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1) }}>
           <SelectTrigger className="w-32 h-8"><SelectValue /></SelectTrigger>
           <SelectContent>
@@ -105,6 +113,7 @@ export default function LeadsListPage() {
       <PaginationControls page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
       <LeadFormDialog open={dialogOpen} onOpenChange={setDialogOpen} workspaceId={workspaceId} lead={editLead} />
       <LeadConvertDialog lead={convertLead} onClose={() => setConvertLead(null)} workspaceId={workspaceId} />
+      <LeadDistributeDialog open={distributeOpen} onOpenChange={setDistributeOpen} workspaceId={workspaceId} />
     </div>
   )
 }

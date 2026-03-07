@@ -66,6 +66,13 @@ docker-prod-up:
 docker-prod-down:
 	docker-compose -f docker-compose.prod.yml down
 
+# Ngrok deployment
+docker-ngrok-up:
+	docker-compose -f docker-compose.prod.yml -f docker-compose.ngrok.yml up -d
+
+docker-ngrok-down:
+	docker-compose -f docker-compose.prod.yml -f docker-compose.ngrok.yml down
+
 run-worker:
 	cd backend && uv run arq app.worker.tasks.WorkerSettings
 

@@ -1,6 +1,7 @@
 import uuid
+from datetime import date
 
-from sqlalchemy import Float, ForeignKey, String
+from sqlalchemy import Date, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -17,6 +18,9 @@ class Account(Base, TimestampMixin):
     status: Mapped[str] = mapped_column(String(50), default="active")
     website: Mapped[str | None] = mapped_column(String(500), nullable=True)
     address: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    source_deal_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("deals.id"), nullable=True)
+    next_follow_up_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    health_score: Mapped[int] = mapped_column(Integer, default=100)
     workspace_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("workspaces.id"), index=True)
 
     workspace: Mapped["Workspace"] = relationship()  # noqa: F821
