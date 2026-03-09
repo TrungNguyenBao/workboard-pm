@@ -87,8 +87,8 @@ async def seed_pms_extras(
         INSERT INTO goal_project_links (goal_id, project_id, created_at)
         VALUES (:g1, :p1, now()), (:g2, :p2, now())
     """), {
-        "g1": g1, "p1": projects["Website Redesign"],
-        "g2": g2, "p2": projects["Mobile App"],
+        "g1": g1, "p1": projects["Agile Software Dev"],
+        "g2": g2, "p2": projects["Social Media Kanban"],
     })
 
     # FOLLOWERS
