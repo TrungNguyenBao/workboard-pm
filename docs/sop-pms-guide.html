@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="vi" data-lang="vi" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOP Quản lý Dự án — PMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--font-sans:'DM Sans',system-ui,-apple-system,sans-serif;--font-mono:'JetBrains Mono','Fira Code',monospace;--color-primary:#5E6AD2;--color-primary-hover:#4F55C4;--color-accent:#F28C38;--color-success:#22C55E;--color-warning:#F59E0B;--color-danger:#EF4444;--color-info:#38BDF8;--bg-page:#FFFFFF;--bg-surface:#F9F9FB;--bg-elevated:#FFFFFF;--border-default:#E4E4E7;--text-primary:#18181B;--text-secondary:#52525B;--text-tertiary:#A1A1AA;--radius-xs:4px;--radius-sm:6px;--radius-md:8px;--radius-lg:12px;--radius-full:9999px;--shadow-elevated:0 4px 12px rgba(0,0,0,.10);--sidebar-width:260px;--topbar-height:52px;--dur:150ms;}
+[data-theme="dark"]{--bg-page:#0F0F12;--bg-surface:#1A1A1F;--bg-elevated:#25252B;--border-default:rgba(255,255,255,.10);--text-primary:#FAFAFA;--text-secondary:#A1A1AA;--text-tertiary:#52525B;--color-primary:#6E78E8;--color-primary-hover:#7D87EE;--color-accent:#F5A05A;--color-success:#4ADE80;--color-warning:#FBB532;--color-danger:#F87171;--color-info:#7DD3FC;--shadow-elevated:0 4px 12px rgba(0,0,0,.40);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;font-size:14px;}
+body{font-family:var(--font-sans);font-size:14px;line-height:1.6;color:var(--text-primary);background:var(--bg-page);transition:background var(--dur) ease,color var(--dur) ease;}
+.topbar{position:fixed;top:0;left:0;right:0;height:var(--topbar-height);background:var(--bg-surface);border-bottom:1px solid var(--border-default);display:flex;align-items:center;padding:0 16px;gap:12px;z-index:100;}
+.topbar-brand{font-size:16px;font-weight:700;color:var(--color-primary);letter-spacing:-.3px;flex-shrink:0;}
+.topbar-brand span{color:var(--text-primary);font-weight:400;}
+.topbar-subtitle{font-size:12px;color:var(--text-tertiary);border-left:1px solid var(--border-default);padding-left:12px;margin-left:4px;}
+.topbar-spacer{flex:1;}
+.hamburger{display:none;background:none;border:none;cursor:pointer;color:var(--text-secondary);padding:6px;border-radius:var(--radius-sm);}
+.hamburger:hover{background:var(--bg-elevated);}
+.dark-toggle{background:none;border:1px solid var(--border-default);border-radius:var(--radius-sm);cursor:pointer;color:var(--text-secondary);padding:6px 10px;font-size:13px;font-family:var(--font-sans);display:flex;align-items:center;gap:6px;transition:background var(--dur) ease,border-color var(--dur) ease;}
+.dark-toggle:hover{background:var(--bg-elevated);border-color:var(--text-tertiary);}
+.sidebar{position:fixed;top:var(--topbar-height);left:0;width:var(--sidebar-width);height:calc(100vh - var(--topbar-height));background:var(--bg-surface);border-right:1px solid var(--border-default);overflow-y:auto;overflow-x:hidden;z-index:90;transition:transform var(--dur) ease;padding:16px 0 32px;}
+.sidebar::-webkit-scrollbar{width:4px;}.sidebar::-webkit-scrollbar-thumb{background:var(--border-default);border-radius:2px;}
+.sidebar-section{margin-bottom:8px;}
+.sidebar-section-header{display:flex;align-items:center;justify-content:space-between;padding:6px 16px;cursor:pointer;user-select:none;}
+.sidebar-section-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--text-tertiary);}
+.sidebar-chevron{color:var(--text-tertiary);transition:transform var(--dur) ease;}
+.sidebar-section.collapsed .sidebar-chevron{transform:rotate(-90deg);}
+.sidebar-section.collapsed .sidebar-section-items{display:none;}
+.sidebar-link{display:flex;align-items:center;gap:8px;padding:6px 16px 6px 24px;font-size:13px;color:var(--text-secondary);text-decoration:none;cursor:pointer;transition:background var(--dur) ease,color var(--dur) ease;border:none;background:none;width:100%;text-align:left;line-height:1.4;}
+.sidebar-link:hover{background:var(--bg-elevated);color:var(--text-primary);}
+.sidebar-link.active,.sidebar-link.spy-active{background:rgba(94,106,210,.10);color:var(--color-primary);font-weight:500;}
+[data-theme="dark"] .sidebar-link.active,[data-theme="dark"] .sidebar-link.spy-active{background:rgba(110,120,232,.15);}
+.sidebar-link-dot{width:5px;height:5px;border-radius:50%;background:var(--text-tertiary);flex-shrink:0;margin-left:4px;}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.40);z-index:89;}
+.main{margin-left:var(--sidebar-width);margin-top:var(--topbar-height);padding:40px 48px;max-width:calc(100% - var(--sidebar-width));min-height:calc(100vh - var(--topbar-height));}
+.content-area{max-width:820px;margin:0 auto;}
+h1{font-size:28px;font-weight:700;line-height:1.2;color:var(--text-primary);margin-bottom:8px;letter-spacing:-.4px;}
+h2{font-size:22px;font-weight:600;line-height:1.3;color:var(--text-primary);margin-top:52px;margin-bottom:16px;padding-top:20px;border-top:1px solid var(--border-default);letter-spacing:-.3px;}
+h2:first-child{margin-top:0;border-top:none;padding-top:0;}
+h3{font-size:16px;font-weight:600;line-height:1.4;color:var(--text-primary);margin-top:32px;margin-bottom:10px;}
+h4{font-size:14px;font-weight:600;color:var(--text-primary);margin-top:20px;margin-bottom:8px;}
+p{color:var(--text-secondary);margin-bottom:12px;line-height:1.7;}p:last-child{margin-bottom:0;}
+ul,ol{padding-left:20px;margin-bottom:12px;color:var(--text-secondary);}
+li{margin-bottom:4px;line-height:1.6;}li strong{color:var(--text-primary);}
+a{color:var(--color-primary);text-decoration:none;}a:hover{text-decoration:underline;}
+code{font-family:var(--font-mono);font-size:12px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-xs);padding:1px 5px;color:var(--color-primary);}
+[data-theme="dark"] code{background:var(--bg-elevated);}
+.page-header{margin-bottom:40px;padding-bottom:28px;border-bottom:1px solid var(--border-default);}
+.page-header-meta{font-size:13px;color:var(--text-tertiary);margin-top:8px;}
+.table-wrap{overflow-x:auto;margin-bottom:20px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;padding:8px 12px;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--text-tertiary);background:var(--bg-surface);border-bottom:1px solid var(--border-default);}
+td{padding:9px 12px;border-bottom:1px solid var(--border-default);color:var(--text-secondary);vertical-align:top;line-height:1.5;}
+td strong{color:var(--text-primary);}tr:last-child td{border-bottom:none;}tr:hover td{background:var(--bg-surface);}
+.callout{display:flex;gap:12px;padding:14px 16px;border-radius:var(--radius-md);margin:20px 0;border-left:3px solid;}
+.callout-icon{font-size:16px;line-height:1.5;flex-shrink:0;}
+.callout-body{flex:1;font-size:13px;line-height:1.6;}
+.callout-body strong{display:block;margin-bottom:2px;}
+.callout-body p{margin:0;font-size:13px;}
+.callout-tip{background:rgba(34,197,94,.07);border-color:var(--color-success);}
+.callout-tip .callout-body{color:#166534;}[data-theme="dark"] .callout-tip .callout-body{color:#86efac;}
+.callout-info{background:rgba(56,189,248,.07);border-color:var(--color-info);}
+.callout-info .callout-body{color:#075985;}[data-theme="dark"] .callout-info .callout-body{color:#7dd3fc;}
+.callout-warning{background:rgba(245,158,11,.07);border-color:var(--color-warning);}
+.callout-warning .callout-body{color:#92400e;}[data-theme="dark"] .callout-warning .callout-body{color:#fcd34d;}
+.callout-danger{background:rgba(239,68,68,.07);border-color:var(--color-danger);}
+.callout-danger .callout-body{color:#991B1B;}[data-theme="dark"] .callout-danger .callout-body{color:#fca5a5;}
+.callout-note{background:rgba(94,106,210,.07);border-color:var(--color-primary);}
+.callout-note .callout-body{color:#3730a3;}[data-theme="dark"] .callout-note .callout-body{color:#a5b4fc;}
+.back-to-top{position:fixed;bottom:28px;right:28px;width:40px;height:40px;background:var(--color-primary);color:#fff;border:none;border-radius:var(--radius-full);cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:var(--shadow-elevated);z-index:200;transition:background var(--dur) ease,transform var(--dur) ease;}
+.back-to-top:hover{background:var(--color-primary-hover);transform:translateY(-2px);}
+.back-to-top.visible{display:flex;}
+.section-intro{color:var(--text-secondary);font-size:14px;margin-bottom:24px;line-height:1.7;}
+.step-list{list-style:none;padding:0;counter-reset:step;}
+.step-list li{counter-increment:step;display:flex;gap:14px;margin-bottom:14px;align-items:flex-start;}
+.step-list li::before{content:counter(step);display:flex;align-items:center;justify-content:center;width:24px;height:24px;min-width:24px;background:var(--color-primary);color:#fff;border-radius:var(--radius-full);font-size:11px;font-weight:700;margin-top:2px;}
+.step-list li span{color:var(--text-secondary);font-size:14px;line-height:1.6;}
+.status-flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:16px 0;padding:14px 16px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-md);}
+.sp{display:inline-flex;align-items:center;padding:4px 10px;border-radius:var(--radius-full);font-size:11px;font-weight:600;font-family:var(--font-mono);letter-spacing:.3px;white-space:nowrap;}
+.sp-draft{background:rgba(161,161,170,.15);color:var(--text-secondary);border:1px solid var(--border-default);}
+.sp-blue{background:rgba(56,189,248,.12);color:#0284C7;border:1px solid rgba(56,189,248,.30);}
+.sp-green{background:rgba(34,197,94,.12);color:#15803D;border:1px solid rgba(34,197,94,.30);}
+.sp-amber{background:rgba(245,158,11,.12);color:#B45309;border:1px solid rgba(245,158,11,.30);}
+.sp-red{background:rgba(239,68,68,.12);color:#B91C1C;border:1px solid rgba(239,68,68,.30);}
+.sp-purple{background:rgba(94,106,210,.12);color:var(--color-primary);border:1px solid rgba(94,106,210,.30);}
+.sp-orange{background:rgba(242,140,56,.12);color:#C2410C;border:1px solid rgba(242,140,56,.30);}
+[data-theme="dark"] .sp-blue{color:#7DD3FC;}[data-theme="dark"] .sp-green{color:#4ADE80;}
+[data-theme="dark"] .sp-amber{color:#FBB532;}[data-theme="dark"] .sp-red{color:#F87171;}[data-theme="dark"] .sp-orange{color:#FB923C;}
+.flow-arr{color:var(--text-tertiary);font-size:14px;font-weight:700;padding:0 2px;}
+.roles-row{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 16px;}
+.role-tag{display:inline-flex;align-items:center;padding:3px 10px;background:rgba(94,106,210,.08);color:var(--color-primary);border-radius:var(--radius-full);font-size:12px;font-weight:500;}
+.feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:20px 0;}
+.feature-card{background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:16px;}
+.feature-card-title{font-weight:600;font-size:13px;color:var(--text-primary);margin-bottom:4px;}
+.feature-card-desc{font-size:12px;color:var(--text-secondary);line-height:1.5;}
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:20px 0;}
+.kpi-card{background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:16px 20px;display:flex;align-items:center;gap:14px;}
+.kpi-value{font-size:22px;font-weight:700;color:var(--color-primary);font-family:var(--font-mono);flex-shrink:0;}
+.kpi-label{font-size:12px;color:var(--text-secondary);line-height:1.4;}
+.golden-list{list-style:none;padding:0;}
+.golden-list li{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-md);margin-bottom:8px;}
+.gl-icon{color:var(--color-accent);font-size:16px;flex-shrink:0;margin-top:1px;}
+.gl-text{color:var(--text-secondary);font-size:13px;line-height:1.6;}
+.gl-text strong{color:var(--text-primary);}
+.module-tag{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 6px;border-radius:var(--radius-xs);margin-right:6px;vertical-align:middle;}
+.mod-ws{background:rgba(94,106,210,.12);color:var(--color-primary);}
+.mod-project{background:rgba(56,189,248,.12);color:#0284C7;}
+.mod-task{background:rgba(34,197,94,.12);color:#16A34A;}
+.mod-kanban{background:rgba(245,158,11,.12);color:#D97706;}
+.mod-agile{background:rgba(242,140,56,.12);color:#C2410C;}
+.mod-analytics{background:rgba(161,161,170,.15);color:var(--text-secondary);}
+[data-theme="dark"] .mod-project{color:#7DD3FC;}[data-theme="dark"] .mod-task{color:#4ADE80;}
+[data-theme="dark"] .mod-kanban{color:#FBB532;}[data-theme="dark"] .mod-agile{color:#FB923C;}
+.view-matrix{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;}
+.view-matrix th{text-align:center;padding:8px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--text-tertiary);background:var(--bg-surface);border-bottom:1px solid var(--border-default);}
+.view-matrix th:first-child{text-align:left;}
+.view-matrix td{padding:8px 12px;border-bottom:1px solid var(--border-default);text-align:center;color:var(--text-secondary);}
+.view-matrix td:first-child{text-align:left;font-weight:500;color:var(--text-primary);}
+.view-matrix tr:last-child td{border-bottom:none;}
+.screenshot{margin:16px 0 20px;border:1px solid var(--border-default);border-radius:var(--radius-md);overflow:hidden;}
+.screenshot-img{width:100%;min-height:160px;background:var(--bg-surface);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;border-bottom:1px solid var(--border-default);position:relative;}
+.screenshot-img img{width:100%;height:auto;display:block;object-fit:cover;}
+.screenshot-img .ph{display:flex;flex-direction:column;align-items:center;gap:8px;padding:32px 16px;}
+.screenshot-img .ph svg{color:var(--text-tertiary);}
+.screenshot-img .ph span{font-size:11px;color:var(--text-tertiary);font-family:var(--font-mono);}
+.screenshot-cap{padding:7px 12px;font-size:11px;color:var(--text-tertiary);background:var(--bg-elevated);font-family:var(--font-mono);letter-spacing:.2px;}
+.check{color:var(--color-success);font-weight:700;}
+.dash{color:var(--text-tertiary);}
+html[data-lang="en"] .lang-vi{display:none;}
+html[data-lang="vi"] .lang-en{display:none;}
+.lang-toggle{display:flex;align-items:center;gap:2px;border:1px solid var(--border-default);border-radius:var(--radius-full);padding:2px;background:var(--bg-elevated);margin-left:4px;}
+.lang-toggle button{padding:2px 10px;border:none;border-radius:var(--radius-full);background:transparent;color:var(--text-secondary);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font-sans);transition:all var(--dur) ease;}
+.lang-toggle button.active{background:var(--color-primary);color:#fff;}
+@media(max-width:768px){.sidebar{transform:translateX(-100%);z-index:95;}.sidebar.open{transform:translateX(0);}.sidebar-overlay.open{display:block;}.hamburger{display:flex;}.topbar-subtitle{display:none;}.main{margin-left:0;max-width:100%;padding:24px 20px;}.feature-grid,.kpi-grid{grid-template-columns:1fr;}h1{font-size:22px;}h2{font-size:18px;}}
+@media print{.sidebar,.topbar,.back-to-top,.dark-toggle,.hamburger{display:none!important;}.main{margin:0;padding:20px;max-width:100%;}h2{page-break-before:always;}h2:first-child{page-break-before:avoid;}.callout{break-inside:avoid;}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <span class="topbar-brand">A-ERP <span>SOP</span></span>
+  <span class="topbar-subtitle lang-vi">Quy trình vận hành — Quản lý Dự án</span>
+  <span class="topbar-subtitle lang-en">Operations SOP — Project Management</span>
+  <span class="topbar-spacer"></span>
+  <button class="dark-toggle" id="darkToggle">
+    <svg id="sunIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+    <svg id="moonIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <span id="darkToggleLabel">Dark</span>
+  </button>
+  <div class="lang-toggle">
+    <button id="langVi" class="active">VI</button>
+    <button id="langEn">EN</button>
+  </div>
+</header>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-section" id="sec-intro">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-intro')">
+      <span class="sidebar-section-title" data-vi="Giới thiệu" data-en="Introduction">Giới thiệu</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#tong-quan" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Tổng quan hệ thống" data-en="System Overview">Tổng quan hệ thống</span></a>
+      <a class="sidebar-link" href="#vai-tro" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Vai trò &amp; Trách nhiệm" data-en="Roles &amp; Responsibilities">Vai trò &amp; Trách nhiệm</span></a>
+      <a class="sidebar-link" href="#loai-du-an" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Ma trận Loại Dự án" data-en="Project Type Matrix">Ma trận Loại Dự án</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-setup">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-setup')">
+      <span class="sidebar-section-title" data-vi="Thiết lập" data-en="Setup">Thiết lập</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#sop01" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 01 — Workspace" data-en="SOP 01 — Workspace">SOP 01 — Workspace</span></a>
+      <a class="sidebar-link" href="#sop02" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 02 — Tạo Dự án" data-en="SOP 02 — Create Project">SOP 02 — Tạo Dự án</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-tasks">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-tasks')">
+      <span class="sidebar-section-title" data-vi="Công việc" data-en="Tasks">Công việc</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#sop03" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 03 — Quản lý Task" data-en="SOP 03 — Manage Tasks">SOP 03 — Quản lý Task</span></a>
+      <a class="sidebar-link" href="#sop04" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 04 — Kanban Board" data-en="SOP 04 — Kanban Board">SOP 04 — Kanban Board</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-agile">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-agile')">
+      <span class="sidebar-section-title" data-vi="Agile / Sprint" data-en="Agile / Sprint">Agile / Sprint</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#sop05" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 05 — Quản lý Sprint" data-en="SOP 05 — Manage Sprints">SOP 05 — Quản lý Sprint</span></a>
+      <a class="sidebar-link" href="#sop06" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 06 — Backlog" data-en="SOP 06 — Backlog">SOP 06 — Backlog</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-views">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-views')">
+      <span class="sidebar-section-title" data-vi="Giao diện xem" data-en="Views">Giao diện xem</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#sop07" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 07 — Calendar &amp; Timeline" data-en="SOP 07 — Calendar &amp; Timeline">SOP 07 — Calendar &amp; Timeline</span></a>
+      <a class="sidebar-link" href="#sop08" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 08 — Goals (Mục tiêu)" data-en="SOP 08 — Goals">SOP 08 — Goals</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-analytics">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-analytics')">
+      <span class="sidebar-section-title" data-vi="Analytics" data-en="Analytics">Analytics</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#sop09" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 09 — Burndown &amp; Velocity" data-en="SOP 09 — Burndown &amp; Velocity">SOP 09 — Burndown &amp; Velocity</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-ref">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-ref')">
+      <span class="sidebar-section-title" data-vi="Tham chiếu" data-en="Reference">Tham chiếu</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#kpi" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="KPI vận hành" data-en="Operational KPIs">KPI vận hành</span></a>
+      <a class="sidebar-link" href="#role-summary" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Tổng hợp theo Vai trò" data-en="Summary by Role">Tổng hợp theo Vai trò</span></a>
+      <a class="sidebar-link" href="#nguyen-tac-vang" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Nguyên tắc vàng" data-en="Golden Principles">Nguyên tắc vàng</span></a>
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+<div class="content-area">
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="lang-vi">
+    <h1>SOP Quản lý Dự án — PMS</h1>
+    <p class="page-header-meta">Workspace • Dự án • Task • Kanban • Agile Sprint • Goals • Analytics — Phiên bản 1.0</p>
+  </div>
+  <div class="lang-en">
+    <h1>Project Management SOP — PMS</h1>
+    <p class="page-header-meta">Workspace • Projects • Tasks • Kanban • Agile Sprint • Goals • Analytics — Version 1.0</p>
+  </div>
+</div>
+
+<!-- ===== OVERVIEW ===== -->
+<h2 id="tong-quan">
+  <span class="lang-vi">Tổng quan hệ thống</span>
+  <span class="lang-en">System Overview</span>
+</h2>
+<div class="lang-vi">
+  <p class="section-intro">Module PMS (Project Management System) cung cấp nền tảng quản lý dự án toàn diện — từ danh sách công việc đơn giản, bảng Kanban trực quan, đến Agile sprint với backlog và analytics chuyên sâu.</p>
+  <div class="feature-grid">
+    <div class="feature-card"><div class="feature-card-title">Mục đích</div><div class="feature-card-desc">Theo dõi tiến độ dự án, phân công công việc, kiểm soát WIP và đo lường hiệu suất nhóm theo sprint.</div></div>
+    <div class="feature-card"><div class="feature-card-title">Phạm vi áp dụng</div><div class="feature-card-desc">Tất cả loại dự án: basic (danh sách), kanban (bảng kéo thả), agile (sprint + backlog + story points).</div></div>
+    <div class="feature-card"><div class="feature-card-title">Tích hợp hệ thống</div><div class="feature-card-desc">RBAC theo workspace/project, Real-time SSE, drag-drop (dnd-kit), biểu đồ burndown &amp; velocity (recharts).</div></div>
+    <div class="feature-card"><div class="feature-card-title">Nguyên tắc nền tảng</div><div class="feature-card-desc">Mọi task được cập nhật trên hệ thống. Chỉ có 1 sprint active cùng lúc. WIP limit phải được tôn trọng.</div></div>
+  </div>
+</div>
+<div class="lang-en">
+  <p class="section-intro">The PMS (Project Management System) module provides a comprehensive project management platform — from simple task lists, visual Kanban boards, to Agile sprints with backlog and in-depth analytics.</p>
+  <div class="feature-grid">
+    <div class="feature-card"><div class="feature-card-title">Purpose</div><div class="feature-card-desc">Track project progress, assign work, control WIP, and measure team performance by sprint.</div></div>
+    <div class="feature-card"><div class="feature-card-title">Scope</div><div class="feature-card-desc">All project types: basic (task list), kanban (drag-drop board), agile (sprints + backlog + story points).</div></div>
+    <div class="feature-card"><div class="feature-card-title">System Integration</div><div class="feature-card-desc">RBAC per workspace/project, real-time SSE, drag-drop (dnd-kit), burndown &amp; velocity charts (recharts).</div></div>
+    <div class="feature-card"><div class="feature-card-title">Core Principles</div><div class="feature-card-desc">All tasks must be updated in the system. Only 1 active sprint at a time. WIP limits must be respected.</div></div>
+  </div>
+</div>
+
+<!-- ===== ROLES ===== -->
+<h2 id="vai-tro">
+  <span class="lang-vi">Vai trò &amp; Trách nhiệm</span>
+  <span class="lang-en">Roles &amp; Responsibilities</span>
+</h2>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Vai trò</span><span class="lang-en">Role</span></th>
+      <th><span class="lang-vi">Phạm vi</span><span class="lang-en">Scope</span></th>
+      <th><span class="lang-vi">Trách nhiệm chính</span><span class="lang-en">Main Responsibilities</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Workspace Admin</strong></td>
+      <td><span class="lang-vi">Toàn workspace</span><span class="lang-en">Full workspace</span></td>
+      <td><span class="lang-vi">Tạo &amp; xóa workspace, quản lý thành viên, cấp quyền project cho người dùng.</span><span class="lang-en">Create &amp; delete workspaces, manage members, grant project permissions.</span></td>
+    </tr>
+    <tr>
+      <td><strong>Project Owner</strong></td>
+      <td><span class="lang-vi">Dự án</span><span class="lang-en">Project</span></td>
+      <td><span class="lang-vi">Tạo dự án, cấu hình loại dự án, quản lý sprint, tùy chỉnh cột (sections), đặt WIP limit, phân quyền thành viên.</span><span class="lang-en">Create projects, configure project type, manage sprints, customize columns (sections), set WIP limits, assign members.</span></td>
+    </tr>
+    <tr>
+      <td><strong>Project Editor</strong></td>
+      <td><span class="lang-vi">Dự án</span><span class="lang-en">Project</span></td>
+      <td><span class="lang-vi">Tạo &amp; cập nhật task, kéo thả task trên board, thêm task vào sprint, cập nhật story points và trạng thái.</span><span class="lang-en">Create &amp; update tasks, drag-drop on board, add tasks to sprints, update story points and status.</span></td>
+    </tr>
+    <tr>
+      <td><strong>Project Commenter</strong></td>
+      <td><span class="lang-vi">Dự án</span><span class="lang-en">Project</span></td>
+      <td><span class="lang-vi">Xem toàn bộ task và dự án. Thêm comment. Không thể chỉnh sửa nội dung task.</span><span class="lang-en">View all tasks and project details. Add comments. Cannot edit task content.</span></td>
+    </tr>
+    <tr>
+      <td><strong>Project Viewer</strong></td>
+      <td><span class="lang-vi">Dự án</span><span class="lang-en">Project</span></td>
+      <td><span class="lang-vi">Chỉ xem — không thể tạo task, comment hay chỉnh sửa bất kỳ nội dung nào.</span><span class="lang-en">Read-only — cannot create tasks, comment, or edit any content.</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ===== PROJECT TYPE MATRIX ===== -->
+<h2 id="loai-du-an">
+  <span class="lang-vi">Ma trận Loại Dự án</span>
+  <span class="lang-en">Project Type Matrix</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">Mỗi loại dự án kích hoạt một bộ giao diện khác nhau. Loại dự án được chọn khi tạo và có thể thay đổi sau.</p></div>
+<div class="lang-en"><p class="section-intro">Each project type activates a different set of views. The type is selected during creation and can be changed later.</p></div>
+<div class="table-wrap">
+<table class="view-matrix">
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Giao diện</span><span class="lang-en">View</span></th>
+      <th>Basic</th>
+      <th>Kanban</th>
+      <th>Agile</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="lang-vi">Overview (Tổng quan)</span><span class="lang-en">Overview</span></td>
+      <td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td>
+    </tr>
+    <tr>
+      <td><span class="lang-vi">List (Danh sách)</span><span class="lang-en">List</span></td>
+      <td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td>
+    </tr>
+    <tr>
+      <td><span class="lang-vi">Calendar (Lịch)</span><span class="lang-en">Calendar</span></td>
+      <td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td>
+    </tr>
+    <tr>
+      <td><span class="lang-vi">Timeline (Gantt)</span><span class="lang-en">Timeline (Gantt)</span></td>
+      <td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td>
+    </tr>
+    <tr>
+      <td><span class="lang-vi">Board (Kanban)</span><span class="lang-en">Board (Kanban)</span></td>
+      <td><span class="dash">—</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td>
+    </tr>
+    <tr>
+      <td><span class="lang-vi">Backlog</span><span class="lang-en">Backlog</span></td>
+      <td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="check">✓</span></td>
+    </tr>
+    <tr>
+      <td><span class="lang-vi">Sprints</span><span class="lang-en">Sprints</span></td>
+      <td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="check">✓</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="callout callout-info">
+  <span class="callout-icon">ℹ</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Mặc định</span><span class="lang-en">Default</span></strong>
+    <p><span class="lang-vi">Dự án mới được tạo mặc định là loại <strong>Kanban</strong> — giữ nguyên hành vi hiện tại. Các dự án cũ chưa chọn loại cũng được gán <code>kanban</code> tự động.</span><span class="lang-en">New projects default to <strong>Kanban</strong> type — preserving current behavior. Existing projects without a type are also auto-assigned <code>kanban</code>.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 01 ===== -->
+<h2 id="sop01">
+  <span class="module-tag mod-ws">WS</span>
+  <span class="lang-vi">SOP 01 — Thiết lập Workspace</span>
+  <span class="lang-en">SOP 01 — Set Up Workspace</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">Workspace Admin tạo không gian làm việc và mời thành viên trước khi bắt đầu bất kỳ dự án nào.</p></div>
+<div class="lang-en"><p class="section-intro">Workspace Admin creates the working environment and invites members before starting any project.</p></div>
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">Workspace Admin (thực hiện)</span><span class="lang-en">Workspace Admin (execute)</span></span>
+</div>
+<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Tạo Workspace</span><span class="lang-en">Create Workspace</span></strong> — <span class="lang-vi">Đăng nhập &gt; Nhấn <strong>Tạo Workspace</strong> &gt; Điền tên và slug (URL duy nhất). Chọn màu nhận diện.</span><span class="lang-en">Sign in &gt; Click <strong>Create Workspace</strong> &gt; Fill in name and slug (unique URL). Choose an accent color.</span></span></li>
+  <li><span><strong><span class="lang-vi">Mời thành viên</span><span class="lang-en">Invite Members</span></strong> — <span class="lang-vi">Vào <code>Settings &gt; Members</code> &gt; Nhập email &gt; Chọn vai trò (<strong>admin</strong> / <strong>member</strong> / <strong>guest</strong>) &gt; Nhấn <strong>Mời</strong>.</span><span class="lang-en">Go to <code>Settings &gt; Members</code> &gt; Enter email &gt; Select role (<strong>admin</strong> / <strong>member</strong> / <strong>guest</strong>) &gt; Click <strong>Invite</strong>.</span></span></li>
+  <li><span><strong><span class="lang-vi">Cấu hình phân quyền</span><span class="lang-en">Configure Permissions</span></strong> — <span class="lang-vi">Workspace Admin có toàn quyền. Workspace Member chỉ truy cập dự án được cấp quyền. Guest không thấy các dự án khác.</span><span class="lang-en">Workspace Admin has full access. Workspace Member only accesses assigned projects. Guest sees no other projects.</span></span></li>
+  <li><span><strong><span class="lang-vi">Tạo dự án đầu tiên</span><span class="lang-en">Create First Project</span></strong> — <span class="lang-vi">Nhấn <strong>Dự án mới</strong> ở sidebar trái &gt; Thực hiện SOP 02.</span><span class="lang-en">Click <strong>New Project</strong> in the left sidebar &gt; Follow SOP 02.</span></span></li>
+</ol>
+<div class="screenshot">
+  <div class="screenshot-img"><div class="ph"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span>Settings › Members — mời thành viên &amp; chọn vai trò / Invite members &amp; select role</span></div></div>
+  <div class="screenshot-cap">SOP 01 — Step 2: Workspace Settings › Members panel</div>
+</div>
+<div class="callout callout-note">
+  <span class="callout-icon">ℹ</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Phân quyền hai lớp</span><span class="lang-en">Two-Layer Access Control</span></strong>
+    <p><span class="lang-vi">Hệ thống áp dụng RBAC hai lớp: <strong>Workspace role</strong> (admin/member/guest) và <strong>Project role</strong> (owner/editor/commenter/viewer). Thành viên cần có cả hai quyền để truy cập một dự án.</span><span class="lang-en">The system uses two-layer RBAC: <strong>Workspace role</strong> (admin/member/guest) and <strong>Project role</strong> (owner/editor/commenter/viewer). Members need both permissions to access a project.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 02 ===== -->
+<h2 id="sop02">
+  <span class="module-tag mod-project">Project</span>
+  <span class="lang-vi">SOP 02 — Tạo Dự án &amp; Chọn Loại</span>
+  <span class="lang-en">SOP 02 — Create Project &amp; Choose Type</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">Project Owner tạo dự án mới, chọn loại phù hợp với quy trình làm việc của nhóm, và thiết lập cấu trúc cột (sections) ban đầu.</p></div>
+<div class="lang-en"><p class="section-intro">Project Owner creates a new project, selects the type that fits the team workflow, and sets up the initial column (section) structure.</p></div>
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">Project Owner (thực hiện)</span><span class="lang-en">Project Owner (execute)</span></span>
+  <span class="role-tag"><span class="lang-vi">Workspace Admin (nếu cần)</span><span class="lang-en">Workspace Admin (if needed)</span></span>
+</div>
+<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Mở dialog tạo dự án</span><span class="lang-en">Open Create Project Dialog</span></strong> — <span class="lang-vi">Nhấn <strong>+ Dự án mới</strong> ở sidebar &gt; Dialog xuất hiện với bộ chọn loại dự án.</span><span class="lang-en">Click <strong>+ New Project</strong> in the sidebar &gt; Dialog opens with the project type selector.</span></span></li>
+  <li><span><strong><span class="lang-vi">Chọn loại dự án</span><span class="lang-en">Select Project Type</span></strong> — <span class="lang-vi">Chọn 1 trong 3 loại: <strong>Basic</strong> (danh sách, lịch, timeline), <strong>Kanban</strong> (thêm Board), <strong>Agile</strong> (thêm Backlog + Sprints). Thẻ được chọn sẽ highlight màu primary.</span><span class="lang-en">Select one of 3 types: <strong>Basic</strong> (list, calendar, timeline), <strong>Kanban</strong> (adds Board), <strong>Agile</strong> (adds Backlog + Sprints). Selected card highlights in primary color.</span></span></li>
+  <li><span><strong><span class="lang-vi">Đặt tên &amp; màu dự án</span><span class="lang-en">Set Name &amp; Color</span></strong><div class="screenshot" style="margin-top:10px"><div class="screenshot-img"><div class="ph"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M8 4v16M2 10h6M2 14h6"/></svg><span>Dialog tạo dự án: 3 thẻ loại (Basic / Kanban / Agile) / Create project dialog: 3 type cards</span></div></div><div class="screenshot-cap">SOP 02 — Step 2: Project type selector — selected card highlighted in primary color</div></div></span> — <span class="lang-vi">Nhập tên dự án. Chọn màu nhận diện (dùng để phân biệt trên sidebar và calendar).</span><span class="lang-en">Enter the project name. Choose an accent color (used to identify the project in sidebar and calendar).</span></span></li>
+  <li><span><strong><span class="lang-vi">Tạo dự án</span><span class="lang-en">Create Project</span></strong> — <span class="lang-vi">Nhấn <strong>Tạo</strong>. Hệ thống chuyển thẳng đến <code>/board</code> (Kanban/Agile) hoặc <code>/list</code> (Basic).</span><span class="lang-en">Click <strong>Create</strong>. System navigates directly to <code>/board</code> (Kanban/Agile) or <code>/list</code> (Basic).</span></span></li>
+  <li><span><strong><span class="lang-vi">Thiết lập cột (Sections)</span><span class="lang-en">Set Up Columns (Sections)</span></strong><div class="screenshot" style="margin-top:10px"><div class="screenshot-img"><div class="ph"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="4" height="18" rx="1"/><rect x="9" y="3" width="4" height="18" rx="1"/><rect x="16" y="3" width="4" height="18" rx="1"/></svg><span>Kanban Board với cột To Do / In Progress / Review / Done + nút "+ Thêm cột"</span></div></div><div class="screenshot-cap">SOP 02 — Step 5: Board columns (sections) setup with "+ Add Column" button</div></div></span> — <span class="lang-vi">Trên Board, nhấn <strong>+ Thêm cột</strong> để tạo các trạng thái: Ví dụ <em>To Do → In Progress → Review → Done</em>. Đặt WIP limit nếu cần kiểm soát luồng công việc.</span><span class="lang-en">On the Board, click <strong>+ Add Column</strong> to create statuses: e.g. <em>To Do → In Progress → Review → Done</em>. Set WIP limits to control workflow.</span></span></li>
+  <li><span><strong><span class="lang-vi">Thêm thành viên dự án</span><span class="lang-en">Add Project Members</span></strong> — <span class="lang-vi">Vào <strong>Project Settings &gt; Members</strong> &gt; Mời thành viên workspace &gt; Gán vai trò <em>owner / editor / commenter / viewer</em>.</span><span class="lang-en">Go to <strong>Project Settings &gt; Members</strong> &gt; Invite workspace members &gt; Assign role <em>owner / editor / commenter / viewer</em>.</span></span></li>
+</ol>
+<div class="callout callout-warning">
+  <span class="callout-icon">⚠</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Lưu ý khi đổi loại dự án</span><span class="lang-en">Note on Changing Project Type</span></strong>
+    <p><span class="lang-vi">Khi hạ cấp từ <strong>Agile → Kanban</strong>, các tab Backlog và Sprints sẽ bị ẩn nhưng dữ liệu sprint không bị xóa. Khi hạ cấp từ <strong>Kanban → Basic</strong>, tab Board bị ẩn. Nâng cấp trở lại sẽ hiển thị lại dữ liệu đã có.</span><span class="lang-en">When downgrading from <strong>Agile → Kanban</strong>, Backlog and Sprints tabs are hidden but sprint data is not deleted. Downgrading <strong>Kanban → Basic</strong> hides the Board tab. Upgrading again will restore all existing data.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 03 ===== -->
+<h2 id="sop03">
+  <span class="module-tag mod-task">Task</span>
+  <span class="lang-vi">SOP 03 — Quản lý Công việc (Task)</span>
+  <span class="lang-en">SOP 03 — Manage Tasks</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">Project Editor tạo, chỉnh sửa, phân công và theo dõi tiến độ từng công việc trong dự án.</p></div>
+<div class="lang-en"><p class="section-intro">Project Editor creates, updates, assigns, and tracks progress of individual tasks within the project.</p></div>
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">Project Editor (thực hiện)</span><span class="lang-en">Project Editor (execute)</span></span>
+  <span class="role-tag"><span class="lang-vi">Project Owner (quản lý)</span><span class="lang-en">Project Owner (manage)</span></span>
+</div>
+<h4><span class="lang-vi">Luồng trạng thái Task</span><span class="lang-en">Task Status Flow</span></h4>
+<div class="status-flow">
+  <span class="sp sp-draft">TODO</span><span class="flow-arr">→</span>
+  <span class="sp sp-blue">IN_PROGRESS</span><span class="flow-arr">→</span>
+  <span class="sp sp-amber">REVIEW</span><span class="flow-arr">→</span>
+  <span class="sp sp-green">DONE</span>
+</div>
+<h4><span class="lang-vi">Tạo &amp; cập nhật Task</span><span class="lang-en">Create &amp; Update Task</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Tạo task mới</span><span class="lang-en">Create New Task</span></strong> — <span class="lang-vi">Trong List view, nhấn <strong>+ Thêm task</strong> ở cuối danh sách. Hoặc trong Board view nhấn <strong>+</strong> ở dưới cùng mỗi cột.</span><span class="lang-en">In List view, click <strong>+ Add Task</strong> at the bottom of the list. Or in Board view click <strong>+</strong> at the bottom of each column.</span></span></li>
+  <li><span><strong><span class="lang-vi">Điền thông tin cơ bản</span><span class="lang-en">Fill Basic Info</span></strong> — <span class="lang-vi">Tiêu đề (bắt buộc), mô tả (rich text), ngày đến hạn, người phụ trách, mức ưu tiên.</span><span class="lang-en">Title (required), description (rich text), due date, assignee, priority.</span></span></li>
+  <li><span><strong><span class="lang-vi">Điền thông tin Agile</span><span class="lang-en">Fill Agile Fields</span></strong><div class="screenshot" style="margin-top:10px"><div class="screenshot-img"><div class="ph"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>Task Detail Drawer — Story Points, Task Type (Task/Story/Bug/Epic), Sprint dropdown</span></div></div><div class="screenshot-cap">SOP 03 — Step 3: Task Detail Drawer with Agile fields (story points, task type, sprint)</div></div> — <span class="lang-vi"><em>(Chỉ hiển thị với dự án Agile)</em> Chọn <strong>Loại task</strong>: Task / Story / Bug / Epic. Nhập <strong>Story Points</strong> (≥ 0). Gán vào <strong>Sprint</strong>.</span><span class="lang-en"><em>(Agile projects only)</em> Select <strong>Task Type</strong>: Task / Story / Bug / Epic. Enter <strong>Story Points</strong> (≥ 0). Assign to a <strong>Sprint</strong>.</span></span></li>
+  <li><span><strong><span class="lang-vi">Theo dõi tiến độ</span><span class="lang-en">Track Progress</span></strong> — <span class="lang-vi">Cập nhật trạng thái qua <strong>Task Detail Drawer</strong> (click vào tên task) hoặc kéo thả giữa các cột trên Board.</span><span class="lang-en">Update status via <strong>Task Detail Drawer</strong> (click task name) or drag between columns on Board.</span></span></li>
+</ol>
+<h4><span class="lang-vi">Loại Task &amp; hiển thị</span><span class="lang-en">Task Types &amp; Display</span></h4>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Loại</span><span class="lang-en">Type</span></th>
+      <th><span class="lang-vi">Ký hiệu</span><span class="lang-en">Badge</span></th>
+      <th><span class="lang-vi">Mục đích</span><span class="lang-en">Purpose</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Task</strong></td>
+      <td><span class="lang-vi">(không có)</span><span class="lang-en">(none)</span></td>
+      <td><span class="lang-vi">Công việc thông thường</span><span class="lang-en">Standard work item</span></td>
+    </tr>
+    <tr>
+      <td><strong>Story</strong></td>
+      <td><code>S</code></td>
+      <td><span class="lang-vi">User story từ góc nhìn người dùng</span><span class="lang-en">User story from user perspective</span></td>
+    </tr>
+    <tr>
+      <td><strong>Bug</strong></td>
+      <td><code>B</code></td>
+      <td><span class="lang-vi">Lỗi cần khắc phục</span><span class="lang-en">Defect to fix</span></td>
+    </tr>
+    <tr>
+      <td><strong>Epic</strong></td>
+      <td><code>E</code></td>
+      <td><span class="lang-vi">Nhóm nhiều story/task lớn</span><span class="lang-en">Large feature grouping multiple stories/tasks</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="callout callout-tip">
+  <span class="callout-icon">✓</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Custom Fields</span><span class="lang-en">Custom Fields</span></strong>
+    <p><span class="lang-vi">Project Owner có thể thêm các trường tùy chỉnh (text, number, select, date) cho mọi task trong dự án tại <code>Project Settings &gt; Custom Fields</code>.</span><span class="lang-en">Project Owner can add custom fields (text, number, select, date) for all tasks in the project via <code>Project Settings &gt; Custom Fields</code>.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 04 ===== -->
+<h2 id="sop04">
+  <span class="module-tag mod-kanban">Kanban</span>
+  <span class="lang-vi">SOP 04 — Vận hành Kanban Board &amp; WIP Limit</span>
+  <span class="lang-en">SOP 04 — Operate Kanban Board &amp; WIP Limits</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">Sử dụng Board view để theo dõi luồng công việc theo cột trạng thái. WIP Limit giúp kiểm soát số lượng task đồng thời trong mỗi cột.</p></div>
+<div class="lang-en"><p class="section-intro">Use Board view to track work flow across status columns. WIP Limits help control the number of concurrent tasks in each column.</p></div>
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">Project Editor (kéo thả)</span><span class="lang-en">Project Editor (drag-drop)</span></span>
+  <span class="role-tag"><span class="lang-vi">Project Owner (cấu hình WIP)</span><span class="lang-en">Project Owner (configure WIP)</span></span>
+</div>
+<h4><span class="lang-vi">Kéo thả Task trên Board</span><span class="lang-en">Drag-Drop Tasks on Board</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Chuyển task sang cột khác</span><span class="lang-en">Move Task to Another Column</span></strong> — <span class="lang-vi">Giữ và kéo thẻ task sang cột đích. Hệ thống cập nhật trạng thái ngay lập tức qua API và SSE thông báo cho các thành viên khác.</span><span class="lang-en">Hold and drag the task card to the target column. System immediately updates status via API and notifies other members via SSE.</span></span></li>
+  <li><span><strong><span class="lang-vi">Sắp xếp thứ tự trong cột</span><span class="lang-en">Reorder Within Column</span></strong> — <span class="lang-vi">Kéo thẻ task lên/xuống trong cùng cột để thay đổi thứ tự ưu tiên. Hệ thống dùng <em>fractional indexing</em> — không cần đánh số lại tất cả.</span><span class="lang-en">Drag task cards up/down within the same column to change priority order. System uses <em>fractional indexing</em> — no need to renumber all items.</span></span></li>
+  <li><span><strong><span class="lang-vi">Kiểm tra WIP khi kéo</span><span class="lang-en">Check WIP on Drag</span></strong><div class="screenshot" style="margin-top:10px"><div class="screenshot-img"><div class="ph"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="4" height="18" rx="1" stroke="#EF4444"/><rect x="9" y="3" width="4" height="18" rx="1"/><rect x="16" y="3" width="4" height="18" rx="1"/><text x="3" y="22" fill="#EF4444" font-size="4">3/3</text></svg><span>Cột "In Progress" vượt WIP Limit: viền đỏ, số đỏ 3/3 / Column over WIP: red border, count 3/3 in red</span></div></div><div class="screenshot-cap">SOP 04 — Step 3: WIP limit exceeded — column border turns red, count shows X/Limit in red</div></div></span> — <span class="lang-vi">Nếu cột đích đã đạt WIP Limit, khung cột chuyển đỏ và hiển thị <em>X/Limit</em>. Bạn vẫn có thể thêm task nhưng sẽ nhận cảnh báo trực quan.</span><span class="lang-en">If the target column has reached its WIP Limit, the column frame turns red and shows <em>X/Limit</em>. You can still add a task but receive a visual warning.</span></span></li>
+</ol>
+<h4><span class="lang-vi">Cấu hình WIP Limit</span><span class="lang-en">Configure WIP Limits</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Mở cài đặt cột</span><span class="lang-en">Open Column Settings</span></strong> — <span class="lang-vi">Hover vào tên cột &gt; Nhấn biểu tượng <strong>⋯</strong> &gt; Chọn <strong>Cài đặt cột</strong>.</span><span class="lang-en">Hover over the column name &gt; Click the <strong>⋯</strong> icon &gt; Select <strong>Column Settings</strong>.</span></span></li>
+  <li><span><strong><span class="lang-vi">Đặt WIP Limit</span><span class="lang-en">Set WIP Limit</span></strong> — <span class="lang-vi">Nhập số lượng tối đa task được phép trong cột này. Để trống = không giới hạn.</span><span class="lang-en">Enter the maximum number of tasks allowed in this column. Leave empty = no limit.</span></span></li>
+  <li><span><strong><span class="lang-vi">Lưu &amp; quan sát</span><span class="lang-en">Save &amp; Monitor</span></strong><div class="screenshot" style="margin-top:10px"><div class="screenshot-img"><div class="ph"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg><span>Column Settings dialog — trường WIP Limit với input số / WIP Limit field with number input</span></div></div><div class="screenshot-cap">SOP 04 — WIP Limit config: column settings dialog showing WIP Limit number input</div></div></span> — <span class="lang-vi">Tiêu đề cột sẽ hiển thị <em>In Progress (3/5)</em>. Khi vượt giới hạn, số đổi thành màu đỏ và viền cột đổi màu.</span><span class="lang-en">Column header will show <em>In Progress (3/5)</em>. When exceeded, the count turns red and column border changes color.</span></span></li>
+</ol>
+<div class="callout callout-warning">
+  <span class="callout-icon">⚠</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">WIP Limit là cảnh báo, không phải khóa cứng</span><span class="lang-en">WIP Limit is a Warning, Not a Hard Block</span></strong>
+    <p><span class="lang-vi">Hệ thống hiển thị cảnh báo trực quan khi vượt WIP Limit nhưng không ngăn thêm task. Đây là nguyên tắc Kanban — nhóm tự quản lý dựa trên tín hiệu trực quan. Nếu nhóm liên tục bỏ qua cảnh báo, hãy thảo luận lại về capacity.</span><span class="lang-en">The system shows a visual warning when WIP is exceeded but does not block adding tasks. This follows Kanban principles — the team self-manages based on visual signals. If the team regularly ignores warnings, discuss capacity planning.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 05 ===== -->
+<h2 id="sop05">
+  <span class="module-tag mod-agile">Agile</span>
+  <span class="lang-vi">SOP 05 — Tạo &amp; Vận hành Sprint</span>
+  <span class="lang-en">SOP 05 — Create &amp; Operate Sprints</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">Project Owner tạo và quản lý vòng lặp sprint cho dự án Agile. Mỗi dự án chỉ có tối đa 1 sprint đang active cùng lúc.</p></div>
+<div class="lang-en"><p class="section-intro">Project Owner creates and manages sprint cycles for Agile projects. Each project can have at most 1 active sprint at a time.</p></div>
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">Project Owner (tạo/bắt đầu/kết thúc)</span><span class="lang-en">Project Owner (create/start/complete)</span></span>
+  <span class="role-tag"><span class="lang-vi">Project Editor (cập nhật task)</span><span class="lang-en">Project Editor (update tasks)</span></span>
+</div>
+<h4><span class="lang-vi">Vòng đời Sprint</span><span class="lang-en">Sprint Lifecycle</span></h4>
+<div class="status-flow">
+  <span class="sp sp-draft">PLANNING</span><span class="flow-arr">→</span>
+  <span class="sp sp-green">ACTIVE</span><span class="flow-arr">→</span>
+  <span class="sp sp-purple">COMPLETED</span>
+</div>
+<h4><span class="lang-vi">Tạo &amp; Bắt đầu Sprint</span><span class="lang-en">Create &amp; Start Sprint</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Tạo Sprint mới</span><span class="lang-en">Create New Sprint</span></strong> — <span class="lang-vi">Vào tab <code>Sprints</code> &gt; Nhấn <strong>Tạo Sprint</strong>. Điền: Tên sprint, Mục tiêu sprint (goal), Ngày bắt đầu &amp; kết thúc. Trạng thái mặc định: <code>PLANNING</code>.</span><span class="lang-en">Go to <code>Sprints</code> tab &gt; Click <strong>Create Sprint</strong>. Fill in: Sprint name, Sprint goal, Start date &amp; end date. Default status: <code>PLANNING</code>.</span></span></li>
+  <li><span><strong><span class="lang-vi">Kéo task từ Backlog vào Sprint</span><span class="lang-en">Pull Tasks from Backlog into Sprint</span></strong><div class="screenshot" style="margin-top:10px"><div class="screenshot-img"><div class="ph"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="5" rx="1"/><rect x="2" y="10" width="20" height="4" rx="1"/><rect x="2" y="16" width="20" height="4" rx="1"/></svg><span>Dialog tạo Sprint: tên, mục tiêu, ngày bắt đầu &amp; kết thúc / Create Sprint dialog: name, goal, dates</span></div></div><div class="screenshot-cap">SOP 05 — Step 1: Create Sprint dialog with name, goal, start &amp; end date fields</div></div></span> — <span class="lang-vi">Vào tab <code>Backlog</code> &gt; Kéo task vào sprint (hoặc mở Task Detail &gt; chọn sprint). Ưu tiên task theo story points và business value.</span><span class="lang-en">Go to <code>Backlog</code> tab &gt; Drag tasks into the sprint (or open Task Detail &gt; select sprint). Prioritize tasks by story points and business value.</span></span></li>
+  <li><span><strong><span class="lang-vi">Bắt đầu Sprint</span><span class="lang-en">Start Sprint</span></strong> — <span class="lang-vi">Nhấn <strong>Bắt đầu Sprint</strong>. Hệ thống kiểm tra xem có sprint nào đang active không — nếu có sẽ báo lỗi 409. Trạng thái đổi sang <code>ACTIVE</code>.</span><span class="lang-en">Click <strong>Start Sprint</strong>. System checks if another sprint is already active — if so, returns error 409. Status changes to <code>ACTIVE</code>.</span></span></li>
+  <li><span><strong><span class="lang-vi">Theo dõi Sprint Board</span><span class="lang-en">Monitor Sprint Board</span></strong><div class="screenshot" style="margin-top:10px"><div class="screenshot-img"><div class="ph"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h18M3 12h18M3 18h18"/><circle cx="7" cy="6" r="1.5" fill="currentColor"/><circle cx="7" cy="12" r="1.5" fill="currentColor"/><circle cx="7" cy="18" r="1.5" fill="currentColor"/></svg><span>Sprint Selector dropdown phía trên Board — chuyển giữa sprint / Sprint Selector dropdown above Board</span></div></div><div class="screenshot-cap">SOP 05 — Step 4: Sprint Selector above Board — switch between sprints or view backlog</div></div></span> — <span class="lang-vi">Board tự lọc chỉ hiển thị task thuộc sprint đang active. Dùng <strong>Sprint Selector</strong> ở trên Board để chuyển giữa các sprint.</span><span class="lang-en">The Board automatically filters to show only tasks in the active sprint. Use the <strong>Sprint Selector</strong> above the Board to switch between sprints.</span></span></li>
+  <li><span><strong><span class="lang-vi">Kết thúc Sprint</span><span class="lang-en">Complete Sprint</span></strong> — <span class="lang-vi">Nhấn <strong>Hoàn thành Sprint</strong> &gt; Xác nhận trong dialog. Task chưa done sẽ tự động trở về Backlog. Sprint chuyển sang <code>COMPLETED</code>.</span><span class="lang-en">Click <strong>Complete Sprint</strong> &gt; Confirm in dialog. Incomplete tasks automatically return to Backlog. Sprint transitions to <code>COMPLETED</code>.</span></span></li>
+</ol>
+<div class="callout callout-danger">
+  <span class="callout-icon">⚠</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Chỉ 1 Sprint Active</span><span class="lang-en">Only 1 Active Sprint</span></strong>
+    <p><span class="lang-vi">Hệ thống enforce quy tắc: mỗi dự án chỉ có tối đa 1 sprint <code>ACTIVE</code> cùng lúc. Phải hoàn thành sprint hiện tại trước khi bắt đầu sprint mới. Đây là thiết kế cố ý theo Scrum methodology.</span><span class="lang-en">The system enforces: each project can have at most 1 <code>ACTIVE</code> sprint at a time. You must complete the current sprint before starting a new one. This is an intentional Scrum methodology design.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 06 ===== -->
+<h2 id="sop06">
+  <span class="module-tag mod-agile">Agile</span>
+  <span class="lang-vi">SOP 06 — Quản lý Backlog &amp; Ưu tiên hóa</span>
+  <span class="lang-en">SOP 06 — Manage Backlog &amp; Prioritization</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">Backlog là danh sách tất cả task chưa được đưa vào sprint nào. Project Owner thường xuyên grooming backlog để sắp xếp thứ tự ưu tiên trước mỗi sprint.</p></div>
+<div class="lang-en"><p class="section-intro">Backlog is the list of all tasks not yet assigned to any sprint. Project Owner regularly grooms the backlog to prioritize items before each sprint.</p></div>
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">Project Owner (grooming)</span><span class="lang-en">Project Owner (grooming)</span></span>
+  <span class="role-tag"><span class="lang-vi">Project Editor (thêm task)</span><span class="lang-en">Project Editor (add tasks)</span></span>
+</div>
+<h4><span class="lang-vi">Quy trình Backlog Grooming</span><span class="lang-en">Backlog Grooming Process</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Xem Backlog</span><span class="lang-en">View Backlog</span></strong> — <span class="lang-vi">Vào tab <code>Backlog</code>. Trang hiển thị tất cả task có <code>sprint_id = null</code>, sắp xếp theo ưu tiên.</span><span class="lang-en">Go to <code>Backlog</code> tab. Page shows all tasks with <code>sprint_id = null</code>, sorted by priority.</span></span></li>
+  <li><span><strong><span class="lang-vi">Thêm task vào Backlog</span><span class="lang-en">Add Tasks to Backlog</span></strong><div class="screenshot" style="margin-top:10px"><div class="screenshot-img"><div class="ph"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg><span>Tab Backlog: danh sách task chưa có sprint, mỗi task hiện story points / Backlog tab: tasks without sprint</span></div></div><div class="screenshot-cap">SOP 06 — Step 1: Backlog view — all tasks with sprint_id = null, ordered by priority</div></div></span> — <span class="lang-vi">Nhấn <strong>+ Thêm task</strong> ở cuối danh sách. Task mới tạo mà không chỉ định sprint sẽ tự động vào Backlog.</span><span class="lang-en">Click <strong>+ Add Task</strong> at the bottom. Newly created tasks without a sprint assigned automatically go to Backlog.</span></span></li>
+  <li><span><strong><span class="lang-vi">Đánh story points</span><span class="lang-en">Estimate Story Points</span></strong> — <span class="lang-vi">Click vào task &gt; Mở Task Detail &gt; Điền <strong>Story Points</strong>. Dùng dãy Fibonacci: 1, 2, 3, 5, 8, 13... Story points dùng để tính velocity.</span><span class="lang-en">Click the task &gt; Open Task Detail &gt; Enter <strong>Story Points</strong>. Use Fibonacci scale: 1, 2, 3, 5, 8, 13... Story points are used to calculate velocity.</span></span></li>
+  <li><span><strong><span class="lang-vi">Kéo vào Sprint Planning</span><span class="lang-en">Pull into Sprint Planning</span></strong> — <span class="lang-vi">Kéo task từ Backlog lên vùng sprint ở trên trang, hoặc mở Task Detail &gt; chọn sprint từ dropdown <strong>Sprint</strong>.</span><span class="lang-en">Drag task from Backlog to the sprint area above, or open Task Detail &gt; select sprint from the <strong>Sprint</strong> dropdown.</span></span></li>
+  <li><span><strong><span class="lang-vi">Sắp xếp thứ tự ưu tiên</span><span class="lang-en">Reorder by Priority</span></strong> — <span class="lang-vi">Kéo thả task lên/xuống trong Backlog để thay đổi thứ tự ưu tiên. Task ở trên = ưu tiên cao hơn.</span><span class="lang-en">Drag tasks up/down in the Backlog to change priority order. Tasks at the top = higher priority.</span></span></li>
+</ol>
+<div class="callout callout-tip">
+  <span class="callout-icon">✓</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Grooming định kỳ</span><span class="lang-en">Regular Grooming</span></strong>
+    <p><span class="lang-vi">Grooming backlog ít nhất 1 lần/tuần (thường trước Sprint Planning). Đảm bảo top 10–15 task trong backlog đã có story points và mô tả đầy đủ để sẵn sàng đưa vào sprint tiếp theo.</span><span class="lang-en">Groom the backlog at least once per week (typically before Sprint Planning). Ensure the top 10–15 backlog items have story points and complete descriptions, ready for the next sprint.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 07 ===== -->
+<h2 id="sop07">
+  <span class="module-tag mod-project">View</span>
+  <span class="lang-vi">SOP 07 — Calendar &amp; Timeline (Gantt)</span>
+  <span class="lang-en">SOP 07 — Calendar &amp; Timeline (Gantt)</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">Calendar và Timeline cung cấp góc nhìn thời gian cho tất cả loại dự án, giúp theo dõi deadline và phát hiện xung đột lịch trình.</p></div>
+<div class="lang-en"><p class="section-intro">Calendar and Timeline provide a time-based view for all project types, helping track deadlines and detect schedule conflicts.</p></div>
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">Tất cả thành viên (xem)</span><span class="lang-en">All members (view)</span></span>
+  <span class="role-tag"><span class="lang-vi">Project Editor (cập nhật ngày)</span><span class="lang-en">Project Editor (update dates)</span></span>
+</div>
+<h4><span class="lang-vi">Calendar View</span><span class="lang-en">Calendar View</span></h4>
+<div class="screenshot">
+  <div class="screenshot-img"><div class="ph"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Calendar tháng hiển thị task theo due_date, task quá hạn màu đỏ / Monthly calendar with tasks by due_date, overdue in red</span></div></div>
+  <div class="screenshot-cap">SOP 07 — Calendar view: tasks appear on their due date, overdue tasks shown in red</div>
+</div>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Chuyển sang Calendar</span><span class="lang-en">Switch to Calendar</span></strong> — <span class="lang-vi">Nhấn tab <strong>Calendar</strong> trên thanh điều hướng dự án. Mặc định xem tháng hiện tại.</span><span class="lang-en">Click the <strong>Calendar</strong> tab in the project navigation. Defaults to current month view.</span></span></li>
+  <li><span><strong><span class="lang-vi">Xem task theo deadline</span><span class="lang-en">View Tasks by Deadline</span></strong> — <span class="lang-vi">Task hiển thị theo <code>due_date</code>. Task quá hạn (due_date &lt; hôm nay) hiển thị màu đỏ.</span><span class="lang-en">Tasks display by <code>due_date</code>. Overdue tasks (due_date &lt; today) display in red.</span></span></li>
+  <li><span><strong><span class="lang-vi">Cập nhật deadline</span><span class="lang-en">Update Deadline</span></strong> — <span class="lang-vi">Kéo thẻ task sang ngày mới trực tiếp trên calendar, hoặc click vào task &gt; chỉnh sửa trong Task Detail Drawer.</span><span class="lang-en">Drag the task card to a new date directly on the calendar, or click the task &gt; edit in Task Detail Drawer.</span></span></li>
+</ol>
+<h4><span class="lang-vi">Timeline (Gantt) View</span><span class="lang-en">Timeline (Gantt) View</span></h4>
+<div class="screenshot">
+  <div class="screenshot-img"><div class="ph"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/><rect x="5" y="4" width="8" height="4" rx="1" fill="currentColor" opacity=".2"/><rect x="10" y="10" width="6" height="4" rx="1" fill="currentColor" opacity=".2"/><rect x="7" y="16" width="10" height="4" rx="1" fill="currentColor" opacity=".2"/></svg><span>Gantt chart: thanh task ngang theo thời gian, kéo cạnh để đổi ngày / Gantt: horizontal task bars, drag edge to change dates</span></div></div>
+  <div class="screenshot-cap">SOP 07 — Timeline (Gantt) view: horizontal bars per task, drag edges to resize, drag middle to move</div>
+</div>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Chuyển sang Timeline</span><span class="lang-en">Switch to Timeline</span></strong> — <span class="lang-vi">Nhấn tab <strong>Timeline</strong>. Biểu đồ Gantt hiển thị task theo trục thời gian ngang.</span><span class="lang-en">Click the <strong>Timeline</strong> tab. Gantt chart displays tasks along a horizontal time axis.</span></span></li>
+  <li><span><strong><span class="lang-vi">Đặt ngày bắt đầu &amp; kết thúc</span><span class="lang-en">Set Start &amp; End Dates</span></strong> — <span class="lang-vi">Kéo cạnh trái/phải của thanh task để thay đổi ngày. Kéo giữa thanh để dời toàn bộ khoảng thời gian.</span><span class="lang-en">Drag the left/right edge of the task bar to change dates. Drag the middle to move the entire time range.</span></span></li>
+  <li><span><strong><span class="lang-vi">Phát hiện xung đột</span><span class="lang-en">Detect Conflicts</span></strong> — <span class="lang-vi">Quan sát các thanh chồng lên nhau trên cùng hàng người thực hiện — đây là tín hiệu overload. Điều chỉnh phân công hoặc deadline.</span><span class="lang-en">Look for overlapping bars in the same assignee row — these signal overload. Adjust assignments or deadlines accordingly.</span></span></li>
+</ol>
+
+<!-- ===== SOP 08 ===== -->
+<h2 id="sop08">
+  <span class="module-tag mod-task">Goals</span>
+  <span class="lang-vi">SOP 08 — Quản lý Mục tiêu (Goals)</span>
+  <span class="lang-en">SOP 08 — Manage Goals</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">Goals cho phép nhóm đặt mục tiêu cấp dự án/workspace và theo dõi tiến độ thực hiện theo OKR hoặc các chỉ số tùy chỉnh.</p></div>
+<div class="lang-en"><p class="section-intro">Goals allow teams to set project/workspace-level objectives and track progress using OKR or custom metrics.</p></div>
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">Project Owner (tạo Goals)</span><span class="lang-en">Project Owner (create Goals)</span></span>
+  <span class="role-tag"><span class="lang-vi">Project Editor (cập nhật tiến độ)</span><span class="lang-en">Project Editor (update progress)</span></span>
+</div>
+<h4><span class="lang-vi">Tạo &amp; theo dõi Goal</span><span class="lang-en">Create &amp; Track Goal</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Tạo Goal</span><span class="lang-en">Create Goal</span></strong> — <span class="lang-vi">Vào <code>PMS &gt; Goals</code> &gt; Nhấn <strong>Tạo Goal</strong>. Điền tiêu đề, mô tả, ngày mục tiêu và loại đo lường (số, phần trăm, true/false).</span><span class="lang-en">Go to <code>PMS &gt; Goals</code> &gt; Click <strong>Create Goal</strong>. Fill in title, description, target date, and measurement type (number, percentage, true/false).</span></span></li>
+  <li><span><strong><span class="lang-vi">Liên kết với Dự án</span><span class="lang-en">Link to Project</span></strong><div class="screenshot" style="margin-top:10px"><div class="screenshot-img"><div class="ph"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Goals page: danh sách goal với progress bar % / Goals page: list of goals with % progress bars</span></div></div><div class="screenshot-cap">SOP 08 — Step 1: Goals page showing objectives with progress bars and target dates</div></div></span> — <span class="lang-vi">Gán goal cho 1 hoặc nhiều dự án liên quan. Tiến độ task của các dự án đó sẽ phản ánh vào Goal.</span><span class="lang-en">Assign the goal to one or more related projects. Task progress from those projects will reflect in the Goal.</span></span></li>
+  <li><span><strong><span class="lang-vi">Cập nhật tiến độ</span><span class="lang-en">Update Progress</span></strong> — <span class="lang-vi">Click <strong>Cập nhật tiến độ</strong> &gt; Nhập giá trị hiện tại. Hệ thống tính toán % hoàn thành và hiển thị progress bar.</span><span class="lang-en">Click <strong>Update Progress</strong> &gt; Enter current value. System calculates completion % and displays a progress bar.</span></span></li>
+  <li><span><strong><span class="lang-vi">Theo dõi trong Overview</span><span class="lang-en">Monitor in Overview</span></strong> — <span class="lang-vi">Tab <strong>Overview</strong> của mỗi dự án hiển thị tổng quan goals liên quan, progress bars và sprint analytics.</span><span class="lang-en">The <strong>Overview</strong> tab of each project shows related goals, progress bars, and sprint analytics.</span></span></li>
+</ol>
+
+<!-- ===== SOP 09 ===== -->
+<h2 id="sop09">
+  <span class="module-tag mod-analytics">Analytics</span>
+  <span class="lang-vi">SOP 09 — Sprint Analytics: Burndown &amp; Velocity</span>
+  <span class="lang-en">SOP 09 — Sprint Analytics: Burndown &amp; Velocity</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">Module Analytics cung cấp hai biểu đồ chính để đánh giá hiệu suất sprint: Burndown Chart và Velocity Chart. Chỉ áp dụng cho dự án loại Agile.</p></div>
+<div class="lang-en"><p class="section-intro">The Analytics module provides two key charts to evaluate sprint performance: Burndown Chart and Velocity Chart. Available for Agile projects only.</p></div>
+<div class="roles-row">
+  <span class="role-tag"><span class="lang-vi">Tất cả thành viên (xem)</span><span class="lang-en">All members (view)</span></span>
+  <span class="role-tag"><span class="lang-vi">Project Owner (phân tích)</span><span class="lang-en">Project Owner (analyze)</span></span>
+</div>
+<h4><span class="lang-vi">Burndown Chart</span><span class="lang-en">Burndown Chart</span></h4>
+<div class="screenshot">
+  <div class="screenshot-img"><div class="ph"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="#5E6AD2"/><line x1="4" y1="20" x2="20" y2="4" stroke-dasharray="3 2" stroke="#A1A1AA"/></svg><span>Đường thực tế (xanh) vs đường lý tưởng (xám đứt) theo ngày sprint / Actual (blue) vs ideal (dashed gray) by sprint day</span></div></div>
+  <div class="screenshot-cap">SOP 09 — Burndown Chart: actual remaining points (solid blue) vs ideal line (dashed gray)</div>
+</div>
+<div class="lang-vi">
+  <p>Vào tab <strong>Overview</strong> &gt; Kéo xuống phần <strong>Sprint Analytics</strong>. Chọn sprint từ dropdown.</p>
+  <ul>
+    <li><strong>Đường thực tế (xanh liền)</strong>: Story points còn lại mỗi ngày dựa trên completed_at của task.</li>
+    <li><strong>Đường lý tưởng (xám đứt)</strong>: Đường thẳng từ tổng points ngày đầu sprint về 0 ngày cuối.</li>
+    <li><strong>Nếu đường xanh trên đường xám</strong>: Nhóm đang chậm so với kế hoạch — cần review và điều chỉnh scope hoặc effort.</li>
+    <li><strong>Nếu đường xanh dưới đường xám</strong>: Nhóm đang tiến nhanh hơn kế hoạch — cân nhắc kéo thêm task từ Backlog.</li>
+  </ul>
+</div>
+<div class="lang-en">
+  <p>Go to <strong>Overview</strong> tab &gt; Scroll to <strong>Sprint Analytics</strong> section. Select a sprint from the dropdown.</p>
+  <ul>
+    <li><strong>Actual line (solid blue)</strong>: Remaining story points per day based on task completed_at timestamps.</li>
+    <li><strong>Ideal line (dashed gray)</strong>: Straight line from total points on day 1 to 0 on the last day.</li>
+    <li><strong>Actual above ideal</strong>: Team is behind schedule — review and adjust scope or effort.</li>
+    <li><strong>Actual below ideal</strong>: Team is ahead of schedule — consider pulling more tasks from Backlog.</li>
+  </ul>
+</div>
+<h4><span class="lang-vi">Velocity Chart</span><span class="lang-en">Velocity Chart</span></h4>
+<div class="screenshot">
+  <div class="screenshot-img"><div class="ph"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="14" width="4" height="8" rx="1" fill="currentColor" opacity=".3"/><rect x="8" y="10" width="4" height="12" rx="1" fill="currentColor" opacity=".3"/><rect x="14" y="6" width="4" height="16" rx="1" fill="currentColor" opacity=".3"/><rect x="20" y="8" width="2" height="14" rx="1" fill="currentColor" opacity=".3"/><line x1="2" y1="22" x2="22" y2="22"/></svg><span>Biểu đồ cột story points hoàn thành mỗi sprint (10 sprint gần nhất) / Bar chart: completed SP per sprint (last 10)</span></div></div>
+  <div class="screenshot-cap">SOP 09 — Velocity Chart: completed story points per sprint — use average to plan next sprint capacity</div>
+</div>
+<div class="lang-vi">
+  <p>Biểu đồ cột hiển thị <strong>story points hoàn thành</strong> cho mỗi sprint (tối đa 10 sprint gần nhất).</p>
+  <ul>
+    <li>Dùng velocity trung bình để lên kế hoạch capacity cho sprint tiếp theo.</li>
+    <li>Xu hướng tăng = nhóm đang cải thiện hiệu suất.</li>
+    <li>Biến động lớn giữa các sprint = cần xem xét lại quy trình estimation hoặc scope management.</li>
+  </ul>
+</div>
+<div class="lang-en">
+  <p>Bar chart showing <strong>completed story points</strong> for each sprint (up to last 10 sprints).</p>
+  <ul>
+    <li>Use average velocity to plan capacity for the next sprint.</li>
+    <li>Upward trend = team improving performance.</li>
+    <li>High variability between sprints = review estimation process or scope management.</li>
+  </ul>
+</div>
+<h4><span class="lang-vi">4 chỉ số tóm tắt Sprint</span><span class="lang-en">4 Sprint Summary Metrics</span></h4>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Chỉ số</span><span class="lang-en">Metric</span></th>
+      <th><span class="lang-vi">Ý nghĩa</span><span class="lang-en">Meaning</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong><span class="lang-vi">Tổng Task</span><span class="lang-en">Total Tasks</span></strong></td>
+      <td><span class="lang-vi">Số task trong sprint</span><span class="lang-en">Number of tasks in sprint</span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">Hoàn thành</span><span class="lang-en">Completed</span></strong></td>
+      <td><span class="lang-vi">Task đã chuyển sang trạng thái Done</span><span class="lang-en">Tasks moved to Done status</span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">Points Completed</span><span class="lang-en">Points Completed</span></strong></td>
+      <td><span class="lang-vi">Tổng story points của task đã done</span><span class="lang-en">Total story points of done tasks</span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">Tổng Points</span><span class="lang-en">Total Points</span></strong></td>
+      <td><span class="lang-vi">Tổng story points của toàn bộ task trong sprint</span><span class="lang-en">Total story points of all tasks in sprint</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="callout callout-info">
+  <span class="callout-icon">ℹ</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Task không có Story Points</span><span class="lang-en">Tasks Without Story Points</span></strong>
+    <p><span class="lang-vi">Task không được đánh story points sẽ không tính vào Burndown và Velocity. Đảm bảo estimate đủ trước khi bắt đầu sprint để analytics có ý nghĩa.</span><span class="lang-en">Tasks without story points will not count toward Burndown and Velocity calculations. Ensure full estimation before starting a sprint for meaningful analytics.</span></p>
+  </div>
+</div>
+
+<!-- ===== KPI ===== -->
+<h2 id="kpi">
+  <span class="lang-vi">KPI Vận hành</span>
+  <span class="lang-en">Operational KPIs</span>
+</h2>
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-value">100%</div>
+    <div class="kpi-label"><span class="lang-vi">Task được cập nhật trên hệ thống (không có task "miệng")</span><span class="lang-en">Tasks updated in system (no off-system tasks)</span></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">1</div>
+    <div class="kpi-label"><span class="lang-vi">Sprint active tối đa tại mỗi thời điểm (hard constraint)</span><span class="lang-en">Maximum active sprints at any time (hard constraint)</span></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">≥80%</div>
+    <div class="kpi-label"><span class="lang-vi">Sprint completion rate (task done / tổng task sprint)</span><span class="lang-en">Sprint completion rate (done tasks / total sprint tasks)</span></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">≤0</div>
+    <div class="kpi-label"><span class="lang-vi">Số cột Board vượt WIP Limit mãn tính (>3 ngày liên tiếp)</span><span class="lang-en">Board columns chronically over WIP Limit (&gt;3 consecutive days)</span></div>
+  </div>
+</div>
+
+<!-- ===== ROLE SUMMARY ===== -->
+<h2 id="role-summary">
+  <span class="lang-vi">Tổng hợp theo Vai trò</span>
+  <span class="lang-en">Summary by Role</span>
+</h2>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Vai trò</span><span class="lang-en">Role</span></th>
+      <th><span class="lang-vi">Các SOP thường sử dụng</span><span class="lang-en">Frequently Used SOPs</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Workspace Admin</strong></td>
+      <td><span class="lang-vi">SOP 01 (Workspace), SOP 02 (Tạo dự án, cấp quyền)</span><span class="lang-en">SOP 01 (Workspace), SOP 02 (Create project, permissions)</span></td>
+    </tr>
+    <tr>
+      <td><strong>Project Owner</strong></td>
+      <td><span class="lang-vi">SOP 02 (Cấu hình dự án), SOP 04 (WIP Limit), SOP 05 (Sprint lifecycle), SOP 06 (Grooming), SOP 08 (Goals), SOP 09 (Analytics)</span><span class="lang-en">SOP 02 (Configure project), SOP 04 (WIP Limits), SOP 05 (Sprint lifecycle), SOP 06 (Grooming), SOP 08 (Goals), SOP 09 (Analytics)</span></td>
+    </tr>
+    <tr>
+      <td><strong>Project Editor</strong></td>
+      <td><span class="lang-vi">SOP 03 (Tạo/cập nhật task), SOP 04 (Kéo thả board), SOP 06 (Thêm vào Backlog/Sprint), SOP 07 (Calendar/Timeline)</span><span class="lang-en">SOP 03 (Create/update tasks), SOP 04 (Drag board), SOP 06 (Add to Backlog/Sprint), SOP 07 (Calendar/Timeline)</span></td>
+    </tr>
+    <tr>
+      <td><strong>Project Commenter</strong></td>
+      <td><span class="lang-vi">SOP 03 (Xem task, thêm comment), SOP 07 (Xem Calendar/Timeline), SOP 09 (Xem Analytics)</span><span class="lang-en">SOP 03 (View tasks, add comments), SOP 07 (View Calendar/Timeline), SOP 09 (View Analytics)</span></td>
+    </tr>
+    <tr>
+      <td><strong>Project Viewer</strong></td>
+      <td><span class="lang-vi">Chỉ xem tất cả các SOP trên — không tạo hay chỉnh sửa</span><span class="lang-en">Read-only across all SOPs above — no create or edit</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ===== GOLDEN PRINCIPLES ===== -->
+<h2 id="nguyen-tac-vang">
+  <span class="lang-vi">Nguyên tắc Vàng</span>
+  <span class="lang-en">Golden Principles</span>
+</h2>
+<ul class="golden-list">
+  <li>
+    <span class="gl-icon">★</span>
+    <span class="gl-text"><strong><span class="lang-vi">Sự thật duy nhất</span><span class="lang-en">Single Source of Truth</span></strong> — <span class="lang-vi">Mọi task phải tồn tại và được cập nhật trên hệ thống. Không trao đổi task qua chat mà không sync lên PMS.</span><span class="lang-en">All tasks must exist and be updated in the system. Do not discuss tasks via chat without syncing back to PMS.</span></span>
+  </li>
+  <li>
+    <span class="gl-icon">★</span>
+    <span class="gl-text"><strong><span class="lang-vi">WIP Limit là tín hiệu, không phải hình phạt</span><span class="lang-en">WIP Limits Are Signals, Not Punishments</span></strong> — <span class="lang-vi">Cột đỏ nghĩa là bottleneck đang xảy ra — hãy dừng bắt đầu mới, hãy hoàn thành task hiện tại trước (Stop Starting, Start Finishing).</span><span class="lang-en">A red column means a bottleneck is forming — stop starting new work, finish current tasks first (Stop Starting, Start Finishing).</span></span>
+  </li>
+  <li>
+    <span class="gl-icon">★</span>
+    <span class="gl-text"><strong><span class="lang-vi">Sprint là cam kết, không phải dự báo</span><span class="lang-en">Sprints Are Commitments, Not Forecasts</span></strong> — <span class="lang-vi">Khi sprint đã active, không thêm task mới trừ khi có lý do khẩn cấp được Project Owner phê duyệt. Scope thay đổi liên tục phá hủy velocity.</span><span class="lang-en">Once a sprint is active, do not add new tasks unless there is an urgent reason approved by the Project Owner. Constant scope changes destroy velocity.</span></span>
+  </li>
+  <li>
+    <span class="gl-icon">★</span>
+    <span class="gl-text"><strong><span class="lang-vi">Estimate trước khi Sprint bắt đầu</span><span class="lang-en">Estimate Before Sprint Starts</span></strong> — <span class="lang-vi">Tất cả task trong sprint phải có story points trước khi nhấn <strong>Bắt đầu Sprint</strong>. Analytics không có ý nghĩa nếu task thiếu estimation.</span><span class="lang-en">All sprint tasks must have story points before clicking <strong>Start Sprint</strong>. Analytics are meaningless if tasks lack estimation.</span></span>
+  </li>
+  <li>
+    <span class="gl-icon">★</span>
+    <span class="gl-text"><strong><span class="lang-vi">Kiểu dự án xác định quy trình</span><span class="lang-en">Project Type Defines Process</span></strong> — <span class="lang-vi">Chọn đúng loại dự án ngay từ đầu: <strong>Basic</strong> cho nhóm nhỏ/đơn giản, <strong>Kanban</strong> cho luồng liên tục, <strong>Agile</strong> cho phát triển phần mềm theo sprint. Đổi loại sau có thể gây nhầm lẫn về dữ liệu.</span><span class="lang-en">Choose the right project type from the start: <strong>Basic</strong> for small/simple teams, <strong>Kanban</strong> for continuous flow, <strong>Agile</strong> for sprint-based software development. Changing type later can cause data confusion.</span></span>
+  </li>
+</ul>
+
+</div>
+</main>
+<button class="back-to-top" id="backToTop">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+<script>
+// Dark mode toggle
+(function(){
+  var html = document.documentElement;
+  var toggle = document.getElementById('darkToggle');
+  var sunIcon = document.getElementById('sunIcon');
+  var moonIcon = document.getElementById('moonIcon');
+  var label = document.getElementById('darkToggleLabel');
+  function applyTheme(dark){
+    html.setAttribute('data-theme', dark ? 'dark' : 'light');
+    sunIcon.style.display = dark ? 'none' : '';
+    moonIcon.style.display = dark ? '' : 'none';
+    label.textContent = dark ? 'Light' : 'Dark';
+  }
+  var stored = localStorage.getItem('aerpTheme');
+  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(stored ? stored === 'dark' : prefersDark);
+  toggle.addEventListener('click', function(){
+    var nowDark = html.getAttribute('data-theme') !== 'dark';
+    applyTheme(nowDark);
+    localStorage.setItem('aerpTheme', nowDark ? 'dark' : 'light');
+  });
+})();
+
+// Sidebar collapse
+function toggleSection(id){
+  var sec = document.getElementById(id);
+  if(sec) sec.classList.toggle('collapsed');
+}
+
+// Mobile sidebar
+var sidebar = document.getElementById('sidebar');
+var overlay = document.getElementById('sidebarOverlay');
+var hamburger = document.getElementById('hamburgerBtn');
+function openSidebar(){ sidebar.classList.add('open'); overlay.classList.add('open'); }
+function closeSidebar(){ sidebar.classList.remove('open'); overlay.classList.remove('open'); }
+function closeSidebarMobile(){ if(window.innerWidth < 768) closeSidebar(); }
+if(hamburger) hamburger.addEventListener('click', function(){ sidebar.classList.contains('open') ? closeSidebar() : openSidebar(); });
+if(overlay) overlay.addEventListener('click', closeSidebar);
+
+// Back to top
+var btt = document.getElementById('backToTop');
+window.addEventListener('scroll', function(){ btt.classList.toggle('visible', window.scrollY > 400); }, {passive:true});
+btt.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+
+// ScrollSpy
+(function(){
+  var headings = document.querySelectorAll('h2[id], h3[id]');
+  var links = document.querySelectorAll('.sidebar-link');
+  var linkMap = {};
+  links.forEach(function(link){
+    var href = link.getAttribute('href');
+    if(href && href.startsWith('#')) linkMap[href.slice(1)] = link;
+  });
+  var current = null;
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        if(current) current.classList.remove('active','spy-active');
+        var link = linkMap[entry.target.id];
+        if(link){ link.classList.add('active','spy-active'); current = link;
+          var sidebarEl = document.getElementById('sidebar');
+          var linkTop = link.offsetTop;
+          if(linkTop < sidebarEl.scrollTop || linkTop > sidebarEl.scrollTop + sidebarEl.clientHeight - 60){
+            sidebarEl.scrollTo({top: linkTop - 80, behavior:'smooth'});
+          }
+        }
+      }
+    });
+  }, {rootMargin:'-60px 0px -70% 0px', threshold:0});
+  headings.forEach(function(h){ observer.observe(h); });
+})();
+
+// Smooth scroll
+document.querySelectorAll('.sidebar-link[href^="#"]').forEach(function(link){
+  link.addEventListener('click', function(e){
+    e.preventDefault();
+    var id = this.getAttribute('href').slice(1);
+    var target = document.getElementById(id);
+    if(target){
+      var top = target.getBoundingClientRect().top + window.scrollY - 72;
+      window.scrollTo({top:top, behavior:'smooth'});
+    }
+  });
+});
+
+// Language toggle
+function setLang(lang){
+  document.documentElement.setAttribute('data-lang', lang);
+  document.documentElement.setAttribute('lang', lang === 'vi' ? 'vi' : 'en');
+  localStorage.setItem('sop-lang', lang);
+  var enBtn = document.getElementById('langEn');
+  var viBtn = document.getElementById('langVi');
+  if(enBtn) enBtn.classList.toggle('active', lang === 'en');
+  if(viBtn) viBtn.classList.toggle('active', lang === 'vi');
+  document.querySelectorAll('[data-en][data-vi]').forEach(function(el){
+    el.textContent = el.getAttribute('data-' + lang) || el.getAttribute('data-en');
+  });
+}
+document.getElementById('langEn').addEventListener('click', function(){ setLang('en'); });
+document.getElementById('langVi').addEventListener('click', function(){ setLang('vi'); });
+(function(){
+  var saved = localStorage.getItem('sop-lang');
+  if(saved) setLang(saved); else setLang('vi');
+})();
+</script>
+</body>
+</html>

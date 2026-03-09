@@ -12,6 +12,8 @@ class InterviewCreate(BaseModel):
     scheduled_at: datetime
     duration_minutes: int = 60
     status: str = "scheduled"
+    room: str | None = None
+    panel_ids: list | None = None
 
     @field_validator("status")
     @classmethod
@@ -28,6 +30,8 @@ class InterviewUpdate(BaseModel):
     feedback: str | None = None
     score: int | None = Field(default=None, ge=1, le=5)
     status: str | None = None
+    room: str | None = None
+    panel_ids: list | None = None
 
     @field_validator("status")
     @classmethod
@@ -47,5 +51,7 @@ class InterviewResponse(BaseModel):
     score: int | None
     status: str
     workspace_id: uuid.UUID
+    room: str | None = None
+    panel_ids: list | None = None
 
     model_config = {"from_attributes": True}

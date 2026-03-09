@@ -30,7 +30,13 @@ async def lifespan(app: FastAPI):
         log_level=settings.LOG_LEVEL,
         rate_limiting=settings.RATE_LIMIT_ENABLED,
     )
+    # Create ARQ pool for background job enqueueing from API handlers
+    import arq
+    from app.worker.tasks import WorkerSettings
+    arq_pool = await arq.create_pool(WorkerSettings.from_config().redis_settings)
+    app.state.arq_pool = arq_pool
     yield
+    await arq_pool.close()
 
 
 app = FastAPI(

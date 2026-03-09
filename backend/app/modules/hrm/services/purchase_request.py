@@ -1,12 +1,37 @@
 import uuid
+from decimal import Decimal
 
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.modules.hrm.dependencies.rbac import HRM_ROLE_RANK
 from app.modules.hrm.models.purchase_request import PurchaseRequest
 from app.modules.hrm.schemas.purchase_request import PurchaseRequestCreate, PurchaseRequestUpdate
+from app.modules.hrm.services.status_transitions import validate_transition
+
+PURCHASE_TRANSITIONS: dict[str, list[str]] = {
+    "draft": ["submitted"],
+    "submitted": ["approved", "rejected"],
+    "approved": [],
+    "rejected": [],
+}
+
+# (exclusive upper bound in VND, minimum hrm_role required)
+_PURCHASE_THRESHOLDS: list[tuple[Decimal, str]] = [
+    (Decimal("5000000"), "line_manager"),
+    (Decimal("20000000"), "hr_admin"),
+    (Decimal("999999999999"), "ceo"),
+]
+
+
+def _required_role_for_amount(amount: float) -> str:
+    amt = Decimal(str(amount))
+    for threshold, role in _PURCHASE_THRESHOLDS:
+        if amt < threshold:
+            return role
+    return "ceo"
 
 
 async def create_purchase_request(
@@ -84,8 +109,7 @@ async def submit_request(
     db: AsyncSession, pr_id: uuid.UUID, workspace_id: uuid.UUID
 ) -> PurchaseRequest:
     pr = await get_purchase_request(db, pr_id, workspace_id)
-    if pr.status != "draft":
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only draft requests can be submitted")
+    validate_transition(pr.status, "submitted", PURCHASE_TRANSITIONS, "PurchaseRequest")
     pr.status = "submitted"
     await db.commit()
     await db.refresh(pr)
@@ -93,11 +117,24 @@ async def submit_request(
 
 
 async def approve_request(
-    db: AsyncSession, pr_id: uuid.UUID, workspace_id: uuid.UUID, approver_id: uuid.UUID
+    db: AsyncSession,
+    pr_id: uuid.UUID,
+    workspace_id: uuid.UUID,
+    approver_id: uuid.UUID,
+    approver_hrm_role: str | None = None,
 ) -> PurchaseRequest:
     pr = await get_purchase_request(db, pr_id, workspace_id)
-    if pr.status != "submitted":
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only submitted requests can be approved")
+    validate_transition(pr.status, "approved", PURCHASE_TRANSITIONS, "PurchaseRequest")
+
+    # Threshold-based role check (skip if approver_hrm_role not provided — router enforces via Depends)
+    if approver_hrm_role is not None:
+        required = _required_role_for_amount(float(pr.estimated_total))
+        if HRM_ROLE_RANK.get(approver_hrm_role, 0) < HRM_ROLE_RANK.get(required, 0):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Amount requires HRM role '{required}' or higher to approve",
+            )
+
     pr.status = "approved"
     pr.approved_by_id = approver_id
     await db.commit()
@@ -109,8 +146,7 @@ async def reject_request(
     db: AsyncSession, pr_id: uuid.UUID, workspace_id: uuid.UUID
 ) -> PurchaseRequest:
     pr = await get_purchase_request(db, pr_id, workspace_id)
-    if pr.status != "submitted":
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only submitted requests can be rejected")
+    validate_transition(pr.status, "rejected", PURCHASE_TRANSITIONS, "PurchaseRequest")
     pr.status = "rejected"
     await db.commit()
     await db.refresh(pr)

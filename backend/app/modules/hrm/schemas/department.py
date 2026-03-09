@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 
 class DepartmentCreate(BaseModel):
     name: str = Field(min_length=1, max_length=255)
+    code: str | None = Field(default=None, max_length=20)
     description: str | None = Field(default=None, max_length=500)
     parent_department_id: uuid.UUID | None = None
     manager_id: uuid.UUID | None = None
@@ -12,6 +13,7 @@ class DepartmentCreate(BaseModel):
 
 class DepartmentUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=255)
+    code: str | None = Field(default=None, max_length=20)
     description: str | None = None
     parent_department_id: uuid.UUID | None = None
     manager_id: uuid.UUID | None = None
@@ -20,6 +22,7 @@ class DepartmentUpdate(BaseModel):
 class DepartmentResponse(BaseModel):
     id: uuid.UUID
     name: str
+    code: str | None = None
     description: str | None
     workspace_id: uuid.UUID
     parent_department_id: uuid.UUID | None = None
@@ -31,6 +34,7 @@ class DepartmentResponse(BaseModel):
 class DepartmentTreeNode(BaseModel):
     id: uuid.UUID
     name: str
+    code: str | None = None
     description: str | None = None
     parent_department_id: uuid.UUID | None = None
     manager_id: uuid.UUID | None = None

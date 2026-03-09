@@ -40,6 +40,13 @@ class Settings(BaseSettings):
     # Rate limiting (set False in tests to disable)
     RATE_LIMIT_ENABLED: bool = True
 
+    # SMTP (optional — email sending silently skipped if SMTP_HOST is empty)
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_FROM: str = "noreply@a-erp.local"
+
     @property
     def is_development(self) -> bool:
         return self.ENVIRONMENT == "development"

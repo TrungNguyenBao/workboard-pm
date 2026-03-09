@@ -1,12 +1,15 @@
 import uuid
 
 from fastapi import APIRouter, Depends, Query, status
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
+from app.models.workspace import WorkspaceMembership
 from app.schemas.pagination import PaginatedResponse
+from app.modules.hrm.dependencies.rbac import require_hrm_role
 from app.modules.hrm.schemas.purchase_request import (
     PurchaseRequestCreate,
     PurchaseRequestResponse,
@@ -117,10 +120,17 @@ async def submit(
 async def approve(
     workspace_id: uuid.UUID,
     pr_id: uuid.UUID,
-    current_user: User = Depends(require_workspace_role("admin")),
+    current_user: User = Depends(require_hrm_role("line_manager")),
     db: AsyncSession = Depends(get_db),
 ):
-    return await approve_request(db, pr_id, workspace_id, current_user.id)
+    membership = await db.scalar(
+        select(WorkspaceMembership).where(
+            WorkspaceMembership.workspace_id == workspace_id,
+            WorkspaceMembership.user_id == current_user.id,
+        )
+    )
+    approver_hrm_role = membership.hrm_role if membership else None
+    return await approve_request(db, pr_id, workspace_id, current_user.id, approver_hrm_role)
 
 
 @router.post(

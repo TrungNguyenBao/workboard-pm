@@ -25,6 +25,8 @@ class PayrollRecordCreate(BaseModel):
     pit_amount: Decimal = Field(default=Decimal("0"), ge=0)
     working_days: int | None = None
     actual_working_days: int | None = None
+    ot_pay: Decimal | None = Field(default=None, ge=0)
+    dependents: int = Field(default=0, ge=0)
 
 
 class PayrollRecordUpdate(BaseModel):
@@ -46,6 +48,8 @@ class PayrollRecordUpdate(BaseModel):
     pit_amount: Decimal | None = Field(default=None, ge=0)
     working_days: int | None = None
     actual_working_days: int | None = None
+    ot_pay: Decimal | None = Field(default=None, ge=0)
+    dependents: int | None = Field(default=None, ge=0)
 
 
 class PayrollRecordResponse(BaseModel):
@@ -71,5 +75,7 @@ class PayrollRecordResponse(BaseModel):
     pit_amount: Decimal = Decimal("0")
     working_days: int | None = None
     actual_working_days: int | None = None
+    ot_pay: Decimal | None = None
+    dependents: int = 0
 
     model_config = {"from_attributes": True}

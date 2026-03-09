@@ -4,8 +4,19 @@ from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.modules.hrm.models.employee import Employee
 from app.modules.hrm.models.resignation import Resignation
 from app.modules.hrm.schemas.resignation import ResignationCreate, ResignationUpdate
+from app.modules.hrm.services.status_transitions import validate_transition
+
+RESIGNATION_TRANSITIONS: dict[str, list[str]] = {
+    "pending": ["approved", "rejected"],
+    "approved": ["handover"],
+    "handover": ["exit_interview"],
+    "exit_interview": ["completed"],
+    "completed": [],
+    "rejected": [],
+}
 
 
 async def create_resignation(
@@ -69,29 +80,42 @@ async def update_resignation(
     return r
 
 
+async def advance_resignation(
+    db: AsyncSession,
+    resignation_id: uuid.UUID,
+    workspace_id: uuid.UUID,
+    target_status: str,
+    actor_id: uuid.UUID,
+) -> Resignation:
+    r = await get_resignation(db, resignation_id, workspace_id)
+    validate_transition(r.status, target_status, RESIGNATION_TRANSITIONS, "Resignation")
+    r.status = target_status
+    if target_status in ("approved", "rejected"):
+        r.approved_by_id = actor_id
+    if target_status == "completed":
+        # Mark employee inactive
+        emp = await db.scalar(
+            select(Employee).where(
+                Employee.id == r.employee_id, Employee.workspace_id == workspace_id
+            )
+        )
+        if emp:
+            emp.employee_status = "inactive"
+    await db.commit()
+    await db.refresh(r)
+    return r
+
+
 async def approve_resignation(
     db: AsyncSession, resignation_id: uuid.UUID, workspace_id: uuid.UUID, approver_id: uuid.UUID
 ) -> Resignation:
-    r = await get_resignation(db, resignation_id, workspace_id)
-    if r.status != "pending":
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only pending resignations can be approved")
-    r.status = "approved"
-    r.approved_by_id = approver_id
-    await db.commit()
-    await db.refresh(r)
-    return r
+    return await advance_resignation(db, resignation_id, workspace_id, "approved", approver_id)
 
 
 async def reject_resignation(
-    db: AsyncSession, resignation_id: uuid.UUID, workspace_id: uuid.UUID
+    db: AsyncSession, resignation_id: uuid.UUID, workspace_id: uuid.UUID, approver_id: uuid.UUID
 ) -> Resignation:
-    r = await get_resignation(db, resignation_id, workspace_id)
-    if r.status != "pending":
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only pending resignations can be rejected")
-    r.status = "rejected"
-    await db.commit()
-    await db.refresh(r)
-    return r
+    return await advance_resignation(db, resignation_id, workspace_id, "rejected", approver_id)
 
 
 async def delete_resignation(

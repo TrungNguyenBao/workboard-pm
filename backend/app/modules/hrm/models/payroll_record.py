@@ -36,6 +36,8 @@ class PayrollRecord(Base, TimestampMixin):
     pit_amount: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=0)
     working_days: Mapped[int | None] = mapped_column(Integer, nullable=True)
     actual_working_days: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    ot_pay: Mapped[Decimal | None] = mapped_column(Numeric(12, 2), nullable=True)
+    dependents: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
 
     employee: Mapped["Employee"] = relationship()  # noqa: F821
     workspace: Mapped["Workspace"] = relationship()  # noqa: F821

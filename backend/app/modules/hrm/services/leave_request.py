@@ -1,11 +1,32 @@
 import uuid
+from datetime import date
 
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.hrm.models.leave_request import LeaveRequest
+from app.modules.hrm.models.leave_type import LeaveType
 from app.modules.hrm.schemas.leave_request import LeaveRequestCreate, LeaveRequestUpdate
+
+
+def _calc_days(start: date, end: date) -> int:
+    """Inclusive calendar-day count (not business-day aware; matches existing integer field)."""
+    return max((end - start).days + 1, 1)
+
+
+async def _get_used_days(
+    db: AsyncSession, employee_id: uuid.UUID, leave_type_id: uuid.UUID, workspace_id: uuid.UUID, exclude_id: uuid.UUID | None = None
+) -> int:
+    q = select(func.coalesce(func.sum(LeaveRequest.days), 0)).where(
+        LeaveRequest.employee_id == employee_id,
+        LeaveRequest.leave_type_id == leave_type_id,
+        LeaveRequest.workspace_id == workspace_id,
+        LeaveRequest.status == "approved",
+    )
+    if exclude_id:
+        q = q.where(LeaveRequest.id != exclude_id)
+    return int(await db.scalar(q) or 0)
 
 
 async def create_leave_request(
@@ -75,6 +96,24 @@ async def approve_leave_request(
     lr = await get_leave_request(db, leave_request_id, workspace_id)
     if lr.status != "pending":
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only pending requests can be approved")
+
+    # Auto-calc days from date range if zero/null
+    if not lr.days:
+        lr.days = _calc_days(lr.start_date, lr.end_date)
+
+    # Validate leave balance against leave type's annual allowance
+    leave_type = await db.scalar(
+        select(LeaveType).where(LeaveType.id == lr.leave_type_id)
+    )
+    if leave_type and leave_type.days_per_year > 0:
+        used = await _get_used_days(db, lr.employee_id, lr.leave_type_id, workspace_id, exclude_id=lr.id)
+        remaining = leave_type.days_per_year - used
+        if lr.days > remaining:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Insufficient leave balance: {remaining} day(s) remaining, {lr.days} requested",
+            )
+
     lr.status = "approved"
     lr.reviewed_by_id = reviewer_id
     await db.commit()

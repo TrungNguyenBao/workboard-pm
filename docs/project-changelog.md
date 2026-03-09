@@ -5,6 +5,73 @@ Format: `## [version] — YYYY-MM-DD` with grouped entries.
 
 ---
 
+## [2.5.0] — 2026-03-09
+
+### Added — HRM SOP Compliance (Phases 1-3)
+
+**Phase 1: Foundation (RBAC + Employee Model + Status Machines)**
+- **HR RBAC System** — `hrm_role` column added to `WorkspaceMembership` with ranks: `line_manager` (1), `hr_manager` (2), `hr_admin` (3), `ceo` (4). Workspace admins bypass HRM role checks. Created `require_hrm_role()` dependency in `backend/app/modules/hrm/dependencies/rbac.py`.
+- **Employee Model Expansion** — 7 new fields: `date_of_birth`, `address`, `national_id`, `bank_account_number`, `bank_name`, `phone`, plus `employee_status` enum (`active`/`inactive`/`probation`).
+- **Department Code** — Added workspace-scoped unique `code` column (e.g., "KY_THUAT", "SALES").
+- **Offer Model Enhancement** — Added `contract_type` (e.g., `full_time`, `part_time`, `contractor`) and `benefits` (JSONB).
+- **RecruitmentRequest Salary Range** — Added `salary_range_min` and `salary_range_max` (Numeric). Changed default status from `open` to `draft`.
+- **Status Transition Helper** — `status_transitions.py` service with `validate_transition()` function for reusable workflow validation.
+- **Alembic Migration 0019** — Applied successfully with backward-compatible nullable columns and defaults.
+
+**Phase 2: Business Logic (Workflows + Auto-calculation)**
+- **OT Rate Constants** — Added to `vn_tax.py`: `OT_RATE_WEEKDAY = 1.5`, `OT_RATE_WEEKEND = 2.0`, `OT_RATE_HOLIDAY = 3.0`. New `calculate_ot_pay()` function for rate-based payroll calculations.
+- **OvertimeRequest Model** — Full CRUD + approval workflow (`pending` → `approved`|`rejected`). Tracks employee, date, planned hours, approval timestamp, and approver.
+- **AttendanceCorrection Model** — Full CRUD + approval workflow. On approval, applies correction to original AttendanceRecord and recalculates daily hours.
+- **7 Approval State Machines**:
+  - **Recruitment**: `draft` → `submitted` → `hr_approved` → `ceo_approved` | `rejected` (legacy `open` compat)
+  - **Offer**: `draft` → `hr_approved` → `sent` → `accepted` | `rejected`
+  - **Payroll**: `draft` → `reviewed` → `approved` → `paid`
+  - **Leave**: Validates balance; auto-calculates business days
+  - **Resignation**: `pending` → `approved` → `handover` → `exit_interview` → `completed` (marks employee inactive on completion)
+  - **Training**: `planned` → `approved` → `in_progress` → `completed` | `cancelled`
+  - **Purchase Request**: Threshold-based approval (< 5M: line_manager, < 20M: hr_admin, >= 20M: ceo)
+- **Payroll Auto-calculation** — Integrated contract base salary + attendance summary + OT rates + vn_tax breakdown. All fields auto-populated from existing data.
+- **Leave Balance Validation** — Prevents approval if insufficient leave balance. Auto-calculates days from date range if null.
+- **Headcount Validation** — Recruitment request submission validates requested quantity against department headcount limits.
+- **Alembic Migration 0020** — Creates `overtime_requests` and `attendance_corrections` tables. Adds `ot_pay` and `dependents` columns to `payroll_records`.
+
+**Phase 3: Integration & UX (Email + Documents + DnD Pipeline + Org Chart)**
+- **ARQ Worker Pool** — Initialized in `main.py` lifespan event. Redis connection configured in `core/config.py`.
+- **Email Notifications** — New `send_hrm_notification` ARQ job in `worker/tasks.py`. HTML email support with `html.escape()` for XSS prevention. Email triggers:
+  - Offer sent (to candidate)
+  - Leave approved/rejected (to employee)
+  - Payroll published (to employee)
+  - Resignation status changes (to employee)
+- **HrmDocument Model** — Tracks uploaded files per entity (`employee`, `recruitment_request`, `contract`). Stores filename, path, size, mime_type, uploader. Indexed on `(entity_type, entity_id)` and `workspace_id`.
+- **Document Upload Router** — `POST /documents` (multipart/form-data), `GET /documents?entity_type=&entity_id=`, `DELETE /documents/{id}`. File size limit: 10MB. MIME validation (pdf, png, jpg, doc, docx).
+- **Interview Model Fields** — Added `room` (VARCHAR(100)) for meeting location and `panel_ids` (JSONB) for array of interviewer UUIDs.
+- **CandidatePipelineBoard** — Drag-and-drop kanban with 7 stages: `applied` → `screening` → `assessment` → `interviewing` → `offered` → `hired` | `rejected`. Reuses `@dnd-kit` pattern from PMS board.
+- **VisualOrgChart** — Box-and-line hierarchical tree layout using CSS flexbox + pseudo-elements. Displays department name, code, headcount, manager. List/Org Chart view toggle.
+- **CandidateDetailPanel Extraction** — Split to separate file maintaining 200-line compliance.
+- **Dead Code Removal** — Removed unused `arq_pool.py` file.
+- **Alembic Migration 0021** — Creates `hrm_documents` table. Adds `room` and `panel_ids` columns to `interviews`.
+
+### Changed
+- All HRM routers now respect `require_hrm_role()` dependency for action endpoints
+- Email bodies use LeaveType name resolution instead of UUID references
+- LeaveType response includes name field for email template rendering
+
+### Security
+- HTML email escaping prevents XSS injection in notification bodies
+- Document upload MIME type validation prevents script execution
+- Panel IDs validated as list of valid user UUIDs before persistence
+- File upload path sanitization prevents directory traversal
+
+### Backward Compatibility
+- All new model fields are nullable or have sensible defaults
+- RecruitmentRequest status change (`open` → `draft`) doesn't affect existing records with `open` status
+- Legacy `open` status supported in recruitment transition map
+
+### New Dependencies
+None — leverages existing ARQ, SQLAlchemy, and Pydantic.
+
+---
+
 ## [2.4.0] — 2026-03-05
 
 ### Added — Full UI Overhaul (Phases 1-8)

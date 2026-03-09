@@ -12,11 +12,15 @@ from app.modules.hrm.schemas.training_program import (
     TrainingProgramResponse,
     TrainingProgramUpdate,
 )
+from app.modules.hrm.dependencies.rbac import require_hrm_role
 from app.modules.hrm.services.training_program import (
+    approve_training,
+    complete_training,
     create_training_program,
     delete_training_program,
     get_training_program,
     list_training_programs,
+    start_training,
     update_training_program,
 )
 
@@ -92,3 +96,42 @@ async def delete(
     db: AsyncSession = Depends(get_db),
 ):
     await delete_training_program(db, program_id, workspace_id)
+
+
+@router.post(
+    "/workspaces/{workspace_id}/training-programs/{program_id}/approve",
+    response_model=TrainingProgramResponse,
+)
+async def approve(
+    workspace_id: uuid.UUID,
+    program_id: uuid.UUID,
+    current_user: User = Depends(require_hrm_role("hr_manager")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await approve_training(db, program_id, workspace_id, current_user.id)
+
+
+@router.post(
+    "/workspaces/{workspace_id}/training-programs/{program_id}/start",
+    response_model=TrainingProgramResponse,
+)
+async def start(
+    workspace_id: uuid.UUID,
+    program_id: uuid.UUID,
+    current_user: User = Depends(require_workspace_role("member")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await start_training(db, program_id, workspace_id)
+
+
+@router.post(
+    "/workspaces/{workspace_id}/training-programs/{program_id}/complete",
+    response_model=TrainingProgramResponse,
+)
+async def complete(
+    workspace_id: uuid.UUID,
+    program_id: uuid.UUID,
+    current_user: User = Depends(require_hrm_role("hr_manager")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await complete_training(db, program_id, workspace_id)

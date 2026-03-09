@@ -36,6 +36,7 @@ class WorkspaceMembership(Base, TimestampMixin):
     invite_token: Mapped[str | None] = mapped_column(
         String(255), nullable=True, unique=True
     )
+    hrm_role: Mapped[str | None] = mapped_column(String(30), nullable=True)
 
     workspace: Mapped["Workspace"] = relationship(back_populates="memberships")
     user: Mapped["User"] = relationship(back_populates="workspace_memberships")  # noqa: F821

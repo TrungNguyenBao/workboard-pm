@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -12,6 +12,11 @@ class Department(Base, TimestampMixin):
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(255))
+    code: Mapped[str | None] = mapped_column(String(20), nullable=True)
+
+    __table_args__ = (
+        UniqueConstraint("workspace_id", "code", name="uq_departments_workspace_code"),
+    )
     description: Mapped[str | None] = mapped_column(String(500), nullable=True)
     workspace_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("workspaces.id"), index=True)
     parent_department_id: Mapped[uuid.UUID | None] = mapped_column(

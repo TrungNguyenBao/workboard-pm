@@ -15,6 +15,8 @@ class OfferCreate(BaseModel):
     expiry_date: date | None = None
     status: str = "draft"
     notes: str | None = None
+    contract_type: str | None = None
+    benefits: dict | None = None
 
     @field_validator("status")
     @classmethod
@@ -31,6 +33,8 @@ class OfferUpdate(BaseModel):
     expiry_date: date | None = None
     status: str | None = None
     notes: str | None = None
+    contract_type: str | None = None
+    benefits: dict | None = None
 
     @field_validator("status")
     @classmethod
@@ -49,6 +53,8 @@ class OfferResponse(BaseModel):
     expiry_date: date | None
     status: str
     notes: str | None
+    contract_type: str | None = None
+    benefits: dict | None = None
     workspace_id: uuid.UUID
 
     model_config = {"from_attributes": True}

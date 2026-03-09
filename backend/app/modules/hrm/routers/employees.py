@@ -7,7 +7,9 @@ from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
 from app.schemas.pagination import PaginatedResponse
-from app.modules.hrm.schemas.employee import EmployeeCreate, EmployeeDetailResponse, EmployeeResponse, EmployeeUpdate
+from app.modules.hrm.schemas.employee import (
+    EmployeeCreate, EmployeeDetailResponse, EmployeeListResponse, EmployeeResponse, EmployeeUpdate,
+)
 from app.modules.hrm.services.employee import (
     create_employee,
     delete_employee,
@@ -36,7 +38,7 @@ async def create(
 
 @router.get(
     "/workspaces/{workspace_id}/employees",
-    response_model=PaginatedResponse[EmployeeResponse],
+    response_model=PaginatedResponse[EmployeeListResponse],
 )
 async def list_(
     workspace_id: uuid.UUID,

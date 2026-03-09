@@ -12,11 +12,16 @@ from app.modules.hrm.schemas.recruitment_request import (
     RecruitmentRequestResponse,
     RecruitmentRequestUpdate,
 )
+from app.modules.hrm.dependencies.rbac import require_hrm_role
 from app.modules.hrm.services.recruitment_request import (
+    approve_recruitment_ceo,
+    approve_recruitment_hr,
     create_recruitment_request,
     delete_recruitment_request,
     get_recruitment_request,
     list_recruitment_requests,
+    reject_recruitment_request,
+    submit_recruitment_request,
     update_recruitment_request,
 )
 
@@ -92,3 +97,55 @@ async def delete(
     db: AsyncSession = Depends(get_db),
 ):
     await delete_recruitment_request(db, request_id, workspace_id)
+
+
+@router.post(
+    "/workspaces/{workspace_id}/recruitment-requests/{request_id}/submit",
+    response_model=RecruitmentRequestResponse,
+)
+async def submit(
+    workspace_id: uuid.UUID,
+    request_id: uuid.UUID,
+    current_user: User = Depends(require_workspace_role("member")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await submit_recruitment_request(db, request_id, workspace_id, current_user.id)
+
+
+@router.post(
+    "/workspaces/{workspace_id}/recruitment-requests/{request_id}/approve-hr",
+    response_model=RecruitmentRequestResponse,
+)
+async def approve_hr(
+    workspace_id: uuid.UUID,
+    request_id: uuid.UUID,
+    current_user: User = Depends(require_hrm_role("hr_manager")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await approve_recruitment_hr(db, request_id, workspace_id, current_user.id)
+
+
+@router.post(
+    "/workspaces/{workspace_id}/recruitment-requests/{request_id}/approve-ceo",
+    response_model=RecruitmentRequestResponse,
+)
+async def approve_ceo(
+    workspace_id: uuid.UUID,
+    request_id: uuid.UUID,
+    current_user: User = Depends(require_hrm_role("ceo")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await approve_recruitment_ceo(db, request_id, workspace_id, current_user.id)
+
+
+@router.post(
+    "/workspaces/{workspace_id}/recruitment-requests/{request_id}/reject",
+    response_model=RecruitmentRequestResponse,
+)
+async def reject(
+    workspace_id: uuid.UUID,
+    request_id: uuid.UUID,
+    current_user: User = Depends(require_hrm_role("hr_manager")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await reject_recruitment_request(db, request_id, workspace_id, current_user.id)

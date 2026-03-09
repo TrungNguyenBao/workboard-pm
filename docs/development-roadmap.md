@@ -1,6 +1,6 @@
 # A-ERP — Development Roadmap
 
-**Last updated:** 2026-03-07
+**Last updated:** 2026-03-09
 
 ---
 
@@ -291,3 +291,44 @@ Sprint management, agile workflow, project type classification, and burndown/vel
 | Backend Tests: Verify backlog endpoint and agile field round-trip | Done |
 | Frontend Tests: Create sprint-selector.test.tsx (render, selection logic) | Done |
 | Verification: All 5 phases complete with zero regressions | Done |
+
+---
+
+## Phase 14 — HRM SOP Compliance Implementation (Complete)
+
+Full HRM module compliance with business logic, approval workflows, RBAC, and integrations.
+
+| Item | Status |
+|---|---|
+| **Phase 1: Foundation (RBAC + Employee + Status Machines)** | |
+| Backend: Add `hrm_role` column to WorkspaceMembership | Done |
+| Backend: Create `require_hrm_role()` dependency in `modules/hrm/dependencies/rbac.py` | Done |
+| Backend: Expand Employee model (7 fields: DOB, address, national_id, bank_account, bank_name, phone, employee_status) | Done |
+| Backend: Add Department `code` column (workspace-scoped unique) | Done |
+| Backend: Add Offer `contract_type` and `benefits` (JSONB) columns | Done |
+| Backend: Add RecruitmentRequest `salary_range_min`/`max` and change status default to `draft` | Done |
+| Backend: Create `status_transitions.py` validation helper | Done |
+| Backend: Create Alembic migration 0019_hrm_phase1_rbac_employee_statuses.py | Done |
+| **Phase 2: Business Logic (Workflows + Auto-calc)** | |
+| Backend: Add OT rate constants to `vn_tax.py` (1.5x weekday, 2.0x weekend, 3.0x holiday) | Done |
+| Backend: Create OvertimeRequest model, schema, service, router | Done |
+| Backend: Create AttendanceCorrection model, schema, service, router | Done |
+| Backend: Wire 7 approval state machines (recruitment, offer, payroll, leave, resignation, training, purchase_request) | Done |
+| Backend: Implement payroll auto-calculation (base + allowances + OT - insurance - PIT) | Done |
+| Backend: Wire leave balance validation + auto-calc business days | Done |
+| Backend: Wire headcount validation on recruitment submission | Done |
+| Backend: Create Alembic migration 0020_hrm_phase2_overtime_correction_models.py | Done |
+| **Phase 3: Integration & UX (Email + Documents + DnD Pipeline + Org Chart)** | |
+| Backend: Initialize ARQ worker pool in `main.py` lifespan | Done |
+| Backend: Create `send_hrm_notification` ARQ job with HTML email support | Done |
+| Backend: Wire email notifications (offer sent, leave approved/rejected, payroll published, resignation) | Done |
+| Backend: Create HrmDocument model, schema, service, router (file uploads per entity) | Done |
+| Backend: Add Interview model `room` and `panel_ids` (JSONB) fields | Done |
+| Backend: Create Alembic migration 0021_hrm_phase3_documents_interview_fields.py | Done |
+| Frontend: Create CandidatePipelineBoard with 7-stage DnD kanban (applied→hired) | Done |
+| Frontend: Create VisualOrgChart with box-and-line hierarchical layout | Done |
+| Frontend: Extract CandidateDetailPanel to separate file (200-line compliance) | Done |
+| Frontend: Remove dead code (arq_pool.py) | Done |
+| All migrations applied and tested | Done |
+| All endpoints wired and routers registered | Done |
+| Email notifications working with html.escape for security | Done |

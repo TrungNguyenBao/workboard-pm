@@ -6,6 +6,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.hrm.models.training_program import TrainingProgram
 from app.modules.hrm.schemas.training_program import TrainingProgramCreate, TrainingProgramUpdate
+from app.modules.hrm.services.status_transitions import validate_transition
+
+TRAINING_TRANSITIONS: dict[str, list[str]] = {
+    "planned": ["approved", "cancelled"],
+    "approved": ["in_progress", "cancelled"],
+    "in_progress": ["completed"],
+    "completed": [],
+    "cancelled": [],
+}
 
 
 async def create_training_program(
@@ -77,3 +86,36 @@ async def delete_training_program(
     program = await get_training_program(db, program_id, workspace_id)
     await db.delete(program)
     await db.commit()
+
+
+async def approve_training(
+    db: AsyncSession, program_id: uuid.UUID, workspace_id: uuid.UUID, reviewer_id: uuid.UUID
+) -> TrainingProgram:
+    program = await get_training_program(db, program_id, workspace_id)
+    validate_transition(program.status, "approved", TRAINING_TRANSITIONS, "TrainingProgram")
+    program.status = "approved"
+    await db.commit()
+    await db.refresh(program)
+    return program
+
+
+async def start_training(
+    db: AsyncSession, program_id: uuid.UUID, workspace_id: uuid.UUID
+) -> TrainingProgram:
+    program = await get_training_program(db, program_id, workspace_id)
+    validate_transition(program.status, "in_progress", TRAINING_TRANSITIONS, "TrainingProgram")
+    program.status = "in_progress"
+    await db.commit()
+    await db.refresh(program)
+    return program
+
+
+async def complete_training(
+    db: AsyncSession, program_id: uuid.UUID, workspace_id: uuid.UUID
+) -> TrainingProgram:
+    program = await get_training_program(db, program_id, workspace_id)
+    validate_transition(program.status, "completed", TRAINING_TRANSITIONS, "TrainingProgram")
+    program.status = "completed"
+    await db.commit()
+    await db.refresh(program)
+    return program

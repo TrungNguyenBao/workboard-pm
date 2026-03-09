@@ -3,6 +3,31 @@
 Hardcoded 2024 Vietnam tax law constants. Pure functions — no DB access.
 """
 
+from decimal import Decimal
+
+# Overtime multipliers per VN Labor Law
+OT_RATE_WEEKDAY = Decimal("1.5")
+OT_RATE_WEEKEND = Decimal("2.0")
+OT_RATE_HOLIDAY = Decimal("3.0")
+
+
+def calculate_ot_pay(
+    base_salary: float,
+    working_days: int,
+    ot_weekday_hours: float = 0,
+    ot_weekend_hours: float = 0,
+    ot_holiday_hours: float = 0,
+) -> float:
+    """Calculate total OT pay based on VN labor law multipliers."""
+    hourly = base_salary / working_days / 8 if working_days > 0 else 0
+    return round(
+        hourly * ot_weekday_hours * float(OT_RATE_WEEKDAY)
+        + hourly * ot_weekend_hours * float(OT_RATE_WEEKEND)
+        + hourly * ot_holiday_hours * float(OT_RATE_HOLIDAY),
+        2,
+    )
+
+
 # Social insurance caps (monthly, VND)
 _BHXH_CAP = 36_400_000   # 20x base salary (1,820,000 * 20)
 _BHTN_CAP = 29_800_000   # max wage for unemployment insurance

@@ -6,6 +6,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.hrm.models.offer import Offer
 from app.modules.hrm.schemas.offer import OfferCreate, OfferUpdate
+from app.modules.hrm.services.status_transitions import validate_transition
+
+OFFER_TRANSITIONS: dict[str, list[str]] = {
+    "draft": ["hr_approved"],
+    "hr_approved": ["sent", "rejected"],
+    "sent": ["accepted", "rejected"],
+    "accepted": [],
+    "rejected": [],
+}
 
 
 async def create_offer(
@@ -66,10 +75,20 @@ async def update_offer(
     return o
 
 
+async def approve_offer_hr(
+    db: AsyncSession, offer_id: uuid.UUID, workspace_id: uuid.UUID, reviewer_id: uuid.UUID
+) -> Offer:
+    o = await get_offer(db, offer_id, workspace_id)
+    validate_transition(o.status, "hr_approved", OFFER_TRANSITIONS, "Offer")
+    o.status = "hr_approved"
+    await db.commit()
+    await db.refresh(o)
+    return o
+
+
 async def send_offer(db: AsyncSession, offer_id: uuid.UUID, workspace_id: uuid.UUID) -> Offer:
     o = await get_offer(db, offer_id, workspace_id)
-    if o.status != "draft":
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only draft offers can be sent")
+    validate_transition(o.status, "sent", OFFER_TRANSITIONS, "Offer")
     o.status = "sent"
     await db.commit()
     await db.refresh(o)
@@ -78,8 +97,7 @@ async def send_offer(db: AsyncSession, offer_id: uuid.UUID, workspace_id: uuid.U
 
 async def accept_offer(db: AsyncSession, offer_id: uuid.UUID, workspace_id: uuid.UUID) -> Offer:
     o = await get_offer(db, offer_id, workspace_id)
-    if o.status != "sent":
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only sent offers can be accepted")
+    validate_transition(o.status, "accepted", OFFER_TRANSITIONS, "Offer")
     o.status = "accepted"
     await db.commit()
     await db.refresh(o)
@@ -88,8 +106,7 @@ async def accept_offer(db: AsyncSession, offer_id: uuid.UUID, workspace_id: uuid
 
 async def reject_offer(db: AsyncSession, offer_id: uuid.UUID, workspace_id: uuid.UUID) -> Offer:
     o = await get_offer(db, offer_id, workspace_id)
-    if o.status != "sent":
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only sent offers can be rejected")
+    validate_transition(o.status, "rejected", OFFER_TRANSITIONS, "Offer")
     o.status = "rejected"
     await db.commit()
     await db.refresh(o)

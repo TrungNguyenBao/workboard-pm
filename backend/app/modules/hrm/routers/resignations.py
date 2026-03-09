@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -8,7 +8,9 @@ from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
 from app.schemas.pagination import PaginatedResponse
 from app.modules.hrm.schemas.resignation import ResignationCreate, ResignationResponse, ResignationUpdate
+from app.modules.hrm.dependencies.rbac import require_hrm_role
 from app.modules.hrm.services.resignation import (
+    advance_resignation,
     approve_resignation,
     create_resignation,
     delete_resignation,
@@ -99,7 +101,7 @@ async def delete(
 async def approve(
     workspace_id: uuid.UUID,
     resignation_id: uuid.UUID,
-    current_user: User = Depends(require_workspace_role("admin")),
+    current_user: User = Depends(require_hrm_role("hr_manager")),
     db: AsyncSession = Depends(get_db),
 ):
     return await approve_resignation(db, resignation_id, workspace_id, current_user.id)
@@ -112,7 +114,29 @@ async def approve(
 async def reject(
     workspace_id: uuid.UUID,
     resignation_id: uuid.UUID,
-    current_user: User = Depends(require_workspace_role("admin")),
+    current_user: User = Depends(require_hrm_role("hr_manager")),
     db: AsyncSession = Depends(get_db),
 ):
-    return await reject_resignation(db, resignation_id, workspace_id)
+    return await reject_resignation(db, resignation_id, workspace_id, current_user.id)
+
+
+VALID_ADVANCE_TARGETS = {"approved", "handover", "exit_interview", "completed", "rejected"}
+
+
+@router.post(
+    "/workspaces/{workspace_id}/resignations/{resignation_id}/advance",
+    response_model=ResignationResponse,
+)
+async def advance(
+    workspace_id: uuid.UUID,
+    resignation_id: uuid.UUID,
+    target_status: str,
+    current_user: User = Depends(require_hrm_role("hr_admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    if target_status not in VALID_ADVANCE_TARGETS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid target_status. Must be one of: {VALID_ADVANCE_TARGETS}",
+        )
+    return await advance_resignation(db, resignation_id, workspace_id, target_status, current_user.id)

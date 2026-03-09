@@ -3,6 +3,7 @@ from datetime import date
 from decimal import Decimal
 
 from sqlalchemy import Date, ForeignKey, Numeric, String, Text
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -22,6 +23,8 @@ class Offer(Base, TimestampMixin):
     expiry_date: Mapped[date | None] = mapped_column(Date, nullable=True)
     status: Mapped[str] = mapped_column(String(20), default="draft")
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    contract_type: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    benefits: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
     workspace_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("workspaces.id"), index=True)
 
     candidate: Mapped["Candidate"] = relationship(back_populates="offers")  # noqa: F821

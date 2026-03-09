@@ -1,7 +1,7 @@
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 
-from sqlalchemy import DateTime, ForeignKey, String
+from sqlalchemy import Date, DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -19,6 +19,15 @@ class Employee(Base, TimestampMixin):
     position: Mapped[str | None] = mapped_column(String(255), nullable=True)
     hire_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     workspace_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("workspaces.id"), index=True)
+    date_of_birth: Mapped[date | None] = mapped_column(Date, nullable=True)
+    address: Mapped[str | None] = mapped_column(Text, nullable=True)
+    national_id: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    bank_account_number: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    bank_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    phone: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    employee_status: Mapped[str] = mapped_column(
+        String(20), default="active", server_default="active"
+    )  # active / inactive / probation
 
     user: Mapped["User | None"] = relationship()  # noqa: F821
     department: Mapped["Department | None"] = relationship(

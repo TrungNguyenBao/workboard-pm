@@ -3,10 +3,12 @@ from fastapi import APIRouter
 from app.modules.hrm.routers import (
     asset_assignments,
     assets,
+    attendance_corrections,
     attendance_records,
     candidates,
     contracts,
     departments,
+    documents,
     employees,
     exit_interviews,
     handover_tasks,
@@ -18,6 +20,7 @@ from app.modules.hrm.routers import (
     leave_types,
     offers,
     onboarding_checklists,
+    overtime_requests,
     payroll_records,
     performance_reviews,
     positions,
@@ -61,3 +64,6 @@ hrm_router.include_router(assets.router)
 hrm_router.include_router(asset_assignments.router)
 hrm_router.include_router(purchase_requests.router)
 hrm_router.include_router(purchase_items.router)
+hrm_router.include_router(overtime_requests.router)
+hrm_router.include_router(attendance_corrections.router)
+hrm_router.include_router(documents.router)

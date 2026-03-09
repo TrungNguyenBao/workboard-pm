@@ -1,19 +1,25 @@
+import logging
 import uuid
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, Query, Request, status
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
 from app.schemas.pagination import PaginatedResponse
+from app.modules.hrm.models.candidate import Candidate
 from app.modules.hrm.schemas.offer import (
     OfferCreate,
     OfferResponse,
     OfferUpdate,
 )
+from app.modules.hrm.dependencies.rbac import require_hrm_role
+from app.modules.hrm.services.email_notifications import offer_sent_email
 from app.modules.hrm.services.offer import (
     accept_offer,
+    approve_offer_hr,
     create_offer,
     delete_offer,
     get_offer,
@@ -22,6 +28,8 @@ from app.modules.hrm.services.offer import (
     send_offer,
     update_offer,
 )
+
+log = logging.getLogger(__name__)
 
 router = APIRouter(tags=["hrm"])
 
@@ -84,14 +92,35 @@ async def update(
     return await update_offer(db, offer_id, workspace_id, data)
 
 
+@router.post("/workspaces/{workspace_id}/offers/{offer_id}/approve-hr", response_model=OfferResponse)
+async def approve_hr(
+    workspace_id: uuid.UUID,
+    offer_id: uuid.UUID,
+    current_user: User = Depends(require_hrm_role("hr_admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await approve_offer_hr(db, offer_id, workspace_id, current_user.id)
+
+
 @router.post("/workspaces/{workspace_id}/offers/{offer_id}/send", response_model=OfferResponse)
 async def send(
+    request: Request,
     workspace_id: uuid.UUID,
     offer_id: uuid.UUID,
     current_user: User = Depends(require_workspace_role("member")),
     db: AsyncSession = Depends(get_db),
 ):
-    return await send_offer(db, offer_id, workspace_id)
+    o = await send_offer(db, offer_id, workspace_id)
+    try:
+        arq_pool = getattr(request.app.state, "arq_pool", None)
+        if arq_pool:
+            candidate = await db.scalar(select(Candidate).where(Candidate.id == o.candidate_id))
+            if candidate:
+                body = offer_sent_email(candidate.name, o.position_title)
+                await arq_pool.enqueue_job("send_hrm_notification", to_email=candidate.email, subject="Job Offer", body=body)
+    except Exception:
+        log.exception("Failed to enqueue offer-sent email for offer_id=%s", offer_id)
+    return o
 
 
 @router.post("/workspaces/{workspace_id}/offers/{offer_id}/accept", response_model=OfferResponse)

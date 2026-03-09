@@ -6,6 +6,36 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.hrm.models.recruitment_request import RecruitmentRequest
 from app.modules.hrm.schemas.recruitment_request import RecruitmentRequestCreate, RecruitmentRequestUpdate
+from app.modules.hrm.services.org_tree import get_headcount_summary
+from app.modules.hrm.services.status_transitions import validate_transition
+
+RECRUITMENT_TRANSITIONS: dict[str, list[str]] = {
+    "draft": ["submitted"],
+    "submitted": ["hr_approved", "rejected"],
+    "hr_approved": ["ceo_approved", "rejected"],
+    "ceo_approved": [],
+    "rejected": [],
+    "open": ["submitted"],  # legacy compat
+}
+
+
+async def _validate_headcount(
+    db: AsyncSession, workspace_id: uuid.UUID, department_id: uuid.UUID, quantity: int
+) -> None:
+    summary = await get_headcount_summary(db, workspace_id)
+    for dept in summary:
+        if dept["department_id"] == str(department_id):
+            available = dept["open_positions"]
+            if quantity > available:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Headcount exceeded: {available} open position(s) available, {quantity} requested",
+                )
+            return
+    raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail="Position not found in org chart headcount. Configure headcount in Organization settings first.",
+    )
 
 
 async def create_recruitment_request(
@@ -74,3 +104,48 @@ async def delete_recruitment_request(
     rr = await get_recruitment_request(db, request_id, workspace_id)
     await db.delete(rr)
     await db.commit()
+
+
+async def submit_recruitment_request(
+    db: AsyncSession, request_id: uuid.UUID, workspace_id: uuid.UUID, requester_id: uuid.UUID
+) -> RecruitmentRequest:
+    rr = await get_recruitment_request(db, request_id, workspace_id)
+    validate_transition(rr.status, "submitted", RECRUITMENT_TRANSITIONS, "RecruitmentRequest")
+    await _validate_headcount(db, workspace_id, rr.department_id, rr.quantity)
+    rr.status = "submitted"
+    await db.commit()
+    await db.refresh(rr)
+    return rr
+
+
+async def approve_recruitment_hr(
+    db: AsyncSession, request_id: uuid.UUID, workspace_id: uuid.UUID, reviewer_id: uuid.UUID
+) -> RecruitmentRequest:
+    rr = await get_recruitment_request(db, request_id, workspace_id)
+    validate_transition(rr.status, "hr_approved", RECRUITMENT_TRANSITIONS, "RecruitmentRequest")
+    rr.status = "hr_approved"
+    await db.commit()
+    await db.refresh(rr)
+    return rr
+
+
+async def approve_recruitment_ceo(
+    db: AsyncSession, request_id: uuid.UUID, workspace_id: uuid.UUID, reviewer_id: uuid.UUID
+) -> RecruitmentRequest:
+    rr = await get_recruitment_request(db, request_id, workspace_id)
+    validate_transition(rr.status, "ceo_approved", RECRUITMENT_TRANSITIONS, "RecruitmentRequest")
+    rr.status = "ceo_approved"
+    await db.commit()
+    await db.refresh(rr)
+    return rr
+
+
+async def reject_recruitment_request(
+    db: AsyncSession, request_id: uuid.UUID, workspace_id: uuid.UUID, reviewer_id: uuid.UUID
+) -> RecruitmentRequest:
+    rr = await get_recruitment_request(db, request_id, workspace_id)
+    validate_transition(rr.status, "rejected", RECRUITMENT_TRANSITIONS, "RecruitmentRequest")
+    rr.status = "rejected"
+    await db.commit()
+    await db.refresh(rr)
+    return rr

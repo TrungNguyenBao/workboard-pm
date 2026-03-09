@@ -28,3 +28,6 @@ from app.modules.hrm.models.purchase_request import PurchaseRequest  # noqa: F40
 from app.modules.hrm.models.purchase_item import PurchaseItem  # noqa: F401
 from app.modules.hrm.models.training_program import TrainingProgram  # noqa: F401
 from app.modules.hrm.models.training_enrollment import TrainingEnrollment  # noqa: F401
+from app.modules.hrm.models.overtime_request import OvertimeRequest  # noqa: F401
+from app.modules.hrm.models.attendance_correction import AttendanceCorrection  # noqa: F401
+from app.modules.hrm.models.hrm_document import HrmDocument  # noqa: F401

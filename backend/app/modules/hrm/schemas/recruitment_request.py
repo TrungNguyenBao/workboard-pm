@@ -1,9 +1,10 @@
 import uuid
 from datetime import date
+from decimal import Decimal
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, model_validator
 
-VALID_STATUSES = {"draft", "open", "closed", "cancelled"}
+VALID_STATUSES = {"draft", "submitted", "hr_approved", "ceo_approved", "open", "closed", "cancelled", "rejected"}
 
 
 class RecruitmentRequestCreate(BaseModel):
@@ -14,8 +15,10 @@ class RecruitmentRequestCreate(BaseModel):
     reason: str
     requirements: str | None = None
     deadline: date | None = None
-    status: str = "open"
+    status: str = "draft"
     requester_id: uuid.UUID
+    salary_range_min: Decimal | None = None
+    salary_range_max: Decimal | None = None
 
     @field_validator("status")
     @classmethod
@@ -23,6 +26,13 @@ class RecruitmentRequestCreate(BaseModel):
         if v not in VALID_STATUSES:
             raise ValueError(f"status must be one of {VALID_STATUSES}")
         return v
+
+    @model_validator(mode="after")
+    def validate_salary_range(self) -> "RecruitmentRequestCreate":
+        if self.salary_range_min is not None and self.salary_range_max is not None:
+            if self.salary_range_min > self.salary_range_max:
+                raise ValueError("salary_range_min must be <= salary_range_max")
+        return self
 
 
 class RecruitmentRequestUpdate(BaseModel):
@@ -34,6 +44,8 @@ class RecruitmentRequestUpdate(BaseModel):
     requirements: str | None = None
     deadline: date | None = None
     status: str | None = None
+    salary_range_min: Decimal | None = None
+    salary_range_max: Decimal | None = None
 
     @field_validator("status")
     @classmethod
@@ -55,5 +67,7 @@ class RecruitmentRequestResponse(BaseModel):
     status: str
     requester_id: uuid.UUID
     workspace_id: uuid.UUID
+    salary_range_min: Decimal | None = None
+    salary_range_max: Decimal | None = None
 
     model_config = {"from_attributes": True}

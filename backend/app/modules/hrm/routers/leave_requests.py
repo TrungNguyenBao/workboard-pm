@@ -1,17 +1,23 @@
+import logging
 import uuid
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, Query, Request, status
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
 from app.schemas.pagination import PaginatedResponse
+from app.modules.hrm.dependencies.rbac import require_hrm_role
+from app.modules.hrm.models.employee import Employee
+from app.modules.hrm.models.leave_type import LeaveType
 from app.modules.hrm.schemas.leave_request import (
     LeaveRequestCreate,
     LeaveRequestResponse,
     LeaveRequestUpdate,
 )
+from app.modules.hrm.services.email_notifications import leave_approved_email, leave_rejected_email
 from app.modules.hrm.services.leave_request import (
     approve_leave_request,
     create_leave_request,
@@ -20,6 +26,8 @@ from app.modules.hrm.services.leave_request import (
     reject_leave_request,
     update_leave_request,
 )
+
+log = logging.getLogger(__name__)
 
 router = APIRouter(tags=["hrm"])
 
@@ -74,12 +82,25 @@ async def update(
     response_model=LeaveRequestResponse,
 )
 async def approve(
+    request: Request,
     workspace_id: uuid.UUID,
     leave_request_id: uuid.UUID,
-    current_user: User = Depends(require_workspace_role("admin")),
+    current_user: User = Depends(require_hrm_role("line_manager")),
     db: AsyncSession = Depends(get_db),
 ):
-    return await approve_leave_request(db, leave_request_id, workspace_id, current_user.id)
+    lr = await approve_leave_request(db, leave_request_id, workspace_id, current_user.id)
+    try:
+        arq_pool = getattr(request.app.state, "arq_pool", None)
+        if arq_pool:
+            emp = await db.scalar(select(Employee).where(Employee.id == lr.employee_id))
+            lt = await db.scalar(select(LeaveType).where(LeaveType.id == lr.leave_type_id))
+            if emp:
+                leave_type_name = lt.name if lt else "Leave"
+                body = leave_approved_email(emp.name, leave_type_name, str(lr.start_date), str(lr.end_date))
+                await arq_pool.enqueue_job("send_hrm_notification", to_email=emp.email, subject="Leave Request Approved", body=body)
+    except Exception:
+        log.exception("Failed to enqueue leave-approved email for leave_request_id=%s", leave_request_id)
+    return lr
 
 
 @router.post(
@@ -87,12 +108,25 @@ async def approve(
     response_model=LeaveRequestResponse,
 )
 async def reject(
+    request: Request,
     workspace_id: uuid.UUID,
     leave_request_id: uuid.UUID,
-    current_user: User = Depends(require_workspace_role("admin")),
+    current_user: User = Depends(require_hrm_role("line_manager")),
     db: AsyncSession = Depends(get_db),
 ):
-    return await reject_leave_request(db, leave_request_id, workspace_id, current_user.id)
+    lr = await reject_leave_request(db, leave_request_id, workspace_id, current_user.id)
+    try:
+        arq_pool = getattr(request.app.state, "arq_pool", None)
+        if arq_pool:
+            emp = await db.scalar(select(Employee).where(Employee.id == lr.employee_id))
+            lt = await db.scalar(select(LeaveType).where(LeaveType.id == lr.leave_type_id))
+            if emp:
+                leave_type_name = lt.name if lt else "Leave"
+                body = leave_rejected_email(emp.name, leave_type_name)
+                await arq_pool.enqueue_job("send_hrm_notification", to_email=emp.email, subject="Leave Request Rejected", body=body)
+    except Exception:
+        log.exception("Failed to enqueue leave-rejected email for leave_request_id=%s", leave_request_id)
+    return lr
 
 
 @router.delete(
