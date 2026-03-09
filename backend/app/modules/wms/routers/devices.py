@@ -10,9 +10,9 @@ from app.modules.wms.schemas.device import DeviceCreate, DeviceResponse, DeviceU
 from app.modules.wms.schemas.pagination import PaginatedResponse
 from app.modules.wms.services.device import (
     create_device,
-    delete_device,
     get_device,
     list_devices,
+    retire_device,
     update_device,
 )
 
@@ -83,12 +83,13 @@ async def update(
 
 @router.delete(
     "/workspaces/{workspace_id}/devices/{device_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
+    response_model=DeviceResponse,
+    status_code=status.HTTP_200_OK,
 )
-async def delete(
+async def retire(
     workspace_id: uuid.UUID,
     device_id: uuid.UUID,
-    current_user: User = Depends(require_workspace_role("admin")),
+    current_user: User = Depends(require_workspace_role("member")),
     db: AsyncSession = Depends(get_db),
 ):
-    await delete_device(db, device_id)
+    return await retire_device(db, device_id)

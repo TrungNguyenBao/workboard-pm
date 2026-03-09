@@ -20,6 +20,8 @@ const CalendarPage = lazy(() => import('@/modules/pms/features/projects/pages/ca
 const OverviewPage = lazy(() => import('@/modules/pms/features/projects/pages/overview'))
 const TimelinePage = lazy(() => import('@/modules/pms/features/projects/pages/timeline'))
 const GoalsPage = lazy(() => import('@/modules/pms/features/goals/pages/goals-list'))
+const BacklogPage = lazy(() => import('@/modules/pms/features/projects/pages/backlog'))
+const SprintsPage = lazy(() => import('@/modules/pms/features/projects/pages/sprints'))
 
 // Lazy-loaded pages — WMS module
 const WmsDashboardPage = lazy(() => import('@/modules/wms/features/dashboard/pages/wms-dashboard'))
@@ -106,6 +108,8 @@ export function AppRouter() {
             <Route path="/pms/projects/:projectId/calendar" element={<CalendarPage />} />
             <Route path="/pms/projects/:projectId/overview" element={<OverviewPage />} />
             <Route path="/pms/projects/:projectId/timeline" element={<TimelinePage />} />
+            <Route path="/pms/projects/:projectId/backlog" element={<BacklogPage />} />
+            <Route path="/pms/projects/:projectId/sprints" element={<SprintsPage />} />
 
             {/* WMS module */}
             <Route path="/wms" element={<Navigate to="/wms/dashboard" replace />} />

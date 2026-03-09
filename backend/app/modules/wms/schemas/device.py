@@ -1,14 +1,19 @@
 import uuid
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field, model_validator
+
+DeviceStatus = Literal[
+    "in_stock", "reserved", "deployed", "activated",
+    "maintenance", "poc", "internal_use", "retired"
+]
 
 
 class DeviceCreate(BaseModel):
     serial_number: str = Field(min_length=1, max_length=255)
     product_id: uuid.UUID
     warehouse_id: uuid.UUID | None = None
-    status: str = Field(default="in_stock", max_length=20)
+    status: DeviceStatus = "in_stock"
     notes: str | None = Field(default=None, max_length=2000)
 
 
@@ -16,7 +21,7 @@ class DeviceUpdate(BaseModel):
     serial_number: str | None = Field(default=None, min_length=1, max_length=255)
     product_id: uuid.UUID | None = None
     warehouse_id: uuid.UUID | None = None
-    status: str | None = Field(default=None, max_length=20)
+    status: DeviceStatus | None = None
     notes: str | None = None
 
 

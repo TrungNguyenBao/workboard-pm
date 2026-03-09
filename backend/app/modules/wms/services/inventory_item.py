@@ -24,6 +24,7 @@ async def list_inventory_items(
     workspace_id: uuid.UUID,
     warehouse_id: uuid.UUID | None = None,
     product_id: uuid.UUID | None = None,
+    search: str | None = None,
     page: int = 1,
     page_size: int = 20,
 ) -> tuple[list[InventoryItem], int]:
@@ -37,6 +38,10 @@ async def list_inventory_items(
     if product_id:
         q = q.where(InventoryItem.product_id == product_id)
         count_q = count_q.where(InventoryItem.product_id == product_id)
+    if search:
+        pattern = f"%{search}%"
+        q = q.where(InventoryItem.name.ilike(pattern) | InventoryItem.sku.ilike(pattern))
+        count_q = count_q.where(InventoryItem.name.ilike(pattern) | InventoryItem.sku.ilike(pattern))
 
     total = await db.scalar(count_q) or 0
     result = await db.scalars(

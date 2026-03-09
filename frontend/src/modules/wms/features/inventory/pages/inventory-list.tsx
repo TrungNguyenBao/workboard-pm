@@ -26,6 +26,7 @@ export default function InventoryListPage() {
 
   const { data, isLoading } = useInventoryItems(workspaceId, {
     warehouse_id: warehouseFilter || undefined,
+    search: search || undefined,
     page,
   })
   const { data: warehousesData } = useWarehouses(workspaceId, { page_size: 100 })

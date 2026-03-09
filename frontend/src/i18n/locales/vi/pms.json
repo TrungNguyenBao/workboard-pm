@@ -18,6 +18,8 @@
 
   "project.views.board": "Bảng",
   "project.views.list": "Danh sách",
+  "project.views.backlog": "Tồn đọng",
+  "project.views.sprints": "Sprint",
   "project.views.calendar": "Lịch",
   "project.views.timeline": "Dòng thời gian",
   "project.views.overview": "Tổng quan",

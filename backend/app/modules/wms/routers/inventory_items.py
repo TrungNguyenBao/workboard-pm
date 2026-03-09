@@ -45,12 +45,13 @@ async def list_(
     workspace_id: uuid.UUID,
     warehouse_id: uuid.UUID | None = Query(default=None),
     product_id: uuid.UUID | None = Query(default=None),
+    search: str | None = Query(default=None),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, ge=1, le=100),
     current_user: User = Depends(require_workspace_role("guest")),
     db: AsyncSession = Depends(get_db),
 ):
-    items, total = await list_inventory_items(db, workspace_id, warehouse_id, product_id, page, page_size)
+    items, total = await list_inventory_items(db, workspace_id, warehouse_id, product_id, search, page, page_size)
     return PaginatedResponse(items=items, total=total, page=page, page_size=page_size)
 
 

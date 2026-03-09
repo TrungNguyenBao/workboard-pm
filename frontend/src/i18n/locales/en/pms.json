@@ -18,6 +18,8 @@
 
   "project.views.board": "Board",
   "project.views.list": "List",
+  "project.views.backlog": "Backlog",
+  "project.views.sprints": "Sprints",
   "project.views.calendar": "Calendar",
   "project.views.timeline": "Timeline",
   "project.views.overview": "Overview",

@@ -53,9 +53,15 @@ async def spawn_recurring_tasks(ctx: dict) -> int:
         return await spawn_all_due(db)
 
 
+async def send_hrm_notification(ctx: dict, to_email: str, subject: str, body: str) -> None:
+    """ARQ background job: send an HRM email notification."""
+    from app.modules.hrm.services.email_notifications import send_email
+    await send_email(to_email, subject, body)
+
+
 class WorkerSettings:
     redis_settings = None  # set dynamically
-    functions = [send_due_reminders, spawn_recurring_tasks]
+    functions = [send_due_reminders, spawn_recurring_tasks, send_hrm_notification]
 
     @classmethod
     def from_config(cls):

@@ -6,11 +6,35 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.modules.wms.models.device import Device
+from app.modules.wms.models.product import Product
 
 
 async def create_device(
     db: AsyncSession, workspace_id: uuid.UUID, data: dict
 ) -> Device:
+    # Validate product exists and is serial-tracked
+    product = await db.scalar(select(Product).where(Product.id == data["product_id"]))
+    if not product:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
+    if not product.is_serial_tracked:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Product is not serial-tracked. Only serial-tracked products can have devices registered.",
+        )
+
+    # Check serial uniqueness within workspace
+    existing = await db.scalar(
+        select(Device).where(
+            Device.workspace_id == workspace_id,
+            Device.serial_number == data["serial_number"],
+        )
+    )
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Serial number already exists in this workspace",
+        )
+
     device = Device(workspace_id=workspace_id, **data)
     db.add(device)
     await db.commit()
@@ -77,7 +101,9 @@ async def update_device(
     return device
 
 
-async def delete_device(db: AsyncSession, device_id: uuid.UUID) -> None:
+async def retire_device(db: AsyncSession, device_id: uuid.UUID) -> Device:
     device = await get_device(db, device_id)
-    await db.delete(device)
+    device.status = "retired"
     await db.commit()
+    await db.refresh(device, attribute_names=["product", "warehouse"])
+    return device

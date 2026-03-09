@@ -24,6 +24,7 @@ export interface PaginatedInventoryItems {
 interface InventoryFilters {
   warehouse_id?: string
   product_id?: string
+  search?: string
   page?: number
   page_size?: number
 }
@@ -31,11 +32,11 @@ interface InventoryFilters {
 const base = (wsId: string) => `/wms/workspaces/${wsId}/inventory-items`
 
 export function useInventoryItems(workspaceId: string, filters: InventoryFilters = {}) {
-  const { warehouse_id, product_id, page = 1, page_size = 20 } = filters
+  const { warehouse_id, product_id, search, page = 1, page_size = 20 } = filters
   return useQuery<PaginatedInventoryItems>({
-    queryKey: ['wms-inventory', workspaceId, { warehouse_id, product_id, page, page_size }],
+    queryKey: ['wms-inventory', workspaceId, { warehouse_id, product_id, search, page, page_size }],
     queryFn: () =>
-      api.get(base(workspaceId), { params: { warehouse_id, product_id, page, page_size } }).then((r) => r.data),
+      api.get(base(workspaceId), { params: { warehouse_id, product_id, search, page, page_size } }).then((r) => r.data),
     enabled: !!workspaceId,
   })
 }
