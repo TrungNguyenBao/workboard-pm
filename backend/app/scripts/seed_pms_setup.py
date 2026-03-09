@@ -32,22 +32,22 @@ async def seed_pms_structure(
     print("Creating projects...")
     projects: dict[str, uuid.UUID] = {}
     project_defs = [
-        ("Website Redesign", "#5E6AD2", "Complete overhaul of company website"),
-        ("Mobile App", "#F59E0B", "iOS and Android app development"),
-        ("Q1 Marketing", "#10B981", "Q1 marketing campaigns and content"),
+        ("Agile Software Dev", "#5E6AD2", "Scrum based development with Sprints", "agile"),
+        ("Social Media Kanban", "#F59E0B", "Continuous flow for marketing content", "kanban"),
+        ("Office Maintenance", "#10B981", "Simple task list for office tasks", "basic"),
     ]
-    for name, color, desc in project_defs:
+    for name, color, desc, ptype in project_defs:
         pid = uuid.uuid4()
         projects[name] = pid
         await session.execute(text("""
             INSERT INTO projects
               (id, workspace_id, owner_id, name, description, color,
-               visibility, is_archived, created_at, updated_at)
+               visibility, is_archived, project_type, created_at, updated_at)
             VALUES (:id, :ws, :owner, :name, :desc, :color,
-                    'public', false, now(), now())
+                    'public', false, :ptype, now(), now())
         """), {
             "id": pid, "ws": ws_id, "owner": demo_id,
-            "name": name, "desc": desc, "color": color,
+            "name": name, "desc": desc, "color": color, "ptype": ptype,
         })
         for uid, role in [(demo_id, "owner"), (alice_id, "editor"), (bob_id, "editor")]:
             await session.execute(text("""
@@ -70,9 +70,9 @@ async def seed_pms_structure(
                 VALUES (:id, :proj, :name, :pos, now(), now())
             """), {"id": sid, "proj": proj_id, "name": sec_name, "pos": float((idx + 1) * 65536)})
 
-    # CUSTOM FIELDS (Website Redesign only)
+    # CUSTOM FIELDS (Agile Software Dev only)
     print("Creating custom field definitions...")
-    wr_id = projects["Website Redesign"]
+    wr_id = projects["Agile Software Dev"]
     cf_story = uuid.uuid4()
     cf_sprint = uuid.uuid4()
     cf_reviewed = uuid.uuid4()
