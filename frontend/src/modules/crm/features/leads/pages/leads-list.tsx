@@ -16,13 +16,6 @@ import { type Lead, LEAD_STATUSES, LEAD_SOURCES, useLeads, useDeleteLead } from 
 
 const PAGE_SIZE = 20
 
-const STATUS_VARIANT: Record<string, 'default' | 'secondary' | 'destructive'> = {
-  qualified: 'default',
-  opportunity: 'default',
-  lost: 'destructive',
-  disqualified: 'destructive',
-}
-
 export default function LeadsListPage() {
   const { t } = useTranslation('crm')
   const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId) ?? ''
@@ -49,11 +42,10 @@ export default function LeadsListPage() {
     { key: 'email', label: 'Email', render: (l) => l.email ?? '-' },
     { key: 'source', label: 'Source', render: (l) => LEAD_SOURCES.find((s) => s.value === l.source)?.label ?? l.source },
     {
-      key: 'status', label: 'Status', render: (l) => (
-        <Badge variant={STATUS_VARIANT[l.status] ?? 'secondary'}>
-          {LEAD_STATUSES.find((s) => s.value === l.status)?.label ?? l.status}
-        </Badge>
-      ),
+      key: 'status', label: 'Status', render: (l) => {
+        const status = l.status;
+        return <Badge variant={status === "new" ? "default" : status === "contacted" ? "secondary" : "destructive" as any}>{LEAD_STATUSES.find((s) => s.value === l.status)?.label ?? l.status}</Badge>;
+      },
     },
     { key: 'score', label: 'Score', render: (l) => l.score },
     {

@@ -113,7 +113,7 @@ export default function AccountDetailPage() {
               <div key={t.id} className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-muted/50">
                 <span className="text-sm">{t.subject}</span>
                 <div className="flex items-center gap-2">
-                  <Badge variant={t.priority === 'critical' ? 'destructive' : 'secondary'}>{t.priority}</Badge>
+                  <Badge variant={t.priority === 'critical' ? 'danger' : 'secondary'}>{t.priority}</Badge>
                   <Badge variant="secondary">{t.status}</Badge>
                 </div>
               </div>

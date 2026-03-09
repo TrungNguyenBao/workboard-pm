@@ -13,9 +13,9 @@ import { type Ticket, TICKET_PRIORITIES, TICKET_STATUSES, useTickets, useDeleteT
 
 const PAGE_SIZE = 20
 
-const PRIORITY_VARIANT: Record<string, 'default' | 'secondary' | 'destructive'> = {
-  critical: 'destructive',
-  high: 'destructive',
+const PRIORITY_VARIANT: Record<string, "default" | "secondary" | "danger"> = {
+  critical: 'danger',
+  high: 'danger',
 }
 
 export default function TicketsListPage() {
@@ -47,7 +47,7 @@ export default function TicketsListPage() {
     },
     {
       key: 'status', label: 'Status', render: (t) => (
-        <Badge variant={t.status === 'resolved' || t.status === 'closed' ? 'default' : 'secondary'}>
+        <Badge variant={t.status === "open" ? "default" : t.status === "in_progress" ? "secondary" : "danger" as any}>
           {TICKET_STATUSES.find((s) => s.value === t.status)?.label ?? t.status}
         </Badge>
       ),

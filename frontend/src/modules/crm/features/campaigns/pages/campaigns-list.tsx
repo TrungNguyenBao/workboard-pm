@@ -20,11 +20,6 @@ function formatCurrency(value: number): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value)
 }
 
-const STATUS_VARIANT: Record<string, 'default' | 'secondary' | 'destructive'> = {
-  active: 'default',
-  cancelled: 'destructive',
-}
-
 export default function CampaignsListPage() {
   const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId) ?? ''
   const [search, setSearch] = useState('')
@@ -47,11 +42,12 @@ export default function CampaignsListPage() {
     { key: 'budget', label: 'Budget', render: (c) => formatCurrency(c.budget) },
     { key: 'cost', label: 'Actual Cost', render: (c) => formatCurrency(c.actual_cost) },
     {
-      key: 'status', label: 'Status', render: (c) => (
-        <Badge variant={STATUS_VARIANT[c.status] ?? 'secondary'}>
+      key: 'status', label: 'Status', render: (c) => {
+        const status = c.status;
+        return <Badge variant={status === "active" ? "default" : status === "draft" ? "secondary" : "danger"}>
           {CAMPAIGN_STATUSES.find((s) => s.value === c.status)?.label ?? c.status}
-        </Badge>
-      ),
+        </Badge>;
+      },
     },
     {
       key: 'actions', label: '', className: 'w-20', render: (c) => (
