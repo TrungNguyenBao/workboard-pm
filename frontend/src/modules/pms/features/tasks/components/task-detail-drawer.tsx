@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { CalendarDays, CheckSquare, History, MessageSquare, Paperclip, Plus, Repeat, Tag, Trash2, Upload, User, X } from 'lucide-react'
+import { CalendarDays, CheckSquare, Hash, History, Layers, MessageSquare, Paperclip, Plus, Repeat, Tag, Trash2, Upload, User, X, Zap } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/shared/components/ui/sheet'
 import { Button } from '@/shared/components/ui/button'
@@ -10,6 +10,7 @@ import { cn, formatRelativeTime } from '@/shared/lib/utils'
 import { TaskActivity } from './task-activity'
 import { RecurrencePicker } from './recurrence-picker'
 import { CustomFieldsSection } from '@/modules/pms/features/custom-fields/components/custom-fields-section'
+import { useSprints } from '@/modules/pms/features/projects/hooks/use-sprints'
 import api from '@/shared/lib/api'
 import type { Task } from '@/modules/pms/features/projects/hooks/use-project-tasks'
 
@@ -287,6 +288,49 @@ export function TaskDetailDrawer({ task, projectId, workspaceId, onClose }: Prop
                     onChange={(data) => updateTask.mutate(data)}
                   />
                 </MetaRow>
+
+                {/* Story Points */}
+                <MetaRow icon={<Hash className="h-4 w-4" />} label="Points">
+                  <input
+                    type="number"
+                    min={0}
+                    max={100}
+                    defaultValue={task.story_points ?? ''}
+                    onChange={(e) => {
+                      const val = e.target.value ? parseInt(e.target.value) : null
+                      updateTask.mutate({ story_points: val } as Partial<Task>)
+                    }}
+                    className="text-xs bg-muted rounded px-2 py-1 border-0 outline-none w-16 text-foreground"
+                    placeholder="--"
+                  />
+                </MetaRow>
+
+                {/* Task Type */}
+                <MetaRow icon={<Layers className="h-4 w-4" />} label="Type">
+                  <Select
+                    value={task.task_type ?? 'task'}
+                    onValueChange={(v) => updateTask.mutate({ task_type: v } as Partial<Task>)}
+                  >
+                    <SelectTrigger className="h-7 w-28 text-xs border-0 bg-muted hover:bg-muted/80">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="task">Task</SelectItem>
+                      <SelectItem value="story">Story</SelectItem>
+                      <SelectItem value="bug">Bug</SelectItem>
+                      <SelectItem value="epic">Epic</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </MetaRow>
+
+                {/* Sprint Assignment */}
+                <MetaRow icon={<Zap className="h-4 w-4" />} label="Sprint">
+                  <SprintAssignSelect
+                    projectId={projectId}
+                    value={task.sprint_id}
+                    onChange={(v) => updateTask.mutate({ sprint_id: v } as Partial<Task>)}
+                  />
+                </MetaRow>
               </div>
 
               {/* Description */}
@@ -507,5 +551,34 @@ function MetaRow({ icon, label, children }: { icon: React.ReactNode; label: stri
       </div>
       {children}
     </div>
+  )
+}
+
+function SprintAssignSelect({
+  projectId,
+  value,
+  onChange,
+}: {
+  projectId: string
+  value: string | null
+  onChange: (v: string | null) => void
+}) {
+  const { data: sprints = [] } = useSprints(projectId)
+  return (
+    <Select value={value ?? 'none'} onValueChange={(v) => onChange(v === 'none' ? null : v)}>
+      <SelectTrigger className="h-7 w-36 text-xs border-0 bg-muted hover:bg-muted/80">
+        <SelectValue placeholder="No sprint" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="none">No sprint</SelectItem>
+        {sprints
+          .filter((s) => s.status !== 'completed')
+          .map((s) => (
+            <SelectItem key={s.id} value={s.id}>
+              {s.name}
+            </SelectItem>
+          ))}
+      </SelectContent>
+    </Select>
   )
 }

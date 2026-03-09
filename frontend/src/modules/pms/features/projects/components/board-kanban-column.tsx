@@ -3,6 +3,7 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useDroppable } from '@dnd-kit/core'
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { cn } from '@/shared/lib/utils'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/components/ui/dropdown-menu'
 import { Button } from '@/shared/components/ui/button'
 import { BoardTaskCard } from './board-task-card'
@@ -36,8 +37,13 @@ export function BoardKanbanColumn({ section, tasks, projectId, onOpenTask }: Boa
     setRenaming(false)
   }
 
+  const wipExceeded = !!section.wip_limit && tasks.length > section.wip_limit
+
   return (
-    <div className="flex w-64 flex-shrink-0 flex-col gap-2">
+    <div className={cn(
+      'flex w-64 flex-shrink-0 flex-col gap-2',
+      wipExceeded && 'ring-1 ring-red-300 rounded-lg p-1',
+    )}>
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center gap-2 flex-1 min-w-0">
           {section.color && (
@@ -58,7 +64,14 @@ export function BoardKanbanColumn({ section, tasks, projectId, onOpenTask }: Boa
           ) : (
             <span className="text-sm font-medium text-foreground truncate">{section.name}</span>
           )}
-          <span className="text-xs text-neutral-400 flex-shrink-0">{tasks.length}</span>
+          <span className="text-xs text-neutral-400 flex-shrink-0">
+            {tasks.length}
+            {section.wip_limit && (
+              <span className={wipExceeded ? 'text-red-500 font-medium' : ''}>
+                /{section.wip_limit}
+              </span>
+            )}
+          </span>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

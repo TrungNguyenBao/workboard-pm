@@ -16,6 +16,18 @@ const PRIORITY_COLORS: Record<string, BadgeVariant> = {
   none: 'secondary',
 }
 
+const TASK_TYPE_BADGE: Record<string, string> = {
+  story: 'bg-blue-100 text-blue-600',
+  bug: 'bg-red-100 text-red-600',
+  epic: 'bg-purple-100 text-purple-600',
+}
+
+const TASK_TYPE_LABEL: Record<string, string> = {
+  story: 'S',
+  bug: 'B',
+  epic: 'E',
+}
+
 interface BoardTaskCardProps {
   task: Task
   onOpen?: (t: Task) => void
@@ -82,13 +94,21 @@ export function BoardTaskCard({ task, onOpen, projectId }: BoardTaskCardProps) {
         </button>
         <p
           className={cn(
-            'text-sm leading-snug cursor-pointer flex-1',
+            'text-sm leading-snug cursor-pointer flex-1 flex items-start gap-1',
             isCompleted
               ? 'line-through text-muted-foreground'
               : 'text-foreground hover:text-primary',
           )}
           onClick={(e) => { e.stopPropagation(); onOpen?.(task) }}
         >
+          {task.task_type && task.task_type !== 'task' && TASK_TYPE_LABEL[task.task_type] && (
+            <span className={cn(
+              'inline-flex items-center justify-center h-4 w-4 rounded text-[9px] font-bold flex-shrink-0 mt-0.5',
+              TASK_TYPE_BADGE[task.task_type],
+            )}>
+              {TASK_TYPE_LABEL[task.task_type]}
+            </span>
+          )}
           {task.title}
           {task.recurrence_rule && (
             <span className="inline-flex items-center ml-1 text-neutral-400" title={`Repeats ${task.recurrence_rule}`}>
@@ -102,6 +122,11 @@ export function BoardTaskCard({ task, onOpen, projectId }: BoardTaskCardProps) {
           {task.priority !== 'none' && (
             <Badge variant={PRIORITY_COLORS[task.priority]} className="text-xs">
               {task.priority}
+            </Badge>
+          )}
+          {task.story_points != null && task.story_points > 0 && (
+            <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4">
+              {task.story_points} SP
             </Badge>
           )}
           {task.due_date && (

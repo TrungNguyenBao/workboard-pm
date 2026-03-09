@@ -75,6 +75,16 @@ class Task(Base, TimestampMixin, SoftDeleteMixin):
     # Custom fields (JSONB map of field_definition_id -> value)
     custom_fields: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
 
+    # Agile fields
+    sprint_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("sprints.id"), nullable=True
+    )
+    epic_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("tasks.id"), nullable=True
+    )
+    story_points: Mapped[int | None] = mapped_column(nullable=True)
+    task_type: Mapped[str] = mapped_column(String(20), default="task")
+
     __table_args__ = (
         # GIN index only applies on PostgreSQL; sqlite silently ignores the kwarg
         Index(
@@ -84,6 +94,8 @@ class Task(Base, TimestampMixin, SoftDeleteMixin):
         ),
         Index("ix_tasks_project_position", "project_id", "position"),
         Index("ix_tasks_section_position", "section_id", "position"),
+        Index("ix_tasks_sprint_id", "sprint_id"),
+        Index("ix_tasks_epic_id", "epic_id"),
     )
 
     project: Mapped["Project"] = relationship(back_populates="tasks")  # noqa: F821
@@ -100,6 +112,10 @@ class Task(Base, TimestampMixin, SoftDeleteMixin):
     subtasks: Mapped[list["Task"]] = relationship(back_populates="parent", foreign_keys="Task.parent_id")
     recurring_parent: Mapped["Task | None"] = relationship(
         remote_side="Task.id", foreign_keys="Task.parent_recurring_id"
+    )
+    sprint: Mapped["Sprint | None"] = relationship(back_populates="tasks")  # noqa: F821
+    epic: Mapped["Task | None"] = relationship(
+        remote_side="Task.id", foreign_keys="Task.epic_id"
     )
     comments: Mapped[list["Comment"]] = relationship(back_populates="task")  # noqa: F821
     attachments: Mapped[list["Attachment"]] = relationship(back_populates="task")  # noqa: F821

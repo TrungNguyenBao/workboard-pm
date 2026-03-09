@@ -19,6 +19,11 @@ class TaskCreate(BaseModel):
     recurrence_cron_expr: str | None = None
     recurrence_end_date: datetime | None = None
     custom_fields: dict[str, Any] | None = None
+    # Agile fields
+    story_points: int | None = Field(default=None, ge=0)
+    task_type: str = "task"  # task/story/bug/epic
+    sprint_id: uuid.UUID | None = None
+    epic_id: uuid.UUID | None = None
 
     @model_validator(mode="after")
     def validate_dates(self) -> Self:
@@ -41,6 +46,11 @@ class TaskUpdate(BaseModel):
     recurrence_cron_expr: str | None = None
     recurrence_end_date: datetime | None = None
     custom_fields: dict[str, Any] | None = None
+    # Agile fields
+    story_points: int | None = Field(default=None, ge=0)
+    task_type: str | None = None
+    sprint_id: uuid.UUID | None = None
+    epic_id: uuid.UUID | None = None
 
     @model_validator(mode="after")
     def validate_dates(self) -> Self:
@@ -80,6 +90,11 @@ class TaskResponse(BaseModel):
     parent_recurring_id: uuid.UUID | None = None
     # Custom fields
     custom_fields: dict | None = None
+    # Agile fields
+    story_points: int | None = None
+    task_type: str = "task"
+    sprint_id: uuid.UUID | None = None
+    epic_id: uuid.UUID | None = None
     # Enriched fields (populated when relationships are eager-loaded)
     assignee_name: str | None = None
     assignee_avatar_url: str | None = None
@@ -119,6 +134,10 @@ class TaskResponse(BaseModel):
             "recurrence_end_date": data.recurrence_end_date,
             "parent_recurring_id": data.parent_recurring_id,
             "custom_fields": data.custom_fields,
+            "story_points": data.story_points,
+            "task_type": data.task_type,
+            "sprint_id": data.sprint_id,
+            "epic_id": data.epic_id,
             "assignee_name": assignee.name if assignee else None,
             "assignee_avatar_url": assignee.avatar_url if assignee else None,
             "subtask_count": len(subtasks),

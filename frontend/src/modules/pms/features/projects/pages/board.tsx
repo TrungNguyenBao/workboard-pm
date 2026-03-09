@@ -12,9 +12,11 @@ import {
 } from '@dnd-kit/core'
 import { useQuery } from '@tanstack/react-query'
 import { useSections, useTasks, useMoveTask, type Task } from '../hooks/use-project-tasks'
+import { useBacklogTasks } from '../hooks/use-backlog-tasks'
 import { BoardTaskCard } from '../components/board-task-card'
 import { BoardKanbanColumn } from '../components/board-kanban-column'
 import { BoardAddSectionInput } from '../components/board-add-section-input'
+import { SprintSelector } from '../components/sprint-selector'
 import { TaskDetailDrawer } from '@/modules/pms/features/tasks/components/task-detail-drawer'
 import { ProjectHeader } from '../components/project-header'
 import { FilterBar, type PriorityFilter, type StatusFilter } from '../components/filter-bar'
@@ -37,10 +39,11 @@ function calcDropPosition(sortedTasks: Task[], dropIndex: number): number {
 export default function BoardPage() {
   const { projectId } = useParams<{ projectId: string }>()
   const { data: sections = [] } = useSections(projectId!)
-  const { data: tasks = [] } = useTasks(projectId!)
+  const { data: allTasks = [] } = useTasks(projectId!)
+  const { data: backlogTasks = [] } = useBacklogTasks(projectId!)
   const moveTask = useMoveTask(projectId!)
 
-  const { data: project } = useQuery<{ workspace_id: string }>({
+  const { data: project } = useQuery<{ workspace_id: string; project_type: string }>({
     queryKey: ['project', projectId],
     queryFn: () => api.get(`/pms/projects/${projectId}`).then((r) => r.data),
     enabled: !!projectId,
@@ -50,24 +53,35 @@ export default function BoardPage() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [filterPriority, setFilterPriority] = useState<PriorityFilter>('all')
   const [filterStatus, setFilterStatus] = useState<StatusFilter>('all')
+  const [selectedSprintId, setSelectedSprintId] = useState<string | null>(null)
+
+  // For agile projects: filter tasks by sprint; non-agile always shows all tasks
+  const isAgile = project?.project_type === 'agile'
+  const tasks = isAgile
+    ? (selectedSprintId
+      ? allTasks.filter((t) => t.sprint_id === selectedSprintId)
+      : backlogTasks)
+    : allTasks
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
 
   const sortedSections = [...sections].sort((a, b) => a.position - b.position)
 
-  /** All tasks in a section (unfiltered), used for position calculation to avoid collisions with hidden tasks */
+  /** All tasks in a section (unfiltered), used for position calculation during drag-drop */
   const allTasksForSection = useCallback((sectionId: string) => {
+    return allTasks
+      .filter((t) => t.section_id === sectionId && !t.parent_id)
+      .sort((a, b) => a.position - b.position)
+  }, [allTasks])
+
+  /** Visible tasks in a section (sprint + priority/status filters applied), used for rendering */
+  const visibleTasksForSection = useCallback((sectionId: string) => {
     return tasks
       .filter((t) => t.section_id === sectionId && !t.parent_id)
       .sort((a, b) => a.position - b.position)
-  }, [tasks])
-
-  /** Visible tasks in a section (with filters applied), used for rendering */
-  const visibleTasksForSection = useCallback((sectionId: string) => {
-    return allTasksForSection(sectionId)
       .filter((t) => filterPriority === 'all' || t.priority === filterPriority)
       .filter((t) => filterStatus === 'all' || t.status === filterStatus)
-  }, [allTasksForSection, filterPriority, filterStatus])
+  }, [tasks, filterPriority, filterStatus])
 
   function handleDragStart(e: DragStartEvent) {
     const task = tasks.find((t) => t.id === e.active.id)
@@ -125,6 +139,13 @@ export default function BoardPage() {
           onPriority={setFilterPriority}
           onStatus={setFilterStatus}
         />
+        {isAgile && (
+          <SprintSelector
+            projectId={projectId!}
+            selectedSprintId={selectedSprintId}
+            onSelect={setSelectedSprintId}
+          />
+        )}
         <div className="flex-1 overflow-x-auto p-6">
           <DndContext
             sensors={sensors}

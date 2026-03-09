@@ -10,6 +10,7 @@ class ProjectCreate(BaseModel):
     icon: str | None = None
     visibility: str = "team"
     team_id: uuid.UUID | None = None
+    project_type: str = "kanban"
 
 
 class ProjectUpdate(BaseModel):
@@ -19,6 +20,7 @@ class ProjectUpdate(BaseModel):
     icon: str | None = None
     visibility: str | None = None
     is_archived: bool | None = None
+    project_type: str | None = None
 
 
 class ProjectResponse(BaseModel):
@@ -32,6 +34,7 @@ class ProjectResponse(BaseModel):
     icon: str | None
     visibility: str
     is_archived: bool
+    project_type: str
 
     model_config = {"from_attributes": True}
 
@@ -40,12 +43,14 @@ class SectionCreate(BaseModel):
     name: str = Field(min_length=1, max_length=255)
     color: str | None = None
     position: float | None = None
+    wip_limit: int | None = None
 
 
 class SectionUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=255)
     color: str | None = None
     position: float | None = None
+    wip_limit: int | None = None
 
 
 class SectionResponse(BaseModel):
@@ -54,6 +59,7 @@ class SectionResponse(BaseModel):
     name: str
     color: str | None
     position: float
+    wip_limit: int | None = None
 
     model_config = {"from_attributes": True}
 

@@ -24,6 +24,7 @@ class Project(Base, TimestampMixin, SoftDeleteMixin):
     icon: Mapped[str | None] = mapped_column(String(50), nullable=True)
     visibility: Mapped[str] = mapped_column(String(20), default="team")
     is_archived: Mapped[bool] = mapped_column(Boolean, default=False)
+    project_type: Mapped[str] = mapped_column(String(20), default="kanban")
 
     workspace: Mapped["Workspace"] = relationship(back_populates="projects")  # noqa: F821
     team: Mapped["Team | None"] = relationship(back_populates="projects")  # noqa: F821
@@ -31,6 +32,7 @@ class Project(Base, TimestampMixin, SoftDeleteMixin):
     memberships: Mapped[list["ProjectMembership"]] = relationship(back_populates="project")
     sections: Mapped[list["Section"]] = relationship(back_populates="project")
     tasks: Mapped[list["Task"]] = relationship(back_populates="project")  # noqa: F821
+    sprints: Mapped[list["Sprint"]] = relationship(back_populates="project")  # noqa: F821
     custom_field_definitions: Mapped[list["CustomFieldDefinition"]] = relationship(  # noqa: F821
         back_populates="project"
     )
@@ -56,6 +58,7 @@ class Section(Base, TimestampMixin, SoftDeleteMixin):
     name: Mapped[str] = mapped_column(String(255))
     color: Mapped[str | None] = mapped_column(String(20), nullable=True)
     position: Mapped[float] = mapped_column()
+    wip_limit: Mapped[int | None] = mapped_column(nullable=True)
 
     project: Mapped["Project"] = relationship(back_populates="sections")
     tasks: Mapped[list["Task"]] = relationship(back_populates="section")  # noqa: F821

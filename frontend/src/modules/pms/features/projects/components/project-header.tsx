@@ -1,37 +1,41 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import { LayoutGrid, List, Calendar, BarChart2, GanttChart } from 'lucide-react'
+import { LayoutGrid, List, Calendar, BarChart2, GanttChart, Inbox, Layers } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/shared/lib/utils'
 import api from '@/shared/lib/api'
 
-interface Project { id: string; name: string; color: string }
+interface Project { id: string; name: string; color: string; project_type: string }
 
-type View = 'board' | 'list' | 'calendar' | 'overview' | 'timeline'
+type View = 'board' | 'list' | 'calendar' | 'overview' | 'timeline' | 'backlog' | 'sprints'
 
 interface Props {
   activeView: View
   actions?: React.ReactNode
 }
 
+const ALL_VIEWS: { key: View; label: string; icon: React.ElementType; types: string[] }[] = [
+  { key: 'board',    label: 'project.views.board',    icon: LayoutGrid, types: ['kanban', 'agile'] },
+  { key: 'list',     label: 'project.views.list',     icon: List,       types: ['basic', 'kanban', 'agile'] },
+  { key: 'backlog',  label: 'project.views.backlog',  icon: Inbox,      types: ['agile'] },
+  { key: 'sprints',  label: 'project.views.sprints',  icon: Layers,     types: ['agile'] },
+  { key: 'calendar', label: 'project.views.calendar', icon: Calendar,   types: ['basic', 'kanban', 'agile'] },
+  { key: 'overview', label: 'project.views.overview', icon: BarChart2,  types: ['basic', 'kanban', 'agile'] },
+  { key: 'timeline', label: 'project.views.timeline', icon: GanttChart, types: ['basic', 'kanban', 'agile'] },
+]
+
 export function ProjectHeader({ activeView, actions }: Props) {
   const { t } = useTranslation('pms')
   const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
-
-  const VIEWS = [
-    { key: 'board' as const, label: t('project.views.board'), icon: LayoutGrid },
-    { key: 'list' as const, label: t('project.views.list'), icon: List },
-    { key: 'calendar' as const, label: t('project.views.calendar'), icon: Calendar },
-    { key: 'overview' as const, label: t('project.views.overview'), icon: BarChart2 },
-    { key: 'timeline' as const, label: t('project.views.timeline'), icon: GanttChart },
-  ]
 
   const { data: project } = useQuery<Project>({
     queryKey: ['project', projectId],
     queryFn: () => api.get(`/pms/projects/${projectId}`).then((r) => r.data),
     enabled: !!projectId,
   })
+
+  const VIEWS = ALL_VIEWS.filter((v) => v.types.includes(project?.project_type ?? 'kanban'))
 
   return (
     <header className="flex flex-col border-b border-border bg-background">
@@ -58,7 +62,7 @@ export function ProjectHeader({ activeView, actions }: Props) {
             )}
           >
             <Icon className="h-3.5 w-3.5" />
-            {label}
+            {t(label)}
           </button>
         ))}
       </div>

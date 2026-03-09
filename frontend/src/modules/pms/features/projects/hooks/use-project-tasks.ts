@@ -7,6 +7,7 @@ export interface Section {
   name: string
   color: string | null
   position: number
+  wip_limit: number | null
 }
 
 export interface Task {
@@ -38,6 +39,11 @@ export interface Task {
   completed_subtask_count: number
   // Custom fields
   custom_fields: Record<string, unknown> | null
+  // Agile fields
+  story_points: number | null
+  task_type: string
+  sprint_id: string | null
+  epic_id: string | null
 }
 
 export function useSections(projectId: string) {

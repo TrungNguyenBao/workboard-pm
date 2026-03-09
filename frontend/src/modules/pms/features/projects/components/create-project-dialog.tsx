@@ -7,6 +7,7 @@ import { Button } from '@/shared/components/ui/button'
 import { Input } from '@/shared/components/ui/input'
 import { Label } from '@/shared/components/ui/label'
 import { toast } from '@/shared/components/ui/toast'
+import { ProjectTypeSelector, type ProjectType } from './project-type-selector'
 import api from '@/shared/lib/api'
 
 interface Props {
@@ -26,6 +27,7 @@ export function CreateProjectDialog({ open, onOpenChange, workspaceId }: Props) 
   const navigate = useNavigate()
   const [name, setName] = useState('')
   const [color, setColor] = useState(COLORS[0])
+  const [projectType, setProjectType] = useState<ProjectType>('kanban')
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
@@ -36,13 +38,15 @@ export function CreateProjectDialog({ open, onOpenChange, workspaceId }: Props) 
       const { data } = await api.post(`/pms/workspaces/${workspaceId}/projects`, {
         name: name.trim(),
         color,
+        project_type: projectType,
       })
       qc.invalidateQueries({ queryKey: ['projects', workspaceId] })
       toast({ title: t('project.created', { name: data.name }), variant: 'success' })
       setName('')
       setColor(COLORS[0])
+      setProjectType('kanban')
       onOpenChange(false)
-      navigate(`/pms/projects/${data.id}/board`)
+      navigate(`/pms/projects/${data.id}/${projectType === 'basic' ? 'list' : 'board'}`)
     } catch (err) {
       const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
       toast({ title: t('project.createFailed'), description: detail ?? 'Please try again', variant: 'error' })
@@ -58,6 +62,10 @@ export function CreateProjectDialog({ open, onOpenChange, workspaceId }: Props) 
           <DialogTitle>{t('project.new')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label>Type</Label>
+            <ProjectTypeSelector value={projectType} onChange={setProjectType} />
+          </div>
           <div className="space-y-1.5">
             <Label htmlFor="proj-name">{t('project.name')}</Label>
             <Input

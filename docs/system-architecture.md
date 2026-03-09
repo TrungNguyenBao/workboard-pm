@@ -181,6 +181,26 @@ Located in `app/schemas/pagination.py` for reuse across WMS, HRM, CRM modules.
 | `contacts` | `id`, `name`, `email`, `phone`, `company`, `workspace_id`, `created_at`, `updated_at` | Workspace-scoped; EmailStr validation; ILIKE search on name/email/company |
 | `deals` | `id`, `title`, `value`, `stage`, `contact_id`, `workspace_id`, `created_at`, `updated_at` | FK to contact (nullable); stage default='lead'; workspace-scoped filtering |
 
+### PMS Agile/Kanban Extensions
+
+| Table | New/Modified Columns | Notes |
+|---|---|---|
+| `projects` | `project_type` (VARCHAR default 'kanban') | Type selector: 'basic' (list/calendar/timeline), 'kanban' (board), 'agile' (sprints/backlog) |
+| `sections` | `wip_limit` (INT nullable) | Work-in-progress limit per column for Kanban boards |
+| `tasks` | `sprint_id` (FK sprints.id, nullable), `epic_id` (FK tasks.id, nullable), `story_points` (INT nullable), `task_type` (VARCHAR default 'task') | Agile fields: sprint assignment, epic grouping, estimation, classification (task/story/bug/epic) |
+| `sprints` | `id`, `project_id` (FK), `name`, `goal`, `start_date`, `end_date`, `status` (planning/active/completed), `created_by_id` | Sprint lifecycle: planning → start → active → complete → completed |
+
+**Indexes:**
+- `ix_sprints_project_id` — efficient sprint list queries per project
+- `ix_sprints_status` — filter by sprint status (active, completed)
+- `ix_tasks_sprint_id` — board view: tasks by sprint
+- `ix_tasks_epic_id` — epic grouping queries
+
+**Constraints:**
+- Only one active sprint per project (enforced in `start_sprint()` service)
+- All new task agile fields nullable (backward compatibility)
+- Soft delete on sprints (deleted_at) via SoftDeleteMixin
+
 ### Key Indexes
 
 | Index | Table | Purpose |

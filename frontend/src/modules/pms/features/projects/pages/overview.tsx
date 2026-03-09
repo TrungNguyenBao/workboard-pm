@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { ProjectHeader } from '../components/project-header'
 import { ActivityTimeline } from '../components/activity-timeline'
+import { SprintAnalyticsPanel } from '../components/sprint-analytics-panel'
 import api from '@/shared/lib/api'
 
 interface SectionStat { section_name: string; total: number; completed: number }
@@ -169,6 +170,11 @@ export default function OverviewPage() {
                   </div>
                 </div>
               )}
+
+              <div className="rounded-lg border border-border bg-background p-4">
+                <p className="text-xs font-medium text-muted-foreground mb-4">Sprint Analytics</p>
+                <SprintAnalyticsPanel projectId={projectId!} />
+              </div>
             </>
           )}
         </div>

@@ -246,3 +246,48 @@ Complete CRM workflow capabilities with lead/deal management, status flows, data
 | Frontend: Update deal form with loss_reason field | Done |
 | Frontend: Update ticket form with resolution_notes field | Done |
 | Frontend: Update account detail with health score badge | Done |
+
+---
+
+## Phase 13 — PMS Agile/Kanban + Project Type Classification (Complete)
+
+Sprint management, agile workflow, project type classification, and burndown/velocity analytics.
+
+| Item | Status |
+|---|---|
+| Backend: Create Sprint model with status lifecycle (planning/active/completed) | Done |
+| Backend: Create Alembic migration 0018_add_sprints_and_agile_fields.py | Done |
+| Backend: Add project_type column to Project (basic/kanban/agile) | Done |
+| Backend: Add agile fields to Task (story_points, task_type, sprint_id, epic_id) | Done |
+| Backend: Add wip_limit to Section for Kanban column limits | Done |
+| Backend: Create SprintResponse schema with task count and points rollup | Done |
+| Backend: Create sprint_analytics.py service (burndown, velocity calculations) | Done |
+| Backend: Create sprints router with CRUD + lifecycle (start, complete) endpoints | Done |
+| Backend: Implement one-active-sprint constraint per project | Done |
+| Backend: Create backlog endpoint (tasks without sprint) | Done |
+| Backend: Create burndown endpoint (daily remaining points) | Done |
+| Backend: Create velocity endpoint (completed points per sprint) | Done |
+| Frontend: Create ProjectTypeSelector component (3-card picker for basic/kanban/agile) | Done |
+| Frontend: Update create-project-dialog with ProjectTypeSelector | Done |
+| Frontend: Update project-header with conditional tabs by project_type | Done |
+| Frontend: Create use-sprints hook with CRUD and lifecycle mutations | Done |
+| Frontend: Create use-backlog-tasks hook | Done |
+| Frontend: Create use-sprint-analytics hook (burndown + velocity queries) | Done |
+| Frontend: Create SprintSelector component (dropdown with status badges) | Done |
+| Frontend: Create SprintManageDialog (create, start, complete sprints) | Done |
+| Frontend: Create BurndownChart component (recharts line chart with ideal line) | Done |
+| Frontend: Create VelocityChart component (recharts bar chart with avg) | Done |
+| Frontend: Create SprintAnalyticsPanel composition component | Done |
+| Frontend: Create BacklogPage at /pms/projects/:id/backlog (task list) | Done |
+| Frontend: Create stub SprintsPage at /pms/projects/:id/sprints | Done |
+| Frontend: Update board.tsx with SprintSelector and sprint-aware filtering | Done |
+| Frontend: Update board-kanban-column.tsx with WIP limit display | Done |
+| Frontend: Update board-task-card.tsx with story points badge and task type icon | Done |
+| Frontend: Update task-detail-drawer with sprint/points/type meta rows | Done |
+| Frontend: Add backlog and sprints routes to router.tsx | Done |
+| Frontend: Add SprintAnalyticsPanel to overview.tsx | Done |
+| Backend Tests: Create test_sprint_crud.py (create, list, get, update, delete) | Done |
+| Backend Tests: Create test_sprint_lifecycle.py (start, complete, one-active constraint) | Done |
+| Backend Tests: Verify backlog endpoint and agile field round-trip | Done |
+| Frontend Tests: Create sprint-selector.test.tsx (render, selection logic) | Done |
+| Verification: All 5 phases complete with zero regressions | Done |

@@ -8,6 +8,7 @@ from app.modules.pms.routers import (
     goals,
     projects,
     sections,
+    sprints,
     tags,
     tasks,
 )
@@ -23,3 +24,4 @@ pms_router.include_router(comments.router)
 pms_router.include_router(attachments.router)
 pms_router.include_router(tags.router)
 pms_router.include_router(activity.router)
+pms_router.include_router(sprints.router)
