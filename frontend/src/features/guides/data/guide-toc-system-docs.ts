@@ -32,6 +32,15 @@ export const SYSTEM_DOCS_CONFIG: GuideConfig = {
             items: [
                 { id: 'tech-stack', hash: '', labelEn: 'Tech Stack', labelVi: 'Công Nghệ Sử Dụng', file: 'tech-stack.html' },
                 { id: 'code-standards', hash: '', labelEn: 'Code Standards', labelVi: 'Tiêu Chuẩn Mã Nguồn', file: 'code-standards.html' },
+                { id: 'roadmap', hash: '', labelEn: 'Development Roadmap', labelVi: 'Lộ Trình Phát Triển', file: 'development-roadmap.html' },
+                { id: 'changelog', hash: '', labelEn: 'Project Changelog', labelVi: 'Lịch Sử Thay Đổi', file: 'project-changelog.html' },
+            ],
+        },
+        {
+            labelEn: 'Design',
+            labelVi: 'Thiết Kế',
+            items: [
+                { id: 'design-guide', hash: '', labelEn: 'Design Guidelines', labelVi: 'Hướng Dẫn Thiết Kế', file: 'design-guidelines.html' },
             ],
         },
     ],
