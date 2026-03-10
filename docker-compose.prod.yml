@@ -16,6 +16,7 @@ services:
       MAX_UPLOAD_SIZE_MB: ${MAX_UPLOAD_SIZE_MB:-10}
     volumes:
       - uploads_data:/app/uploads
+      - ./docs:/docs:ro
     depends_on:
       postgres:
         condition: service_healthy
