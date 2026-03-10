@@ -9,10 +9,10 @@ import { GuideBreadcrumb } from '../components/guide-breadcrumb'
 import { useGuideNavigation } from '../hooks/use-guide-navigation'
 
 export default function GuideViewerPage() {
-  const { activeGuide, activeSectionHash } = useGuideNavigation()
+  const { activeGuide, activeItem, activeSectionHash } = useGuideNavigation()
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
 
-  const guideFile = activeGuide?.file ?? 'user-guide.html'
+  const guideFile = activeItem?.file ?? activeGuide?.file ?? 'user-guide.html'
 
   return (
     <div className="flex h-full overflow-hidden">

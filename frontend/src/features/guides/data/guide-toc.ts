@@ -3,12 +3,15 @@ import { SOP_PMS_CONFIG } from './guide-toc-sop-pms'
 import { SOP_CRM_CONFIG } from './guide-toc-sop-crm'
 import { SOP_HRM_CONFIG } from './guide-toc-sop-hrm'
 import { SOP_WMS_CONFIG } from './guide-toc-sop-wms'
+import { SYSTEM_DOCS_CONFIG } from './guide-toc-system-docs'
+import { PRD_CONFIG } from './guide-toc-prd'
 
 export interface GuideTocItem {
   id: string
   hash: string
   labelEn: string
   labelVi: string
+  file?: string
 }
 
 export interface GuideTocSection {
@@ -38,6 +41,8 @@ export const GUIDE_CONFIGS: GuideConfig[] = [
   SOP_CRM_CONFIG,
   SOP_HRM_CONFIG,
   SOP_WMS_CONFIG,
+  SYSTEM_DOCS_CONFIG,
+  PRD_CONFIG,
 ]
 
 export function getGuideById(id: string): GuideConfig | undefined {

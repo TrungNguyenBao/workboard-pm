@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="vi" data-lang="vi" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRM PRD — A-ERP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            --color-primary: #5E6AD2;
+            --color-primary-hover: #4F55C4;
+            --color-accent: #F28C38;
+            --color-success: #22C55E;
+            --color-warning: #F59E0B;
+            --color-danger: #EF4444;
+            --color-info: #38BDF8;
+            --bg-page: #FFFFFF;
+            --bg-surface: #F9F9FB;
+            --bg-elevated: #FFFFFF;
+            --border-default: #E4E4E7;
+            --text-primary: #18181B;
+            --text-secondary: #52525B;
+            --text-tertiary: #A1A1AA;
+            --radius-xs: 4px;
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+            --shadow-elevated: 0 4px 12px rgba(0, 0, 0, .10);
+            --sidebar-width: 260px;
+            --topbar-height: 52px;
+            --dur: 150ms;
+        }
+
+        [data-theme="dark"] {
+            --bg-page: #0F0F12;
+            --bg-surface: #1A1A1F;
+            --bg-elevated: #25252B;
+            --border-default: rgba(255, 255, 255, .10);
+            --text-primary: #FAFAFA;
+            --text-secondary: #A1A1AA;
+            --text-tertiary: #52525B;
+            --color-primary: #6E78E8;
+            --color-primary-hover: #7D87EE;
+            --color-accent: #F5A05A;
+            --color-success: #4ADE80;
+            --color-warning: #FBB532;
+            --color-danger: #F87171;
+            --color-info: #7DD3FC;
+            --shadow-elevated: 0 4px 12px rgba(0, 0, 0, .40);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 14px;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-page);
+            transition: background var(--dur) ease, color var(--dur) ease;
+        }
+
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--topbar-height);
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border-default);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .topbar-brand {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--color-primary);
+            letter-spacing: -.3px;
+            flex-shrink: 0;
+        }
+
+        .topbar-brand span {
+            color: var(--text-primary);
+            font-weight: 400;
+        }
+
+        .topbar-subtitle {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            border-left: 1px solid var(--border-default);
+            padding-left: 12px;
+            margin-left: 4px;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: var(--topbar-height);
+            left: 0;
+            width: var(--sidebar-width);
+            height: calc(100vh - var(--topbar-height));
+            background: var(--bg-surface);
+            border-right: 1px solid var(--border-default);
+            overflow-y: auto;
+            overflow-x: hidden;
+            z-index: 90;
+            transition: transform var(--dur) ease;
+            padding: 16px 0 32px;
+        }
+
+        .sidebar-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            color: var(--text-tertiary);
+            padding: 6px 16px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px 6px 24px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            cursor: pointer;
+            transition: background var(--dur) ease, color var(--dur) ease;
+        }
+
+        .sidebar-link:hover {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+        }
+
+        .sidebar-link-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--text-tertiary);
+            flex-shrink: 0;
+            margin-left: 4px;
+        }
+
+        .main {
+            margin-left: var(--sidebar-width);
+            margin-top: var(--topbar-height);
+            padding: 40px 48px;
+            max-width: calc(100% - var(--sidebar-width));
+            min-height: calc(100vh - var(--topbar-height));
+        }
+
+        .content-area {
+            max-width: 820px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1.2;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        h2 {
+            font-size: 22px;
+            font-weight: 600;
+            line-height: 1.3;
+            color: var(--text-primary);
+            margin-top: 52px;
+            margin-bottom: 16px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-default);
+        }
+
+        h2:first-child {
+            margin-top: 0;
+            border-top: none;
+            padding-top: 0;
+        }
+
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.4;
+            color: var(--text-primary);
+            margin-top: 32px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            line-height: 1.7;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            text-align: left;
+            padding: 8px 12px;
+            font-weight: 600;
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border-default);
+        }
+
+        td {
+            padding: 9px 12px;
+            border-bottom: 1px solid var(--border-default);
+            color: var(--text-secondary);
+        }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-xs);
+            padding: 1px 5px;
+            color: var(--color-primary);
+        }
+
+        [data-lang="en"] .lang-vi {
+            display: none;
+        }
+
+        [data-lang="vi"] .lang-en {
+            display: none;
+        }
+    </style>
+</head>
+
+<body data-theme="light" data-lang="vi">
+
+    <header class="topbar">
+        <span class="topbar-brand">A-ERP <span>Docs</span></span>
+    </header>
+
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-section-title">HRM PRD</div>
+        <a class="sidebar-link" href="#overview"><span class="sidebar-link-dot"></span>Overview</a>
+        <a class="sidebar-link" href="#scope"><span class="sidebar-link-dot"></span>Scope</a>
+        <a class="sidebar-link" href="#data-models"><span class="sidebar-link-dot"></span>Data Models</a>
+        <a class="sidebar-link" href="#endpoints"><span class="sidebar-link-dot"></span>API Endpoints</a>
+        <a class="sidebar-link" href="#pages"><span class="sidebar-link-dot"></span>Frontend Pages</a>
+    </nav>
+
+    <main class="main">
+        <div class="content-area">
+
+            <div class="page-header">
+                <h1>HRM Product Requirements</h1>
+                <p class="page-header-meta">Human Resource Management — Full Specification — Last updated: 2026-03-09
+                </p>
+            </div>
+
+            <h2 id="overview">1. Tổng quan sản phẩm</h2>
+            <p>Hệ thống Quản lý Hành chính Nhân sự (HCNS) nhằm mục tiêu chuẩn hóa 100% quy trình nhân sự, số hóa toàn bộ
+                hồ sơ và biểu mẫu, sẵn sàng tích hợp ERP & AI Agent.</p>
+
+            <h2 id="scope">2. Phạm vi hệ thống</h2>
+            <ul>
+                <li><strong>HR Core:</strong> Vòng đời nhân viên, tuyển dụng, nghỉ phép, chấm công, lương, hiệu suất.
+                </li>
+                <li><strong>Hành chính:</strong> Quản lý tài sản, mua sắm nội bộ, văn bản.</li>
+                <li><strong>Tuân thủ:</strong> Quy định công ty, tuân thủ pháp luật lao động.</li>
+            </ul>
+
+            <h2 id="data-models">3. Core Data Models (32+ Tables)</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Entity</th>
+                            <th>Key Fields</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Employee</td>
+                            <td>user_id, name, email, department_id, hire_date</td>
+                            <td>Hồ sơ nhân viên</td>
+                        </tr>
+                        <tr>
+                            <td>Department</td>
+                            <td>name, code, manager_id, parent_id</td>
+                            <td>Phòng ban & Sơ đồ tổ chức</td>
+                        </tr>
+                        <tr>
+                            <td>LeaveRequest</td>
+                            <td>employee_id, type_id, start_date, status</td>
+                            <td>Yêu cầu nghỉ phép</td>
+                        </tr>
+                        <tr>
+                            <td>PayrollRecord</td>
+                            <td>employee_id, period, gross, net, status</td>
+                            <td>Bảng lương hàng tháng</td>
+                        </tr>
+                        <tr>
+                            <td>Recruitment</td>
+                            <td>title, quantity, requirements, deadline</td>
+                            <td>Quản lý tuyển dụng</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 id="endpoints">4. API Endpoints</h2>
+            <p>Hệ thống cung cấp REST API đầy đủ cho các module con:</p>
+            <ul>
+                <li><code>/api/v1/hrm/employees</code> - Nhân sự</li>
+                <li><code>/api/v1/hrm/departments</code> - Phòng ban</li>
+                <li><code>/api/v1/hrm/leave-requests</code> - Nghỉ phép</li>
+                <li><code>/api/v1/hrm/payroll-records</code> - Tính lương</li>
+            </ul>
+
+            <h2 id="pages">5. Frontend Pages (23+)</h2>
+            <p>Hệ thống bao gồm Dashboard chiến lược, Danh sách nhân sự, Pipeline tuyển dụng (Kanban), Sơ đồ tổ chức
+                trực quan (Org Chart) và các trang quản lý tài sản, mua sắm.</p>
+
+        </div>
+    </main>
+
+    <script>
+        // Mock simple interactivity for the template
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+    </script>
+</body>
+
+</html>

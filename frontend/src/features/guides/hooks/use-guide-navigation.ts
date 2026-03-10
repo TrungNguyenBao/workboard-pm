@@ -4,6 +4,7 @@ import type { GuideConfig, GuideTocItem } from '../data/guide-toc'
 
 export interface GuideNavContext {
   activeGuide: GuideConfig | undefined
+  activeItem: GuideTocItem | undefined
   activeSectionHash: string
   prevItem: GuideTocItem | null
   nextItem: GuideTocItem | null
@@ -36,6 +37,7 @@ export function useGuideNavigation(): GuideNavContext {
 
   return {
     activeGuide,
+    activeItem: activeIndex >= 0 ? flatItems[activeIndex].item : undefined,
     activeSectionHash: sectionHash,
     prevItem,
     nextItem,

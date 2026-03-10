@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SOP Hành chính Nhân sự — HRM</title>
+<title>SOP Quản lý Hành chính Nhân sự — HRM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -107,14 +107,11 @@ td strong{color:var(--text-primary);}tr:last-child td{border-bottom:none;}tr:hov
 .gl-text{color:var(--text-secondary);font-size:13px;line-height:1.6;}
 .gl-text strong{color:var(--text-primary);}
 .module-tag{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 6px;border-radius:var(--radius-xs);margin-right:6px;vertical-align:middle;}
-.mod-org{background:rgba(94,106,210,.12);color:var(--color-primary);}
-.mod-recruit{background:rgba(56,189,248,.12);color:#0284C7;}
-.mod-cb{background:rgba(34,197,94,.12);color:#16A34A;}
-.mod-perf{background:rgba(245,158,11,.12);color:#D97706;}
-.mod-admin{background:rgba(242,140,56,.12);color:#C2410C;}
-.mod-off{background:rgba(239,68,68,.12);color:#DC2626;}
-[data-theme="dark"] .mod-recruit{color:#7DD3FC;}[data-theme="dark"] .mod-cb{color:#4ADE80;}
-[data-theme="dark"] .mod-perf{color:#FBB532;}[data-theme="dark"] .mod-admin{color:#FB923C;}[data-theme="dark"] .mod-off{color:#F87171;}
+.mod-hr{background:rgba(59,130,246,.12);color:#1E40AF;}
+.mod-recruit{background:rgba(34,197,94,.12);color:#16A34A;}
+.mod-admin{background:rgba(245,158,11,.12);color:#D97706;}
+.mod-finance{background:rgba(239,68,68,.12);color:#DC2626;}
+[data-theme="dark"] .mod-recruit{color:#4ADE80;}[data-theme="dark"] .mod-admin{color:#FBB532;}[data-theme="dark"] .mod-finance{color:#F87171;}
 html[data-lang="en"] .lang-vi{display:none;}
 html[data-lang="vi"] .lang-en{display:none;}
 .lang-toggle{display:flex;align-items:center;gap:2px;border:1px solid var(--border-default);border-radius:var(--radius-full);padding:2px;background:var(--bg-elevated);margin-left:4px;}
@@ -132,8 +129,8 @@ html[data-lang="vi"] .lang-en{display:none;}
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
   </button>
   <span class="topbar-brand">A-ERP <span>SOP</span></span>
-  <span class="topbar-subtitle lang-vi">Quy trình vận hành — Hành chính Nhân sự</span>
-  <span class="topbar-subtitle lang-en">Operations SOP — Human Resource Management</span>
+  <span class="topbar-subtitle lang-vi">Hướng dẫn — Quản lý Hành chính Nhân sự</span>
+  <span class="topbar-subtitle lang-en">Guide — Human Resources &amp; Administration</span>
   <span class="topbar-spacer"></span>
   <button class="dark-toggle" id="darkToggle">
     <svg id="sunIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
@@ -155,78 +152,69 @@ html[data-lang="vi"] .lang-en{display:none;}
       <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
     <div class="sidebar-section-items">
-      <a class="sidebar-link" href="#tong-quan" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Tổng quan hệ thống" data-en="System Overview">Tổng quan hệ thống</span></a>
-      <a class="sidebar-link" href="#vai-tro" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Vai trò &amp; Trách nhiệm" data-en="Roles &amp; Responsibilities">Vai trò &amp; Trách nhiệm</span></a>
+      <a class="sidebar-link" href="#overview" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Tổng quan" data-en="Overview">Tổng quan</span></a>
+      <a class="sidebar-link" href="#roles" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Vai trò &amp; Quyền" data-en="Roles &amp; Permissions">Vai trò &amp; Quyền</span></a>
     </div>
   </div>
   <div class="sidebar-section" id="sec-org">
     <div class="sidebar-section-header" onclick="toggleSection('sec-org')">
-      <span class="sidebar-section-title" data-vi="Tổ chức &amp; Hồ sơ" data-en="Org &amp; Records">Tổ chức &amp; Hồ sơ</span>
+      <span class="sidebar-section-title" data-vi="Tổ chức &amp; Nhân viên" data-en="Organization &amp; Employee">Tổ chức &amp; Nhân viên</span>
       <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
     <div class="sidebar-section-items">
-      <a class="sidebar-link" href="#sop01" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 01 — Sơ đồ Tổ chức" data-en="SOP 01 — Org Chart">SOP 01 — Sơ đồ Tổ chức</span></a>
-      <a class="sidebar-link" href="#sop02" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 02 — Hồ sơ Nhân sự" data-en="SOP 02 — Employee Records">SOP 02 — Hồ sơ Nhân sự</span></a>
+      <a class="sidebar-link" href="#org-structure" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Cấu trúc Tổ chức" data-en="Org Structure">Cấu trúc Tổ chức</span></a>
+      <a class="sidebar-link" href="#employee-lifecycle" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Vòng đời Nhân viên" data-en="Employee Lifecycle">Vòng đời Nhân viên</span></a>
+      <a class="sidebar-link" href="#contract-salary" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Hợp đồng &amp; Lương" data-en="Contract &amp; Salary">Hợp đồng &amp; Lương</span></a>
     </div>
   </div>
-  <div class="sidebar-section" id="sec-recruit">
-    <div class="sidebar-section-header" onclick="toggleSection('sec-recruit')">
+  <div class="sidebar-section" id="sec-recruitment">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-recruitment')">
       <span class="sidebar-section-title" data-vi="Tuyển dụng" data-en="Recruitment">Tuyển dụng</span>
       <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
     <div class="sidebar-section-items">
-      <a class="sidebar-link" href="#sop03" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 03 — Yêu cầu Tuyển dụng" data-en="SOP 03 — Recruitment Request">SOP 03 — Yêu cầu Tuyển dụng</span></a>
-      <a class="sidebar-link" href="#sop04" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 04 — Pipeline Ứng viên" data-en="SOP 04 — Candidate Pipeline">SOP 04 — Pipeline Ứng viên</span></a>
-      <a class="sidebar-link" href="#sop05" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 05 — Offer &amp; Onboarding" data-en="SOP 05 — Offer &amp; Onboarding">SOP 05 — Offer &amp; Onboarding</span></a>
+      <a class="sidebar-link" href="#recruitment-pipeline" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Pipeline Tuyển dụng" data-en="Recruitment Pipeline">Pipeline Tuyển dụng</span></a>
+      <a class="sidebar-link" href="#interview-offer" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Phỏng vấn &amp; Offer" data-en="Interview &amp; Offer">Phỏng vấn &amp; Offer</span></a>
     </div>
   </div>
-  <div class="sidebar-section" id="sec-cb">
-    <div class="sidebar-section-header" onclick="toggleSection('sec-cb')">
-      <span class="sidebar-section-title" data-vi="Chấm công &amp; Lương" data-en="Attendance &amp; Payroll">Chấm công &amp; Lương</span>
+  <div class="sidebar-section" id="sec-leave">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-leave')">
+      <span class="sidebar-section-title" data-vi="Nghỉ phép &amp; Chấm công" data-en="Leave &amp; Attendance">Nghỉ phép &amp; Chấm công</span>
       <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
     <div class="sidebar-section-items">
-      <a class="sidebar-link" href="#sop06" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 06 — Chấm công &amp; Nghỉ phép" data-en="SOP 06 — Attendance &amp; Leave">SOP 06 — Chấm công &amp; Nghỉ phép</span></a>
-      <a class="sidebar-link" href="#sop07" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 07 — Tính &amp; Chi lương" data-en="SOP 07 — Payroll">SOP 07 — Tính &amp; Chi lương</span></a>
+      <a class="sidebar-link" href="#leave-mgt" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Quản lý Nghỉ phép" data-en="Leave Management">Quản lý Nghỉ phép</span></a>
+      <a class="sidebar-link" href="#attendance-mgt" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Quản lý Chấm công" data-en="Attendance Management">Quản lý Chấm công</span></a>
     </div>
   </div>
-  <div class="sidebar-section" id="sec-perf">
-    <div class="sidebar-section-header" onclick="toggleSection('sec-perf')">
-      <span class="sidebar-section-title" data-vi="Đánh giá &amp; Đào tạo" data-en="Performance &amp; Training">Đánh giá &amp; Đào tạo</span>
+  <div class="sidebar-section" id="sec-performance">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-performance')">
+      <span class="sidebar-section-title" data-vi="Hiệu suất &amp; KPI" data-en="Performance &amp; KPI">Hiệu suất &amp; KPI</span>
       <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
     <div class="sidebar-section-items">
-      <a class="sidebar-link" href="#sop08" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 08 — KPI/OKR &amp; Đánh giá" data-en="SOP 08 — KPI/OKR &amp; Review">SOP 08 — KPI/OKR &amp; Đánh giá</span></a>
-      <a class="sidebar-link" href="#sop09" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 09 — Đào tạo &amp; Phát triển" data-en="SOP 09 — Training &amp; Development">SOP 09 — Đào tạo &amp; Phát triển</span></a>
+      <a class="sidebar-link" href="#performance-review" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Performance Review" data-en="Performance Review">Performance Review</span></a>
+      <a class="sidebar-link" href="#kpi-training" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="KPI &amp; Training" data-en="KPI &amp; Training">KPI &amp; Training</span></a>
     </div>
   </div>
-  <div class="sidebar-section" id="sec-admin">
-    <div class="sidebar-section-header" onclick="toggleSection('sec-admin')">
-      <span class="sidebar-section-title" data-vi="Hành chính" data-en="Admin">Hành chính</span>
+  <div class="sidebar-section" id="sec-offboarding">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-offboarding')">
+      <span class="sidebar-section-title" data-vi="Offboarding &amp; Tài sản" data-en="Offboarding &amp; Asset">Offboarding &amp; Tài sản</span>
       <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
     <div class="sidebar-section-items">
-      <a class="sidebar-link" href="#sop10" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 10 — Tài sản &amp; Mua sắm" data-en="SOP 10 — Assets &amp; Procurement">SOP 10 — Tài sản &amp; Mua sắm</span></a>
+      <a class="sidebar-link" href="#offboarding-process" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Quy trình Offboarding" data-en="Offboarding Process">Quy trình Offboarding</span></a>
+      <a class="sidebar-link" href="#asset-management" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Quản lý Tài sản" data-en="Asset Management">Quản lý Tài sản</span></a>
     </div>
   </div>
-  <div class="sidebar-section" id="sec-off">
-    <div class="sidebar-section-header" onclick="toggleSection('sec-off')">
-      <span class="sidebar-section-title" data-vi="Thôi việc" data-en="Offboarding">Thôi việc</span>
-      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-    </div>
-    <div class="sidebar-section-items">
-      <a class="sidebar-link" href="#sop11" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 11 — Quy trình Thôi việc" data-en="SOP 11 — Offboarding Process">SOP 11 — Quy trình Thôi việc</span></a>
-    </div>
-  </div>
-  <div class="sidebar-section" id="sec-ref">
-    <div class="sidebar-section-header" onclick="toggleSection('sec-ref')">
+  <div class="sidebar-section" id="sec-api">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-api')">
       <span class="sidebar-section-title" data-vi="Tham chiếu" data-en="Reference">Tham chiếu</span>
       <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
     <div class="sidebar-section-items">
-      <a class="sidebar-link" href="#kpi" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="KPI vận hành" data-en="Operational KPIs">KPI vận hành</span></a>
-      <a class="sidebar-link" href="#role-summary" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Tổng hợp theo Vai trò" data-en="Summary by Role">Tổng hợp theo Vai trò</span></a>
-      <a class="sidebar-link" href="#nguyen-tac-vang" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Nguyên tắc vàng" data-en="Golden Principles">Nguyên tắc vàng</span></a>
+      <a class="sidebar-link" href="#api-endpoints" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="API Endpoints" data-en="API Endpoints">API Endpoints</span></a>
+      <a class="sidebar-link" href="#permissions" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Bảng Quyền hạn" data-en="Permission Matrix">Bảng Quyền hạn</span></a>
     </div>
   </div>
 </nav>
@@ -237,654 +225,800 @@ html[data-lang="vi"] .lang-en{display:none;}
 <!-- PAGE HEADER -->
 <div class="page-header">
   <div class="lang-vi">
-    <h1>SOP Hành chính Nhân sự</h1>
-    <p class="page-header-meta">Quản lý Tổ chức • Tuyển dụng • C&amp;B • Đánh giá • Đào tạo — Phiên bản 1.0</p>
+    <h1>Hướng dẫn Quản lý Hành chính Nhân sự</h1>
+    <p class="page-header-meta">HR • Administration • Payroll — Phiên bản 1.0 • Triển khai đầy đủ (32 data models)</p>
   </div>
   <div class="lang-en">
-    <h1>HR Management SOP</h1>
-    <p class="page-header-meta">Organization • Recruitment • C&amp;B • Performance • Training — Version 1.0</p>
+    <h1>Human Resources &amp; Administration Management Guide</h1>
+    <p class="page-header-meta">HR • Administration • Payroll — Version 1.0 • Fully Implemented (32 data models)</p>
   </div>
 </div>
 
-<!-- ===== OVERVIEW ===== -->
-<h2 id="tong-quan">
+<!-- OVERVIEW -->
+<h2 id="overview">
   <span class="lang-vi">Tổng quan hệ thống</span>
   <span class="lang-en">System Overview</span>
 </h2>
+
 <div class="lang-vi">
-  <p class="section-intro">Tài liệu này chuẩn hóa 100% quy trình nghiệp vụ HCNS trong doanh nghiệp — từ tuyển dụng, chấm công, tính lương, đánh giá hiệu suất đến quản lý tài sản và thôi việc.</p>
+  <p class="section-intro">Hệ thống HRM quản lý vòng đời toàn bộ nhân viên từ tuyển dụng, onboarding, quản lý hoạt động, lương thưởng, hiệu suất đến offboarding. Số hóa 100% quy trình HCNS, giảm 40-60% thao tác thủ công, kiểm soát tuân thủ pháp lý.</p>
   <div class="feature-grid">
-    <div class="feature-card"><div class="feature-card-title">Mục đích</div><div class="feature-card-desc">Chuẩn hóa quy trình HCNS, đảm bảo tính nhất quán, minh bạch và tuân thủ pháp luật lao động.</div></div>
-    <div class="feature-card"><div class="feature-card-title">Phạm vi áp dụng</div><div class="feature-card-desc">Quản lý tổ chức, tuyển dụng, chấm công, lương, đánh giá, đào tạo, tài sản và offboarding.</div></div>
-    <div class="feature-card"><div class="feature-card-title">Tích hợp hệ thống</div><div class="feature-card-desc">Module HRM tích hợp toàn diện với ERP. Phân quyền RBAC, phê duyệt online, self-service cho nhân viên.</div></div>
-    <div class="feature-card"><div class="feature-card-title">Nguyên tắc nền tảng</div><div class="feature-card-desc">Dữ liệu trên hệ thống = chính thức. Phê duyệt online bắt buộc. SLA 24h cho mọi yêu cầu.</div></div>
+    <div class="feature-card">
+      <div class="feature-card-title">Mục tiêu</div>
+      <div class="feature-card-desc">Chuẩn hóa 100% quy trình, số hóa hồ sơ, giảm thao tác Excel rời rạc 60%, đảm bảo tuân thủ pháp lý</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">Phạm vi</div>
+      <div class="feature-card-desc">Employee lifecycle, Recruitment, Leave, Attendance, Payroll, Performance, Training, Assets, Offboarding</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">Phủ sóng dữ liệu</div>
+      <div class="feature-card-desc">32 data models: Employee, Department, Position, Contract, Leave, Attendance, Recruitment, Interview, Offer, Performance, KPI, Training, Payroll, Insurance, Asset, Offboarding, và hơn nữa</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">Status: Triển khai đầy đủ</div>
+      <div class="feature-card-desc">Tất cả tính năng core sản xuất sẵn sàng. 23+ trang frontend, API đầy đủ, workflow approval tự động</div>
+    </div>
   </div>
 </div>
 <div class="lang-en">
-  <p class="section-intro">This document standardizes 100% of HR administrative processes — from recruitment, attendance, payroll, performance review to asset management and offboarding.</p>
+  <p class="section-intro">The HRM system manages the entire employee lifecycle from recruitment, onboarding, employment management, compensation, performance to offboarding. Digitizes 100% of HR processes, reduces 40-60% of manual work, ensures legal compliance.</p>
   <div class="feature-grid">
-    <div class="feature-card"><div class="feature-card-title">Purpose</div><div class="feature-card-desc">Standardize all HR processes, ensuring consistency, transparency and compliance with labor law.</div></div>
-    <div class="feature-card"><div class="feature-card-title">Scope</div><div class="feature-card-desc">Organization management, recruitment, attendance, payroll, performance, training, assets and offboarding.</div></div>
-    <div class="feature-card"><div class="feature-card-title">System Integration</div><div class="feature-card-desc">HRM module fully integrated with ERP. RBAC access control, online approval workflows, employee self-service.</div></div>
-    <div class="feature-card"><div class="feature-card-title">Core Principles</div><div class="feature-card-desc">Data in system = official record. Online approval is mandatory. 24-hour SLA for all requests.</div></div>
+    <div class="feature-card">
+      <div class="feature-card-title">Objectives</div>
+      <div class="feature-card-desc">Standardize 100% of processes, digitize records, eliminate 60% of manual Excel work, ensure legal compliance</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">Scope</div>
+      <div class="feature-card-desc">Employee lifecycle, Recruitment, Leave, Attendance, Payroll, Performance, Training, Assets, Offboarding</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">Data Coverage</div>
+      <div class="feature-card-desc">32 data models: Employee, Department, Position, Contract, Leave, Attendance, Recruitment, Interview, Offer, Performance, KPI, Training, Payroll, Insurance, Asset, Offboarding, and more</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">Status: Fully Implemented</div>
+      <div class="feature-card-desc">All core features production-ready. 23+ frontend pages, complete API, automated approval workflows</div>
+    </div>
   </div>
 </div>
 
-<!-- ===== ROLES ===== -->
-<h2 id="vai-tro">
-  <span class="lang-vi">Vai trò &amp; Trách nhiệm</span>
-  <span class="lang-en">Roles &amp; Responsibilities</span>
+<!-- ROLES -->
+<h2 id="roles">
+  <span class="lang-vi">Vai trò &amp; Quyền hạn</span>
+  <span class="lang-en">Roles &amp; Permissions</span>
 </h2>
+
 <div class="table-wrap">
 <table>
   <thead>
     <tr>
       <th><span class="lang-vi">Vai trò</span><span class="lang-en">Role</span></th>
-      <th><span class="lang-vi">Trách nhiệm chính</span><span class="lang-en">Main Responsibilities</span></th>
+      <th><span class="lang-vi">Trách nhiệm</span><span class="lang-en">Responsibilities</span></th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td><strong>HR Admin</strong></td>
-      <td><span class="lang-vi">Thực thi nghiệp vụ: cập nhật hồ sơ, chấm công, tính lương. Quản lý kho biểu mẫu và tài liệu nhân sự.</span><span class="lang-en">Execute operations: update records, attendance, payroll. Manage HR form library and documents.</span></td>
+      <td><strong><span class="lang-vi">HR Admin</span><span class="lang-en">HR Admin</span></strong></td>
+      <td><span class="lang-vi">Full access: Employees, recruitment, payroll, contracts, leave approval, system config</span><span class="lang-en">Full access: Employees, recruitment, payroll, contracts, leave approval, system config</span></td>
     </tr>
     <tr>
-      <td><strong>HR Manager</strong></td>
-      <td><span class="lang-vi">Kiểm soát và phê duyệt đề xuất tuyển dụng, đào tạo, lương. Giám sát tính tuân thủ quy trình.</span><span class="lang-en">Control and approve recruitment, training, payroll proposals. Monitor process compliance.</span></td>
+      <td><strong><span class="lang-vi">HR Manager</span><span class="lang-en">HR Manager</span></strong></td>
+      <td><span class="lang-vi">Workflow approvals, team reports, recruitment oversight, performance reviews, analytics</span><span class="lang-en">Workflow approvals, team reports, recruitment oversight, performance reviews, analytics</span></td>
     </tr>
     <tr>
       <td><strong><span class="lang-vi">Line Manager</span><span class="lang-en">Line Manager</span></strong></td>
-      <td><span class="lang-vi">Lập kế hoạch nhu cầu nhân sự, đề xuất tuyển dụng. Đánh giá KPI/OKR và phê duyệt nghỉ phép, tăng ca.</span><span class="lang-en">Plan headcount needs, create recruitment requests. Evaluate KPI/OKR and approve leave, overtime.</span></td>
+      <td><span class="lang-vi">Approve leave (team), KPI assignments, performance reviews (team), team analytics</span><span class="lang-en">Approve leave (team), KPI assignments, performance reviews (team), team analytics</span></td>
     </tr>
     <tr>
-      <td><strong><span class="lang-vi">Nhân viên</span><span class="lang-en">Employee</span></strong></td>
-      <td><span class="lang-vi">Tự quản lý thông tin cá nhân (Self-service). Gửi các yêu cầu phê duyệt: nghỉ phép, tăng ca, thanh toán.</span><span class="lang-en">Self-manage personal information. Submit approval requests: leave, overtime, reimbursements.</span></td>
+      <td><strong><span class="lang-vi">Employee</span><span class="lang-en">Employee</span></strong></td>
+      <td><span class="lang-vi">Self-service: View own profile, request leave, view payslip, training enrollment, submit feedback</span><span class="lang-en">Self-service: View own profile, request leave, view payslip, training enrollment, submit feedback</span></td>
     </tr>
     <tr>
-      <td><strong>CEO</strong></td>
-      <td><span class="lang-vi">Phê duyệt định biên nhân sự và ngân sách lớn. Theo dõi dashboard báo cáo chiến lược nhân sự.</span><span class="lang-en">Approve headcount plans and major budgets. Monitor strategic HR dashboard reports.</span></td>
+      <td><strong><span class="lang-vi">Accountant</span><span class="lang-en">Accountant</span></strong></td>
+      <td><span class="lang-vi">Payroll records, salary history, insurance data, tax reporting</span><span class="lang-en">Payroll records, salary history, insurance data, tax reporting</span></td>
     </tr>
   </tbody>
 </table>
 </div>
 
-<!-- ===== SOP 01 ===== -->
-<h2 id="sop01">
-  <span class="module-tag mod-org">Org</span>
-  <span class="lang-vi">SOP 01 — Thiết lập Sơ đồ Tổ chức (Org Chart)</span>
-  <span class="lang-en">SOP 01 — Set Up Organization Chart</span>
+<!-- ORGANIZATION & EMPLOYEE -->
+<h2 id="org-structure">
+  <span class="module-tag mod-hr">HR</span>
+  <span class="lang-vi">Cấu trúc Tổ chức</span>
+  <span class="lang-en">Organizational Structure</span>
 </h2>
-<div class="lang-vi"><p class="section-intro">HR Manager thiết lập và duy trì cơ cấu phòng ban, vị trí công việc và định biên nhân sự trên hệ thống.</p></div>
-<div class="lang-en"><p class="section-intro">HR Manager establishes and maintains department structure, job positions, and headcount planning in the system.</p></div>
-<div class="roles-row">
-  <span class="role-tag"><span class="lang-vi">HR Manager (thực hiện)</span><span class="lang-en">HR Manager (execute)</span></span>
-  <span class="role-tag"><span class="lang-vi">CEO (phê duyệt)</span><span class="lang-en">CEO (approve)</span></span>
-</div>
-<h4><span class="lang-vi">Luồng trạng thái</span><span class="lang-en">Status Flow</span></h4>
+
+<div class="lang-vi"><p class="section-intro">Hệ thống HRM hỗ trợ cấu trúc tổ chức phân cấp. Mỗi Department có parent (nếu là sub-department), manager, và danh sách nhân viên.</p></div>
+<div class="lang-en"><p class="section-intro">HRM system supports hierarchical organizational structure. Each Department has parent (if sub-department), manager, and employee list.</p></div>
+
+<h3><span class="lang-vi">Department Hierarchy</span><span class="lang-en">Department Hierarchy</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr>
+    <td><strong><span class="lang-vi">Department:</span><span class="lang-en">Department:</span></strong> <span class="lang-vi">Tên phòng ban, mã, mô tả, manager, parent_department_id (nếu có)</span><span class="lang-en">Name, code, description, manager, parent_department_id (if sub-department)</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Position:</span><span class="lang-en">Position:</span></strong> <span class="lang-vi">Tên vị trí, department_id, headcount limit, description, is_active</span><span class="lang-en">Title, department_id, headcount limit, description, is_active</span></td>
+  </tr>
+</tbody>
+</table>
+
+<h3><span class="lang-vi">Org Chart Features</span><span class="lang-en">Org Chart Features</span></h3>
+<ul>
+  <li><strong><span class="lang-vi">Hierarchical Tree:</span><span class="lang-en">Hierarchical Tree:</span></strong> <span class="lang-vi">Xem toàn bộ cấu trúc tổ chức theo cây. Dễ dàng quản lý reporting lines</span><span class="lang-en">View full org structure in tree view. Easy reporting line management</span></li>
+  <li><strong><span class="lang-vi">Headcount Tracking:</span><span class="lang-en">Headcount Tracking:</span></strong> <span class="lang-vi">Theo dõi headcount hiện tại vs. limit. Alert nếu vượt định biên</span><span class="lang-en">Track current headcount vs. limit. Alert if exceeds headcount limit</span></li>
+  <li><strong><span class="lang-vi">Department Filters:</span><span class="lang-en">Department Filters:</span></strong> <span class="lang-vi">Lọc employees theo department, xem team member list nhanh chóng</span><span class="lang-en">Filter employees by department, quickly view team member lists</span></li>
+</ul>
+
+<!-- EMPLOYEE LIFECYCLE -->
+<h2 id="employee-lifecycle">
+  <span class="lang-vi">Vòng đời Nhân viên</span>
+  <span class="lang-en">Employee Lifecycle</span>
+</h2>
+
+<div class="lang-vi"><p class="section-intro">Nhân viên trải qua các giai đoạn: Recruitment → Onboarding → Active (Probation/Regular) → Offboarding → Archive.</p></div>
+<div class="lang-en"><p class="section-intro">Employee progresses through stages: Recruitment → Onboarding → Active (Probation/Regular) → Offboarding → Archive.</p></div>
+
 <div class="status-flow">
-  <span class="sp sp-draft">DRAFT</span><span class="flow-arr">→</span>
-  <span class="sp sp-blue">PENDING_APPROVAL</span><span class="flow-arr">→</span>
-  <span class="sp sp-green">APPROVED</span><span class="flow-arr"> / </span><span class="sp sp-red">REJECTED</span>
-</div>
-<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
-<ol class="step-list">
-  <li><span><strong><span class="lang-vi">Truy cập Org Chart</span><span class="lang-en">Access Org Chart</span></strong> — <span class="lang-vi">Vào <code>HRM &gt; Organization &gt; Departments</code> &gt; Tạo phòng ban mới hoặc chọn chỉnh sửa.</span><span class="lang-en">Go to <code>HRM &gt; Organization &gt; Departments</code> &gt; Create new department or select to edit.</span></span></li>
-  <li><span><strong><span class="lang-vi">Thiết lập Phòng ban</span><span class="lang-en">Set Up Department</span></strong> — <span class="lang-vi">Điền: Tên phòng ban, Mã phòng ban, Phòng ban cha (nếu có).</span><span class="lang-en">Fill in: Department name, department code, parent department (if applicable).</span></span></li>
-  <li><span><strong><span class="lang-vi">Định nghĩa vị trí &amp; Headcount</span><span class="lang-en">Define Positions &amp; Headcount</span></strong> — <span class="lang-vi">Tab <strong>Positions</strong> &gt; Thêm vị trí công việc &gt; Nhập định biên từng vị trí.</span><span class="lang-en">In <strong>Positions</strong> tab &gt; Add job positions &gt; Set headcount for each.</span></span></li>
-  <li><span><strong><span class="lang-vi">Gửi phê duyệt CEO</span><span class="lang-en">Submit for CEO Approval</span></strong> — <span class="lang-vi">Nhấn <strong>Submit</strong> &gt; Đề xuất gửi đến CEO phê duyệt.</span><span class="lang-en">Click <strong>Submit</strong> &gt; Proposal sent to CEO for approval.</span></span></li>
-  <li><span><strong><span class="lang-vi">Org Chart cập nhật</span><span class="lang-en">Org Chart Updated</span></strong> — <span class="lang-vi">Sau khi được duyệt, hệ thống tự động cập nhật Org Chart trực quan.</span><span class="lang-en">Once approved, system automatically updates the visual Org Chart.</span></span></li>
-</ol>
-<div class="callout callout-danger">
-  <span class="callout-icon">⚠</span>
-  <div class="callout-body">
-    <strong><span class="lang-vi">Bắt buộc</span><span class="lang-en">Mandatory</span></strong>
-    <p><span class="lang-vi">Mọi thay đổi cơ cấu tổ chức BẮT BUỘC phải có phê duyệt từ CEO trước khi có hiệu lực. Không thực hiện thay đổi tắt quy trình.</span><span class="lang-en">All organizational changes MUST have CEO approval before taking effect. Never bypass the approval process.</span></p>
-  </div>
+  <span class="sp sp-blue"><span class="lang-vi">Prospective</span><span class="lang-en">Prospective</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-blue"><span class="lang-vi">Probation</span><span class="lang-en">Probation</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-green"><span class="lang-vi">Active</span><span class="lang-en">Active</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-amber"><span class="lang-vi">Resignation</span><span class="lang-en">Resignation</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-red"><span class="lang-vi">Inactive</span><span class="lang-en">Inactive</span></span>
 </div>
 
-<!-- ===== SOP 02 ===== -->
-<h2 id="sop02">
-  <span class="module-tag mod-org">Org</span>
-  <span class="lang-vi">SOP 02 — Cập nhật Hồ sơ Nhân sự</span>
-  <span class="lang-en">SOP 02 — Update Employee Records</span>
+<h3><span class="lang-vi">Employee Data Fields</span><span class="lang-en">Employee Data Fields</span></h3>
+<table class="table-wrap">
+<thead>
+  <tr>
+    <th><span class="lang-vi">Trường</span><span class="lang-en">Field</span></th>
+    <th><span class="lang-vi">Loại</span><span class="lang-en">Type</span></th>
+    <th><span class="lang-vi">Mô tả</span><span class="lang-en">Description</span></th>
+  </tr>
+</thead>
+<tbody>
+  <tr><td><code>name</code></td><td>String</td><td><span class="lang-vi">Tên nhân viên</span><span class="lang-en">Full name</span></td></tr>
+  <tr><td><code>email</code></td><td>String</td><td><span class="lang-vi">Email cá nhân/công ty</span><span class="lang-en">Personal/work email</span></td></tr>
+  <tr><td><code>phone</code></td><td>String</td><td><span class="lang-vi">Số điện thoại liên hệ</span><span class="lang-en">Contact phone</span></td></tr>
+  <tr><td><code>date_of_birth</code></td><td>Date</td><td><span class="lang-vi">Ngày sinh</span><span class="lang-en">Date of birth</span></td></tr>
+  <tr><td><code>national_id</code></td><td>String</td><td><span class="lang-vi">Số CMND/CCCD (bắt buộc)</span><span class="lang-en">ID number (required)</span></td></tr>
+  <tr><td><code>department_id</code></td><td>UUID</td><td><span class="lang-vi">Phòng ban hiện tại</span><span class="lang-en">Current department</span></td></tr>
+  <tr><td><code>position</code></td><td>String</td><td><span class="lang-vi">Chức vụ hiện tại</span><span class="lang-en">Current position/title</span></td></tr>
+  <tr><td><code>hire_date</code></td><td>Date</td><td><span class="lang-vi">Ngày vào làm (chính thức)</span><span class="lang-en">Official hire date</span></td></tr>
+  <tr><td><code>employee_status</code></td><td>Enum</td><td><span class="lang-vi">active, inactive, probation</span><span class="lang-en">active, inactive, probation</span></td></tr>
+  <tr><td><code>bank_account_number</code></td><td>String</td><td><span class="lang-vi">Số tài khoản ngân hàng (cho lương)</span><span class="lang-en">Bank account for salary</span></td></tr>
+  <tr><td><code>bank_name</code></td><td>String</td><td><span class="lang-vi">Tên ngân hàng</span><span class="lang-en">Bank name</span></td></tr>
+</tbody>
+</table>
+
+<h3><span class="lang-vi">Onboarding Checklist</span><span class="lang-en">Onboarding Checklist</span></h3>
+<div class="golden-list">
+  <li>
+    <div class="gl-icon">✓</div>
+    <div class="gl-text"><strong><span class="lang-vi">Document Submission:</span><span class="lang-en">Document Submission:</span></strong> <span class="lang-vi">CV, chứng chỉ, hợp đồng signed, insurance forms</span><span class="lang-en">CV, certificates, signed contract, insurance forms</span></div>
+  </li>
+  <li>
+    <div class="gl-icon">✓</div>
+    <div class="gl-text"><strong><span class="lang-vi">System Access:</span><span class="lang-en">System Access:</span></strong> <span class="lang-vi">Tạo account, email, access systems, training</span><span class="lang-en">Create account, email, system access, training</span></div>
+  </li>
+  <li>
+    <div class="gl-icon">✓</div>
+    <div class="gl-text"><strong><span class="lang-vi">Asset Assignment:</span><span class="lang-en">Asset Assignment:</span></strong> <span class="lang-vi">Laptop, phone, access card, office setup</span><span class="lang-en">Laptop, phone, access card, office setup</span></div>
+  </li>
+  <li>
+    <div class="gl-icon">✓</div>
+    <div class="gl-text"><strong><span class="lang-vi">Orientation:</span><span class="lang-en">Orientation:</span></strong> <span class="lang-vi">Company overview, policy briefing, team introductions</span><span class="lang-en">Company overview, policy briefing, team introductions</span></div>
+  </li>
+</div>
+
+<!-- CONTRACT & SALARY -->
+<h2 id="contract-salary">
+  <span class="lang-vi">Hợp đồng &amp; Lương thưởng</span>
+  <span class="lang-en">Contract &amp; Compensation</span>
 </h2>
-<div class="lang-vi"><p class="section-intro">HR Admin hoặc nhân viên (self-service) cập nhật thông tin cá nhân và tài liệu trong hồ sơ nhân sự.</p></div>
-<div class="lang-en"><p class="section-intro">HR Admin or employee (self-service) updates personal information and documents in the employee record.</p></div>
-<div class="roles-row">
-  <span class="role-tag"><span class="lang-vi">HR Admin</span><span class="lang-en">HR Admin</span></span>
-  <span class="role-tag"><span class="lang-vi">Nhân viên (self-service)</span><span class="lang-en">Employee (self-service)</span></span>
-</div>
-<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
-<ol class="step-list">
-  <li><span><strong><span class="lang-vi">Mở hồ sơ nhân viên</span><span class="lang-en">Open Employee Profile</span></strong> — <span class="lang-vi">Vào <code>HRM &gt; Employees</code> &gt; Chọn hồ sơ &gt; Nhấn <strong>Chỉnh sửa</strong>.</span><span class="lang-en">Go to <code>HRM &gt; Employees</code> &gt; Select profile &gt; Click <strong>Edit</strong>.</span></span></li>
-  <li><span><strong><span class="lang-vi">Cập nhật thông tin</span><span class="lang-en">Update Information</span></strong> — <span class="lang-vi">Điền thông tin: Họ tên, Ngày sinh, Địa chỉ, CCCD, Tài khoản ngân hàng.</span><span class="lang-en">Fill in: Full name, date of birth, address, ID number, bank account.</span></span></li>
-  <li><span><strong><span class="lang-vi">Đính kèm tài liệu</span><span class="lang-en">Attach Documents</span></strong> — <span class="lang-vi">Tab <strong>Documents</strong> &gt; Upload giấy tờ scan (Hợp đồng, Bằng cấp, CCCD).</span><span class="lang-en">In <strong>Documents</strong> tab &gt; Upload scanned documents (Contract, Degree, ID card).</span></span></li>
-  <li><span><strong><span class="lang-vi">Lưu hồ sơ</span><span class="lang-en">Save Profile</span></strong> — <span class="lang-vi">Nhấn <strong>Lưu</strong>. Hệ thống ghi nhận lịch sử thay đổi.</span><span class="lang-en">Click <strong>Save</strong>. System logs change history automatically.</span></span></li>
-</ol>
-<div class="callout callout-info">
-  <span class="callout-icon">ℹ</span>
-  <div class="callout-body">
-    <strong><span class="lang-vi">Phân quyền</span><span class="lang-en">Access Control</span></strong>
-    <p><span class="lang-vi">Thông tin Lương và Phụ cấp chỉ hiển thị cho HR Admin và HR Manager. Nhân viên tự cập nhật thông tin cá nhân qua Self-service nhưng KHÔNG thể sửa thông tin lương.</span><span class="lang-en">Salary and allowance information is only visible to HR Admin and HR Manager. Employees can update personal info via self-service but CANNOT edit salary data.</span></p>
+
+<h3><span class="lang-vi">Contract Types</span><span class="lang-en">Contract Types</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr>
+    <td><strong><span class="lang-vi">Probation:</span><span class="lang-en">Probation:</span></strong> <span class="lang-vi">Hợp đồng thử việc, thường 3 tháng, lương thấp hơn</span><span class="lang-en">Trial period, usually 3 months, lower salary</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Fixed Term:</span><span class="lang-en">Fixed Term:</span></strong> <span class="lang-vi">Hợp đồng xác định thời hạn (1-3 năm), tự động gia hạn hoặc chuyển vô thời hạn</span><span class="lang-en">Fixed-term (1-3 years), auto-renew or convert to indefinite</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Indefinite:</span><span class="lang-en">Indefinite:</span></strong> <span class="lang-vi">Hợp đồng vô thời hạn (long-term stable)</span><span class="lang-en">Indefinite contract (long-term stable)</span></td>
+  </tr>
+</tbody>
+</table>
+
+<h3><span class="lang-vi">Salary Components</span><span class="lang-en">Salary Components</span></h3>
+<div class="feature-grid">
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="lang-vi">Base Salary</span><span class="lang-en">Base Salary</span></div>
+    <div class="feature-card-desc"><span class="lang-vi">Lương cơ bản hàng tháng. Cập nhật trong contract.</span><span class="lang-en">Monthly base salary. Updated in contract.</span></div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="lang-vi">Allowances</span><span class="lang-en">Allowances</span></div>
+    <div class="feature-card-desc"><span class="lang-vi">Phụ cấp (ăn trưa, xăng, nhà). Lưu dạng JSON flexible.</span><span class="lang-en">Bonuses (meal, transport, housing). Stored as flexible JSON.</span></div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="lang-vi">Deductions</span><span class="lang-en">Deductions</span></div>
+    <div class="feature-card-desc"><span class="lang-vi">Khấu trừ (bảo hiểm, thuế, loan). Tính trong payroll.</span><span class="lang-en">Deductions (insurance, tax, loan). Calculated in payroll.</span></div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="lang-vi">Overtime Pay</span><span class="lang-en">Overtime Pay</span></div>
+    <div class="feature-card-desc"><span class="lang-vi">Tăng ca được tính theo giờ. Thường 1.5x hoặc 2x lương giờ.</span><span class="lang-en">Overtime calculated hourly. Usually 1.5x or 2x hourly rate.</span></div>
   </div>
 </div>
 
-<!-- ===== SOP 03 ===== -->
-<h2 id="sop03">
+<h3><span class="lang-vi">Salary History &amp; Payroll</span><span class="lang-en">Salary History &amp; Payroll</span></h3>
+<ul>
+  <li><strong><span class="lang-vi">Salary Change Tracking:</span><span class="lang-en">Salary Change Tracking:</span></strong> <span class="lang-vi">Mỗi thay đổi lương ghi lại effective_date, reason (raise, promotion, etc.), approved_by</span><span class="lang-en">Track all salary changes with effective_date, reason, approver</span></li>
+  <li><strong><span class="lang-vi">Payroll Records:</span><span class="lang-en">Payroll Records:</span></strong> <span class="lang-vi">Tạo hàng tháng (period = YYYY-MM). Ghi gross salary, deductions, net salary, status (draft/approved/paid)</span><span class="lang-en">Generated monthly. Gross, deductions, net, status tracking</span></li>
+  <li><strong><span class="lang-vi">Payslip Access:</span><span class="lang-en">Payslip Access:</span></strong> <span class="lang-vi">Nhân viên có thể xem payslip riêng mình. Có/không download PDF</span><span class="lang-en">Employees can view/download their own payslips</span></li>
+</ul>
+
+<!-- RECRUITMENT -->
+<h2 id="recruitment-pipeline">
   <span class="module-tag mod-recruit">Recruit</span>
-  <span class="lang-vi">SOP 03 — Tạo Yêu cầu Tuyển dụng</span>
-  <span class="lang-en">SOP 03 — Create Recruitment Request</span>
+  <span class="lang-vi">Recruitment Pipeline</span>
+  <span class="lang-en">Recruitment Pipeline</span>
 </h2>
-<div class="lang-vi"><p class="section-intro">Line Manager tạo yêu cầu tuyển dụng khi phòng ban cần bổ sung nhân sự mới hoặc thay thế vị trí trống.</p></div>
-<div class="lang-en"><p class="section-intro">Line Manager creates a recruitment request when the department needs new headcount or a replacement hire.</p></div>
-<div class="roles-row">
-  <span class="role-tag"><span class="lang-vi">Line Manager (tạo)</span><span class="lang-en">Line Manager (create)</span></span>
-  <span class="role-tag"><span class="lang-vi">HR Manager (duyệt)</span><span class="lang-en">HR Manager (approve)</span></span>
-  <span class="role-tag"><span class="lang-vi">CEO (duyệt nếu cần)</span><span class="lang-en">CEO (approve if needed)</span></span>
-</div>
-<h4><span class="lang-vi">Luồng trạng thái</span><span class="lang-en">Status Flow</span></h4>
+
+<div class="lang-vi"><p class="section-intro">Quy trình tuyển dụng theo dõi từ Recruitment Request → Candidates → Interviews → Offers → Hires. Mỗi stage có approval workflow.</p></div>
+<div class="lang-en"><p class="section-intro">Recruitment process tracks Recruitment Request → Candidates → Interviews → Offers → Hires. Each stage has approval workflow.</p></div>
+
 <div class="status-flow">
-  <span class="sp sp-draft">DRAFT</span><span class="flow-arr">→</span>
-  <span class="sp sp-blue">SUBMITTED</span><span class="flow-arr">→</span>
-  <span class="sp sp-amber">HR_APPROVED</span><span class="flow-arr">→</span>
-  <span class="sp sp-green">CEO_APPROVED</span><span class="flow-arr"> / </span><span class="sp sp-red">REJECTED</span>
-</div>
-<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
-<ol class="step-list">
-  <li><span><strong><span class="lang-vi">Tạo yêu cầu</span><span class="lang-en">Create Request</span></strong> — <span class="lang-vi">Vào <code>HRM &gt; Recruitment &gt; Requests</code> &gt; Nhấn <strong>Tạo yêu cầu mới</strong>.</span><span class="lang-en">Go to <code>HRM &gt; Recruitment &gt; Requests</code> &gt; Click <strong>New Request</strong>.</span></span></li>
-  <li><span><strong><span class="lang-vi">Điền thông tin</span><span class="lang-en">Fill In Details</span></strong> — <span class="lang-vi">Chọn vị trí, số lượng, phòng ban, mức lương đề xuất. Đính kèm JD nếu có.</span><span class="lang-en">Select position, quantity, department, proposed salary. Attach JD if available.</span></span></li>
-  <li><span><strong><span class="lang-vi">Nộp phê duyệt</span><span class="lang-en">Submit for Approval</span></strong> — <span class="lang-vi">Nhấn <strong>Submit</strong>. Yêu cầu chuyển qua HR Manager &gt; CEO.</span><span class="lang-en">Click <strong>Submit</strong>. Request routes to HR Manager &gt; CEO.</span></span></li>
-  <li><span><strong><span class="lang-vi">Theo dõi trạng thái</span><span class="lang-en">Track Status</span></strong> — <span class="lang-vi">Xem tiến trình phê duyệt tại <strong>My Requests</strong>.</span><span class="lang-en">View approval progress under <strong>My Requests</strong>.</span></span></li>
-</ol>
-<div class="callout callout-warning">
-  <span class="callout-icon">⚠</span>
-  <div class="callout-body">
-    <strong><span class="lang-vi">Lưu ý</span><span class="lang-en">Important</span></strong>
-    <p><span class="lang-vi">Chỉ tạo yêu cầu khi vị trí đó đã có trong Org Chart và còn slot định biên trống. Nếu chưa có, thực hiện SOP 01 trước để bổ sung vị trí.</span><span class="lang-en">Only create a request if the position exists in the Org Chart with available headcount slots. If not, run SOP 01 first to add the position.</span></p>
-  </div>
+  <span class="sp sp-draft"><span class="lang-vi">Request Draft</span><span class="lang-en">Request Draft</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-blue"><span class="lang-vi">Open</span><span class="lang-en">Open</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-blue"><span class="lang-vi">Candidates Applied</span><span class="lang-en">Candidates Applied</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-blue"><span class="lang-vi">Interviewed</span><span class="lang-en">Interviewed</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-blue"><span class="lang-vi">Offered</span><span class="lang-en">Offered</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-green"><span class="lang-vi">Hired</span><span class="lang-en">Hired</span></span>
+  <span class="flow-arr">|</span>
+  <span class="sp sp-red"><span class="lang-vi">Rejected</span><span class="lang-en">Rejected</span></span>
 </div>
 
-<!-- ===== SOP 04 ===== -->
-<h2 id="sop04">
-  <span class="module-tag mod-recruit">Recruit</span>
-  <span class="lang-vi">SOP 04 — Vận hành Pipeline Ứng viên &amp; Phỏng vấn</span>
-  <span class="lang-en">SOP 04 — Manage Candidate Pipeline &amp; Interviews</span>
+<h3><span class="lang-vi">Recruitment Request Fields</span><span class="lang-en">Recruitment Request Fields</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr>
+    <td><code>title</code></td>
+    <td><span class="lang-vi">Vị trí tuyển dụng (e.g., Senior Backend Engineer)</span><span class="lang-en">Job title</span></td>
+  </tr>
+  <tr>
+    <td><code>department_id</code></td>
+    <td><span class="lang-vi">Phòng ban cần nhân viên</span><span class="lang-en">Requesting department</span></td>
+  </tr>
+  <tr>
+    <td><code>quantity</code></td>
+    <td><span class="lang-vi">Số lượng cần tuyển</span><span class="lang-en">Number of positions</span></td>
+  </tr>
+  <tr>
+    <td><code>salary_range_min / max</code></td>
+    <td><span class="lang-vi">Mức lương (VND). Hiển thị trên job posting nếu cần</span><span class="lang-en">Salary range for budget</span></td>
+  </tr>
+  <tr>
+    <td><code>deadline</code></td>
+    <td><span class="lang-vi">Hạn chót nhận hồ sơ</span><span class="lang-en">Application deadline</span></td>
+  </tr>
+  <tr>
+    <td><code>requirements</code></td><td><span class="lang-vi">Yêu cầu kỹ năng, kinh nghiệm</span><span class="lang-en">Job requirements</span></td>
+  </tr>
+</tbody>
+</table>
+
+<h3><span class="lang-vi">Candidate Pipeline</span><span class="lang-en">Candidate Pipeline</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr>
+    <td><strong><span class="lang-vi">Applied:</span><span class="lang-en">Applied:</span></strong> <span class="lang-vi">CV nhận được, HR screen sơ bộ</span><span class="lang-en">CV received, HR initial screen</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Interviewed:</span><span class="lang-en">Interviewed:</span></strong> <span class="lang-vi">Phỏng vấn 1 hoặc nhiều lần. Ghi feedback, score 0-10</span><span class="lang-en">Interviewed (1+ rounds). Record feedback, score 0-10</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Offered:</span><span class="lang-en">Offered:</span></strong> <span class="lang-vi">Gửi offer letter. Chờ acceptance với deadline</span><span class="lang-en">Send offer letter. Await acceptance with deadline</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Hired:</span><span class="lang-en">Hired:</span></strong> <span class="lang-vi">Ứng viên chấp nhận. Tạo Employee record, Onboarding checklist</span><span class="lang-en">Offer accepted. Create Employee record, Onboarding</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Rejected:</span><span class="lang-en">Rejected:</span></strong> <span class="lang-vi">Không fit. Ghi reason, lưu CV cho future reference</span><span class="lang-en">Not a fit. Record reason, keep CV for future</span></td>
+  </tr>
+</tbody>
+</table>
+
+<!-- INTERVIEW & OFFER -->
+<h2 id="interview-offer">
+  <span class="lang-vi">Phỏng vấn &amp; Job Offer</span>
+  <span class="lang-en">Interview &amp; Job Offer Management</span>
 </h2>
-<div class="lang-vi"><p class="section-intro">HR Admin vận hành quy trình tuyển dụng sau khi yêu cầu được phê duyệt: lọc hồ sơ, phỏng vấn và đánh giá ứng viên.</p></div>
-<div class="lang-en"><p class="section-intro">HR Admin manages the recruitment pipeline after the request is approved: screen CVs, conduct interviews, and evaluate candidates.</p></div>
-<div class="roles-row">
-  <span class="role-tag"><span class="lang-vi">HR Admin (vận hành)</span><span class="lang-en">HR Admin (operate)</span></span>
-  <span class="role-tag"><span class="lang-vi">Line Manager (phỏng vấn)</span><span class="lang-en">Line Manager (interview)</span></span>
-</div>
-<h4><span class="lang-vi">Luồng Pipeline</span><span class="lang-en">Pipeline Flow</span></h4>
-<div class="status-flow">
-  <span class="sp sp-draft">SCREENING</span><span class="flow-arr">→</span>
-  <span class="sp sp-blue">INTERVIEW</span><span class="flow-arr">→</span>
-  <span class="sp sp-amber">ASSESSMENT</span><span class="flow-arr">→</span>
-  <span class="sp sp-purple">OFFER</span><span class="flow-arr">→</span>
-  <span class="sp sp-green">HIRED</span><span class="flow-arr"> / </span><span class="sp sp-red">REJECTED</span>
-</div>
-<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
-<ol class="step-list">
-  <li><span><strong><span class="lang-vi">Thêm ứng viên</span><span class="lang-en">Add Candidates</span></strong> — <span class="lang-vi">Vào <code>HRM &gt; Recruitment &gt; Pipeline</code> &gt; Chọn vị trí &gt; Nhấn <strong>Thêm ứng viên</strong> hoặc upload hàng loạt.</span><span class="lang-en">Go to <code>HRM &gt; Recruitment &gt; Pipeline</code> &gt; Select position &gt; Click <strong>Add Candidate</strong> or bulk upload CVs.</span></span></li>
-  <li><span><strong><span class="lang-vi">Kéo-thả qua Pipeline</span><span class="lang-en">Drag Through Pipeline</span></strong> — <span class="lang-vi">Kéo ứng viên qua các cột: Screening → Interview → Assessment → Offer.</span><span class="lang-en">Drag candidates across columns: Screening → Interview → Assessment → Offer.</span></span></li>
-  <li><span><strong><span class="lang-vi">Lên lịch phỏng vấn</span><span class="lang-en">Schedule Interviews</span></strong> — <span class="lang-vi">Tại giai đoạn Interview &gt; <strong>Lịch phỏng vấn</strong> &gt; Chọn ngày giờ, phòng, panel phỏng vấn.</span><span class="lang-en">In the Interview stage &gt; <strong>Schedule Interview</strong> &gt; Select date, room, and interview panel.</span></span></li>
-  <li><span><strong><span class="lang-vi">Điền Evaluation Form</span><span class="lang-en">Fill Evaluation Form</span></strong> — <span class="lang-vi">Sau phỏng vấn, điền <strong>Interview Evaluation Form</strong> cho từng ứng viên.</span><span class="lang-en">After interview, complete <strong>Interview Evaluation Form</strong> for each candidate.</span></span></li>
-  <li><span><strong><span class="lang-vi">Chuyển sang Offer</span><span class="lang-en">Move to Offer</span></strong> — <span class="lang-vi">Ứng viên đạt &gt; kéo sang cột <strong>Offer</strong>. Hệ thống tự gửi email thông báo.</span><span class="lang-en">Qualified candidate &gt; drag to <strong>Offer</strong> column. System auto-sends notification emails.</span></span></li>
-</ol>
+
+<h3><span class="lang-vi">Interview Scheduling</span><span class="lang-en">Interview Scheduling</span></h3>
 <div class="callout callout-tip">
-  <span class="callout-icon">✓</span>
+  <div class="callout-icon">💡</div>
   <div class="callout-body">
-    <strong><span class="lang-vi">Tự động hóa</span><span class="lang-en">Automation</span></strong>
-    <p><span class="lang-vi">Mỗi lần chuyển giai đoạn Pipeline, hệ thống tự động gửi email thông báo cho ứng viên và các bên liên quan. Không cần gửi thủ công.</span><span class="lang-en">Every pipeline stage transition automatically sends notification emails to candidates and stakeholders. No manual sending required.</span></p>
+    <strong><span class="lang-vi">Interview Fields:</span><span class="lang-en">Interview Fields:</span></strong>
+    <p><span class="lang-vi">candidate_id, scheduled_at, duration_minutes, interviewer_id, panel_ids (multiple), room, feedback, score (0-10), status (scheduled/completed/no_show)</span><span class="lang-en">candidate_id, scheduled_at, duration_minutes, interviewer_id, panel_ids (multiple), room, feedback, score (0-10), status</span></p>
   </div>
 </div>
 
-<!-- ===== SOP 05 ===== -->
-<h2 id="sop05">
-  <span class="module-tag mod-recruit">Recruit</span>
-  <span class="lang-vi">SOP 05 — Gửi Offer &amp; Onboarding Nhân sự Mới</span>
-  <span class="lang-en">SOP 05 — Send Offer &amp; Onboard New Employee</span>
+<h3><span class="lang-vi">Offer Letter</span><span class="lang-en">Offer Letter</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr>
+    <td><code>title</code></td><td><span class="lang-vi">Vị trí đề nghị</span><span class="lang-en">Offered position</span></td>
+  </tr>
+  <tr>
+    <td><code>salary</code></td><td><span class="lang-vi">Mức lương đề nghị (VND)</span><span class="lang-en">Proposed salary</span></td>
+  </tr>
+  <tr>
+    <td><code>benefits_package</code></td><td><span class="lang-vi">Chi tiết phúc lợi (ăn, xe, bảo hiểm, etc.)</span><span class="lang-en">Benefits details</span></td>
+  </tr>
+  <tr>
+    <td><code>location</code></td><td><span class="lang-vi">Địa điểm làm việc</span><span class="lang-en">Work location</span></td>
+  </tr>
+  <tr>
+    <td><code>expiration_date</code></td><td><span class="lang-vi">Hạn chót chấp nhận offer (thường 7 ngày)</span><span class="lang-en">Acceptance deadline (usually 7 days)</span></td>
+  </tr>
+  <tr>
+    <td><code>status</code></td><td><span class="lang-vi">draft, extended, accepted, rejected</span><span class="lang-en">draft, extended, accepted, rejected</span></td>
+  </tr>
+</tbody>
+</table>
+
+<!-- LEAVE MANAGEMENT -->
+<h2 id="leave-mgt">
+  <span class="module-tag mod-hr">HR</span>
+  <span class="lang-vi">Quản lý Nghỉ phép</span>
+  <span class="lang-en">Leave Management</span>
 </h2>
-<div class="lang-vi"><p class="section-intro">HR Admin hoàn tất quy trình tuyển dụng bằng cách gửi thư mời làm việc và thực hiện quy trình tiếp nhận nhân viên mới.</p></div>
-<div class="lang-en"><p class="section-intro">HR Admin completes the recruitment process by sending the offer letter and executing the new employee onboarding process.</p></div>
-<div class="roles-row">
-  <span class="role-tag"><span class="lang-vi">HR Admin (thực hiện)</span><span class="lang-en">HR Admin (execute)</span></span>
-  <span class="role-tag"><span class="lang-vi">HR Manager (duyệt Offer)</span><span class="lang-en">HR Manager (approve Offer)</span></span>
+
+<div class="lang-vi"><p class="section-intro">Hệ thống quản lý request nghỉ phép với approval workflow. Mỗi loại nghỉ có policy (tối đa ngày/năm, quy tắc), và tracking balance.</p></div>
+<div class="lang-en"><p class="section-intro">Leave request system with approval workflow. Each leave type has policy (max days/year, rules), and balance tracking.</p></div>
+
+<h3><span class="lang-vi">Leave Types</span><span class="lang-en">Leave Types</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr>
+    <td><strong><span class="lang-vi">Annual Leave:</span><span class="lang-en">Annual Leave:</span></strong> <span class="lang-vi">Nghỉ năm. Default: 12 ngày/năm (theo luật VN). Tích lũy qua năm</span><span class="lang-en">Vacation. Default: 12 days/year (VN law). Carries forward per policy</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Sick Leave:</span><span class="lang-en">Sick Leave:</span></strong> <span class="lang-vi">Bệnh. Default: 30 ngày/năm (có giấy khám bệnh)</span><span class="lang-en">Medical. Default: 30 days/year (with certificate)</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Unpaid Leave:</span><span class="lang-en">Unpaid Leave:</span></strong> <span class="lang-vi">Không lương. Không tính vào lương. Cần approve manager</span><span class="lang-en">Unpaid. No salary impact. Manager approval required</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Maternity:</span><span class="lang-en">Maternity:</span></strong> <span class="lang-vi">Thai sản (theo luật: 4-6 tháng tùy trường hợp)</span><span class="lang-en">Maternity (per law: 4-6 months depending)</span></td>
+  </tr>
+</tbody>
+</table>
+
+<h3><span class="lang-vi">Leave Request Workflow</span><span class="lang-en">Leave Request Workflow</span></h3>
+<ol class="step-list">
+  <li><span><span class="lang-vi">Employee đăng ký request leave (chọn ngày bắt đầu, kết thúc, loại, lý do)</span><span class="lang-en">Employee submits leave request (dates, type, reason)</span></span></li>
+  <li><span><span class="lang-vi">System check balance có đủ không. Nếu không đủ → reject</span><span class="lang-en">System checks balance. Reject if insufficient</span></span></li>
+  <li><span><span class="lang-vi">Gửi approval cho Line Manager</span><span class="lang-en">Send to Line Manager for approval</span></span></li>
+  <li><span><span class="lang-vi">Manager approve/reject. Nếu approve → status = approved, balance trừ đi</span><span class="lang-en">Manager approves/rejects. If approved → balance deducted</span></span></li>
+  <li><span><span class="lang-vi">Payroll system update: mark days as leave trong attendance</span><span class="lang-en">Payroll marks days as leave in attendance records</span></span></li>
+</ol>
+
+<!-- ATTENDANCE -->
+<h2 id="attendance-mgt">
+  <span class="lang-vi">Quản lý Chấm công</span>
+  <span class="lang-en">Attendance Management</span>
+</h2>
+
+<h3><span class="lang-vi">Daily Attendance Record</span><span class="lang-en">Daily Attendance Record</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr>
+    <td><code>date</code></td><td><span class="lang-vi">Ngày công</span><span class="lang-en">Work date</span></td>
+  </tr>
+  <tr>
+    <td><code>check_in / check_out</code></td><td><span class="lang-vi">Thời gian vào/ra (nếu manual hoặc API)</span><span class="lang-en">Check-in/out times</span></td>
+  </tr>
+  <tr>
+    <td><code>total_hours</code></td><td><span class="lang-vi">Tổng giờ làm (tính tự động từ check-in/out)</span><span class="lang-en">Total hours worked (auto-calculated)</span></td>
+  </tr>
+  <tr>
+    <td><code>overtime_hours</code></td><td><span class="lang-vi">Giờ tăng ca (nếu &gt;8 giờ/ngày)</span><span class="lang-en">Overtime hours (if &gt;8 hrs/day)</span></td>
+  </tr>
+  <tr>
+    <td><code>status</code></td><td><span class="lang-vi">present, absent, late, half_day, holiday, leave</span><span class="lang-en">present, absent, late, half_day, holiday, leave</span></td>
+  </tr>
+</tbody>
+</table>
+
+<h3><span class="lang-vi">Attendance Correction Workflow</span><span class="lang-en">Attendance Correction Workflow</span></h3>
+<div class="golden-list">
+  <li>
+    <div class="gl-icon">📝</div>
+    <div class="gl-text"><strong><span class="lang-vi">Employee Request:</span><span class="lang-en">Employee Request:</span></strong> <span class="lang-vi">Yêu cầu chỉnh sửa attendance record (quên check-in, lỗi hệ thống)</span><span class="lang-en">Request correction (forgot check-in, system error)</span></div>
+  </li>
+  <li>
+    <div class="gl-icon">✓</div>
+    <div class="gl-text"><strong><span class="lang-vi">Manager Review:</span><span class="lang-en">Manager Review:</span></strong> <span class="lang-vi">Xem xét lý do, approve/reject</span><span class="lang-en">Review reason, approve or reject</span></div>
+  </li>
+  <li>
+    <div class="gl-icon">📊</div>
+    <div class="gl-text"><strong><span class="lang-vi">Monthly Summary:</span><span class="lang-en">Monthly Summary:</span></strong> <span class="lang-vi">Report tháng: tổng present, absent, late, leave, OT</span><span class="lang-en">Monthly report: total present, absent, late, leave, OT hours</span></div>
+  </li>
 </div>
-<h4><span class="lang-vi">Luồng trạng thái</span><span class="lang-en">Status Flow</span></h4>
+
+<!-- PERFORMANCE & KPI -->
+<h2 id="performance-review">
+  <span class="lang-vi">Performance Review</span>
+  <span class="lang-en">Performance Review</span>
+</h2>
+
+<div class="lang-vi"><p class="section-intro">Hệ thống đánh giá hiệu suất định kỳ (quarterly hoặc annual). Mỗi review có competency feedback, overall score, comments từ manager/team.</p></div>
+<div class="lang-en"><p class="section-intro">Periodic performance evaluation (quarterly or annual). Each review includes competency feedback, overall score, manager comments.</p></div>
+
+<h3><span class="lang-vi">Review Structure</span><span class="lang-en">Review Structure</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr>
+    <td><code>period</code></td><td><span class="lang-vi">YYYY-Q (e.g., 2024-Q1) hoặc YYYY-ANNUAL</span><span class="lang-en">YYYY-Q (e.g., 2024-Q1) or YYYY-ANNUAL</span></td>
+  </tr>
+  <tr>
+    <td><code>reviewer_id</code></td><td><span class="lang-vi">Manager/HR conduct review</span><span class="lang-en">Manager or HR conducting review</span></td>
+  </tr>
+  <tr>
+    <td><code>overall_score</code></td><td><span class="lang-vi">Điểm tổng thể 0-10 (hoặc 1-5 scale)</span><span class="lang-en">Overall score 0-10 or 1-5 scale</span></td>
+  </tr>
+  <tr>
+    <td><code>status</code></td><td><span class="lang-vi">draft, completed</span><span class="lang-en">draft, completed</span></td>
+  </tr>
+</tbody>
+</table>
+
+<h3><span class="lang-vi">Competency Feedback</span><span class="lang-en">Competency Feedback</span></h3>
+<div class="feature-grid">
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="lang-vi">Technical Skills</span><span class="lang-en">Technical Skills</span></div>
+    <div class="feature-card-desc"><span class="lang-vi">Năng lực kỹ thuật, expertise, learning ability</span><span class="lang-en">Technical proficiency, expertise, learning ability</span></div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="lang-vi">Communication</span><span class="lang-en">Communication</span></div>
+    <div class="feature-card-desc"><span class="lang-vi">Giao tiếp, lắng nghe, presentation skills</span><span class="lang-en">Communication, listening, presentation skills</span></div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="lang-vi">Teamwork</span><span class="lang-en">Teamwork</span></div>
+    <div class="feature-card-desc"><span class="lang-vi">Collaboration, support colleagues, team player</span><span class="lang-en">Collaboration, support colleagues, team player</span></div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="lang-vi">Leadership</span><span class="lang-en">Leadership</span></div>
+    <div class="feature-card-desc"><span class="lang-vi">Initiative, decision-making, mentoring</span><span class="lang-en">Initiative, decision-making, mentoring</span></div>
+  </div>
+</div>
+
+<!-- KPI & TRAINING -->
+<h2 id="kpi-training">
+  <span class="lang-vi">KPI Management &amp; Training</span>
+  <span class="lang-en">KPI Management &amp; Training</span>
+</h2>
+
+<h3><span class="lang-vi">KPI Assignment Workflow</span><span class="lang-en">KPI Assignment Workflow</span></h3>
+<ol class="step-list">
+  <li><span><span class="lang-vi">HR/Manager tạo KPI templates (revenue, quality, time-based metrics)</span><span class="lang-en">HR/Manager creates KPI templates (revenue, quality, time metrics)</span></span></li>
+  <li><span><span class="lang-vi">Assign KPI cho employees cho period (quarterly/annual)</span><span class="lang-en">Assign KPIs to employees for period (quarterly/annual)</span></span></li>
+  <li><span><span class="lang-vi">Employee track actual_value tháng/quý</span><span class="lang-en">Employee tracks actual_value monthly/quarterly</span></span></li>
+  <li><span><span class="lang-vi">Manager review achievement rate (actual / target %)</span><span class="lang-en">Manager reviews achievement rate (actual / target %)</span></span></li>
+  <li><span><span class="lang-vi">KPI score contribute vào performance review overall score</span><span class="lang-en">KPI score contributes to performance review overall score</span></span></li>
+</ol>
+
+<h3><span class="lang-vi">Training &amp; Development</span><span class="lang-en">Training &amp; Development</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr>
+    <td><strong><span class="lang-vi">Training Program:</span><span class="lang-en">Training Program:</span></strong> <span class="lang-vi">Course title, category (technical/soft), duration (hours), cost, start/end date, status</span><span class="lang-en">Course title, category, duration (hours), cost, dates, status</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Enrollment:</span><span class="lang-en">Enrollment:</span></strong> <span class="lang-vi">Employee tự enroll hoặc manager assign. Track completion, certificate URL</span><span class="lang-en">Employee self-enroll or manager assign. Track completion, certificate</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Status:</span><span class="lang-en">Status:</span></strong> <span class="lang-vi">enrolled, in_progress, completed, dropped</span><span class="lang-en">enrolled, in_progress, completed, dropped</span></td>
+  </tr>
+</tbody>
+</table>
+
+<!-- OFFBOARDING & ASSETS -->
+<h2 id="offboarding-process">
+  <span class="lang-vi">Offboarding &amp; Resignation Process</span>
+  <span class="lang-en">Offboarding &amp; Resignation Process</span>
+</h2>
+
+<div class="lang-vi"><p class="section-intro">Quy trình khi nhân viên từ chức hoặc kết thúc hợp đồng. Bao gồm resignation, handover tasks, exit interview, final payroll.</p></div>
+<div class="lang-en"><p class="section-intro">Process when employee resigns or contract ends. Includes resignation, handover, exit interview, final settlement.</p></div>
+
 <div class="status-flow">
-  <span class="sp sp-blue">OFFER_SENT</span><span class="flow-arr">→</span>
-  <span class="sp sp-green">ACCEPTED</span><span class="flow-arr">→</span>
-  <span class="sp sp-amber">ONBOARDING</span><span class="flow-arr">→</span>
-  <span class="sp sp-purple">ACTIVE</span>
-</div>
-<h4><span class="lang-vi">Phần A — Gửi Offer Letter</span><span class="lang-en">Part A — Send Offer Letter</span></h4>
-<ol class="step-list">
-  <li><span><strong><span class="lang-vi">Tạo Offer Proposal</span><span class="lang-en">Create Offer Proposal</span></strong> — <span class="lang-vi">Tại Pipeline (Offer) &gt; Nhấn <strong>Tạo Offer Proposal</strong> &gt; Điền: Lương, Ngày bắt đầu, Loại hợp đồng, Phúc lợi.</span><span class="lang-en">In Pipeline (Offer) &gt; Click <strong>Create Offer Proposal</strong> &gt; Fill: Salary, Start date, Contract type, Benefits.</span></span></li>
-  <li><span><strong><span class="lang-vi">HR Manager phê duyệt</span><span class="lang-en">HR Manager Approves</span></strong> — <span class="lang-vi">Gửi Offer cho HR Manager duyệt trước khi gửi ứng viên.</span><span class="lang-en">Send Offer to HR Manager for approval before sending to candidate.</span></span></li>
-  <li><span><strong><span class="lang-vi">Gửi Offer Letter</span><span class="lang-en">Send Offer Letter</span></strong> — <span class="lang-vi">Sau khi duyệt, nhấn <strong>Gửi thư mời</strong> — hệ thống tự gửi email Offer Letter.</span><span class="lang-en">Once approved, click <strong>Send Offer</strong> — system auto-sends Offer Letter email to candidate.</span></span></li>
-</ol>
-<h4><span class="lang-vi">Phần B — Onboarding</span><span class="lang-en">Part B — Onboarding</span></h4>
-<ol class="step-list">
-  <li><span><strong><span class="lang-vi">Bắt đầu Onboarding</span><span class="lang-en">Start Onboarding</span></strong> — <span class="lang-vi">Khi ứng viên xác nhận, nhấn <strong>Bắt đầu Onboarding</strong>. Hệ thống tạo mã NV và tài khoản hệ thống.</span><span class="lang-en">When candidate confirms, click <strong>Start Onboarding</strong>. System creates employee ID and system account.</span></span></li>
-  <li><span><strong><span class="lang-vi">Hoàn thành Checklist</span><span class="lang-en">Complete Checklist</span></strong> — <span class="lang-vi">Mở <strong>Onboarding Checklist</strong>: Bàn giao chỗ ngồi/thiết bị, đào tạo nội quy, ký hợp đồng, đăng ký BHXH.</span><span class="lang-en">Open <strong>Onboarding Checklist</strong>: Seat/device handover, policy training, contract signing, social insurance registration.</span></span></li>
-  <li><span><strong><span class="lang-vi">Hoàn tất Onboarding</span><span class="lang-en">Complete Onboarding</span></strong> — <span class="lang-vi">Đánh dấu tất cả mục &gt; Nhấn <strong>Hoàn tất</strong>. Hồ sơ chuyển sang trạng thái <code>ACTIVE</code>.</span><span class="lang-en">Check all items &gt; Click <strong>Complete</strong>. Employee record status changes to <code>ACTIVE</code>.</span></span></li>
-</ol>
-<div class="callout callout-warning">
-  <span class="callout-icon">⚠</span>
-  <div class="callout-body">
-    <strong><span class="lang-vi">Thời hạn</span><span class="lang-en">Deadline</span></strong>
-    <p><span class="lang-vi">Toàn bộ Onboarding Checklist phải hoàn tất trong vòng 7 ngày làm việc kể từ ngày nhân viên bắt đầu.</span><span class="lang-en">The full Onboarding Checklist must be completed within 7 working days of the employee's start date.</span></p>
-  </div>
+  <span class="sp sp-amber"><span class="lang-vi">Resignation Request</span><span class="lang-en">Resignation Request</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-amber"><span class="lang-vi">Approved</span><span class="lang-en">Approved</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-amber"><span class="lang-vi">Notice Period</span><span class="lang-en">Notice Period</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-amber"><span class="lang-vi">Handover</span><span class="lang-en">Handover</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-red"><span class="lang-vi">Exit Interview</span><span class="lang-en">Exit Interview</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-red"><span class="lang-vi">Inactive</span><span class="lang-en">Inactive</span></span>
 </div>
 
-<!-- ===== SOP 06 ===== -->
-<h2 id="sop06">
-  <span class="module-tag mod-cb">C&amp;B</span>
-  <span class="lang-vi">SOP 06 — Chấm công, Nghỉ phép &amp; Tăng ca</span>
-  <span class="lang-en">SOP 06 — Attendance, Leave &amp; Overtime</span>
-</h2>
-<div class="lang-vi"><p class="section-intro">Nhân viên ghi nhận công hàng ngày và gửi yêu cầu nghỉ phép hoặc tăng ca qua hệ thống để Line Manager phê duyệt.</p></div>
-<div class="lang-en"><p class="section-intro">Employees record daily attendance and submit leave or overtime requests through the system for Line Manager approval.</p></div>
-<div class="roles-row">
-  <span class="role-tag"><span class="lang-vi">Nhân viên (gửi)</span><span class="lang-en">Employee (submit)</span></span>
-  <span class="role-tag"><span class="lang-vi">Line Manager (duyệt)</span><span class="lang-en">Line Manager (approve)</span></span>
-  <span class="role-tag"><span class="lang-vi">HR Admin (chốt bảng công)</span><span class="lang-en">HR Admin (finalize)</span></span>
-</div>
-<h4><span class="lang-vi">Luồng phê duyệt yêu cầu</span><span class="lang-en">Request Approval Flow</span></h4>
-<div class="status-flow">
-  <span class="sp sp-draft">DRAFT</span><span class="flow-arr">→</span>
-  <span class="sp sp-blue">SUBMITTED</span><span class="flow-arr">→</span>
-  <span class="sp sp-green">APPROVED</span><span class="flow-arr"> / </span><span class="sp sp-red">REJECTED</span>
-</div>
-<h4><span class="lang-vi">A — Chấm công hàng ngày</span><span class="lang-en">A — Daily Attendance</span></h4>
+<h3><span class="lang-vi">Resignation Workflow</span><span class="lang-en">Resignation Workflow</span></h3>
 <ol class="step-list">
-  <li><span><strong><span class="lang-vi">Check-in / Check-out</span><span class="lang-en">Check-in / Check-out</span></strong> — <span class="lang-vi">Nhân viên quẹt thẻ máy chấm công hoặc check-in qua App di động.</span><span class="lang-en">Employee swipes card at time clock machine or checks in via mobile app.</span></span></li>
-  <li><span><strong><span class="lang-vi">Bổ sung công nếu quên</span><span class="lang-en">Supplement if Missed</span></strong> — <span class="lang-vi">Vào <code>HRM &gt; Attendance</code> &gt; <strong>Đề nghị bổ sung công</strong> &gt; Điền lý do &gt; Submit.</span><span class="lang-en">Go to <code>HRM &gt; Attendance</code> &gt; <strong>Request Attendance Correction</strong> &gt; Fill reason &gt; Submit.</span></span></li>
-</ol>
-<h4><span class="lang-vi">B — Yêu cầu Nghỉ phép</span><span class="lang-en">B — Leave Request</span></h4>
-<ol class="step-list">
-  <li><span><span class="lang-vi">Vào <code>HRM &gt; Leave</code> &gt; Nhấn <strong>Tạo đơn nghỉ phép</strong>.</span><span class="lang-en">Go to <code>HRM &gt; Leave</code> &gt; Click <strong>New Leave Request</strong>.</span></span></li>
-  <li><span><span class="lang-vi">Chọn loại phép: Phép năm, Phép không lương, Nghỉ ốm, Nghỉ thai sản...</span><span class="lang-en">Select leave type: Annual leave, Unpaid leave, Sick leave, Maternity leave...</span></span></li>
-  <li><span><span class="lang-vi">Chọn ngày (hệ thống tự tính số ngày) &gt; Nhập lý do &gt; <strong>Submit</strong>.</span><span class="lang-en">Select dates (system auto-calculates days) &gt; Enter reason &gt; <strong>Submit</strong>.</span></span></li>
-  <li><span><span class="lang-vi">Line Manager phê duyệt trực tuyến. Nhân viên nhận thông báo kết quả.</span><span class="lang-en">Line Manager approves online. Employee receives notification of the result.</span></span></li>
-</ol>
-<h4><span class="lang-vi">C — Yêu cầu Tăng ca</span><span class="lang-en">C — Overtime Request</span></h4>
-<ol class="step-list">
-  <li><span><span class="lang-vi">Vào <code>HRM &gt; Overtime</code> &gt; Nhấn <strong>Tạo đơn tăng ca</strong> &gt; Điền ngày, số giờ, lý do &gt; <strong>Submit</strong>.</span><span class="lang-en">Go to <code>HRM &gt; Overtime</code> &gt; Click <strong>New OT Request</strong> &gt; Fill date, hours, reason &gt; <strong>Submit</strong>.</span></span></li>
-  <li><span><span class="lang-vi">HR chốt bảng công vào ngày cuối cùng của tháng.</span><span class="lang-en">HR finalizes the attendance sheet on the last day of the month.</span></span></li>
-</ol>
-<div class="callout callout-note">
-  <span class="callout-icon">📋</span>
-  <div class="callout-body">
-    <strong>SLA</strong>
-    <p><span class="lang-vi">Mọi yêu cầu phê duyệt phải được xử lý trong vòng <strong>24 giờ</strong> làm việc. Quá hạn sẽ leo thang lên cấp trên.</span><span class="lang-en">All approval requests must be processed within <strong>24 business hours</strong>. Overdue requests escalate to the next level.</span></p>
-  </div>
-</div>
-
-<!-- ===== SOP 07 ===== -->
-<h2 id="sop07">
-  <span class="module-tag mod-cb">C&amp;B</span>
-  <span class="lang-vi">SOP 07 — Tính Lương &amp; Chi trả Lương</span>
-  <span class="lang-en">SOP 07 — Payroll Calculation &amp; Disbursement</span>
-</h2>
-<div class="lang-vi"><p class="section-intro">HR Admin tổng hợp bảng lương cuối tháng sau khi chốt bảng công, trình HR Manager và Kế toán phê duyệt trước khi phát hành phiếu lương.</p></div>
-<div class="lang-en"><p class="section-intro">HR Admin compiles the monthly payroll after attendance is finalized, submits to HR Manager and Accounting for approval before publishing pay slips.</p></div>
-<div class="roles-row">
-  <span class="role-tag"><span class="lang-vi">HR Admin (tổng hợp)</span><span class="lang-en">HR Admin (compile)</span></span>
-  <span class="role-tag"><span class="lang-vi">HR Manager (duyệt)</span><span class="lang-en">HR Manager (approve)</span></span>
-  <span class="role-tag"><span class="lang-vi">Kế toán (duyệt)</span><span class="lang-en">Accounting (approve)</span></span>
-</div>
-<h4><span class="lang-vi">Luồng trạng thái</span><span class="lang-en">Status Flow</span></h4>
-<div class="status-flow">
-  <span class="sp sp-draft">DRAFT</span><span class="flow-arr">→</span>
-  <span class="sp sp-blue">REVIEWED</span><span class="flow-arr">→</span>
-  <span class="sp sp-amber">APPROVED</span><span class="flow-arr">→</span>
-  <span class="sp sp-green">PUBLISHED</span>
-</div>
-<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
-<ol class="step-list">
-  <li><span><strong><span class="lang-vi">Tạo bảng lương tháng</span><span class="lang-en">Create Monthly Payroll</span></strong> — <span class="lang-vi">Vào <code>HRM &gt; Payroll &gt; Monthly Payroll</code> &gt; <strong>Tạo bảng lương</strong> &gt; Chọn tháng/năm.</span><span class="lang-en">Go to <code>HRM &gt; Payroll &gt; Monthly Payroll</code> &gt; <strong>Create Payroll</strong> &gt; Select month/year.</span></span></li>
-  <li><span><strong><span class="lang-vi">Hệ thống tự tổng hợp</span><span class="lang-en">System Auto-Aggregates</span></strong> — <span class="lang-vi">Ngày công thực tế + Lương cơ bản + Phụ cấp + Tăng ca (×150%/200%/300%) − BHXH, BHYT, Thuế TNCN.</span><span class="lang-en">Actual workdays + Base salary + Allowances + OT (×150%/200%/300%) − Social insurance, health insurance, personal income tax.</span></span></li>
-  <li><span><strong><span class="lang-vi">Kiểm tra &amp; xuất nháp</span><span class="lang-en">Review &amp; Export Draft</span></strong> — <span class="lang-vi">HR Admin kiểm tra từng dòng &gt; Nhấn <strong>Xuất phiếu lương nháp</strong> để xem lại.</span><span class="lang-en">HR Admin reviews each line &gt; Click <strong>Export Draft Payslip</strong> to preview.</span></span></li>
-  <li><span><strong><span class="lang-vi">Gửi phê duyệt</span><span class="lang-en">Submit for Approval</span></strong> — <span class="lang-vi">Gửi bảng lương cho HR Manager và Kế toán phê duyệt đồng thời.</span><span class="lang-en">Send payroll to HR Manager and Accounting for simultaneous approval.</span></span></li>
-  <li><span><strong><span class="lang-vi">Phát hành Phiếu lương</span><span class="lang-en">Publish Pay Slips</span></strong> — <span class="lang-vi">Sau khi duyệt, nhấn <strong>Phát hành</strong> — hệ thống tự gửi Payslip cho từng nhân viên qua email/app.</span><span class="lang-en">Once approved, click <strong>Publish</strong> — system auto-sends payslip to each employee via email/app.</span></span></li>
-</ol>
-<div class="callout callout-danger">
-  <span class="callout-icon">⚠</span>
-  <div class="callout-body">
-    <strong><span class="lang-vi">Chất lượng</span><span class="lang-en">Quality Standard</span></strong>
-    <p><span class="lang-vi">Sai sót tính lương phải dưới <strong>1%</strong>. Nếu phát hiện sai, HR Admin chỉnh sửa và gửi duyệt lại trước khi phát hành. Không phát hành khi chưa được phê duyệt đầy đủ.</span><span class="lang-en">Payroll error rate must be below <strong>1%</strong>. If an error is found, HR Admin corrects and re-submits for approval before publishing. Never publish without full approval.</span></p>
-  </div>
-</div>
-
-<!-- ===== SOP 08 ===== -->
-<h2 id="sop08">
-  <span class="module-tag mod-perf">Performance</span>
-  <span class="lang-vi">SOP 08 — Thiết lập KPI/OKR &amp; Đánh giá Hiệu suất</span>
-  <span class="lang-en">SOP 08 — Set Up KPI/OKR &amp; Performance Review</span>
-</h2>
-<div class="lang-vi"><p class="section-intro">Line Manager và nhân viên cùng thiết lập mục tiêu đầu kỳ, theo dõi tiến độ, và thực hiện đánh giá tổng kết cuối kỳ.</p></div>
-<div class="lang-en"><p class="section-intro">Line Manager and employee jointly set goals at the start of a period, track progress, and conduct a final performance review at period end.</p></div>
-<div class="roles-row">
-  <span class="role-tag"><span class="lang-vi">Line Manager (đánh giá)</span><span class="lang-en">Line Manager (evaluate)</span></span>
-  <span class="role-tag"><span class="lang-vi">Nhân viên (tự đánh giá)</span><span class="lang-en">Employee (self-assess)</span></span>
-</div>
-<h4><span class="lang-vi">Luồng trạng thái</span><span class="lang-en">Status Flow</span></h4>
-<div class="status-flow">
-  <span class="sp sp-blue">SETUP</span><span class="flow-arr">→</span>
-  <span class="sp sp-amber">IN_PROGRESS</span><span class="flow-arr">→</span>
-  <span class="sp sp-purple">REVIEW</span><span class="flow-arr">→</span>
-  <span class="sp sp-green">COMPLETED</span>
-</div>
-<h4><span class="lang-vi">A — Thiết lập mục tiêu (Đầu kỳ)</span><span class="lang-en">A — Set Goals (Period Start)</span></h4>
-<ol class="step-list">
-  <li><span><span class="lang-vi">Vào <code>HRM &gt; Performance &gt; KPI Setup</code> &gt; <strong>Tạo KPI mới</strong> cho nhân viên hoặc theo phòng ban.</span><span class="lang-en">Go to <code>HRM &gt; Performance &gt; KPI Setup</code> &gt; <strong>Create KPI</strong> for employee or by department.</span></span></li>
-  <li><span><span class="lang-vi">Điền: Tên mục tiêu, Chỉ số đo lường, Trọng số (%), Mức kỳ vọng.</span><span class="lang-en">Fill in: Goal name, measurement metric, weight (%), target level.</span></span></li>
-  <li><span><span class="lang-vi">Gửi nhân viên xác nhận và cam kết mục tiêu.</span><span class="lang-en">Send to employee for confirmation and goal commitment.</span></span></li>
-</ol>
-<h4><span class="lang-vi">B — Theo dõi &amp; Phản hồi (Giữa kỳ)</span><span class="lang-en">B — Track &amp; Feedback (Mid-Period)</span></h4>
-<ol class="step-list">
-  <li><span><span class="lang-vi">Nhân viên cập nhật tiến độ tại <strong>My Performance</strong>.</span><span class="lang-en">Employee updates progress under <strong>My Performance</strong>.</span></span></li>
-  <li><span><span class="lang-vi">Line Manager ghi nhận phản hồi định kỳ (360 feedback).</span><span class="lang-en">Line Manager records periodic feedback (360 feedback).</span></span></li>
-</ol>
-<h4><span class="lang-vi">C — Đánh giá tổng kết (Cuối kỳ)</span><span class="lang-en">C — Final Review (Period End)</span></h4>
-<ol class="step-list">
-  <li><span><span class="lang-vi">Vào <code>Performance &gt; Reviews</code> &gt; Chọn nhân viên &gt; Điền <strong>Performance Review Form</strong>: Điểm KPI, Nhận xét tổng quan.</span><span class="lang-en">Go to <code>Performance &gt; Reviews</code> &gt; Select employee &gt; Fill <strong>Performance Review Form</strong>: KPI scores, overall comments.</span></span></li>
-  <li><span><span class="lang-vi">Nhấn <strong>Submit</strong>. Kết quả liên kết với quyết định tăng lương, thưởng, thăng chức và Career Path.</span><span class="lang-en">Click <strong>Submit</strong>. Results link to salary increase, bonus, promotion decisions, and Career Path.</span></span></li>
+  <li><span><span class="lang-vi">Employee submit resignation request với effective_date (thường 2-4 tuần)</span><span class="lang-en">Employee submits resignation with effective_date (usually 2-4 weeks)</span></span></li>
+  <li><span><span class="lang-vi">HR/Manager approve → status = approved</span><span class="lang-en">HR/Manager approves → status = approved</span></span></li>
+  <li><span><span class="lang-vi">Create Handover tasks: assign tasks to be transferred</span><span class="lang-en">Create Handover tasks: assign tasks to be transferred</span></span></li>
+  <li><span><span class="lang-vi">Schedule Exit Interview (feedback, satisfaction, suggestions)</span><span class="lang-en">Schedule Exit Interview (feedback, satisfaction, suggestions)</span></span></li>
+  <li><span><span class="lang-vi">On effective_date: Mark employee status = inactive, create final payroll</span><span class="lang-en">On effective_date: Mark status = inactive, create final payroll</span></span></li>
 </ol>
 
-<!-- ===== SOP 09 ===== -->
-<h2 id="sop09">
-  <span class="module-tag mod-perf">Performance</span>
-  <span class="lang-vi">SOP 09 — Đào tạo &amp; Phát triển Nhân sự</span>
-  <span class="lang-en">SOP 09 — Training &amp; Employee Development</span>
+<!-- ASSET MANAGEMENT -->
+<h2 id="asset-management">
+  <span class="lang-vi">Quản lý Tài sản Công ty</span>
+  <span class="lang-en">Company Asset Management</span>
 </h2>
-<div class="lang-vi"><p class="section-intro">HR lập kế hoạch và triển khai các chương trình đào tạo. Kết quả cập nhật tự động vào Career Path của nhân viên.</p></div>
-<div class="lang-en"><p class="section-intro">HR plans and deploys training programs. Results automatically update the employee's Career Path.</p></div>
-<div class="roles-row">
-  <span class="role-tag"><span class="lang-vi">HR Admin (tổ chức)</span><span class="lang-en">HR Admin (organize)</span></span>
-  <span class="role-tag"><span class="lang-vi">HR Manager (duyệt ngân sách)</span><span class="lang-en">HR Manager (approve budget)</span></span>
-</div>
-<h4><span class="lang-vi">Luồng trạng thái</span><span class="lang-en">Status Flow</span></h4>
-<div class="status-flow">
-  <span class="sp sp-draft">PLANNED</span><span class="flow-arr">→</span>
-  <span class="sp sp-blue">APPROVED</span><span class="flow-arr">→</span>
-  <span class="sp sp-amber">IN_PROGRESS</span><span class="flow-arr">→</span>
-  <span class="sp sp-green">COMPLETED</span>
-</div>
-<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
-<ol class="step-list">
-  <li><span><strong><span class="lang-vi">Tạo chương trình đào tạo</span><span class="lang-en">Create Training Program</span></strong> — <span class="lang-vi">Vào <code>HRM &gt; Training</code> &gt; <strong>Tạo chương trình mới</strong> &gt; Điền: Tên, Mục tiêu, Thời gian, Giảng viên, Ngân sách.</span><span class="lang-en">Go to <code>HRM &gt; Training</code> &gt; <strong>Create Program</strong> &gt; Fill: Name, Goals, Duration, Trainer, Budget.</span></span></li>
-  <li><span><strong><span class="lang-vi">Thêm học viên</span><span class="lang-en">Add Participants</span></strong> — <span class="lang-vi">Thêm danh sách học viên: chọn nhân viên cụ thể hoặc toàn bộ phòng ban.</span><span class="lang-en">Add participant list: select specific employees or entire departments.</span></span></li>
-  <li><span><strong><span class="lang-vi">Duyệt ngân sách</span><span class="lang-en">Budget Approval</span></strong> — <span class="lang-vi">Gửi cho HR Manager phê duyệt ngân sách. Sau khi duyệt, nhấn <strong>Triển khai</strong>.</span><span class="lang-en">Submit to HR Manager for budget approval. Once approved, click <strong>Deploy</strong>.</span></span></li>
-  <li><span><strong><span class="lang-vi">Cập nhật kết quả</span><span class="lang-en">Update Results</span></strong> — <span class="lang-vi">Sau khóa học, nhập kết quả đánh giá tại <strong>Training Results</strong>. Kết quả tự động cập nhật vào <strong>Career Path</strong>.</span><span class="lang-en">After training, enter results under <strong>Training Results</strong>. Results auto-update the employee's <strong>Career Path</strong>.</span></span></li>
-</ol>
 
-<!-- ===== SOP 10 ===== -->
-<h2 id="sop10">
-  <span class="module-tag mod-admin">Admin</span>
-  <span class="lang-vi">SOP 10 — Quản lý Tài sản &amp; Mua sắm Nội bộ</span>
-  <span class="lang-en">SOP 10 — Asset Management &amp; Internal Procurement</span>
-</h2>
-<div class="lang-vi"><p class="section-intro">HR/Hành chính quản lý toàn bộ vòng đời tài sản công ty và xử lý các đề xuất mua sắm nội bộ theo luồng phê duyệt.</p></div>
-<div class="lang-en"><p class="section-intro">HR/Admin manages the full lifecycle of company assets and processes internal procurement requests through the approval workflow.</p></div>
-<div class="roles-row">
-  <span class="role-tag"><span class="lang-vi">HR Admin / Hành chính</span><span class="lang-en">HR Admin / Admin Staff</span></span>
-  <span class="role-tag"><span class="lang-vi">Line Manager → CEO (phê duyệt)</span><span class="lang-en">Line Manager → CEO (approve)</span></span>
-</div>
-<h4><span class="lang-vi">A — Cấp phát Tài sản cho Nhân viên</span><span class="lang-en">A — Asset Allocation to Employee</span></h4>
-<ol class="step-list">
-  <li><span><span class="lang-vi">Vào <code>HRM &gt; Assets</code> &gt; <strong>Cấp phát tài sản</strong> &gt; Chọn nhân viên và tài sản từ kho.</span><span class="lang-en">Go to <code>HRM &gt; Assets</code> &gt; <strong>Allocate Asset</strong> &gt; Select employee and asset from inventory.</span></span></li>
-  <li><span><span class="lang-vi">Điền <strong>Asset Allocation Form</strong>: Ngày bàn giao, tình trạng tài sản. Nhân viên xác nhận trên hệ thống.</span><span class="lang-en">Fill <strong>Asset Allocation Form</strong>: Handover date, asset condition. Employee confirms in the system.</span></span></li>
-</ol>
-<h4><span class="lang-vi">B — Mua sắm Nội bộ</span><span class="lang-en">B — Internal Procurement</span></h4>
-<ol class="step-list">
-  <li><span><span class="lang-vi">Nhân viên vào <code>HRM &gt; Procurement</code> &gt; <strong>Tạo đề xuất mua sắm</strong> &gt; Điền: Hàng hóa, Số lượng, Lý do, Ngân sách.</span><span class="lang-en">Employee goes to <code>HRM &gt; Procurement</code> &gt; <strong>Create Purchase Request</strong> &gt; Fill: Item, Qty, Reason, Budget.</span></span></li>
-  <li><span><span class="lang-vi">Đề xuất đi qua luồng: <strong>Line Manager</strong> → <strong>HR Admin</strong> → <strong>CEO</strong> (nếu vượt ngưỡng ngân sách).</span><span class="lang-en">Request routes through: <strong>Line Manager</strong> → <strong>HR Admin</strong> → <strong>CEO</strong> (if over budget threshold).</span></span></li>
-  <li><span><span class="lang-vi">Sau khi duyệt, HR Admin cập nhật trạng thái thanh toán và lưu chứng từ.</span><span class="lang-en">Once approved, HR Admin updates payment status and archives documents.</span></span></li>
-</ol>
-<h4><span class="lang-vi">C — Kiểm kê Tài sản</span><span class="lang-en">C — Asset Inventory</span></h4>
-<ol class="step-list">
-  <li><span><span class="lang-vi">HR Admin tạo <strong>Phiếu kiểm kê</strong> định kỳ &gt; Đối chiếu thực tế với danh mục hệ thống.</span><span class="lang-en">HR Admin creates periodic <strong>Inventory Check</strong> &gt; Compare physical assets with system records.</span></span></li>
-  <li><span><span class="lang-vi">Cập nhật tình trạng: Đang sử dụng, Hỏng, Mất, Thanh lý. Lịch bảo trì nhắc tự động.</span><span class="lang-en">Update status: In Use, Defective, Lost, Disposed. Maintenance schedule auto-reminds.</span></span></li>
-</ol>
+<h3><span class="lang-vi">Asset Types</span><span class="lang-en">Asset Types</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr>
+    <td><strong><span class="lang-vi">Laptop/Desktop:</span><span class="lang-en">Laptop/Desktop:</span></strong> <span class="lang-vi">Serial number, model, purchase_date, cost, warranty, condition</span><span class="lang-en">Serial number, model, purchase_date, cost, warranty, condition</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Phone:</span><span class="lang-en">Phone:</span></strong> <span class="lang-vi">Mobile device, SIM, IMEI, condition</span><span class="lang-en">Mobile device, SIM, IMEI, condition</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Furniture:</span><span class="lang-en">Furniture:</span></strong> <span class="lang-vi">Desk, chair, cabinet, condition</span><span class="lang-en">Desk, chair, cabinet, condition</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Access Card:</span><span class="lang-en">Access Card:</span></strong> <span class="lang-vi">ID card, badge, key</span><span class="lang-en">ID card, badge, key</span></td>
+  </tr>
+</tbody>
+</table>
 
-<!-- ===== SOP 11 ===== -->
-<h2 id="sop11">
-  <span class="module-tag mod-off">Offboarding</span>
-  <span class="lang-vi">SOP 11 — Quy trình Thôi việc (Offboarding)</span>
-  <span class="lang-en">SOP 11 — Offboarding Process</span>
-</h2>
-<div class="lang-vi"><p class="section-intro">Quy trình xử lý toàn diện khi nhân viên thôi việc — từ nộp đơn nghỉ, bàn giao công việc đến chốt lương và đóng tài khoản.</p></div>
-<div class="lang-en"><p class="section-intro">Comprehensive process for employee departures — from resignation submission through work handover to final payroll and account closure.</p></div>
-<div class="roles-row">
-  <span class="role-tag"><span class="lang-vi">Nhân viên (nộp đơn)</span><span class="lang-en">Employee (submit)</span></span>
-  <span class="role-tag"><span class="lang-vi">Line Manager (duyệt)</span><span class="lang-en">Line Manager (approve)</span></span>
-  <span class="role-tag"><span class="lang-vi">HR Admin (thực hiện)</span><span class="lang-en">HR Admin (execute)</span></span>
-</div>
-<h4><span class="lang-vi">Luồng trạng thái</span><span class="lang-en">Status Flow</span></h4>
-<div class="status-flow">
-  <span class="sp sp-blue">SUBMITTED</span><span class="flow-arr">→</span>
-  <span class="sp sp-amber">APPROVED</span><span class="flow-arr">→</span>
-  <span class="sp sp-purple">HANDOVER</span><span class="flow-arr">→</span>
-  <span class="sp sp-orange">EXIT_INTERVIEW</span><span class="flow-arr">→</span>
-  <span class="sp sp-green">COMPLETED</span>
-</div>
-<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
-<ol class="step-list">
-  <li><span><strong><span class="lang-vi">Nộp đơn nghỉ việc</span><span class="lang-en">Submit Resignation</span></strong> — <span class="lang-vi">Nhân viên vào <code>HRM &gt; Offboarding</code> &gt; <strong>Nộp đơn nghỉ việc</strong> &gt; Điền lý do, ngày nghỉ đề xuất &gt; Submit.</span><span class="lang-en">Employee goes to <code>HRM &gt; Offboarding</code> &gt; <strong>Submit Resignation</strong> &gt; Fill reason, proposed last date &gt; Submit.</span></span></li>
-  <li><span><strong><span class="lang-vi">Phê duyệt &amp; xác định Last Working Day</span><span class="lang-en">Approve &amp; Set Last Working Day</span></strong> — <span class="lang-vi">Line Manager và HR Manager phê duyệt. Hệ thống xác định chính thức ngày làm việc cuối.</span><span class="lang-en">Line Manager and HR Manager approve. System officially sets the Last Working Day.</span></span></li>
-  <li><span><strong><span class="lang-vi">Bàn giao công việc</span><span class="lang-en">Work Handover</span></strong> — <span class="lang-vi">Nhân viên điền <strong>Handover Form</strong>: bàn giao tài liệu, tài sản công ty, quyền truy cập hệ thống.</span><span class="lang-en">Employee fills <strong>Handover Form</strong>: hand over documents, company assets, and system access.</span></span></li>
-  <li><span><strong><span class="lang-vi">Exit Interview</span><span class="lang-en">Exit Interview</span></strong> — <span class="lang-vi">HR Admin tạo <strong>Exit Interview Form</strong> &gt; Mời nhân viên khảo sát lý do nghỉ việc.</span><span class="lang-en">HR Admin creates <strong>Exit Interview Form</strong> &gt; Invite employee to share departure reasons.</span></span></li>
-  <li><span><strong><span class="lang-vi">Chốt lương cuối</span><span class="lang-en">Final Payroll</span></strong> — <span class="lang-vi">HR tính lương ngày công còn lại, số ngày phép chưa nghỉ, thưởng (nếu có).</span><span class="lang-en">HR calculates remaining workdays, unused leave balance, and bonus (if applicable).</span></span></li>
-  <li><span><strong><span class="lang-vi">Đóng tài khoản &amp; Hoàn tất</span><span class="lang-en">Close Accounts &amp; Finalize</span></strong> — <span class="lang-vi">Vô hiệu hóa email, VPN, tài khoản hệ thống. Nhấn <strong>Hoàn tất Offboarding</strong>. Hồ sơ chuyển sang <code>Inactive</code>.</span><span class="lang-en">Deactivate email, VPN, system accounts. Click <strong>Complete Offboarding</strong>. Record changes to <code>Inactive</code>.</span></span></li>
-</ol>
-<div class="callout callout-warning">
-  <span class="callout-icon">⚠</span>
-  <div class="callout-body">
-    <strong><span class="lang-vi">Thời hạn</span><span class="lang-en">Deadline</span></strong>
-    <p><span class="lang-vi">Toàn bộ Offboarding phải hoàn tất trước hoặc đúng Ngày làm việc cuối cùng. Dữ liệu Exit Interview được lưu để phân tích tỷ lệ nghỉ việc.</span><span class="lang-en">All offboarding tasks must be completed by or on the Last Working Day. Exit Interview data is retained for attrition analysis.</span></p>
-  </div>
+<h3><span class="lang-vi">Asset Assignment &amp; Return</span><span class="lang-en">Asset Assignment &amp; Return</span></h3>
+<div class="golden-list">
+  <li>
+    <div class="gl-icon">📦</div>
+    <div class="gl-text"><strong><span class="lang-vi">On Onboarding:</span><span class="lang-en">On Onboarding:</span></strong> <span class="lang-vi">Giao laptop, phone, card → record assignment_date, condition</span><span class="lang-en">Issue laptop, phone, card → record assignment_date, condition</span></div>
+  </li>
+  <li>
+    <div class="gl-icon">📦</div>
+    <div class="gl-text"><strong><span class="lang-vi">Replacement:</span><span class="lang-en">Replacement:</span></strong> <span class="lang-vi">Nếu asset bị hỏng → create new assignment, return old</span><span class="lang-en">If asset breaks → new assignment, return old one</span></div>
+  </li>
+  <li>
+    <div class="gl-icon">🔄</div>
+    <div class="gl-text"><strong><span class="lang-vi">On Offboarding:</span><span class="lang-en">On Offboarding:</span></strong> <span class="lang-vi">Yêu cầu trả tất cả assets, inspect condition, mark return_date</span><span class="lang-en">Request return of all assets, inspect condition, mark return_date</span></div>
+  </li>
+  <li>
+    <div class="gl-icon">⚠️</div>
+    <div class="gl-text"><strong><span class="lang-vi">Lost/Damaged:</span><span class="lang-en">Lost/Damaged:</span></strong> <span class="lang-vi">Log damage reason. Có thể charge employee nếu do negligence</span><span class="lang-en">Log damage reason. May charge employee if negligence</span></div>
+  </li>
 </div>
 
-<!-- ===== KPI ===== -->
-<h2 id="kpi">
-  <span class="lang-vi">KPI Vận hành</span>
-  <span class="lang-en">Operational KPIs</span>
+<!-- API REFERENCE -->
+<h2 id="api-endpoints">
+  <span class="lang-vi">API Reference — Employee Endpoints</span>
+  <span class="lang-en">API Reference — Employee Endpoints</span>
 </h2>
-<div class="kpi-grid">
-  <div class="kpi-card">
-    <div class="kpi-value">100%</div>
-    <div class="kpi-label"><span class="lang-vi">Hồ sơ nhân sự được số hóa</span><span class="lang-en">Employee records digitized</span></div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-value">100%</div>
-    <div class="kpi-label"><span class="lang-vi">Yêu cầu nghỉ phép / tăng ca phê duyệt online</span><span class="lang-en">Leave / OT requests approved online</span></div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-value">&lt;1%</div>
-    <div class="kpi-label"><span class="lang-vi">Sai sót tính lương</span><span class="lang-en">Payroll error rate</span></div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-value">−50%</div>
-    <div class="kpi-label"><span class="lang-vi">Thời gian xử lý Onboarding/Offboarding so với quy trình cũ</span><span class="lang-en">Onboarding/Offboarding processing time vs. old process</span></div>
-  </div>
-</div>
 
-<!-- ===== ROLE SUMMARY ===== -->
-<h2 id="role-summary">
-  <span class="lang-vi">Tổng hợp theo Vai trò</span>
-  <span class="lang-en">Summary by Role</span>
+<div class="lang-vi"><p class="section-intro">Tất cả HRM API tuân theo RESTful convention. Base URL: <code>/api/v1/hrm</code></p></div>
+<div class="lang-en"><p class="section-intro">All HRM APIs follow RESTful convention. Base URL: <code>/api/v1/hrm</code></p></div>
+
+<h3><span class="lang-vi">Employee Management</span><span class="lang-en">Employee Management</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr><td><code>GET /employees</code></td><td><span class="lang-vi">List employees (filter by department, status)</span><span class="lang-en">List employees (filter by department, status)</span></td></tr>
+  <tr><td><code>POST /employees</code></td><td><span class="lang-vi">Create new employee</span><span class="lang-en">Create new employee</span></td></tr>
+  <tr><td><code>GET /employees/{id}</code></td><td><span class="lang-vi">Get employee detail with contracts, salary history</span><span class="lang-en">Get detail with contracts, salary history</span></td></tr>
+  <tr><td><code>PUT /employees/{id}</code></td><td><span class="lang-vi">Update employee info</span><span class="lang-en">Update employee info</span></td></tr>
+  <tr><td><code>DELETE /employees/{id}</code></td><td><span class="lang-vi">Delete employee (archive)</span><span class="lang-en">Delete employee (archive)</span></td></tr>
+</tbody>
+</table>
+
+<h3><span class="lang-vi">Org Structure, Leave, Attendance, Recruitment</span><span class="lang-en">Org Structure, Leave, Attendance, Recruitment</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr><td><code>GET /departments</code>, <code>GET /departments/tree</code></td><td><span class="lang-vi">List depts, hierarchical tree view</span><span class="lang-en">List depts, hierarchical tree</span></td></tr>
+  <tr><td><code>GET /leave-requests</code>, <code>POST /leave-requests</code></td><td><span class="lang-vi">CRUD leave requests, approvals</span><span class="lang-en">CRUD leave requests, approvals</span></td></tr>
+  <tr><td><code>GET /attendance-records</code>, <code>POST /attendance-records</code></td><td><span class="lang-vi">CRUD attendance, corrections, summary</span><span class="lang-en">CRUD attendance, corrections, summary</span></td></tr>
+  <tr><td><code>GET /recruitment-requests</code>, <code>GET /candidates</code></td><td><span class="lang-vi">Manage requisitions, candidates, pipeline</span><span class="lang-en">Manage requisitions, candidates, pipeline</span></td></tr>
+  <tr><td><code>GET /interviews</code>, <code>POST /interviews</code></td><td><span class="lang-vi">Schedule, record interviews</span><span class="lang-en">Schedule, record interviews</span></td></tr>
+  <tr><td><code>GET /offers</code>, <code>POST /offers</code></td><td><span class="lang-vi">Create, track job offers</span><span class="lang-en">Create, track job offers</span></td></tr>
+</tbody>
+</table>
+
+<h3><span class="lang-vi">Performance, Training, Payroll, Assets, Offboarding</span><span class="lang-en">Performance, Training, Payroll, Assets, Offboarding</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr><td><code>GET /performance-reviews</code>, <code>POST /performance-reviews</code></td><td><span class="lang-vi">Manage performance reviews, feedback</span><span class="lang-en">Manage performance reviews, feedback</span></td></tr>
+  <tr><td><code>GET /kpi-templates</code>, <code>POST /kpi-assignments</code></td><td><span class="lang-vi">Create KPI templates, assign to employees</span><span class="lang-en">Create KPI templates, assign to employees</span></td></tr>
+  <tr><td><code>GET /training-programs</code>, <code>GET /training-enrollments</code></td><td><span class="lang-vi">Manage training programs, enrollments</span><span class="lang-en">Manage training programs, enrollments</span></td></tr>
+  <tr><td><code>GET /payroll-records</code>, <code>POST /payroll-records</code></td><td><span class="lang-vi">Generate, manage monthly payroll</span><span class="lang-en">Generate, manage monthly payroll</span></td></tr>
+  <tr><td><code>GET /assets</code>, <code>GET /asset-assignments</code></td><td><span class="lang-vi">Track company assets, assignments, returns</span><span class="lang-en">Track company assets, assignments, returns</span></td></tr>
+  <tr><td><code>GET /resignations</code>, <code>POST /resignations</code></td><td><span class="lang-vi">Manage resignations, offboarding workflow</span><span class="lang-en">Manage resignations, offboarding workflow</span></td></tr>
+</tbody>
+</table>
+
+<!-- PERMISSIONS MATRIX -->
+<h2 id="permissions">
+  <span class="lang-vi">Role-Based Permissions Matrix</span>
+  <span class="lang-en">Role-Based Permissions Matrix</span>
 </h2>
+
 <div class="table-wrap">
 <table>
   <thead>
     <tr>
-      <th><span class="lang-vi">Vai trò</span><span class="lang-en">Role</span></th>
-      <th><span class="lang-vi">Các SOP thường sử dụng</span><span class="lang-en">Frequently Used SOPs</span></th>
+      <th><span class="lang-vi">Feature</span><span class="lang-en">Feature</span></th>
+      <th><span class="lang-vi">HR Admin</span><span class="lang-en">HR Admin</span></th>
+      <th><span class="lang-vi">HR Manager</span><span class="lang-en">HR Manager</span></th>
+      <th><span class="lang-vi">Line Mgr</span><span class="lang-en">Line Mgr</span></th>
+      <th><span class="lang-vi">Employee</span><span class="lang-en">Employee</span></th>
+      <th><span class="lang-vi">Accountant</span><span class="lang-en">Accountant</span></th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td><strong><span class="lang-vi">Nhân viên</span><span class="lang-en">Employee</span></strong></td>
-      <td><span class="lang-vi">SOP 02 (Hồ sơ), SOP 06 (Chấm công/Nghỉ phép), SOP 08 (KPI tự đánh giá), SOP 11 (Thôi việc)</span><span class="lang-en">SOP 02 (Records), SOP 06 (Attendance/Leave), SOP 08 (KPI self-review), SOP 11 (Offboarding)</span></td>
+      <td><span class="lang-vi">Employee CRUD</span><span class="lang-en">Employee CRUD</span></td>
+      <td>✓</td><td>–</td><td>–</td><td>–</td><td>–</td>
     </tr>
     <tr>
-      <td><strong>Line Manager</strong></td>
-      <td><span class="lang-vi">SOP 03 (Tuyển dụng), SOP 06 (Duyệt phép/tăng ca), SOP 08 (Đánh giá KPI nhóm)</span><span class="lang-en">SOP 03 (Recruitment), SOP 06 (Approve leave/OT), SOP 08 (Team KPI review)</span></td>
+      <td><span class="lang-vi">Approve Leave</span><span class="lang-en">Approve Leave</span></td>
+      <td>✓</td><td>✓</td><td>✓ (team)</td><td>–</td><td>–</td>
     </tr>
     <tr>
-      <td><strong>HR Admin</strong></td>
-      <td><span class="lang-vi">Tất cả SOP 01–11</span><span class="lang-en">All SOPs 01–11</span></td>
+      <td><span class="lang-vi">View Payroll</span><span class="lang-en">View Payroll</span></td>
+      <td>✓</td><td>✓</td><td>–</td><td>Own only</td><td>✓</td>
     </tr>
     <tr>
-      <td><strong>HR Manager</strong></td>
-      <td><span class="lang-vi">SOP 01 (Org Chart), SOP 04–05 (Pipeline/Offer), SOP 07 (Lương), SOP 09 (Đào tạo)</span><span class="lang-en">SOP 01 (Org Chart), SOP 04–05 (Pipeline/Offer), SOP 07 (Payroll), SOP 09 (Training)</span></td>
+      <td><span class="lang-vi">Recruitment Mgmt</span><span class="lang-en">Recruitment Mgmt</span></td>
+      <td>✓</td><td>✓</td><td>–</td><td>–</td><td>–</td>
     </tr>
     <tr>
-      <td><strong>CEO</strong></td>
-      <td><span class="lang-vi">SOP 01 (Duyệt cơ cấu), SOP 03 (Duyệt tuyển dụng), SOP 10 (Duyệt mua sắm lớn)</span><span class="lang-en">SOP 01 (Approve structure), SOP 03 (Approve recruitment), SOP 10 (Approve major purchases)</span></td>
+      <td><span class="lang-vi">Performance Review</span><span class="lang-en">Performance Review</span></td>
+      <td>✓</td><td>✓</td><td>✓ (team)</td><td>Own only</td><td>–</td>
+    </tr>
+    <tr>
+      <td><span class="lang-vi">Training Enrollment</span><span class="lang-en">Training Enrollment</span></td>
+      <td>✓</td><td>✓</td><td>Assign (team)</td><td>Self enroll</td><td>–</td>
+    </tr>
+    <tr>
+      <td><span class="lang-vi">Org Chart View</span><span class="lang-en">Org Chart View</span></td>
+      <td>✓</td><td>✓</td><td>✓ (team)</td><td>✓ (company)</td><td>–</td>
     </tr>
   </tbody>
 </table>
 </div>
 
-<!-- ===== GOLDEN PRINCIPLES ===== -->
-<h2 id="nguyen-tac-vang">
-  <span class="lang-vi">Nguyên tắc Vàng</span>
-  <span class="lang-en">Golden Principles</span>
+<!-- SUCCESS METRICS -->
+<h2 id="success-metrics">
+  <span class="lang-vi">Success Metrics</span>
+  <span class="lang-en">Success Metrics</span>
 </h2>
-<ul class="golden-list">
-  <li>
-    <span class="gl-icon">★</span>
-    <span class="gl-text"><strong><span class="lang-vi">Sự thật duy nhất</span><span class="lang-en">Single Source of Truth</span></strong> — <span class="lang-vi">Mọi dữ liệu nhân sự chỉ được coi là chính thức khi đã tồn tại trên hệ thống.</span><span class="lang-en">HR data is only official when it exists in the system. External records are not recognized.</span></span>
-  </li>
-  <li>
-    <span class="gl-icon">★</span>
-    <span class="gl-text"><strong><span class="lang-vi">Phê duyệt Online</span><span class="lang-en">Online Approval Only</span></strong> — <span class="lang-vi">Không chấp nhận phê duyệt bằng giấy hoặc miệng cho các quy trình đã được số hóa.</span><span class="lang-en">Paper or verbal approvals are not accepted for digitized processes.</span></span>
-  </li>
-  <li>
-    <span class="gl-icon">★</span>
-    <span class="gl-text"><strong><span class="lang-vi">Tuân thủ SLA 24h</span><span class="lang-en">24-Hour SLA Compliance</span></strong> — <span class="lang-vi">Mọi yêu cầu phê duyệt phải được xử lý trong vòng 24 giờ làm việc. Quá hạn sẽ leo thang tự động.</span><span class="lang-en">All approval requests must be processed within 24 business hours. Overdue requests auto-escalate.</span></span>
-  </li>
-  <li>
-    <span class="gl-icon">★</span>
-    <span class="gl-text"><strong><span class="lang-vi">Bảo mật RBAC</span><span class="lang-en">RBAC Security</span></strong> — <span class="lang-vi">Tuân thủ nghiêm ngặt quyền truy cập theo vai trò. Không chia sẻ thông tin ngoài phạm vi được phép.</span><span class="lang-en">Strictly enforce role-based access control. Do not share information outside your authorized scope.</span></span>
-  </li>
-</ul>
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-value"><span class="lang-vi">100%</span><span class="lang-en">100%</span></div>
+    <div class="kpi-label"><span class="lang-vi">Quy trình số hóa (không Excel)</span><span class="lang-en">Process digitization (zero Excel)</span></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value"><span class="lang-vi">60%</span><span class="lang-en">60%</span></div>
+    <div class="kpi-label"><span class="lang-vi">Giảm thao tác thủ công</span><span class="lang-en">Manual work reduction</span></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value"><span class="lang-vi">100%</span><span class="lang-en">100%</span></div>
+    <div class="kpi-label"><span class="lang-vi">Phê duyệt online</span><span class="lang-en">Online approvals</span></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value"><span class="lang-vi">30%</span><span class="lang-en">30%</span></div>
+    <div class="kpi-label"><span class="lang-vi">Giảm lỗi tính lương</span><span class="lang-en">Payroll error reduction</span></div>
+  </div>
+</div>
+
+<!-- CLOSING -->
+<div class="callout callout-tip">
+  <div class="callout-icon">💡</div>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Cập nhật thường xuyên:</span><span class="lang-en">Regular Updates:</span></strong>
+    <p><span class="lang-vi">Hệ thống HRM được cập nhật liên tục với các policy mới, quy luật lương thưởng, leave policy theo luật. Đặc biệt khi có thay đổi luật lao động VN.</span><span class="lang-en">HRM system is regularly updated with new policies, compensation rules, leave policies per regulations. Especially for VN labor law changes.</span></p>
+  </div>
+</div>
 
 </div>
 </main>
+
 <button class="back-to-top" id="backToTop">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
 </button>
+
 <script>
-// Dark mode toggle
-(function(){
-  var html = document.documentElement;
-  var toggle = document.getElementById('darkToggle');
-  var sunIcon = document.getElementById('sunIcon');
-  var moonIcon = document.getElementById('moonIcon');
-  var label = document.getElementById('darkToggleLabel');
-  function applyTheme(dark){
-    html.setAttribute('data-theme', dark ? 'dark' : 'light');
-    sunIcon.style.display = dark ? 'none' : '';
-    moonIcon.style.display = dark ? '' : 'none';
-    label.textContent = dark ? 'Light' : 'Dark';
+document.getElementById('darkToggle').addEventListener('click', function() {
+  const html = document.documentElement;
+  const isDark = html.dataset.theme === 'dark';
+  html.dataset.theme = isDark ? 'light' : 'dark';
+  const label = document.getElementById('darkToggleLabel');
+  const sunIcon = document.getElementById('sunIcon');
+  const moonIcon = document.getElementById('moonIcon');
+  if (isDark) {
+    label.textContent = 'Dark';
+    sunIcon.style.display = 'block';
+    moonIcon.style.display = 'none';
+  } else {
+    label.textContent = 'Light';
+    sunIcon.style.display = 'none';
+    moonIcon.style.display = 'block';
   }
-  var stored = localStorage.getItem('aerpTheme');
-  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  applyTheme(stored ? stored === 'dark' : prefersDark);
-  toggle.addEventListener('click', function(){
-    var nowDark = html.getAttribute('data-theme') !== 'dark';
-    applyTheme(nowDark);
-    localStorage.setItem('aerpTheme', nowDark ? 'dark' : 'light');
-  });
-})();
-
-// Sidebar collapse
-function toggleSection(id){
-  var sec = document.getElementById(id);
-  if(sec) sec.classList.toggle('collapsed');
+});
+document.getElementById('langVi').addEventListener('click', function() {
+  document.documentElement.lang = 'vi';
+  document.documentElement.dataset.lang = 'vi';
+  this.classList.add('active');
+  document.getElementById('langEn').classList.remove('active');
+});
+document.getElementById('langEn').addEventListener('click', function() {
+  document.documentElement.lang = 'en';
+  document.documentElement.dataset.lang = 'en';
+  this.classList.add('active');
+  document.getElementById('langVi').classList.remove('active');
+});
+function toggleSection(id) {
+  const section = document.getElementById(id);
+  section.classList.toggle('collapsed');
 }
-
-// Mobile sidebar
-var sidebar = document.getElementById('sidebar');
-var overlay = document.getElementById('sidebarOverlay');
-var hamburger = document.getElementById('hamburgerBtn');
-function openSidebar(){ sidebar.classList.add('open'); overlay.classList.add('open'); }
-function closeSidebar(){ sidebar.classList.remove('open'); overlay.classList.remove('open'); }
-function closeSidebarMobile(){ if(window.innerWidth < 768) closeSidebar(); }
-if(hamburger) hamburger.addEventListener('click', function(){ sidebar.classList.contains('open') ? closeSidebar() : openSidebar(); });
-if(overlay) overlay.addEventListener('click', closeSidebar);
-
-// Back to top
-var btt = document.getElementById('backToTop');
-window.addEventListener('scroll', function(){ btt.classList.toggle('visible', window.scrollY > 400); }, {passive:true});
-btt.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
-
-// ScrollSpy
-(function(){
-  var headings = document.querySelectorAll('h2[id], h3[id]');
-  var links = document.querySelectorAll('.sidebar-link');
-  var linkMap = {};
-  links.forEach(function(link){
-    var href = link.getAttribute('href');
-    if(href && href.startsWith('#')) linkMap[href.slice(1)] = link;
+function closeSidebarMobile() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  sidebar.classList.remove('open');
+  overlay.classList.remove('open');
+}
+document.getElementById('hamburgerBtn').addEventListener('click', function() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('open');
+});
+document.getElementById('sidebarOverlay').addEventListener('click', closeSidebarMobile);
+const backToTopBtn = document.getElementById('backToTop');
+window.addEventListener('scroll', function() {
+  backToTopBtn.classList.toggle('visible', window.scrollY > 500);
+});
+backToTopBtn.addEventListener('click', function() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+const sidebarLinks = document.querySelectorAll('.sidebar-link');
+window.addEventListener('scroll', function() {
+  let current = '';
+  document.querySelectorAll('h2').forEach(section => {
+    const sectionTop = section.offsetTop;
+    const sectionHeight = section.clientHeight;
+    if (window.pageYOffset >= sectionTop - 200) {
+      current = section.getAttribute('id');
+    }
   });
-  var current = null;
-  var observer = new IntersectionObserver(function(entries){
-    entries.forEach(function(entry){
-      if(entry.isIntersecting){
-        if(current) current.classList.remove('active','spy-active');
-        var link = linkMap[entry.target.id];
-        if(link){ link.classList.add('active','spy-active'); current = link;
-          var sidebarEl = document.getElementById('sidebar');
-          var linkTop = link.offsetTop;
-          if(linkTop < sidebarEl.scrollTop || linkTop > sidebarEl.scrollTop + sidebarEl.clientHeight - 60){
-            sidebarEl.scrollTo({top: linkTop - 80, behavior:'smooth'});
-          }
-        }
-      }
-    });
-  }, {rootMargin:'-60px 0px -70% 0px', threshold:0});
-  headings.forEach(function(h){ observer.observe(h); });
-})();
-
-// Smooth scroll
-document.querySelectorAll('.sidebar-link[href^="#"]').forEach(function(link){
-  link.addEventListener('click', function(e){
-    e.preventDefault();
-    var id = this.getAttribute('href').slice(1);
-    var target = document.getElementById(id);
-    if(target){
-      var top = target.getBoundingClientRect().top + window.scrollY - 72;
-      window.scrollTo({top:top, behavior:'smooth'});
+  sidebarLinks.forEach(link => {
+    link.classList.remove('spy-active');
+    if (link.getAttribute('href').substring(1) === current) {
+      link.classList.add('spy-active');
     }
   });
 });
-
-// Language toggle
-function setLang(lang){
-  document.documentElement.setAttribute('data-lang', lang);
-  document.documentElement.setAttribute('lang', lang === 'vi' ? 'vi' : 'en');
-  localStorage.setItem('sop-lang', lang);
-  var enBtn = document.getElementById('langEn');
-  var viBtn = document.getElementById('langVi');
-  if(enBtn) enBtn.classList.toggle('active', lang === 'en');
-  if(viBtn) viBtn.classList.toggle('active', lang === 'vi');
-  document.querySelectorAll('[data-en][data-vi]').forEach(function(el){
-    el.textContent = el.getAttribute('data-' + lang) || el.getAttribute('data-en');
-  });
-}
-document.getElementById('langEn').addEventListener('click', function(){ setLang('en'); });
-document.getElementById('langVi').addEventListener('click', function(){ setLang('vi'); });
-(function(){
-  var saved = localStorage.getItem('sop-lang');
-  if(saved) setLang(saved); else setLang('vi');
-})();
 </script>
 </body>
 </html>
