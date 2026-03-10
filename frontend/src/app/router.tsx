@@ -60,6 +60,9 @@ const HrmOffboardingDetailPage = lazy(() => import('@/modules/hrm/features/offbo
 const HrmAssetsPage = lazy(() => import('@/modules/hrm/features/assets/pages/assets-list'))
 const HrmProcurementPage = lazy(() => import('@/modules/hrm/features/procurement/pages/procurement-list'))
 
+// Lazy-loaded pages — Guides
+const GuideViewerPage = lazy(() => import('@/features/guides/pages/guide-viewer'))
+
 // Lazy-loaded pages — CRM module
 const CrmDashboardPage = lazy(() => import('@/modules/crm/features/dashboard/pages/crm-dashboard'))
 const CrmContactsPage = lazy(() => import('@/modules/crm/features/contacts/pages/contacts-list'))
@@ -154,6 +157,11 @@ export function AppRouter() {
             <Route path="/crm/activities" element={<CrmActivitiesPage />} />
             <Route path="/crm/campaigns" element={<CrmCampaignsPage />} />
             <Route path="/crm/tickets" element={<CrmTicketsPage />} />
+
+            {/* Guides */}
+            <Route path="/guides" element={<Navigate to="/guides/user-guide" replace />} />
+            <Route path="/guides/:guideId" element={<GuideViewerPage />} />
+            <Route path="/guides/:guideId/:sectionHash" element={<GuideViewerPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

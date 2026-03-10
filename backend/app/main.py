@@ -81,3 +81,9 @@ app.include_router(api_router, prefix="/api/v1")
 # Serve uploaded files
 if os.path.exists(settings.UPLOAD_DIR):
     app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
+
+# Serve user guide HTML files
+from pathlib import Path
+_docs_dir = Path(__file__).resolve().parents[2] / "docs"
+if _docs_dir.exists():
+    app.mount("/guides-static", StaticFiles(directory=str(_docs_dir), html=True), name="guides")

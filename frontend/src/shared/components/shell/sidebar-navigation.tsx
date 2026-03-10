@@ -175,6 +175,22 @@ export function SidebarNavigation({ collapsed }: Props) {
         )}
       </nav>
 
+      {/* User Guide — always visible */}
+      {!collapsed && (
+        <div className="pt-4 pb-1 px-2">
+          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+            Resources
+          </span>
+        </div>
+      )}
+      <NavItem
+        to="/guides"
+        iconName="BookOpen"
+        label="User Guide"
+        active={isActive('/guides')}
+        collapsed={collapsed}
+      />
+
       <CreateProjectDialog open={projDialogOpen} onOpenChange={setProjDialogOpen} workspaceId={activeWorkspaceId} />
       <InviteMembersDialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen} workspaceId={activeWorkspaceId} />
     </TooltipProvider>

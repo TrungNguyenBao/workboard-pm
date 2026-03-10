@@ -30,6 +30,10 @@ export default mergeConfig(
           target: process.env.VITE_BACKEND_URL ?? 'http://localhost:8000',
           changeOrigin: true,
         },
+        '/guides-static': {
+          target: process.env.VITE_BACKEND_URL ?? 'http://localhost:8000',
+          changeOrigin: true,
+        },
       },
     },
   }),
