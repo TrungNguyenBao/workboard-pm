@@ -733,6 +733,8 @@ html[data-lang="vi"] .lang-en { display: none; }
       <a class="sidebar-link" href="#my-tasks" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-en="My Tasks" data-vi="Nhiệm Vụ Của Tôi">My Tasks</span></a>
       <a class="sidebar-link" href="#creating-project" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-en="Creating a Project" data-vi="Tạo Dự Án">Creating a Project</span></a>
       <a class="sidebar-link" href="#board-view" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-en="Board View" data-vi="Chế Độ Xem Bảng">Board View</span></a>
+      <a class="sidebar-link" href="#backlog-view" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-en="Backlog View" data-vi="Backlog">Backlog View</span></a>
+      <a class="sidebar-link" href="#sprints-view" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-en="Sprints View" data-vi="Sprints">Sprints View</span></a>
       <a class="sidebar-link" href="#list-view" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-en="List View" data-vi="Chế Độ Xem Danh Sách">List View</span></a>
       <a class="sidebar-link" href="#calendar-view" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-en="Calendar View" data-vi="Chế Độ Xem Lịch">Calendar View</span></a>
       <a class="sidebar-link" href="#timeline-view" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-en="Timeline View" data-vi="Chế Độ Xem Dòng Thời Gian">Timeline View</span></a>
@@ -1334,6 +1336,100 @@ html[data-lang="vi"] .lang-en { display: none; }
 </div>
 <div class="lang-vi">
 <p>Nhấn <strong>+ Thêm Nhiệm Vụ</strong> ở cuối bất kỳ cột nào, hoặc nhấn nút thẻ <strong>+</strong> xuất hiện khi di chuột qua. Nhập tiêu đề và nhấn <kbd>Enter</kbd> để tạo ngay lập tức.</p>
+</div>
+
+<h3 data-en="Sprint Selector (Agile Projects)" data-vi="Sprint Selector (Dự Án Agile)">Sprint Selector (Agile Projects)</h3>
+<div class="lang-en">
+<p>For <strong>Agile</strong> projects, a Sprint Selector bar appears below the filter bar. The board automatically selects the active sprint on page load. The selector shows:</p>
+<ul>
+  <li><strong>Sprint name</strong> with date range (e.g., "Mar 1 – Mar 14") and progress points (e.g., "8/20 pts").</li>
+  <li><strong>Goal tooltip</strong> — hover over a sprint to see its goal description.</li>
+  <li><strong>Sprint goal banner</strong> — displayed below the selector showing the sprint goal and a days-remaining badge (e.g., "5 days left" or "2 days overdue").</li>
+  <li><strong>Manage Sprints</strong> — opens a dialog for creating, editing (name, goal, dates), starting, completing, or deleting sprints.</li>
+</ul>
+</div>
+<div class="lang-vi">
+<p>Đối với dự án <strong>Agile</strong>, thanh Sprint Selector xuất hiện bên dưới thanh lọc. Board tự động chọn sprint đang active khi mở trang. Thanh hiển thị:</p>
+<ul>
+  <li><strong>Tên sprint</strong> cùng khoảng ngày (vd: "Mar 1 – Mar 14") và điểm tiến độ (vd: "8/20 pts").</li>
+  <li><strong>Tooltip goal</strong> — di chuột qua sprint để xem mô tả mục tiêu.</li>
+  <li><strong>Banner sprint goal</strong> — hiển thị bên dưới selector với goal sprint và badge số ngày còn lại (vd: "5 days left" hoặc "2 days overdue").</li>
+  <li><strong>Manage Sprints</strong> — mở dialog để tạo, chỉnh sửa (tên, goal, ngày), bắt đầu, hoàn thành hoặc xóa sprint.</li>
+</ul>
+</div>
+
+<!-- ─── Backlog View ─── -->
+<h2 id="backlog-view" data-en="Backlog View (Agile)" data-vi="Backlog (Agile)">Backlog View (Agile)</h2>
+<div class="lang-en">
+<p><span class="route">/pms/projects/:id/backlog</span> — Available for Agile projects only. The Backlog page provides a Jira-style layout with sprint swim lanes for planning and organizing work.</p>
+<ul>
+  <li><strong>Sprint sections</strong> — each non-completed sprint appears as a collapsible section showing its name, status badge, task count, total story points, goal, and action buttons (Start/Complete/Edit).</li>
+  <li><strong>Backlog section</strong> — at the bottom, containing tasks not yet assigned to any sprint.</li>
+  <li><strong>Create Sprint</strong> — button in the top-right of the page header to quickly create a new sprint.</li>
+</ul>
+</div>
+<div class="lang-vi">
+<p><span class="route">/pms/projects/:id/backlog</span> — Chỉ dành cho dự án Agile. Trang Backlog cung cấp bố cục kiểu Jira với sprint swim lanes để lên kế hoạch và tổ chức công việc.</p>
+<ul>
+  <li><strong>Sprint sections</strong> — mỗi sprint chưa hoàn thành hiển thị dưới dạng section có thể thu gọn, với tên, badge trạng thái, số task, tổng story points, goal và nút hành động (Start/Complete/Edit).</li>
+  <li><strong>Backlog section</strong> — ở cuối, chứa task chưa phân công sprint nào.</li>
+  <li><strong>Create Sprint</strong> — nút ở góc trên bên phải page header để tạo sprint mới nhanh chóng.</li>
+</ul>
+</div>
+
+<h3 data-en="Drag-Drop &amp; Context Menu" data-vi="Kéo Thả &amp; Menu Ngữ Cảnh">Drag-Drop &amp; Context Menu</h3>
+<div class="lang-en">
+<p>Move tasks between sprints using two methods:</p>
+<ul>
+  <li><strong>Drag-drop</strong> — grab the grip handle on the left side of a task row and drag it into a different sprint section or the Backlog. The task's <code>sprint_id</code> updates automatically.</li>
+  <li><strong>Context menu</strong> — click the <strong>⋯</strong> button on any task row to see options like "Move to Sprint X" or "Move to Backlog". All non-completed sprints are listed.</li>
+</ul>
+</div>
+<div class="lang-vi">
+<p>Di chuyển task giữa các sprint bằng hai cách:</p>
+<ul>
+  <li><strong>Kéo thả</strong> — nắm tay cầm bên trái task row và kéo vào sprint section khác hoặc Backlog. <code>sprint_id</code> của task tự động cập nhật.</li>
+  <li><strong>Menu ngữ cảnh</strong> — nhấn nút <strong>⋯</strong> trên mỗi task row để xem tùy chọn như "Move to Sprint X" hoặc "Move to Backlog". Liệt kê tất cả sprint chưa hoàn thành.</li>
+</ul>
+</div>
+
+<!-- ─── Sprints View ─── -->
+<h2 id="sprints-view" data-en="Sprints View (Agile)" data-vi="Sprints (Agile)">Sprints View (Agile)</h2>
+<div class="lang-en">
+<p><span class="route">/pms/projects/:id/sprints</span> — Available for Agile projects only. The Sprints page is the comprehensive sprint performance hub with three sections:</p>
+<ul>
+  <li><strong>Active Sprint Card</strong> — shows the currently active sprint with a progress bar (% complete), story points breakdown (completed/total), date range, goal, days remaining badge, and a "Complete Sprint" button.</li>
+  <li><strong>Sprint Analytics</strong> — embedded Burndown Chart (remaining points per day vs ideal line) and Velocity Chart (completed points per sprint). Select different sprints from the dropdown to compare.</li>
+  <li><strong>Sprint History</strong> — list of all completed sprints with their final stats (points, dates, task count).</li>
+</ul>
+</div>
+<div class="lang-vi">
+<p><span class="route">/pms/projects/:id/sprints</span> — Chỉ dành cho dự án Agile. Trang Sprints là trung tâm theo dõi hiệu suất sprint toàn diện với ba phần:</p>
+<ul>
+  <li><strong>Thẻ Sprint Active</strong> — hiển thị sprint đang chạy với thanh tiến độ (% hoàn thành), phân tích story points (hoàn thành/tổng), khoảng ngày, goal, badge ngày còn lại và nút "Complete Sprint".</li>
+  <li><strong>Sprint Analytics</strong> — Biểu đồ Burndown (story points còn lại mỗi ngày so với đường lý tưởng) và Velocity Chart (điểm hoàn thành mỗi sprint). Chọn sprint khác từ dropdown để so sánh.</li>
+  <li><strong>Lịch sử Sprint</strong> — danh sách tất cả sprint đã hoàn thành với thống kê cuối cùng (điểm, ngày, số task).</li>
+</ul>
+</div>
+
+<h3 data-en="Sprint Completion Flow" data-vi="Quy Trình Hoàn Thành Sprint">Sprint Completion Flow</h3>
+<div class="lang-en">
+<p>When completing a sprint, a Jira-style dialog appears showing:</p>
+<ul>
+  <li>Number of <strong>completed tasks</strong> and their total story points.</li>
+  <li>Number of <strong>incomplete tasks</strong> and their total story points.</li>
+  <li>A choice for where to move incomplete tasks: <strong>Backlog</strong> (default) or <strong>another sprint</strong> (any planning or active sprint).</li>
+</ul>
+<p>Click "Complete Sprint" to finalize. The sprint transitions to <code>COMPLETED</code> status and incomplete tasks are moved to the selected destination.</p>
+</div>
+<div class="lang-vi">
+<p>Khi hoàn thành sprint, dialog kiểu Jira hiện ra hiển thị:</p>
+<ul>
+  <li>Số <strong>task hoàn thành</strong> và tổng story points của chúng.</li>
+  <li>Số <strong>task chưa xong</strong> và tổng story points của chúng.</li>
+  <li>Lựa chọn nơi di chuyển task chưa xong: <strong>Backlog</strong> (mặc định) hoặc <strong>sprint khác</strong> (sprint planning hoặc active).</li>
+</ul>
+<p>Nhấn "Complete Sprint" để xác nhận. Sprint chuyển sang trạng thái <code>COMPLETED</code> và task chưa xong được di chuyển đến đích đã chọn.</p>
 </div>
 
 <!-- ─── List View ─── -->
