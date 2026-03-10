@@ -25,10 +25,10 @@ import {
 
 const PAGE_SIZE = 20
 
-const STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-yellow-100 text-yellow-800',
-  approved: 'bg-green-100 text-green-800',
-  rejected: 'bg-red-100 text-red-800',
+const STATUS_VARIANT: Record<string, string> = {
+  pending: 'warning',
+  approved: 'success',
+  rejected: 'danger',
 }
 
 export default function LeaveRequestsListPage() {
@@ -63,7 +63,7 @@ export default function LeaveRequestsListPage() {
       key: 'status',
       label: t('common:common.status'),
       render: (r) => (
-        <Badge variant="outline" className={STATUS_COLORS[r.status] ?? ''}>
+        <Badge variant={(STATUS_VARIANT[r.status] ?? 'secondary') as any}>
           {r.status}
         </Badge>
       ),
@@ -99,7 +99,7 @@ export default function LeaveRequestsListPage() {
             </>
           )}
           <button
-            className="p-1 text-neutral-400 hover:text-red-600"
+            className="p-1 text-muted-foreground hover:text-destructive"
             onClick={async () => {
               if (window.confirm('Delete this leave request?')) {
                 await deleteRequest.mutateAsync(r.id)
@@ -141,11 +141,11 @@ export default function LeaveRequestsListPage() {
           {(typesData?.items ?? []).map((lt) => (
             <div key={lt.id} className="flex items-center gap-1 text-xs bg-card border border-border rounded px-2 py-1">
               <span>{lt.name} ({lt.days_per_year}d/yr)</span>
-              <button className="text-neutral-400 hover:text-neutral-700" onClick={() => { setEditType(lt); setTypeDialogOpen(true) }}>
+              <button className="text-muted-foreground hover:text-foreground" onClick={() => { setEditType(lt); setTypeDialogOpen(true) }}>
                 <Pencil className="h-3 w-3" />
               </button>
               <button
-                className="text-neutral-400 hover:text-red-600"
+                className="text-muted-foreground hover:text-destructive"
                 onClick={async () => {
                   if (window.confirm(t('common:common.deleteConfirm', { name: lt.name }))) {
                     await deleteType.mutateAsync(lt.id)

@@ -48,6 +48,7 @@
   "sidebar.logOut": "Đăng xuất",
   "sidebar.profileSettings": "Cài đặt hồ sơ",
 
+  "nav.dashboard": "Tổng quan",
   "nav.myTasks": "Nhiệm vụ của tôi",
   "nav.goals": "Mục tiêu",
   "nav.members": "Thành viên",
@@ -73,6 +74,20 @@
   "nav.devices": "Thiết bị",
   "nav.inventory": "Tồn kho",
   "nav.suppliers": "Nhà cung cấp",
+  "nav.leads": "Khách tiềm năng",
+  "nav.accounts": "Tài khoản",
+  "nav.pipeline": "Pipeline",
+  "nav.activities": "Hoạt động",
+  "nav.campaigns": "Chiến dịch",
+  "nav.tickets": "Phiếu hỗ trợ",
+
+  "nav.group.people": "Nhân sự",
+  "nav.group.timePay": "Thời gian & Lương",
+  "nav.group.talent": "Nhân tài",
+  "nav.group.operations": "Vận hành",
+  "nav.group.sales": "Bán hàng",
+  "nav.group.engagement": "Tương tác",
+  "nav.group.catalog": "Danh mục",
 
   "module.pms": "Dự án",
   "module.pms.description": "Quản lý dự án",

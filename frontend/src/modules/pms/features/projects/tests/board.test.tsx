@@ -8,7 +8,7 @@ import BoardPage from '../pages/board'
 vi.mock('../hooks/use-project-tasks', () => ({
   useSections: () => ({
     data: [
-      { id: 'sec-1', name: 'To Do', color: '#5E6AD2', position: 65536, project_id: 'proj-1' },
+      { id: 'sec-1', name: 'To Do', color: '#2563EB', position: 65536, project_id: 'proj-1' },
       { id: 'sec-2', name: 'In Progress', color: '#22C55E', position: 131072, project_id: 'proj-1' },
     ],
   }),

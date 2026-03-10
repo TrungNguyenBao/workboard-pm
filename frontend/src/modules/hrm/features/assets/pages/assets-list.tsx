@@ -14,11 +14,11 @@ import { type Asset, useAssets, useDeleteAsset } from '../hooks/use-assets'
 
 const PAGE_SIZE = 20
 
-const STATUS_COLORS: Record<string, string> = {
-  available: 'bg-green-100 text-green-800',
-  assigned: 'bg-blue-100 text-blue-800',
-  maintenance: 'bg-yellow-100 text-yellow-800',
-  retired: 'bg-neutral-100 text-neutral-600',
+const STATUS_VARIANT: Record<string, string> = {
+  available: 'secondary',
+  assigned: 'info',
+  maintenance: 'warning',
+  retired: 'secondary',
 }
 
 function formatCurrency(value: number | null) {
@@ -49,19 +49,19 @@ export default function AssetsListPage() {
     { key: 'serial_number', label: 'Serial #', render: (a) => a.serial_number ?? '—' },
     { key: 'purchase_value', label: 'Value', render: (a) => formatCurrency(a.purchase_value) },
     { key: 'status', label: 'Status', render: (a) => (
-      <Badge variant="outline" className={STATUS_COLORS[a.status] ?? ''}>{a.status}</Badge>
+      <Badge variant={(STATUS_VARIANT[a.status] ?? 'secondary') as any}>{a.status}</Badge>
     )},
     { key: 'actions', label: '', className: 'w-24', render: (a) => (
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
         {a.status === 'available' && (
-          <button className="p-1 text-neutral-400 hover:text-blue-600" title="Assign" onClick={() => setAssignAsset(a)}>
+          <button className="p-1 text-muted-foreground hover:text-primary" title="Assign" onClick={() => setAssignAsset(a)}>
             <UserPlus className="h-3.5 w-3.5" />
           </button>
         )}
-        <button className="p-1 text-neutral-400 hover:text-neutral-700" onClick={() => { setEditAsset(a); setFormOpen(true) }}>
+        <button className="p-1 text-muted-foreground hover:text-foreground" onClick={() => { setEditAsset(a); setFormOpen(true) }}>
           <Pencil className="h-3.5 w-3.5" />
         </button>
-        <button className="p-1 text-neutral-400 hover:text-red-600" onClick={async () => {
+        <button className="p-1 text-muted-foreground hover:text-destructive" onClick={async () => {
           if (window.confirm('Delete this asset?')) {
             await deleteAsset.mutateAsync(a.id)
             toast({ title: 'Asset deleted', variant: 'success' })

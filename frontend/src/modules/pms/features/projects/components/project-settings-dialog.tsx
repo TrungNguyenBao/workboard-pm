@@ -9,7 +9,7 @@ import { FieldConfigPanel } from '@/modules/pms/features/custom-fields/component
 import api from '@/shared/lib/api'
 
 const COLORS = [
-  '#5E6AD2', '#E36857', '#F2C94C', '#27AE60',
+  '#2563EB', '#E36857', '#F2C94C', '#27AE60',
   '#2F80ED', '#F28C38', '#9B51E0', '#56CCF2',
   '#EC4899', '#14B8A6', '#64748B', '#EF4444',
 ]

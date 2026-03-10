@@ -17,9 +17,9 @@ const PRIORITY_COLORS: Record<string, BadgeVariant> = {
 }
 
 const TASK_TYPE_BADGE: Record<string, string> = {
-  story: 'bg-blue-100 text-blue-600',
-  bug: 'bg-red-100 text-red-600',
-  epic: 'bg-purple-100 text-purple-600',
+  story: 'bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-400',
+  bug: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400',
+  epic: 'bg-violet-50 text-violet-700 dark:bg-violet-950 dark:text-violet-400',
 }
 
 const TASK_TYPE_LABEL: Record<string, string> = {
@@ -84,7 +84,7 @@ export function BoardTaskCard({ task, onOpen, projectId }: BoardTaskCardProps) {
         <button
           onPointerDown={(e) => e.stopPropagation()}
           onClick={(e) => { e.stopPropagation(); toggleComplete.mutate() }}
-          className="mt-0.5 flex-shrink-0 text-neutral-300 hover:text-primary transition-colors"
+          className="mt-0.5 flex-shrink-0 text-muted-foreground/50 hover:text-primary transition-colors"
           title={isCompleted ? 'Mark incomplete' : 'Mark complete'}
         >
           {isCompleted
@@ -111,7 +111,7 @@ export function BoardTaskCard({ task, onOpen, projectId }: BoardTaskCardProps) {
           )}
           {task.title}
           {task.recurrence_rule && (
-            <span className="inline-flex items-center ml-1 text-neutral-400" title={`Repeats ${task.recurrence_rule}`}>
+            <span className="inline-flex items-center ml-1 text-muted-foreground" title={`Repeats ${task.recurrence_rule}`}>
               <Repeat className="h-3 w-3" />
             </span>
           )}
@@ -134,13 +134,13 @@ export function BoardTaskCard({ task, onOpen, projectId }: BoardTaskCardProps) {
               'text-xs',
               new Date(task.due_date) < new Date() && !isCompleted
                 ? 'text-red-500 font-medium'
-                : 'text-neutral-400',
+                : 'text-muted-foreground',
             )}>
               {new Date(task.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
             </span>
           )}
           {task.subtask_count > 0 && (
-            <span className="text-xs text-neutral-400 flex items-center gap-0.5">
+            <span className="text-xs text-muted-foreground flex items-center gap-0.5">
               <CheckCircle2 className="h-3 w-3" />
               {task.completed_subtask_count}/{task.subtask_count}
             </span>

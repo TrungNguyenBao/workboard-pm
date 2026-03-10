@@ -48,6 +48,7 @@
   "sidebar.logOut": "Log out",
   "sidebar.profileSettings": "Profile settings",
 
+  "nav.dashboard": "Dashboard",
   "nav.myTasks": "My Tasks",
   "nav.goals": "Goals",
   "nav.members": "Members",
@@ -73,6 +74,20 @@
   "nav.devices": "Devices",
   "nav.inventory": "Inventory",
   "nav.suppliers": "Suppliers",
+  "nav.leads": "Leads",
+  "nav.accounts": "Accounts",
+  "nav.pipeline": "Pipeline",
+  "nav.activities": "Activities",
+  "nav.campaigns": "Campaigns",
+  "nav.tickets": "Tickets",
+
+  "nav.group.people": "People",
+  "nav.group.timePay": "Time & Pay",
+  "nav.group.talent": "Talent",
+  "nav.group.operations": "Operations",
+  "nav.group.sales": "Sales",
+  "nav.group.engagement": "Engagement",
+  "nav.group.catalog": "Catalog",
 
   "module.pms": "Projects",
   "module.pms.description": "Project Management",

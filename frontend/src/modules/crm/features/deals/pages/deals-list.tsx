@@ -16,8 +16,9 @@ import { useContacts } from '../../contacts/hooks/use-contacts'
 
 const PAGE_SIZE = 20
 
-const STAGE_VARIANT: Record<string, 'default' | 'secondary'> = {
-  closed_won: 'default',
+const STAGE_VARIANT: Record<string, string> = {
+  closed_won: 'success',
+  closed_lost: 'danger',
 }
 
 function formatCurrency(value: number): string {
@@ -56,7 +57,7 @@ export default function DealsListPage() {
       key: 'stage',
       label: t('deals.stage'),
       render: (d) => (
-        <Badge variant={STAGE_VARIANT[d.stage] ?? 'secondary'}>
+        <Badge variant={(STAGE_VARIANT[d.stage] ?? 'secondary') as any}>
           {DEAL_STAGES.find((s) => s.value === d.stage)?.label ?? d.stage}
         </Badge>
       ),
@@ -69,14 +70,14 @@ export default function DealsListPage() {
       render: (d) => (
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
           {!d.stage.startsWith('closed_') && (
-            <button className="p-1 text-neutral-400 hover:text-green-600" title="Close deal" onClick={() => setCloseDeal(d)}>
+            <button className="p-1 text-muted-foreground hover:text-emerald-600" title="Close deal" onClick={() => setCloseDeal(d)}>
               <CheckCircle2 className="h-3.5 w-3.5" />
             </button>
           )}
-          <button className="p-1 text-neutral-400 hover:text-neutral-700" onClick={() => { setEditDeal(d); setDialogOpen(true) }}>
+          <button className="p-1 text-muted-foreground hover:text-foreground" onClick={() => { setEditDeal(d); setDialogOpen(true) }}>
             <Pencil className="h-3.5 w-3.5" />
           </button>
-          <button className="p-1 text-neutral-400 hover:text-red-600" onClick={async () => {
+          <button className="p-1 text-muted-foreground hover:text-destructive" onClick={async () => {
             if (window.confirm(t('common:common.deleteConfirm', { name: d.title }))) {
               await deleteDeal.mutateAsync(d.id)
               toast({ title: t('deals.deleted'), variant: 'success' })

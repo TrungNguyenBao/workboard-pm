@@ -23,10 +23,10 @@ import {
 
 const PAGE_SIZE = 20
 
-const STATUS_COLORS: Record<string, string> = {
-  draft: 'bg-neutral-100 text-neutral-600',
-  in_progress: 'bg-yellow-100 text-yellow-800',
-  completed: 'bg-green-100 text-green-800',
+const STATUS_VARIANT: Record<string, string> = {
+  draft: 'secondary',
+  in_progress: 'warning',
+  completed: 'success',
 }
 
 function ReviewDetailRow({ workspaceId, review }: { workspaceId: string; review: PerformanceReview }) {
@@ -92,7 +92,7 @@ export default function ReviewsListPage() {
     { key: 'period', label: 'Period', className: 'w-24', render: (r) => r.period },
     { key: 'score', label: 'Score', className: 'w-20', render: (r) => r.overall_score ? `${r.overall_score}/5` : '—' },
     { key: 'status', label: 'Status', className: 'w-28', render: (r) => (
-      <Badge variant="outline" className={STATUS_COLORS[r.status] ?? ''}>{r.status}</Badge>
+      <Badge variant={(STATUS_VARIANT[r.status] ?? 'secondary') as any}>{r.status}</Badge>
     )},
     { key: 'actions', label: '', className: 'w-36', render: (r) => (
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
@@ -108,7 +108,7 @@ export default function ReviewsListPage() {
             Complete
           </Button>
         )}
-        <button className="p-1 text-neutral-400 hover:text-red-600" onClick={async () => {
+        <button className="p-1 text-muted-foreground hover:text-destructive" onClick={async () => {
           if (window.confirm('Delete this review?')) {
             await deleteReview.mutateAsync(r.id)
             toast({ title: 'Review deleted', variant: 'success' })

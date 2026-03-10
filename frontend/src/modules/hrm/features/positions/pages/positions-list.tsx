@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useWorkspaceStore } from '@/stores/workspace.store'
+import { Badge } from '@/shared/components/ui/badge'
 import { toast } from '@/shared/components/ui/toast'
 import { DataTable } from '@/shared/components/ui/data-table'
 import { toColumnDefs, type SimpleColumn } from '@/shared/components/ui/data-table-types'
@@ -36,19 +37,17 @@ export default function PositionsListPage() {
     { key: 'department', label: 'Department', render: (p) => deptMap[p.department_id] ?? '-' },
     { key: 'headcount_limit', label: 'Headcount limit', render: (p) => p.headcount_limit === 0 ? 'Unlimited' : p.headcount_limit },
     { key: 'is_active', label: 'Status', render: (p) => (
-      <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-        p.is_active ? 'bg-green-100 text-green-700' : 'bg-neutral-100 text-neutral-500'
-      }`}>
+      <Badge variant={p.is_active ? 'success' : 'secondary'}>
         {p.is_active ? 'Active' : 'Inactive'}
-      </span>
+      </Badge>
     )},
     { key: 'actions', label: '', className: 'w-20', render: (p) => (
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
-        <button className="p-1 text-neutral-400 hover:text-neutral-700"
+        <button className="p-1 text-muted-foreground hover:text-foreground"
           onClick={() => { setEditPosition(p); setDialogOpen(true) }}>
           <Pencil className="h-3.5 w-3.5" />
         </button>
-        <button className="p-1 text-neutral-400 hover:text-red-600" onClick={async () => {
+        <button className="p-1 text-muted-foreground hover:text-destructive" onClick={async () => {
           if (window.confirm(`Delete "${p.title}"?`)) {
             await deletePosition.mutateAsync(p.id)
             toast({ title: 'Position deleted', variant: 'success' })

@@ -36,13 +36,13 @@ export default function DepartmentsListPage() {
       render: (d) => (
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
           <button
-            className="p-1 text-neutral-400 hover:text-neutral-700"
+            className="p-1 text-muted-foreground hover:text-foreground"
             onClick={() => { setEditDept(d); setDialogOpen(true) }}
           >
             <Pencil className="h-3.5 w-3.5" />
           </button>
           <button
-            className="p-1 text-neutral-400 hover:text-red-600"
+            className="p-1 text-muted-foreground hover:text-destructive"
             onClick={async () => {
               if (window.confirm(t('common:common.deleteConfirm', { name: d.name }))) {
                 await deleteDept.mutateAsync(d.id)

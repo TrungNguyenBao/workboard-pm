@@ -16,11 +16,11 @@ import {
 import { HandoverTaskFormDialog } from '../components/handover-task-form-dialog'
 
 const STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-yellow-100 text-yellow-800',
-  approved: 'bg-green-100 text-green-800',
-  rejected: 'bg-red-100 text-red-800',
-  completed: 'bg-neutral-100 text-neutral-600',
-  in_progress: 'bg-blue-100 text-blue-800',
+  pending: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400',
+  approved: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400',
+  rejected: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400',
+  completed: 'bg-muted text-muted-foreground',
+  in_progress: 'bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-400',
 }
 
 export default function OffboardingDetailPage() {

@@ -6,8 +6,8 @@ import type { Task } from '../hooks/use-project-tasks'
 const PRIORITY_BAR: Record<string, string> = {
   high: 'bg-red-500',
   medium: 'bg-amber-500',
-  low: 'bg-blue-500',
-  none: 'bg-indigo-500',
+  low: 'bg-sky-500',
+  none: 'bg-primary',
 }
 
 interface Props {
@@ -36,7 +36,7 @@ export function TimelineTaskBar({ task, timelineStart, dayWidth, onClickTask, on
       <div
         title={`${task.title}\n${format(dueDate, 'MMM d')}`}
         onClick={() => onClickTask(task)}
-        className="absolute top-1/2 -translate-y-1/2 h-3 w-3 rotate-45 cursor-pointer bg-neutral-400 border border-white hover:scale-125 transition-transform"
+        className="absolute top-1/2 -translate-y-1/2 h-3 w-3 rotate-45 cursor-pointer bg-muted-foreground border border-white hover:scale-125 transition-transform"
         style={{ left: left + dayWidth / 2 - 6 }}
       />
     )
@@ -86,7 +86,7 @@ export function TimelineTaskBar({ task, timelineStart, dayWidth, onClickTask, on
       className={cn(
         'absolute top-1 bottom-1 rounded cursor-pointer group flex items-center hover:brightness-90 transition-all overflow-hidden',
         task.status === 'completed'
-          ? 'bg-neutral-300 opacity-60'
+          ? 'bg-muted-foreground/30 opacity-60'
           : (PRIORITY_BAR[task.priority] ?? PRIORITY_BAR.none),
       )}
       style={{ left, width: Math.max(width, dayWidth) }}
@@ -98,7 +98,7 @@ export function TimelineTaskBar({ task, timelineStart, dayWidth, onClickTask, on
       />
       <span className={cn(
         'px-1.5 truncate text-xs text-white font-medium select-none',
-        task.status === 'completed' && 'line-through text-neutral-500',
+        task.status === 'completed' && 'line-through text-white/60',
       )}>
         {task.title}
       </span>

@@ -1,22 +1,21 @@
 import { Award, DollarSign, Target, TrendingUp, Users, Users2, Activity, Ticket } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid, Cell, PieChart, Pie } from 'recharts'
 import { KpiCard } from '@/shared/components/ui/kpi-card'
+import { CHART_COLORS, CHART_AXIS_STYLE, CHART_GRID_STYLE } from '@/shared/lib/chart-colors'
 import { useCrmStats } from '../hooks/use-crm-stats'
 import { useGovernanceAlerts } from '../hooks/use-governance-alerts'
 import { StaleDealsAlert } from '../components/stale-deals-alert'
 import { SalesFunnelChart } from '../components/sales-funnel-chart'
 
 const STAGE_COLORS: Record<string, string> = {
-  Lead: '#A1A1AA',
-  Qualified: '#38BDF8',
-  'Needs Analysis': '#6366F1',
-  Proposal: '#818CF8',
-  Negotiation: '#F59E0B',
-  'Closed Won': '#22C55E',
-  'Closed Lost': '#EF4444',
+  Lead: CHART_COLORS.muted,
+  Qualified: CHART_COLORS.info,
+  'Needs Analysis': CHART_COLORS.primary,
+  Proposal: CHART_COLORS.primaryLight,
+  Negotiation: CHART_COLORS.warning,
+  'Closed Won': CHART_COLORS.success,
+  'Closed Lost': CHART_COLORS.danger,
 }
-
-const SOURCE_COLORS = ['#38BDF8', '#818CF8', '#F59E0B', '#22C55E', '#EF4444', '#A1A1AA']
 
 function formatCurrency(value: number) {
   if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`
@@ -69,13 +68,13 @@ export default function CrmDashboardPage() {
           <p className="text-sm font-medium text-foreground mb-4">Deals by Stage</p>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={stageBars} barSize={36}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#888888" strokeOpacity={0.2} vertical={false} />
-              <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#6B7280' }} />
-              <YAxis tick={{ fontSize: 12, fill: '#6B7280' }} allowDecimals={false} />
+              <CartesianGrid {...CHART_GRID_STYLE} />
+              <XAxis dataKey="name" tick={{ ...CHART_AXIS_STYLE, fontSize: 10 }} />
+              <YAxis tick={CHART_AXIS_STYLE} allowDecimals={false} />
               <Tooltip />
               <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                 {stageBars.map((entry, i) => (
-                  <Cell key={i} fill={STAGE_COLORS[entry.name] ?? '#A1A1AA'} />
+                  <Cell key={i} fill={STAGE_COLORS[entry.name] ?? CHART_COLORS.muted} />
                 ))}
               </Bar>
             </BarChart>
@@ -100,7 +99,7 @@ export default function CrmDashboardPage() {
                   label={({ name, count }) => `${name}: ${count}`}
                 >
                   {leadSourceBars.map((_, i) => (
-                    <Cell key={i} fill={SOURCE_COLORS[i % SOURCE_COLORS.length]} />
+                    <Cell key={i} fill={CHART_COLORS.series[i % CHART_COLORS.series.length]} />
                   ))}
                 </Pie>
                 <Tooltip />

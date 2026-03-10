@@ -49,30 +49,30 @@ export default function ProcurementListPage() {
     { key: 'actions', label: '', className: 'w-28', render: (r) => (
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
         {r.status === 'draft' && (
-          <button className="p-1 text-neutral-400 hover:text-blue-600" title="Submit"
+          <button className="p-1 text-muted-foreground hover:text-primary" title="Submit"
             onClick={async () => { await submitRequest.mutateAsync(r.id); toast({ title: 'Request submitted', variant: 'success' }) }}>
             <Send className="h-3.5 w-3.5" />
           </button>
         )}
         {r.status === 'submitted' && (
           <>
-            <button className="p-1 text-neutral-400 hover:text-green-600" title="Approve"
+            <button className="p-1 text-muted-foreground hover:text-emerald-600" title="Approve"
               onClick={async () => { await approveRequest.mutateAsync(r.id); toast({ title: 'Request approved', variant: 'success' }) }}>
               <CheckCircle className="h-3.5 w-3.5" />
             </button>
-            <button className="p-1 text-neutral-400 hover:text-red-600" title="Reject"
+            <button className="p-1 text-muted-foreground hover:text-destructive" title="Reject"
               onClick={async () => { await rejectRequest.mutateAsync(r.id); toast({ title: 'Request rejected', variant: 'success' }) }}>
               <XCircle className="h-3.5 w-3.5" />
             </button>
           </>
         )}
         {r.status === 'draft' && (
-          <button className="p-1 text-neutral-400 hover:text-neutral-700"
+          <button className="p-1 text-muted-foreground hover:text-foreground"
             onClick={() => { setEditRequest(r); setFormOpen(true) }}>
             <Pencil className="h-3.5 w-3.5" />
           </button>
         )}
-        <button className="p-1 text-neutral-400 hover:text-red-600" onClick={async () => {
+        <button className="p-1 text-muted-foreground hover:text-destructive" onClick={async () => {
           if (window.confirm('Delete this purchase request?')) {
             await deleteRequest.mutateAsync(r.id)
             toast({ title: 'Request deleted', variant: 'success' })

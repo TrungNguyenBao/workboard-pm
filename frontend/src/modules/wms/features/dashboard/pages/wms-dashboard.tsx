@@ -1,9 +1,8 @@
 import { Box, Package, Truck, Warehouse } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid, Cell } from 'recharts'
 import { KpiCard } from '@/shared/components/ui/kpi-card'
+import { CHART_COLORS, CHART_AXIS_STYLE, CHART_GRID_STYLE } from '@/shared/lib/chart-colors'
 import { useWmsStats } from '../hooks/use-wms-stats'
-
-const BAR_COLOR = '#38BDF8'
 
 export default function WmsDashboardPage() {
   const { stats, topInventoryItems, isLoading } = useWmsStats()
@@ -43,13 +42,13 @@ export default function WmsDashboardPage() {
           <p className="text-sm font-medium text-foreground mb-4">Top Inventory by Quantity</p>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={chartData} barSize={36}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#888888" strokeOpacity={0.2} vertical={false} />
-              <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#6B7280' }} />
-              <YAxis tick={{ fontSize: 12, fill: '#6B7280' }} allowDecimals={false} />
+              <CartesianGrid {...CHART_GRID_STYLE} />
+              <XAxis dataKey="name" tick={{ ...CHART_AXIS_STYLE, fontSize: 11 }} />
+              <YAxis tick={CHART_AXIS_STYLE} allowDecimals={false} />
               <Tooltip />
               <Bar dataKey="qty" radius={[4, 4, 0, 0]}>
                 {chartData.map((_, i) => (
-                  <Cell key={i} fill={BAR_COLOR} />
+                  <Cell key={i} fill={CHART_COLORS.info} />
                 ))}
               </Bar>
             </BarChart>

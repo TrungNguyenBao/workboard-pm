@@ -15,13 +15,13 @@ import { type AttendanceRecord, useAttendance, useAttendanceSummary, useDeleteAt
 
 const PAGE_SIZE = 20
 
-const STATUS_COLORS: Record<string, string> = {
-  present: 'bg-green-100 text-green-800',
-  absent: 'bg-red-100 text-red-700',
-  late: 'bg-amber-100 text-amber-800',
-  half_day: 'bg-blue-100 text-blue-700',
-  holiday: 'bg-purple-100 text-purple-700',
-  leave: 'bg-neutral-100 text-neutral-700',
+const STATUS_VARIANT: Record<string, string> = {
+  present: 'success',
+  absent: 'danger',
+  late: 'secondary',
+  half_day: 'secondary',
+  holiday: 'info',
+  leave: 'secondary',
 }
 
 function currentPeriod() {
@@ -55,7 +55,7 @@ export default function AttendanceListPage() {
     { key: 'check_in', label: 'Check In', render: (r) => r.check_in ?? '—' },
     { key: 'check_out', label: 'Check Out', render: (r) => r.check_out ?? '—' },
     { key: 'status', label: 'Status', render: (r) => (
-      <Badge variant="outline" className={STATUS_COLORS[r.status] ?? ''}>
+      <Badge variant={(STATUS_VARIANT[r.status] ?? 'secondary') as any}>
         {r.status.replace('_', ' ')}
       </Badge>
     )},
@@ -66,10 +66,10 @@ export default function AttendanceListPage() {
     },
     { key: 'actions', label: '', className: 'w-20', render: (r) => (
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
-        <button className="p-1 text-neutral-400 hover:text-neutral-700" onClick={() => { setEditRecord(r); setDialogOpen(true) }}>
+        <button className="p-1 text-muted-foreground hover:text-foreground" onClick={() => { setEditRecord(r); setDialogOpen(true) }}>
           <Pencil className="h-3.5 w-3.5" />
         </button>
-        <button className="p-1 text-neutral-400 hover:text-red-600" onClick={async () => {
+        <button className="p-1 text-muted-foreground hover:text-destructive" onClick={async () => {
           if (window.confirm('Delete this attendance record?')) {
             await deleteRecord.mutateAsync(r.id)
             toast({ title: 'Attendance record deleted', variant: 'success' })

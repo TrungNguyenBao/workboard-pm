@@ -30,14 +30,14 @@ export default function WarehousesListPage() {
     { key: 'manager', label: 'Manager', render: (w) => w.manager_name ?? '—' },
     { key: 'address', label: 'Address', render: (w) => w.address ?? '—' },
     { key: 'status', label: t('common:common.status'), render: (w) => (
-      <Badge variant={w.is_active ? 'default' : 'secondary'}>{w.is_active ? t('common:common.active') : t('common:common.inactive')}</Badge>
+      <Badge variant={w.is_active ? 'success' : 'secondary'}>{w.is_active ? t('common:common.active') : t('common:common.inactive')}</Badge>
     )},
     { key: 'actions', label: '', className: 'w-20', render: (w) => (
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
-        <button className="p-1 text-neutral-400 hover:text-neutral-700" onClick={() => { setEditWarehouse(w); setDialogOpen(true) }}>
+        <button className="p-1 text-muted-foreground hover:text-foreground" onClick={() => { setEditWarehouse(w); setDialogOpen(true) }}>
           <Pencil className="h-3.5 w-3.5" />
         </button>
-        <button className="p-1 text-neutral-400 hover:text-red-600" onClick={async () => {
+        <button className="p-1 text-muted-foreground hover:text-destructive" onClick={async () => {
           if (window.confirm(t('common:common.deleteConfirm', { name: w.name }))) {
             await deleteWarehouse.mutateAsync(w.id)
             toast({ title: t('warehouses.deleted'), variant: 'success' })

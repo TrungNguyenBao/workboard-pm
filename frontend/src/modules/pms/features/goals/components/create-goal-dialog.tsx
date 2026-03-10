@@ -18,7 +18,7 @@ interface Props {
   workspaceId: string
 }
 
-const COLORS = ['#5E6AD2', '#E36857', '#F2C94C', '#27AE60', '#2F80ED', '#F28C38', '#9B51E0', '#56CCF2']
+const COLORS = ['#2563EB', '#E36857', '#F2C94C', '#27AE60', '#2F80ED', '#F28C38', '#9B51E0', '#56CCF2']
 
 export function CreateGoalDialog({ open, onOpenChange, workspaceId }: Props) {
   const { t } = useTranslation('pms')

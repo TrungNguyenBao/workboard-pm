@@ -8,11 +8,12 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default: 'bg-primary/10 text-primary',
-        secondary: 'bg-neutral-100 text-neutral-600',
-        success: 'bg-green-100 text-green-700',
-        warning: 'bg-amber-100 text-amber-700',
-        danger: 'bg-red-100 text-red-700',
-        outline: 'border border-border text-neutral-600',
+        secondary: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
+        success: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400',
+        warning: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400',
+        danger: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400',
+        info: 'bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-400',
+        outline: 'border border-border text-muted-foreground',
       },
     },
     defaultVariants: { variant: 'default' },
@@ -26,6 +27,8 @@ export interface BadgeProps
 function Badge({ className, variant, ...props }: BadgeProps) {
   return <span className={cn(badgeVariants({ variant }), className)} {...props} />
 }
+
+export type BadgeVariant = NonNullable<VariantProps<typeof badgeVariants>['variant']>
 
 // eslint-disable-next-line react-refresh/only-export-components
 export { Badge, badgeVariants }

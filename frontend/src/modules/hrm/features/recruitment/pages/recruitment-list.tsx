@@ -14,11 +14,11 @@ import { useDepartments } from '../../departments/hooks/use-departments'
 
 const PAGE_SIZE = 20
 
-const STATUS_COLORS: Record<string, string> = {
-  draft: 'bg-neutral-100 text-neutral-700',
-  open: 'bg-green-100 text-green-800',
-  closed: 'bg-blue-100 text-blue-800',
-  cancelled: 'bg-red-100 text-red-800',
+const STATUS_VARIANT: Record<string, string> = {
+  draft: 'secondary',
+  open: 'success',
+  closed: 'secondary',
+  cancelled: 'danger',
 }
 
 export default function RecruitmentListPage() {
@@ -49,10 +49,10 @@ export default function RecruitmentListPage() {
     { key: 'quantity', label: 'Qty', className: 'w-14 text-center', render: (r) => r.quantity },
     { key: 'deadline', label: 'Deadline', render: (r) => r.deadline ?? '—' },
     { key: 'status', label: 'Status', render: (r) => (
-      <Badge variant="outline" className={STATUS_COLORS[r.status] ?? ''}>{r.status}</Badge>
+      <Badge variant={(STATUS_VARIANT[r.status] ?? 'secondary') as any}>{r.status}</Badge>
     )},
     { key: 'actions', label: '', className: 'w-16', render: (r) => (
-      <button className="text-xs text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100"
+      <button className="text-xs text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100"
         onClick={async (e) => {
           e.stopPropagation()
           if (window.confirm('Delete this recruitment request?')) {

@@ -27,17 +27,17 @@ export default function EmployeeDetailPage() {
   const { data: leaveData } = useLeaveRequests(workspaceId, { employee_id: employeeId, page_size: 50 })
 
   if (isLoading) {
-    return <div className="flex h-full items-center justify-center text-sm text-neutral-400">Loading…</div>
+    return <div className="flex h-full items-center justify-center text-sm text-muted-foreground">Loading…</div>
   }
   if (!employee) {
-    return <div className="flex h-full items-center justify-center text-sm text-neutral-400">Employee not found</div>
+    return <div className="flex h-full items-center justify-center text-sm text-muted-foreground">Employee not found</div>
   }
 
   return (
     <div className="flex flex-col h-full">
       <div className="border-b border-border px-6 py-4">
         <button
-          className="flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700 mb-3"
+          className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-3"
           onClick={() => navigate('/hrm/employees')}
         >
           <ArrowLeft className="h-3.5 w-3.5" />
@@ -45,8 +45,8 @@ export default function EmployeeDetailPage() {
         </button>
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-xl font-semibold text-neutral-900">{employee.name}</h1>
-            <div className="flex items-center gap-2 mt-1 text-sm text-neutral-500">
+            <h1 className="text-xl font-semibold text-foreground">{employee.name}</h1>
+            <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
               {employee.position && <span>{employee.position}</span>}
               {employee.hire_date && (
                 <span>· Hired {new Date(employee.hire_date).toLocaleDateString()}</span>
@@ -66,8 +66,8 @@ export default function EmployeeDetailPage() {
               className={cn(
                 'px-4 py-2.5 text-sm font-medium border-b-2 transition-colors',
                 activeTab === tab
-                  ? 'border-neutral-900 text-neutral-900'
-                  : 'border-transparent text-neutral-500 hover:text-neutral-700',
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-muted-foreground hover:text-foreground',
               )}
             >
               {tab}
@@ -106,20 +106,20 @@ function InfoTab({ employee }: { employee: ReturnType<typeof useEmployeeDetail>[
       <div className="rounded-lg border border-border divide-y divide-border">
         {fields.map(({ label, value }) => (
           <div key={label} className="flex px-4 py-3">
-            <span className="w-32 shrink-0 text-sm font-medium text-neutral-500">{label}</span>
-            <span className="text-sm text-neutral-900">{value ?? '—'}</span>
+            <span className="w-32 shrink-0 text-sm font-medium text-muted-foreground">{label}</span>
+            <span className="text-sm text-foreground">{value ?? '—'}</span>
           </div>
         ))}
       </div>
       {Object.keys(employee.leave_balance).length > 0 && (
         <div>
-          <h3 className="text-sm font-semibold text-neutral-700 mb-2">Leave Balance</h3>
+          <h3 className="text-sm font-semibold text-foreground mb-2">Leave Balance</h3>
           <div className="rounded-lg border border-border divide-y divide-border">
             {Object.entries(employee.leave_balance).map(([type, bal]) => (
               <div key={type} className="flex items-center px-4 py-2.5 text-sm">
-                <span className="flex-1 text-neutral-700">{type}</span>
-                <span className="text-neutral-500">{bal.used} / {bal.total} used</span>
-                <span className="ml-4 font-medium text-neutral-900">{bal.remaining} remaining</span>
+                <span className="flex-1 text-foreground">{type}</span>
+                <span className="text-muted-foreground">{bal.used} / {bal.total} used</span>
+                <span className="ml-4 font-medium text-foreground">{bal.remaining} remaining</span>
               </div>
             ))}
           </div>
@@ -130,9 +130,9 @@ function InfoTab({ employee }: { employee: ReturnType<typeof useEmployeeDetail>[
 }
 
 const LEAVE_STATUS_CLASSES: Record<string, string> = {
-  pending: 'bg-yellow-100 text-yellow-700',
-  approved: 'bg-green-100 text-green-700',
-  rejected: 'bg-red-100 text-red-700',
+  pending: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400',
+  approved: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400',
+  rejected: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400',
 }
 
 function LeaveTab({ items }: { items: LeaveRequest[] }) {

@@ -42,7 +42,7 @@ export default function AccountDetailPage() {
             <p className="text-sm text-muted-foreground">{account.industry ?? 'No industry'} &middot; {account.status}</p>
             <HealthBadge score={account.health_score ?? 100} />
             {account.next_follow_up_date && (
-              <span className={`text-xs px-2 py-0.5 rounded ${new Date(account.next_follow_up_date) <= new Date() ? 'bg-red-500/10 text-red-500' : 'bg-muted text-muted-foreground'}`}>
+              <span className={`text-xs px-2 py-0.5 rounded ${new Date(account.next_follow_up_date) <= new Date() ? 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400' : 'bg-muted text-muted-foreground'}`}>
                 Follow-up: {account.next_follow_up_date}
               </span>
             )}
@@ -144,7 +144,7 @@ function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string
 }
 
 function HealthBadge({ score }: { score: number }) {
-  const color = score > 70 ? 'bg-green-500/10 text-green-600' : score > 40 ? 'bg-amber-500/10 text-amber-600' : 'bg-red-500/10 text-red-600'
+  const color = score > 70 ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400' : score > 40 ? 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400' : 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400'
   return <span className={`text-xs font-medium px-2 py-0.5 rounded ${color}`}>Health: {score}</span>
 }
 

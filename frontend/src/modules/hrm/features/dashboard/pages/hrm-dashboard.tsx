@@ -1,9 +1,8 @@
 import { Briefcase, Calendar, DollarSign, Users } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid, Cell } from 'recharts'
 import { KpiCard } from '@/shared/components/ui/kpi-card'
+import { CHART_COLORS, CHART_AXIS_STYLE, CHART_GRID_STYLE } from '@/shared/lib/chart-colors'
 import { useHrmStats } from '../hooks/use-hrm-stats'
-
-const BAR_COLOR = '#818CF8'
 
 export default function HrmDashboardPage() {
   const { stats, deptBars, isLoading } = useHrmStats()
@@ -38,13 +37,13 @@ export default function HrmDashboardPage() {
           <p className="text-sm font-medium text-foreground mb-4">Employees by Department</p>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={deptBars} barSize={36}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#888888" strokeOpacity={0.2} vertical={false} />
-              <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#6B7280' }} />
-              <YAxis tick={{ fontSize: 12, fill: '#6B7280' }} allowDecimals={false} />
+              <CartesianGrid {...CHART_GRID_STYLE} />
+              <XAxis dataKey="name" tick={{ ...CHART_AXIS_STYLE, fontSize: 11 }} />
+              <YAxis tick={CHART_AXIS_STYLE} allowDecimals={false} />
               <Tooltip />
               <Bar dataKey="employees" radius={[4, 4, 0, 0]}>
                 {deptBars.map((_, i) => (
-                  <Cell key={i} fill={BAR_COLOR} />
+                  <Cell key={i} fill={CHART_COLORS.primary} />
                 ))}
               </Bar>
             </BarChart>

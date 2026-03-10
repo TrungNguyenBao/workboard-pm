@@ -1,7 +1,7 @@
 # WorkBoard Design Guidelines
 
-**Version 1.0 | 2026-02-25**
-Based on design research: `plans/reports/researcher-design-ui-ux-pm-app.md`
+**Version 2.0 | 2026-03-09**
+Enterprise Professional redesign. Based on UI/UX Pro Max analysis.
 
 ---
 
@@ -13,47 +13,47 @@ All colors are specified as exact hex values. CSS custom properties use HSL for 
 
 | Token | Hex | HSL | Usage |
 |---|---|---|---|
-| `--color-primary` | `#5E6AD2` | `235 57% 60%` | Primary actions, active states, links |
-| `--color-primary-hover` | `#4F55C4` | `236 52% 54%` | Hover state for primary |
-| `--color-accent` | `#F28C38` | `28 88% 58%` | CTAs, urgency, orange highlights |
-| `--color-accent-hover` | `#E07620` | `27 74% 50%` | Hover state for accent |
-| `--color-success` | `#22C55E` | `142 71% 45%` | Success states, completed tasks |
-| `--color-warning` | `#F59E0B` | `38 92% 50%` | Warning states, medium priority |
-| `--color-danger` | `#EF4444` | `0 84% 60%` | Errors, high priority, overdue |
-| `--color-info` | `#38BDF8` | `199 89% 60%` | Info states, low priority |
+| `--color-primary` | `#2563EB` | `217 91% 60%` | Primary actions, active states, links |
+| `--color-primary-hover` | `#1D4ED8` | `217 91% 48%` | Hover state for primary |
+| `--color-accent` | `#F97316` | `25 95% 53%` | CTAs, urgency, orange highlights |
+| `--color-accent-hover` | `#EA580C` | `21 90% 48%` | Hover state for accent |
+| `--color-success` | `#16A34A` | `142 76% 36%` | Success states, completed tasks |
+| `--color-warning` | `#D97706` | `38 92% 44%` | Warning states, medium priority |
+| `--color-danger` | `#DC2626` | `0 72% 51%` | Errors, high priority, overdue |
+| `--color-info` | `#0EA5E9` | `199 89% 49%` | Info states, low priority |
 
 ### Neutral Scale
 
 | Token | Hex | Usage |
 |---|---|---|
-| `--neutral-50` | `#FAFAFA` | Alternate row tint, empty state bg |
-| `--neutral-100` | `#F4F4F5` | Subtle background, disabled states |
-| `--neutral-200` | `#E4E4E7` | Borders, dividers, card edges |
-| `--neutral-400` | `#A1A1AA` | Placeholder text, secondary icons |
-| `--neutral-600` | `#52525B` | Secondary text, captions |
-| `--neutral-800` | `#27272A` | Primary text (light mode) |
-| `--neutral-900` | `#18181B` | Headings, high-emphasis text |
+| `--neutral-50` | `#F8FAFC` | Alternate row tint, empty state bg |
+| `--neutral-100` | `#F1F5F9` | Subtle background, disabled states |
+| `--neutral-200` | `#E2E8F0` | Borders, dividers, card edges |
+| `--neutral-400` | `#94A3B8` | Placeholder text, secondary icons |
+| `--neutral-600` | `#475569` | Secondary text, captions |
+| `--neutral-800` | `#1E293B` | Primary text (light mode) |
+| `--neutral-900` | `#0F172A` | Headings, high-emphasis text |
 
 ### Semantic Surface Tokens — Light Mode
 
 | Token | Value | Usage |
 |---|---|---|
-| `--bg-page` | `#FFFFFF` | Page background |
-| `--bg-surface` | `#F9F9FB` | Sidebar, panels, secondary surfaces |
+| `--bg-page` | `#F8FAFC` | Page background |
+| `--bg-surface` | `#F1F5F9` | Sidebar, panels, secondary surfaces |
 | `--bg-elevated` | `#FFFFFF` | Cards, dropdowns, modals |
-| `--border-default` | `#E4E4E7` | Default borders |
-| `--text-primary` | `#18181B` | Primary body text |
-| `--text-secondary` | `#52525B` | Secondary/muted text |
-| `--text-tertiary` | `#A1A1AA` | Placeholders, disabled text |
+| `--border-default` | `#E2E8F0` | Default borders |
+| `--text-primary` | `#1E293B` | Primary body text |
+| `--text-secondary` | `#475569` | Secondary/muted text |
+| `--text-tertiary` | `#94A3B8` | Placeholders, disabled text |
 
 ### Priority Color Mapping
 
 | Priority | Color | Hex | Dot class |
 |---|---|---|---|
-| High | Danger red | `#EF4444` | `bg-red-500` |
-| Medium | Warning amber | `#F59E0B` | `bg-amber-500` |
-| Low | Info blue | `#38BDF8` | `bg-sky-400` |
-| None | Neutral | `#A1A1AA` | `bg-neutral-400` |
+| High | Danger red | `#DC2626` | `bg-red-600` |
+| Medium | Warning amber | `#D97706` | `bg-amber-600` |
+| Low | Info blue | `#0EA5E9` | `bg-sky-500` |
+| None | Neutral | `#94A3B8` | `bg-slate-400` |
 
 ---
 
@@ -61,19 +61,15 @@ All colors are specified as exact hex values. CSS custom properties use HSL for 
 
 ### Font Family
 
-**Primary: DM Sans** — loaded via Google Fonts CDN.
+**Primary: Inter** — loaded via Google Fonts CDN. Industry standard for enterprise SaaS, excellent legibility at 14px.
 
 ```html
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 ```
 
 **Monospace: JetBrains Mono** — for code snippets, keyboard shortcut overlays only.
-
-```html
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-```
 
 ### Type Scale
 
@@ -102,7 +98,7 @@ Base size is **14px** (not 16px — PM apps use 14px for information density).
 
 ```css
 :root {
-  --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
   --text-xs: 0.6875rem;    /* 11px */
@@ -454,25 +450,25 @@ Dark mode inverts surface hierarchy. Never use pure `#000000`.
 ```css
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Surfaces */
-    --bg-page:      #0F0F12;
-    --bg-surface:   #1A1A1F;
-    --bg-elevated:  #25252B;
-    --bg-popover:   #2E2E38;
+    /* Surfaces — slate-based */
+    --bg-page:      #0F172A;
+    --bg-surface:   #1E293B;
+    --bg-elevated:  #334155;
+    --bg-popover:   #1E293B;
 
-    /* Borders — white at low opacity */
+    /* Borders */
     --border-default: rgba(255,255,255,0.10);
     --border-strong:  rgba(255,255,255,0.18);
 
     /* Text */
-    --text-primary:   #FAFAFA;
-    --text-secondary: #A1A1AA;
-    --text-tertiary:  #52525B;
+    --text-primary:   #F8FAFC;
+    --text-secondary: #94A3B8;
+    --text-tertiary:  #475569;
 
     /* Brand — lightened for dark bg contrast */
-    --color-primary:       #6E78E8;  /* lightened from #5E6AD2 */
-    --color-primary-hover: #7D87EE;
-    --color-accent:        #F5A05A;  /* lightened from #F28C38 */
+    --color-primary:       #3B82F6;  /* lightened from #2563EB */
+    --color-primary-hover: #60A5FA;
+    --color-accent:        #FB923C;  /* lightened from #F97316 */
 
     /* Functional — same hue, adjusted lightness */
     --color-success: #4ADE80;
@@ -485,11 +481,11 @@ Dark mode inverts surface hierarchy. Never use pure `#000000`.
 
 ### Dark Mode Component Notes
 
-- Cards: `background: #25252B`, `border: 1px solid rgba(255,255,255,0.10)`
-- Sidebar: `background: #1A1A1F`, active item: `background: rgba(110,120,232,0.15)`
-- Inputs: `background: #1A1A1F`, `border: rgba(255,255,255,0.12)`
-- Kanban cards: `background: #25252B`
-- Tooltips: use `#FAFAFA` bg with dark text (inverted from dark mode default)
+- Cards: `background: #1E293B`, `border: 1px solid rgba(255,255,255,0.10)`
+- Sidebar: `background: var(--card)`, active item: `background: rgba(37,99,235,0.15)`
+- Inputs: `background: #1E293B`, `border: rgba(255,255,255,0.12)`
+- Kanban cards: `background: #1E293B`
+- Tooltips: use `#F8FAFC` bg with dark text (inverted from dark mode default)
 
 ---
 
@@ -500,67 +496,48 @@ Place in `app/globals.css` (Next.js) or equivalent global stylesheet.
 ```css
 @layer base {
   :root {
-    /* Radius */
-    --radius: 0.5rem;  /* 8px — md radius as default */
-
-    /* Brand */
-    --primary: 235 57% 60%;              /* #5E6AD2 */
-    --primary-foreground: 0 0% 100%;     /* white */
-
-    /* Accent */
-    --accent: 28 88% 58%;                /* #F28C38 */
-    --accent-foreground: 0 0% 100%;      /* white */
-
-    /* Muted surfaces */
-    --muted: 240 5% 96%;                 /* #F4F4F5 */
-    --muted-foreground: 240 4% 46%;      /* #71717A → approx neutral-500 */
-
-    /* Borders */
-    --border: 240 6% 90%;                /* #E4E4E7 */
-    --input: 240 6% 90%;                 /* same as border */
-    --ring: 235 57% 60%;                 /* focus ring = primary */
-
-    /* Backgrounds */
-    --background: 0 0% 100%;            /* #FFFFFF */
-    --foreground: 240 10% 4%;           /* #09090B near #18181B */
-
-    /* Card */
+    --radius: 0.5rem;
+    --primary: 217 91% 60%;              /* #2563EB */
+    --primary-foreground: 0 0% 100%;
+    --accent: 25 95% 53%;                /* #F97316 */
+    --accent-foreground: 0 0% 100%;
+    --muted: 210 40% 96%;                /* #F1F5F9 */
+    --muted-foreground: 215 16% 47%;     /* #64748B */
+    --border: 214 32% 91%;               /* #E2E8F0 */
+    --input: 214 32% 91%;
+    --ring: 217 91% 60%;
+    --background: 210 40% 98%;           /* #F8FAFC */
+    --foreground: 222 47% 11%;           /* #1E293B */
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 4%;
-
-    /* Popover */
+    --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 4%;
-
-    /* Destructive */
-    --destructive: 0 84% 60%;           /* #EF4444 */
+    --popover-foreground: 222 47% 11%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-
-    /* Secondary */
-    --secondary: 240 5% 96%;            /* #F4F4F5 */
-    --secondary-foreground: 240 6% 16%; /* #27272A */
+    --secondary: 210 40% 96%;            /* #F1F5F9 */
+    --secondary-foreground: 222 47% 11%;
   }
 
   .dark {
-    --background: 240 11% 7%;           /* #0F0F12 */
-    --foreground: 0 0% 98%;             /* #FAFAFA */
-    --card: 240 8% 11%;                 /* #1A1A1F */
-    --card-foreground: 0 0% 98%;
-    --popover: 240 8% 17%;              /* #25252B */
-    --popover-foreground: 0 0% 98%;
-    --primary: 237 73% 67%;             /* #6E78E8 */
+    --background: 222 47% 7%;            /* #0F172A */
+    --foreground: 210 40% 98%;           /* #F8FAFC */
+    --card: 222 47% 11%;                 /* #1E293B */
+    --card-foreground: 210 40% 98%;
+    --popover: 222 35% 15%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217 91% 65%;              /* #3B82F6 */
     --primary-foreground: 0 0% 100%;
-    --secondary: 240 6% 16%;            /* #27272A */
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 6% 16%;
-    --muted-foreground: 240 5% 65%;     /* #A1A1AA */
-    --accent: 25 90% 65%;               /* #F5A05A */
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;     /* #94A3B8 */
+    --accent: 25 90% 60%;                /* #FB923C */
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 72% 71%;           /* #F87171 */
-    --destructive-foreground: 0 0% 100%;
-    --border: 240 6% 16%;               /* rgba(255,255,255,0.10) approx */
-    --input: 240 6% 16%;
-    --ring: 237 73% 67%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 33% 20%;
+    --input: 217 33% 20%;
+    --ring: 217 91% 65%;
   }
 }
 
@@ -648,10 +625,12 @@ Place in `app/globals.css` (Next.js) or equivalent global stylesheet.
 
 | Decision | Rationale |
 |---|---|
-| DM Sans over Inter | Inter is overused; DM Sans offers distinct weight contrast at 14px |
-| 14px base (not 16px) | PM apps require information density; 16px wastes vertical space in task rows |
+| Inter font family | Industry standard for enterprise SaaS; excellent legibility at 14px, variable font |
+| Blue primary (#2563EB) | Enterprise trust color; Salesforce/HubSpot/Monday pattern; better WCAG AA on white |
+| Slate neutral scale | Warmer than zinc; more professional enterprise feel vs cold gray |
+| 14px base (not 16px) | ERP apps require information density; 16px wastes vertical space in data tables |
 | 4px grid | Finer control than 8px grid for compact components like task rows and sidebar items |
-| Flat cards (no shadow) | 2025 trend; border-only cards look less dated and reduce visual noise |
+| Flat cards (no shadow) | Border-only cards reduce visual noise; enterprise data-dense pattern |
+| Grouped sidebar nav | HRM has 16+ items — grouping into sections (People, Time, Talent, Ops) improves navigation |
 | Primary viewport: 1280px | Most common enterprise/SaaS desktop target; drawer at 480px leaves ~760px for content |
-| Approachable direction | WorkBoard targets team adoption; Linear-style minimal would hinder onboarding |
 | No hover-expand sidebar | Hover-expand causes accidental triggers; collapsed = icon-only, always explicit |

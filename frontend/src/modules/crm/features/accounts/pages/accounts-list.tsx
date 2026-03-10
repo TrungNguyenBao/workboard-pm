@@ -34,19 +34,19 @@ export default function AccountsListPage() {
     { key: 'revenue', label: 'Revenue', render: (a) => formatCurrency(a.total_revenue) },
     {
       key: 'status', label: 'Status', render: (a) => (
-        <Badge variant={a.status === 'active' ? 'default' : 'secondary'}>{a.status}</Badge>
+        <Badge variant={a.status === 'active' ? 'success' : 'secondary'}>{a.status}</Badge>
       ),
     },
     {
       key: 'actions', label: '', className: 'w-24', render: (a) => (
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
-          <button className="p-1 text-neutral-400 hover:text-blue-600" onClick={() => navigate(`/crm/accounts/${a.id}`)}>
+          <button className="p-1 text-muted-foreground hover:text-primary" onClick={() => navigate(`/crm/accounts/${a.id}`)}>
             <Eye className="h-3.5 w-3.5" />
           </button>
-          <button className="p-1 text-neutral-400 hover:text-neutral-700" onClick={() => { setEditAccount(a); setDialogOpen(true) }}>
+          <button className="p-1 text-muted-foreground hover:text-foreground" onClick={() => { setEditAccount(a); setDialogOpen(true) }}>
             <Pencil className="h-3.5 w-3.5" />
           </button>
-          <button className="p-1 text-neutral-400 hover:text-red-600" onClick={async () => {
+          <button className="p-1 text-muted-foreground hover:text-destructive" onClick={async () => {
             if (window.confirm(`Delete "${a.name}"?`)) {
               await deleteAccount.mutateAsync(a.id)
               toast({ title: 'Account deleted', variant: 'success' })

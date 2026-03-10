@@ -49,10 +49,10 @@ export default function InventoryListPage() {
     },
     { key: 'actions', label: '', className: 'w-20', render: (i) => (
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
-        <button className="p-1 text-neutral-400 hover:text-neutral-700" onClick={() => { setEditItem(i); setDialogOpen(true) }}>
+        <button className="p-1 text-muted-foreground hover:text-foreground" onClick={() => { setEditItem(i); setDialogOpen(true) }}>
           <Pencil className="h-3.5 w-3.5" />
         </button>
-        <button className="p-1 text-neutral-400 hover:text-red-600" onClick={async () => {
+        <button className="p-1 text-muted-foreground hover:text-destructive" onClick={async () => {
           if (window.confirm(t('common:common.deleteConfirm', { name: i.name }))) {
             await deleteItem.mutateAsync(i.id)
             toast({ title: 'Item deleted', variant: 'success' })

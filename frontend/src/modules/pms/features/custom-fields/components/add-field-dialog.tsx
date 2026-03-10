@@ -18,7 +18,7 @@ const FIELD_TYPES = [
   { value: 'url', label: 'URL' },
 ]
 
-const OPTION_COLORS = ['#5E6AD2', '#E36857', '#F2C94C', '#27AE60', '#2F80ED', '#9B51E0', '#56CCF2', '#EC4899']
+const OPTION_COLORS = ['#2563EB', '#E36857', '#F2C94C', '#27AE60', '#2F80ED', '#9B51E0', '#56CCF2', '#EC4899']
 
 interface Props {
   projectId: string

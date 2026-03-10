@@ -1,4 +1,5 @@
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid, Cell } from 'recharts'
+import { CHART_COLORS, CHART_AXIS_STYLE, CHART_GRID_STYLE } from '@/shared/lib/chart-colors'
 
 interface FunnelData {
   total_leads: number
@@ -11,7 +12,7 @@ interface Props {
   funnel: FunnelData
 }
 
-const FUNNEL_COLORS = ['#38BDF8', '#818CF8', '#F59E0B', '#22C55E']
+const FUNNEL_COLORS = [CHART_COLORS.info, CHART_COLORS.primaryLight, CHART_COLORS.warning, CHART_COLORS.success]
 
 export function SalesFunnelChart({ funnel }: Props) {
   const data = [
@@ -36,9 +37,9 @@ export function SalesFunnelChart({ funnel }: Props) {
       <p className="text-sm font-medium text-foreground mb-4">Sales Funnel</p>
       <ResponsiveContainer width="100%" height={200}>
         <BarChart data={data} layout="vertical" barSize={24}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#888888" strokeOpacity={0.2} horizontal={false} />
-          <XAxis type="number" tick={{ fontSize: 12, fill: '#6B7280' }} allowDecimals={false} />
-          <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fill: '#6B7280' }} width={80} />
+          <CartesianGrid {...CHART_GRID_STYLE} vertical={true} horizontal={false} />
+          <XAxis type="number" tick={CHART_AXIS_STYLE} allowDecimals={false} />
+          <YAxis type="category" dataKey="name" tick={CHART_AXIS_STYLE} width={80} />
           <Tooltip />
           <Bar dataKey="value" radius={[0, 4, 4, 0]}>
             {data.map((_, i) => (

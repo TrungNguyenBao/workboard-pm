@@ -10,10 +10,10 @@ import type { Task } from '../hooks/use-project-tasks'
 import api from '@/shared/lib/api'
 
 const TYPE_STYLES: Record<string, string> = {
-  bug: 'bg-red-100 text-red-600',
-  story: 'bg-blue-100 text-blue-600',
-  epic: 'bg-purple-100 text-purple-600',
-  task: 'bg-neutral-100 text-neutral-600',
+  bug: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400',
+  story: 'bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-400',
+  epic: 'bg-violet-50 text-violet-700 dark:bg-violet-950 dark:text-violet-400',
+  task: 'bg-muted text-muted-foreground',
 }
 
 export default function BacklogPage() {

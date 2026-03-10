@@ -44,20 +44,21 @@ export default function LeadsListPage() {
     {
       key: 'status', label: 'Status', render: (l) => {
         const status = l.status;
-        return <Badge variant={status === "new" ? "default" : status === "contacted" ? "secondary" : "destructive" as any}>{LEAD_STATUSES.find((s) => s.value === l.status)?.label ?? l.status}</Badge>;
+        const variant = status === 'new' ? 'info' : status === 'contacted' ? 'secondary' : status === 'qualified' ? 'success' : status === 'lost' ? 'danger' : 'secondary'
+        return <Badge variant={variant as any}>{LEAD_STATUSES.find((s) => s.value === l.status)?.label ?? l.status}</Badge>;
       },
     },
     { key: 'score', label: 'Score', render: (l) => l.score },
     {
       key: 'actions', label: '', className: 'w-24', render: (l) => (
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
-          <button className="p-1 text-neutral-400 hover:text-blue-600" title="Convert to opportunity" onClick={() => setConvertLead(l)}>
+          <button className="p-1 text-muted-foreground hover:text-primary" title="Convert to opportunity" onClick={() => setConvertLead(l)}>
             <ArrowRightCircle className="h-3.5 w-3.5" />
           </button>
-          <button className="p-1 text-neutral-400 hover:text-neutral-700" onClick={() => { setEditLead(l); setDialogOpen(true) }}>
+          <button className="p-1 text-muted-foreground hover:text-foreground" onClick={() => { setEditLead(l); setDialogOpen(true) }}>
             <Pencil className="h-3.5 w-3.5" />
           </button>
-          <button className="p-1 text-neutral-400 hover:text-red-600" onClick={async () => {
+          <button className="p-1 text-muted-foreground hover:text-destructive" onClick={async () => {
             if (window.confirm(t('common:common.deleteConfirm', { name: l.name }))) {
               await deleteLead.mutateAsync(l.id)
               toast({ title: 'Lead deleted', variant: 'success' })

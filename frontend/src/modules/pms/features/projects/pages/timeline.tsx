@@ -56,7 +56,7 @@ export default function TimelinePage() {
           activeView="timeline"
           actions={
             <div className="flex items-center gap-1">
-              <span className="text-xs font-medium text-neutral-600 mr-1">
+              <span className="text-xs font-medium text-muted-foreground mr-1">
                 {format(rangeStart, 'MMM d')} – {format(rangeEnd, 'MMM d, yyyy')}
               </span>
               <Button variant="ghost" size="icon-sm" onClick={() => shiftRange(-1)}>

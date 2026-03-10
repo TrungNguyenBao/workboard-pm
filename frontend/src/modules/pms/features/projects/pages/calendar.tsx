@@ -11,9 +11,9 @@ import { TaskDetailDrawer } from '@/modules/pms/features/tasks/components/task-d
 import api from '@/shared/lib/api'
 
 const PRIORITY_CHIP: Record<string, string> = {
-  high: 'bg-red-100 text-red-700',
-  medium: 'bg-amber-100 text-amber-700',
-  low: 'bg-blue-100 text-blue-700',
+  high: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400',
+  medium: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400',
+  low: 'bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-400',
   none: 'bg-primary/10 text-primary',
 }
 
@@ -36,7 +36,7 @@ function CalendarDay({
       <span
         className={cn(
           'inline-flex h-6 w-6 items-center justify-center rounded-full text-xs',
-          isToday ? 'bg-primary text-white font-semibold' : isCurrentMonth ? 'text-neutral-700' : 'text-neutral-300',
+          isToday ? 'bg-primary text-white font-semibold' : isCurrentMonth ? 'text-foreground' : 'text-muted-foreground/40',
         )}
       >
         {format(date, 'd')}
@@ -57,7 +57,7 @@ function CalendarDay({
           </div>
         ))}
         {tasks.length > 3 && (
-          <span className="text-xs text-neutral-400">+{tasks.length - 3} more</span>
+          <span className="text-xs text-muted-foreground">+{tasks.length - 3} more</span>
         )}
       </div>
     </div>
@@ -93,7 +93,7 @@ export default function CalendarPage() {
           activeView="calendar"
           actions={
             <div className="flex items-center gap-1">
-              <span className="text-xs font-medium text-neutral-600 mr-1">{format(month, 'MMMM yyyy')}</span>
+              <span className="text-xs font-medium text-muted-foreground mr-1">{format(month, 'MMMM yyyy')}</span>
               <Button variant="ghost" size="icon-sm" onClick={() => setMonth(addMonths(month, -1))}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
@@ -108,7 +108,7 @@ export default function CalendarPage() {
           <div className="rounded-lg border border-border overflow-hidden">
             <div className="grid grid-cols-7 border-b border-border bg-muted/30">
               {WEEKDAYS.map((d) => (
-                <div key={d} className="py-2 text-center text-xs font-medium text-neutral-500">{d}</div>
+                <div key={d} className="py-2 text-center text-xs font-medium text-muted-foreground">{d}</div>
               ))}
             </div>
             <div className="grid grid-cols-7">

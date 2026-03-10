@@ -14,9 +14,9 @@ interface Stats {
 }
 
 const PRIORITY_COLORS: Record<string, string> = {
-  high: 'bg-red-100 text-red-700',
-  medium: 'bg-orange-100 text-orange-700',
-  low: 'bg-blue-100 text-blue-700',
+  high: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400',
+  medium: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400',
+  low: 'bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-400',
   none: 'bg-muted text-muted-foreground',
 }
 
@@ -99,7 +99,7 @@ export default function OverviewPage() {
                   <div className="relative h-28 w-28">
                     <div
                       className="h-28 w-28 rounded-full"
-                      style={{ background: `conic-gradient(var(--primary, #5E6AD2) ${completionPct}%, hsl(var(--muted)) 0)` }}
+                      style={{ background: `conic-gradient(hsl(var(--primary)) ${completionPct}%, hsl(var(--muted)) 0)` }}
                     />
                     <div className="absolute inset-3 rounded-full bg-background flex items-center justify-center">
                       <span className="text-lg font-semibold text-foreground">{completionPct}%</span>

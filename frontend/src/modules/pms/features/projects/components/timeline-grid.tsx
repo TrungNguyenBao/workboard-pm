@@ -77,11 +77,11 @@ export function TimelineGrid({ tasks, sections, dayWidth, timelineStart, timelin
         >
           <div className="w-48 flex-shrink-0 sticky left-0 z-10 bg-muted/30 border-r border-border px-3 py-1.5 flex items-center gap-1">
             {isCollapsed
-              ? <ChevronRight className="h-3 w-3 text-neutral-400 flex-shrink-0" />
-              : <ChevronDown className="h-3 w-3 text-neutral-400 flex-shrink-0" />
+              ? <ChevronRight className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+              : <ChevronDown className="h-3 w-3 text-muted-foreground flex-shrink-0" />
             }
             <span className="text-xs font-medium text-muted-foreground truncate">{label}</span>
-            <span className="text-xs text-neutral-400 ml-1">({sectionTasks.length})</span>
+            <span className="text-xs text-muted-foreground ml-1">({sectionTasks.length})</span>
           </div>
           <div className="flex-shrink-0 bg-muted/30" style={{ width: totalWidth }} />
         </div>
@@ -111,12 +111,12 @@ export function TimelineGrid({ tasks, sections, dayWidth, timelineStart, timelin
                   style={{ width: dayWidth }}
                 >
                   {(i === 0 || !isSameMonth(day, days[i - 1])) && (
-                    <span className="absolute -top-0 left-1 text-xs font-semibold text-neutral-600 whitespace-nowrap">
+                    <span className="absolute -top-0 left-1 text-xs font-semibold text-muted-foreground whitespace-nowrap">
                       {format(day, 'MMM yyyy')}
                     </span>
                   )}
                   {dayWidth >= 20 && (
-                    <span className={cn('text-xs', isToday(day) ? 'font-bold text-primary' : 'text-neutral-400')}>
+                    <span className={cn('text-xs', isToday(day) ? 'font-bold text-primary' : 'text-muted-foreground')}>
                       {format(day, 'd')}
                     </span>
                   )}
@@ -141,7 +141,7 @@ export function TimelineGrid({ tasks, sections, dayWidth, timelineStart, timelin
 
         {/* Unscheduled tasks listing (no bars) */}
         {unscheduled.length > 0 && (
-          <div className="border-t border-dashed border-border/50 px-3 py-2 text-xs text-neutral-400">
+          <div className="border-t border-dashed border-border/50 px-3 py-2 text-xs text-muted-foreground">
             {unscheduled.length} unscheduled task{unscheduled.length !== 1 ? 's' : ''} — set dates to show on timeline
           </div>
         )}

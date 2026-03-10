@@ -20,11 +20,11 @@ import { useEmployees } from '../../employees/hooks/use-employees'
 
 const PAGE_SIZE = 20
 
-const STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-yellow-100 text-yellow-800',
-  approved: 'bg-green-100 text-green-800',
-  rejected: 'bg-red-100 text-red-800',
-  completed: 'bg-neutral-100 text-neutral-600',
+const STATUS_VARIANT: Record<string, string> = {
+  pending: 'warning',
+  approved: 'success',
+  rejected: 'danger',
+  completed: 'secondary',
 }
 
 export default function OffboardingListPage() {
@@ -50,7 +50,7 @@ export default function OffboardingListPage() {
     { key: 'resignation_date', label: 'Resignation Date', render: (r) => r.resignation_date },
     { key: 'last_working_day', label: 'Last Working Day', render: (r) => r.last_working_day },
     { key: 'status', label: 'Status', render: (r) => (
-      <Badge variant="outline" className={STATUS_COLORS[r.status] ?? ''}>{r.status}</Badge>
+      <Badge variant={(STATUS_VARIANT[r.status] ?? 'secondary') as any}>{r.status}</Badge>
     )},
     { key: 'actions', label: '', className: 'w-20', render: (r) => (
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>

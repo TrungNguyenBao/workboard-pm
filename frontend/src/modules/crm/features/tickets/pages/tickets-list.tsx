@@ -47,7 +47,7 @@ export default function TicketsListPage() {
     },
     {
       key: 'status', label: 'Status', render: (t) => (
-        <Badge variant={t.status === "open" ? "default" : t.status === "in_progress" ? "secondary" : "danger" as any}>
+        <Badge variant={(t.status === 'open' ? 'success' : t.status === 'in_progress' ? 'warning' : t.status === 'closed' ? 'secondary' : 'danger') as any}>
           {TICKET_STATUSES.find((s) => s.value === t.status)?.label ?? t.status}
         </Badge>
       ),
@@ -56,10 +56,10 @@ export default function TicketsListPage() {
     {
       key: 'actions', label: '', className: 'w-20', render: (t) => (
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
-          <button className="p-1 text-neutral-400 hover:text-neutral-700" onClick={() => { setEditTicket(t); setDialogOpen(true) }}>
+          <button className="p-1 text-muted-foreground hover:text-foreground" onClick={() => { setEditTicket(t); setDialogOpen(true) }}>
             <Pencil className="h-3.5 w-3.5" />
           </button>
-          <button className="p-1 text-neutral-400 hover:text-red-600" onClick={async () => {
+          <button className="p-1 text-muted-foreground hover:text-destructive" onClick={async () => {
             if (window.confirm(`Delete ticket "${t.subject}"?`)) {
               await deleteTicket.mutateAsync(t.id)
               toast({ title: 'Ticket deleted', variant: 'success' })

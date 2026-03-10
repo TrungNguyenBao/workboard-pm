@@ -12,7 +12,7 @@ export function Sidebar() {
 
   return (
     <aside className={cn(
-      'flex h-screen flex-col border-r border-border bg-muted/50 transition-[width] duration-200 ease-in-out overflow-hidden flex-shrink-0',
+      'flex h-screen flex-col border-r border-border bg-card transition-[width] duration-200 ease-in-out overflow-hidden flex-shrink-0',
       collapsed ? 'w-12' : 'w-56',
     )}>
       <SidebarWorkspacePicker collapsed={collapsed} />

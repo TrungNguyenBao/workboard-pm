@@ -1,14 +1,15 @@
 import { AlertCircle, CheckSquare, FolderKanban, TrendingUp } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid, Cell } from 'recharts'
 import { KpiCard } from '@/shared/components/ui/kpi-card'
+import { CHART_COLORS, CHART_AXIS_STYLE, CHART_GRID_STYLE } from '@/shared/lib/chart-colors'
 import { usePmsStats } from '../hooks/use-pms-stats'
 import type { Task } from '@/modules/pms/features/projects/hooks/use-project-tasks'
 
 const PRIORITY_COLORS: Record<string, string> = {
-  high: '#EF4444',
-  medium: '#F59E0B',
-  low: '#38BDF8',
-  none: '#A1A1AA',
+  high: CHART_COLORS.priorityHigh,
+  medium: CHART_COLORS.priorityMedium,
+  low: CHART_COLORS.priorityLow,
+  none: CHART_COLORS.priorityNone,
 }
 
 function buildPriorityData(tasks: Task[]) {
@@ -64,9 +65,9 @@ export default function PmsDashboardPage() {
         <p className="text-sm font-medium text-foreground mb-4">Tasks by Priority</p>
         <ResponsiveContainer width="100%" height={200}>
           <BarChart data={priorityData} barSize={36}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#888888" strokeOpacity={0.2} vertical={false} />
-            <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#6B7280' }} />
-            <YAxis tick={{ fontSize: 12, fill: '#6B7280' }} allowDecimals={false} />
+            <CartesianGrid {...CHART_GRID_STYLE} />
+            <XAxis dataKey="name" tick={CHART_AXIS_STYLE} />
+            <YAxis tick={CHART_AXIS_STYLE} allowDecimals={false} />
             <Tooltip />
             <Bar dataKey="count" radius={[4, 4, 0, 0]}>
               {priorityData.map((entry, i) => (

@@ -5,10 +5,10 @@ import { useContacts } from '../../contacts/hooks/use-contacts'
 import { DealCard } from '../components/deal-card'
 
 const STAGE_COLORS: Record<string, string> = {
-  lead: '#A1A1AA',
+  lead: '#94A3B8',
   qualified: '#38BDF8',
-  needs_analysis: '#6366F1',
-  proposal: '#818CF8',
+  needs_analysis: '#2563EB',
+  proposal: '#1D4ED8',
   negotiation: '#F59E0B',
   closed_won: '#22C55E',
   closed_lost: '#EF4444',

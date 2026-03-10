@@ -11,6 +11,12 @@ export function Header() {
 
   return (
     <header className="flex h-12 items-center justify-between border-b border-border bg-background px-4 shrink-0">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-primary focus:text-white focus:px-4 focus:py-2 focus:rounded-md focus:top-2 focus:left-2"
+      >
+        Skip to content
+      </a>
       <Breadcrumb />
       <div className="flex items-center gap-1">
         <Button variant="ghost" size="icon-sm" onClick={() => setSearchOpen(true)} title="Search (⌘K)">

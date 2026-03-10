@@ -10,6 +10,8 @@ interface PageHeaderProps {
   searchPlaceholder?: string
   onCreateClick?: () => void
   createLabel?: string
+  filters?: React.ReactNode
+  actions?: React.ReactNode
   children?: React.ReactNode
 }
 
@@ -21,6 +23,8 @@ export function PageHeader({
   searchPlaceholder = 'Search...',
   onCreateClick,
   createLabel = 'Create',
+  filters,
+  actions,
   children,
 }: PageHeaderProps) {
   return (
@@ -28,17 +32,20 @@ export function PageHeader({
       <div className="flex items-center justify-between mb-3">
         <div>
           <h1 className="text-xl font-bold text-foreground">{title}</h1>
-          {description && <p className="text-sm text-muted-foreground">{description}</p>}
+          {description && <p className="text-sm text-muted-foreground mt-0.5">{description}</p>}
         </div>
-        {onCreateClick && (
-          <Button size="sm" onClick={onCreateClick}>
-            <Plus className="h-4 w-4 mr-1.5" />
-            {createLabel}
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {actions}
+          {onCreateClick && (
+            <Button size="sm" onClick={onCreateClick}>
+              <Plus className="h-4 w-4 mr-1.5" />
+              {createLabel}
+            </Button>
+          )}
+        </div>
       </div>
-      {(onSearchChange ?? children) && (
-        <div className="flex items-center gap-3">
+      {(onSearchChange ?? filters ?? children) && (
+        <div className="flex items-center gap-3 flex-wrap">
           {onSearchChange && (
             <div className="relative flex-1 max-w-xs">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -50,6 +57,7 @@ export function PageHeader({
               />
             </div>
           )}
+          {filters}
           {children}
         </div>
       )}

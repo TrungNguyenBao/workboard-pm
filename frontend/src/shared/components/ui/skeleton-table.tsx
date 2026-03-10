@@ -9,9 +9,9 @@ function SkeletonCell({ wide }: { wide?: boolean }) {
   )
 }
 
-function SkeletonRow({ columns, isHeader }: { columns: number; isHeader?: boolean }) {
+function SkeletonRow({ columns, isHeader, index = 0 }: { columns: number; isHeader?: boolean; index?: number }) {
   return (
-    <div className={`flex items-center gap-4 px-4 py-3 border-b border-border ${isHeader ? 'bg-muted/50' : ''}`}>
+    <div className={`flex items-center gap-4 px-4 py-3 border-b border-border ${isHeader ? 'bg-muted/50' : index % 2 === 1 ? 'bg-muted/20' : ''}`}>
       {Array.from({ length: columns }).map((_, i) => (
         <div key={i} className="flex-1">
           <SkeletonCell wide={i === 0} />
@@ -23,10 +23,10 @@ function SkeletonRow({ columns, isHeader }: { columns: number; isHeader?: boolea
 
 export function SkeletonTable({ rows = 5, columns = 4 }: SkeletonTableProps) {
   return (
-    <div className="rounded border border-border overflow-hidden">
+    <div className="rounded-md border border-border overflow-hidden">
       <SkeletonRow columns={columns} isHeader />
       {Array.from({ length: rows }).map((_, i) => (
-        <SkeletonRow key={i} columns={columns} />
+        <SkeletonRow key={i} columns={columns} index={i} />
       ))}
     </div>
   )

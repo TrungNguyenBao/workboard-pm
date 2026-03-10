@@ -17,10 +17,10 @@ import { type KpiTemplate, useDeleteKpiTemplate, useKpiTemplates } from '../hook
 
 const PAGE_SIZE = 20
 
-const STATUS_COLORS: Record<string, string> = {
-  active: 'bg-blue-100 text-blue-800',
-  completed: 'bg-green-100 text-green-800',
-  cancelled: 'bg-neutral-100 text-neutral-600',
+const STATUS_VARIANT: Record<string, string> = {
+  active: 'info',
+  completed: 'success',
+  cancelled: 'secondary',
 }
 
 function KpiProgressBar({ actual, target }: { actual: number | null; target: number }) {
@@ -67,10 +67,10 @@ export default function KpiListPage() {
     { key: 'progress', label: 'Progress', render: (r) => <KpiProgressBar actual={r.actual_value} target={r.target_value} /> },
     { key: 'target', label: 'Target', className: 'w-20', render: (r) => r.target_value },
     { key: 'status', label: 'Status', className: 'w-24', render: (r) => (
-      <Badge variant="outline" className={STATUS_COLORS[r.status] ?? ''}>{r.status}</Badge>
+      <Badge variant={(STATUS_VARIANT[r.status] ?? 'secondary') as any}>{r.status}</Badge>
     )},
     { key: 'actions', label: '', className: 'w-12', render: (r) => (
-      <button className="p-1 text-neutral-400 hover:text-red-600 opacity-0 group-hover:opacity-100"
+      <button className="p-1 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100"
         onClick={async (e) => {
           e.stopPropagation()
           if (window.confirm('Delete this KPI assignment?')) {
@@ -112,10 +112,10 @@ export default function KpiListPage() {
               <span className="font-medium">{tpl.name}</span>
               {tpl.category && <span className="text-muted-foreground">· {tpl.category}</span>}
               {tpl.measurement_unit && <span className="text-muted-foreground">({tpl.measurement_unit})</span>}
-              <button className="text-neutral-400 hover:text-neutral-700 ml-1" onClick={() => { setEditTemplate(tpl); setTemplateDialogOpen(true) }}>
+              <button className="text-muted-foreground hover:text-foreground ml-1" onClick={() => { setEditTemplate(tpl); setTemplateDialogOpen(true) }}>
                 <Pencil className="h-3 w-3" />
               </button>
-              <button className="text-neutral-400 hover:text-red-600" onClick={async () => {
+              <button className="text-muted-foreground hover:text-destructive" onClick={async () => {
                 if (window.confirm(`Delete template "${tpl.name}"?`)) {
                   await deleteTemplate.mutateAsync(tpl.id)
                   toast({ title: 'Template deleted', variant: 'success' })

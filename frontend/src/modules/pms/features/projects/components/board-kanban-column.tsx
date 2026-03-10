@@ -64,7 +64,7 @@ export function BoardKanbanColumn({ section, tasks, projectId, onOpenTask }: Boa
           ) : (
             <span className="text-sm font-medium text-foreground truncate">{section.name}</span>
           )}
-          <span className="text-xs text-neutral-400 flex-shrink-0">
+          <span className="text-xs text-muted-foreground flex-shrink-0">
             {tasks.length}
             {section.wip_limit && (
               <span className={wipExceeded ? 'text-red-500 font-medium' : ''}>
@@ -101,7 +101,7 @@ export function BoardKanbanColumn({ section, tasks, projectId, onOpenTask }: Boa
       <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
         <div ref={setDroppableRef} className="min-h-[60px] space-y-2 rounded-md bg-muted/30 p-2">
           {tasks.length === 0 && (
-            <p className="py-4 text-center text-xs text-neutral-400">No tasks</p>
+            <p className="py-4 text-center text-xs text-muted-foreground">No tasks</p>
           )}
           {tasks.map((task) => (
             <BoardTaskCard key={task.id} task={task} onOpen={onOpenTask} projectId={projectId} />

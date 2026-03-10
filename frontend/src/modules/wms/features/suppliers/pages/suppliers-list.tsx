@@ -30,14 +30,14 @@ export default function SuppliersListPage() {
     { key: 'phone', label: t('common:common.phone'), render: (s) => s.phone ?? '—' },
     { key: 'address', label: 'Address', render: (s) => s.address ?? '—' },
     { key: 'status', label: t('common:common.status'), render: (s) => (
-      <Badge variant={s.is_active ? 'default' : 'secondary'}>{s.is_active ? t('common:common.active') : t('common:common.inactive')}</Badge>
+      <Badge variant={s.is_active ? 'success' : 'secondary'}>{s.is_active ? t('common:common.active') : t('common:common.inactive')}</Badge>
     )},
     { key: 'actions', label: '', className: 'w-20', render: (s) => (
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
-        <button className="p-1 text-neutral-400 hover:text-neutral-700" onClick={() => { setEditSupplier(s); setDialogOpen(true) }}>
+        <button className="p-1 text-muted-foreground hover:text-foreground" onClick={() => { setEditSupplier(s); setDialogOpen(true) }}>
           <Pencil className="h-3.5 w-3.5" />
         </button>
-        <button className="p-1 text-neutral-400 hover:text-red-600" onClick={async () => {
+        <button className="p-1 text-muted-foreground hover:text-destructive" onClick={async () => {
           if (window.confirm(t('common:common.deleteConfirm', { name: s.name }))) {
             await deleteSupplier.mutateAsync(s.id)
             toast({ title: t('suppliers.deleted'), variant: 'success' })
