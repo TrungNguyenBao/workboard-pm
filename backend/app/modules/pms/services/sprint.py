@@ -154,6 +154,7 @@ async def complete_sprint(
     db: AsyncSession,
     sprint_id: uuid.UUID,
     project_id: uuid.UUID | None = None,
+    move_to_sprint_id: uuid.UUID | None = None,
 ) -> Sprint:
     sprint = await get_sprint(db, sprint_id, project_id=project_id)
     if sprint.status != "active":
@@ -161,6 +162,24 @@ async def complete_sprint(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Only active sprints can be completed",
         )
+    if move_to_sprint_id:
+        target = await get_sprint(db, move_to_sprint_id, project_id=project_id)
+        if target.status == "completed":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Cannot move tasks to a completed sprint",
+            )
+
+    incomplete_tasks = await db.scalars(
+        select(Task).where(
+            Task.sprint_id == sprint_id,
+            Task.status != "completed",
+            Task.deleted_at.is_(None),
+        )
+    )
+    for task in incomplete_tasks:
+        task.sprint_id = move_to_sprint_id  # None = backlog
+
     sprint.status = "completed"
     if not sprint.end_date:
         sprint.end_date = datetime.now(timezone.utc)

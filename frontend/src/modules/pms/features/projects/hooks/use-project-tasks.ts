@@ -106,7 +106,11 @@ export function useUpdateTask(projectId: string) {
   return useMutation({
     mutationFn: ({ taskId, ...data }: { taskId: string } & Record<string, unknown>) =>
       api.patch(`/pms/projects/${projectId}/tasks/${taskId}`, data).then((r) => r.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['tasks', projectId] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['tasks', projectId] })
+      qc.invalidateQueries({ queryKey: ['backlog', projectId] })
+      qc.invalidateQueries({ queryKey: ['sprints', projectId] })
+    },
   })
 }
 

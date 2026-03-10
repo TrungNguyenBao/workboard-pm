@@ -60,4 +60,8 @@ class VelocityPoint(BaseModel):
     completed_points: int
 
 
+class SprintCompleteRequest(BaseModel):
+    move_to_sprint_id: uuid.UUID | None = None
+
+
 SprintStatusFilter = Literal["planning", "active", "completed"]

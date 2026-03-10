@@ -1,25 +1,37 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Badge } from '@/shared/components/ui/badge'
-import { cn } from '@/shared/lib/utils'
+import { Plus } from 'lucide-react'
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  closestCorners,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragStartEvent,
+} from '@dnd-kit/core'
+import { Button } from '@/shared/components/ui/button'
 import { ProjectHeader } from '../components/project-header'
+import { BacklogSprintSection } from '../components/backlog-sprint-section'
+import { BacklogTaskRow } from '../components/backlog-task-row'
+import { SprintCompleteDialog } from '../components/sprint-complete-dialog'
+import { SprintManageDialog } from '../components/sprint-manage-dialog'
 import { TaskDetailDrawer } from '@/modules/pms/features/tasks/components/task-detail-drawer'
+import { useSprints, useCreateSprint, useStartSprint } from '../hooks/use-sprints'
+import { useTasks, useUpdateTask, type Task } from '../hooks/use-project-tasks'
 import { useBacklogTasks } from '../hooks/use-backlog-tasks'
-import type { Task } from '../hooks/use-project-tasks'
 import api from '@/shared/lib/api'
-
-const TYPE_STYLES: Record<string, string> = {
-  bug: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400',
-  story: 'bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-400',
-  epic: 'bg-violet-50 text-violet-700 dark:bg-violet-950 dark:text-violet-400',
-  task: 'bg-muted text-muted-foreground',
-}
 
 export default function BacklogPage() {
   const { projectId } = useParams<{ projectId: string }>()
-  const { data: tasks = [], isLoading } = useBacklogTasks(projectId!)
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+  const { data: sprints = [] } = useSprints(projectId!)
+  const { data: allTasks = [] } = useTasks(projectId!)
+  const { data: backlogTasks = [] } = useBacklogTasks(projectId!)
+  const updateTask = useUpdateTask(projectId!)
+  const createSprint = useCreateSprint(projectId!)
+  const startSprint = useStartSprint(projectId!)
 
   const { data: project } = useQuery<{ workspace_id: string }>({
     queryKey: ['project', projectId],
@@ -27,49 +39,133 @@ export default function BacklogPage() {
     enabled: !!projectId,
   })
 
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+  const [activeTask, setActiveTask] = useState<Task | null>(null)
+  const [completeSprintId, setCompleteSprintId] = useState<string | null>(null)
+  const [editSprint, setEditSprint] = useState<{ open: boolean }>({ open: false })
+
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
+
+  // Group sprints: planning first, then active (reverse chrono)
+  const nonCompletedSprints = sprints
+    .filter((s) => s.status !== 'completed')
+    .sort((a, b) => {
+      if (a.status === 'active' && b.status !== 'active') return 1
+      if (b.status === 'active' && a.status !== 'active') return -1
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    })
+
+  // Tasks grouped by sprint
+  const tasksForSprint = useCallback(
+    (sprintId: string) =>
+      allTasks
+        .filter((t) => t.sprint_id === sprintId && !t.parent_id)
+        .sort((a, b) => a.position - b.position),
+    [allTasks],
+  )
+
+  const backlogItems = backlogTasks.filter((t) => !t.parent_id).sort((a, b) => a.position - b.position)
+
+  function handleMoveTo(taskId: string, sprintId: string | null) {
+    updateTask.mutate({ taskId, sprint_id: sprintId })
+  }
+
+  function handleDragStart(e: DragStartEvent) {
+    const all = [...allTasks, ...backlogTasks]
+    const task = all.find((t) => t.id === e.active.id)
+    if (task) setActiveTask(task)
+  }
+
+  function handleDragEnd(e: DragEndEvent) {
+    setActiveTask(null)
+    const { active, over } = e
+    if (!over) return
+
+    const all = [...allTasks, ...backlogTasks]
+    const draggedTask = all.find((t) => t.id === active.id)
+    if (!draggedTask) return
+
+    const overId = String(over.id)
+
+    // Determine target sprint from droppable id
+    let targetSprintId: string | null
+    if (overId.startsWith('sprint-backlog')) {
+      targetSprintId = null
+    } else if (overId.startsWith('sprint-')) {
+      targetSprintId = overId.replace('sprint-', '')
+    } else {
+      // Dropped on a task — find that task's sprint_id
+      const overTask = all.find((t) => t.id === overId)
+      targetSprintId = overTask?.sprint_id ?? null
+    }
+
+    // Only update if sprint changed
+    if (targetSprintId !== draggedTask.sprint_id) {
+      updateTask.mutate({ taskId: draggedTask.id, sprint_id: targetSprintId })
+    }
+  }
+
+  function handleCreateSprint() {
+    const count = sprints.length + 1
+    createSprint.mutate({ name: `Sprint ${count}` })
+  }
+
   return (
     <>
       <div className="flex flex-col h-full">
-        <ProjectHeader activeView="backlog" />
-        <div className="flex-1 overflow-y-auto">
-          <div className="px-4 py-2 border-b border-border bg-muted/30 text-xs font-medium text-muted-foreground uppercase tracking-wide flex items-center gap-3">
-            <span className="flex-1">Task</span>
-            <span className="w-16 text-center">Type</span>
-            <span className="w-12 text-center">Points</span>
-            <span className="w-20 text-right">Priority</span>
-          </div>
+        <ProjectHeader
+          activeView="backlog"
+          actions={
+            <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={handleCreateSprint}>
+              <Plus className="h-3.5 w-3.5" /> Create Sprint
+            </Button>
+          }
+        />
 
-          {isLoading && (
-            <p className="px-4 py-8 text-center text-sm text-muted-foreground">Loading…</p>
-          )}
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCorners}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
+            {/* Sprint sections (planning first, then active) */}
+            {nonCompletedSprints.map((sprint) => (
+              <BacklogSprintSection
+                key={sprint.id}
+                sprint={sprint}
+                tasks={tasksForSprint(sprint.id)}
+                allSprints={sprints}
+                onOpenTask={setSelectedTask}
+                onMoveTo={handleMoveTo}
+                onStartSprint={(id) => startSprint.mutate(id)}
+                onCompleteSprint={(id) => setCompleteSprintId(id)}
+                onEditSprint={() => setEditSprint({ open: true })}
+              />
+            ))}
 
-          {!isLoading && tasks.length === 0 && (
-            <p className="px-4 py-8 text-center text-sm text-muted-foreground">
-              No tasks in backlog. Assign tasks to a sprint from the board view.
-            </p>
-          )}
+            {/* Backlog section */}
+            <BacklogSprintSection
+              sprint={null}
+              tasks={backlogItems}
+              allSprints={sprints}
+              onOpenTask={setSelectedTask}
+              onMoveTo={handleMoveTo}
+            />
 
-          {tasks.map((task) => (
-            <div
-              key={task.id}
-              onClick={() => setSelectedTask(task)}
-              className="flex items-center gap-3 px-4 py-2.5 border-b border-border hover:bg-muted/50 cursor-pointer"
-            >
-              <span className="flex-1 text-sm text-foreground truncate">{task.title}</span>
-              <Badge
-                variant="secondary"
-                className={cn('text-[10px] w-14 justify-center', TYPE_STYLES[task.task_type] ?? TYPE_STYLES.task)}
-              >
-                {task.task_type ?? 'task'}
-              </Badge>
-              <span className="w-12 text-center text-xs text-muted-foreground">
-                {task.story_points ?? '--'}
-              </span>
-              <span className="w-20 text-right text-xs capitalize text-muted-foreground">
-                {task.priority !== 'none' ? task.priority : ''}
-              </span>
-            </div>
-          ))}
+            <DragOverlay>
+              {activeTask && (
+                <div className="bg-background border border-border rounded shadow-lg px-3 py-1.5">
+                  <BacklogTaskRow
+                    task={activeTask}
+                    sprints={sprints}
+                    onOpenTask={() => {}}
+                    onMoveTo={() => {}}
+                  />
+                </div>
+              )}
+            </DragOverlay>
+          </DndContext>
         </div>
       </div>
 
@@ -78,6 +174,21 @@ export default function BacklogPage() {
         projectId={projectId!}
         workspaceId={project?.workspace_id}
         onClose={() => setSelectedTask(null)}
+      />
+
+      {completeSprintId && (
+        <SprintCompleteDialog
+          projectId={projectId!}
+          sprintId={completeSprintId}
+          open={true}
+          onOpenChange={(open) => !open && setCompleteSprintId(null)}
+        />
+      )}
+
+      <SprintManageDialog
+        projectId={projectId!}
+        open={editSprint.open}
+        onOpenChange={(open) => setEditSprint({ open })}
       />
     </>
   )

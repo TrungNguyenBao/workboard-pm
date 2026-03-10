@@ -55,12 +55,46 @@ export function useStartSprint(projectId: string) {
 export function useCompleteSprint(projectId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (sprintId: string) =>
-      api.post(`/pms/projects/${projectId}/sprints/${sprintId}/complete`).then((r) => r.data),
+    mutationFn: ({ sprintId, moveToSprintId }: { sprintId: string; moveToSprintId?: string | null }) =>
+      api
+        .post(`/pms/projects/${projectId}/sprints/${sprintId}/complete`, {
+          move_to_sprint_id: moveToSprintId ?? null,
+        })
+        .then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['sprints', projectId] })
       qc.invalidateQueries({ queryKey: ['tasks', projectId] })
+      qc.invalidateQueries({ queryKey: ['backlog', projectId] })
     },
     onError: () => toast({ title: 'Failed to complete sprint', variant: 'error' }),
+  })
+}
+
+export function useUpdateSprint(projectId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      sprintId,
+      data,
+    }: {
+      sprintId: string
+      data: { name?: string; goal?: string | null; start_date?: string | null; end_date?: string | null }
+    }) => api.patch(`/pms/projects/${projectId}/sprints/${sprintId}`, data).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['sprints', projectId] }),
+    onError: () => toast({ title: 'Failed to update sprint', variant: 'error' }),
+  })
+}
+
+export function useDeleteSprint(projectId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (sprintId: string) =>
+      api.delete(`/pms/projects/${projectId}/sprints/${sprintId}`).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['sprints', projectId] })
+      qc.invalidateQueries({ queryKey: ['tasks', projectId] })
+      qc.invalidateQueries({ queryKey: ['backlog', projectId] })
+    },
+    onError: () => toast({ title: 'Failed to delete sprint', variant: 'error' }),
   })
 }

@@ -9,6 +9,7 @@ from app.modules.pms.dependencies.rbac import require_project_role
 from app.modules.pms.schemas.sprint import (
     BurndownPoint,
     SprintBoardResponse,
+    SprintCompleteRequest,
     SprintCreate,
     SprintResponse,
     SprintStatusFilter,
@@ -100,10 +101,12 @@ async def start(
 async def complete(
     project_id: uuid.UUID,
     sprint_id: uuid.UUID,
+    data: SprintCompleteRequest | None = None,
     current_user: User = Depends(require_project_role("editor")),
     db: AsyncSession = Depends(get_db),
 ):
-    return await complete_sprint(db, sprint_id, project_id=project_id)
+    move_to = data.move_to_sprint_id if data else None
+    return await complete_sprint(db, sprint_id, project_id=project_id, move_to_sprint_id=move_to)
 
 
 @router.get("/sprints/{sprint_id}/board", response_model=SprintBoardResponse)
