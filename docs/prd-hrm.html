@@ -115,6 +115,44 @@
             margin-left: 4px;
         }
 
+        .topbar-spacer {
+            flex: 1;
+        }
+
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 6px;
+            border-radius: var(--radius-sm);
+        }
+
+        .hamburger:hover {
+            background: var(--bg-elevated);
+        }
+
+        .dark-toggle {
+            background: none;
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 6px 10px;
+            font-size: 13px;
+            font-family: var(--font-sans);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background var(--dur) ease, border-color var(--dur) ease;
+        }
+
+        .dark-toggle:hover {
+            background: var(--bg-elevated);
+            border-color: var(--text-tertiary);
+        }
+
         .sidebar {
             position: fixed;
             top: var(--topbar-height);
@@ -130,13 +168,47 @@
             padding: 16px 0 32px;
         }
 
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border-default);
+            border-radius: 2px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 16px;
+            cursor: pointer;
+            user-select: none;
+        }
+
         .sidebar-section-title {
             font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: .6px;
             color: var(--text-tertiary);
-            padding: 6px 16px;
+        }
+
+        .sidebar-chevron {
+            color: var(--text-tertiary);
+            transition: transform var(--dur) ease;
+        }
+
+        .sidebar-section.collapsed .sidebar-chevron {
+            transform: rotate(-90deg);
+        }
+
+        .sidebar-section.collapsed .sidebar-section-items {
+            display: none;
         }
 
         .sidebar-link {
@@ -149,11 +221,28 @@
             text-decoration: none;
             cursor: pointer;
             transition: background var(--dur) ease, color var(--dur) ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            line-height: 1.4;
         }
 
         .sidebar-link:hover {
             background: var(--bg-elevated);
             color: var(--text-primary);
+        }
+
+        .sidebar-link.active,
+        .sidebar-link.spy-active {
+            background: rgba(94, 106, 210, .10);
+            color: var(--color-primary);
+            font-weight: 500;
+        }
+
+        [data-theme="dark"] .sidebar-link.active,
+        [data-theme="dark"] .sidebar-link.spy-active {
+            background: rgba(110, 120, 232, .15);
         }
 
         .sidebar-link-dot {
@@ -163,6 +252,14 @@
             background: var(--text-tertiary);
             flex-shrink: 0;
             margin-left: 4px;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .40);
+            z-index: 89;
         }
 
         .main {
@@ -184,6 +281,7 @@
             line-height: 1.2;
             color: var(--text-primary);
             margin-bottom: 8px;
+            letter-spacing: -.4px;
         }
 
         h2 {
@@ -195,6 +293,7 @@
             margin-bottom: 16px;
             padding-top: 20px;
             border-top: 1px solid var(--border-default);
+            letter-spacing: -.3px;
         }
 
         h2:first-child {
@@ -212,10 +311,90 @@
             margin-bottom: 10px;
         }
 
+        h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+
         p {
             color: var(--text-secondary);
             margin-bottom: 12px;
             line-height: 1.7;
+        }
+
+        p:last-child {
+            margin-bottom: 0;
+        }
+
+        ul,
+        ol {
+            padding-left: 20px;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        li {
+            margin-bottom: 4px;
+            line-height: 1.6;
+        }
+
+        li strong {
+            color: var(--text-primary);
+        }
+
+        a {
+            color: var(--color-primary);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-xs);
+            padding: 1px 5px;
+            color: var(--color-primary);
+        }
+
+        [data-theme="dark"] code {
+            background: var(--bg-elevated);
+        }
+
+        pre {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            overflow-x: auto;
+            margin: 16px 0;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+
+        [data-theme="dark"] pre {
+            background: var(--bg-elevated);
+        }
+
+        .page-header {
+            margin-bottom: 40px;
+            padding-bottom: 28px;
+            border-bottom: 1px solid var(--border-default);
+        }
+
+        .page-header-meta {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-top: 8px;
         }
 
         .table-wrap {
@@ -233,6 +412,10 @@
             text-align: left;
             padding: 8px 12px;
             font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            color: var(--text-tertiary);
             background: var(--bg-surface);
             border-bottom: 1px solid var(--border-default);
         }
@@ -241,41 +424,184 @@
             padding: 9px 12px;
             border-bottom: 1px solid var(--border-default);
             color: var(--text-secondary);
+            vertical-align: top;
+            line-height: 1.5;
         }
 
-        code {
-            font-family: var(--font-mono);
-            font-size: 12px;
+        td strong {
+            color: var(--text-primary);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
             background: var(--bg-surface);
-            border: 1px solid var(--border-default);
-            border-radius: var(--radius-xs);
-            padding: 1px 5px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: .2px;
+        }
+
+        .badge-green {
+            background: rgba(34, 197, 94, .12);
+            color: var(--color-success);
+        }
+
+        .badge-blue {
+            background: rgba(94, 106, 210, .12);
             color: var(--color-primary);
         }
 
-        [data-lang="en"] .lang-vi {
-            display: none;
+        .model-desc {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-bottom: 10px;
+            font-style: italic;
         }
 
-        [data-lang="vi"] .lang-en {
-            display: none;
+        @media(max-width:768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 95;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay.open {
+                display: block;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .topbar-subtitle {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+                max-width: 100%;
+                padding: 24px 20px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
         }
     </style>
 </head>
 
-<body data-theme="light" data-lang="vi">
+<body data-theme="light">
 
     <header class="topbar">
+        <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+        </button>
         <span class="topbar-brand">A-ERP <span>Docs</span></span>
+        <span class="topbar-subtitle">HRM PRD</span>
+        <span class="topbar-spacer"></span>
+        <button class="dark-toggle" id="darkToggle">
+            <svg id="sunIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+            </svg>
+            <svg id="moonIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+            <span id="darkToggleLabel">Dark</span>
+        </button>
     </header>
 
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <nav class="sidebar" id="sidebar">
-        <div class="sidebar-section-title">HRM PRD</div>
-        <a class="sidebar-link" href="#overview"><span class="sidebar-link-dot"></span>Overview</a>
-        <a class="sidebar-link" href="#scope"><span class="sidebar-link-dot"></span>Scope</a>
-        <a class="sidebar-link" href="#data-models"><span class="sidebar-link-dot"></span>Data Models</a>
-        <a class="sidebar-link" href="#endpoints"><span class="sidebar-link-dot"></span>API Endpoints</a>
-        <a class="sidebar-link" href="#pages"><span class="sidebar-link-dot"></span>Frontend Pages</a>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-header" onclick="toggleSection(this)">
+                <span class="sidebar-section-title">Overview</span>
+                <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="sidebar-section-items">
+                <a class="sidebar-link" href="#overview"><span class="sidebar-link-dot"></span>1. Tổng quan sản phẩm</a>
+                <a class="sidebar-link" href="#scope"><span class="sidebar-link-dot"></span>2. Phạm vi hệ thống</a>
+                <a class="sidebar-link" href="#roles"><span class="sidebar-link-dot"></span>3. Vai trò người dùng</a>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-header" onclick="toggleSection(this)">
+                <span class="sidebar-section-title">Data Models (32)</span>
+                <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="sidebar-section-items">
+                <a class="sidebar-link" href="#data-models"><span class="sidebar-link-dot"></span>4. Core Data Models</a>
+                <a class="sidebar-link" href="#models-employee-org"><span class="sidebar-link-dot"></span>Employee &amp; Org (4.1–4.3)</a>
+                <a class="sidebar-link" href="#models-contracts"><span class="sidebar-link-dot"></span>Contracts (4.4)</a>
+                <a class="sidebar-link" href="#models-leave-attendance"><span class="sidebar-link-dot"></span>Leave &amp; Attendance (4.5–4.9)</a>
+                <a class="sidebar-link" href="#models-recruitment"><span class="sidebar-link-dot"></span>Recruitment (4.10–4.13)</a>
+                <a class="sidebar-link" href="#models-performance"><span class="sidebar-link-dot"></span>Performance (4.14–4.17)</a>
+                <a class="sidebar-link" href="#models-training"><span class="sidebar-link-dot"></span>Training (4.18–4.19)</a>
+                <a class="sidebar-link" href="#models-compensation"><span class="sidebar-link-dot"></span>Compensation (4.20–4.22)</a>
+                <a class="sidebar-link" href="#models-assets"><span class="sidebar-link-dot"></span>Assets (4.23–4.24)</a>
+                <a class="sidebar-link" href="#models-onboarding-offboarding"><span class="sidebar-link-dot"></span>Onboarding/Offboarding (4.25–4.28)</a>
+                <a class="sidebar-link" href="#models-docs-procurement"><span class="sidebar-link-dot"></span>Documents &amp; Procurement (4.29–4.32)</a>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-header" onclick="toggleSection(this)">
+                <span class="sidebar-section-title">API &amp; Frontend</span>
+                <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="sidebar-section-items">
+                <a class="sidebar-link" href="#api-endpoints"><span class="sidebar-link-dot"></span>5. API Endpoints</a>
+                <a class="sidebar-link" href="#frontend-pages"><span class="sidebar-link-dot"></span>6. Frontend Pages (23+)</a>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-header" onclick="toggleSection(this)">
+                <span class="sidebar-section-title">Features</span>
+                <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="sidebar-section-items">
+                <a class="sidebar-link" href="#key-features"><span class="sidebar-link-dot"></span>7. Key Features</a>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-header" onclick="toggleSection(this)">
+                <span class="sidebar-section-title">Workflows</span>
+                <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="sidebar-section-items">
+                <a class="sidebar-link" href="#candidate-pipeline"><span class="sidebar-link-dot"></span>8. Candidate Pipeline</a>
+                <a class="sidebar-link" href="#employee-status"><span class="sidebar-link-dot"></span>9. Employee Status Flow</a>
+                <a class="sidebar-link" href="#permissions"><span class="sidebar-link-dot"></span>10. Role-Based Permissions</a>
+                <a class="sidebar-link" href="#success-metrics"><span class="sidebar-link-dot"></span>11. Success Metrics</a>
+                <a class="sidebar-link" href="#future"><span class="sidebar-link-dot"></span>12. Future Enhancements</a>
+            </div>
+        </div>
+
     </nav>
 
     <main class="main">
@@ -283,84 +609,1110 @@
 
             <div class="page-header">
                 <h1>HRM Product Requirements</h1>
-                <p class="page-header-meta">Human Resource Management — Full Specification — Last updated: 2026-03-09
-                </p>
+                <p class="page-header-meta">Hệ thống Quản lý Hành chính Nhân sự — Full Specification — 32 Data Models Implemented — Last updated: 2026-03-11</p>
             </div>
 
+            <!-- SECTION 1 -->
             <h2 id="overview">1. Tổng quan sản phẩm</h2>
-            <p>Hệ thống Quản lý Hành chính Nhân sự (HCNS) nhằm mục tiêu chuẩn hóa 100% quy trình nhân sự, số hóa toàn bộ
-                hồ sơ và biểu mẫu, sẵn sàng tích hợp ERP & AI Agent.</p>
 
-            <h2 id="scope">2. Phạm vi hệ thống</h2>
+            <h3>1.1 Tên sản phẩm</h3>
+            <p>Hệ thống Quản lý Hành chính Nhân sự (Internal HR &amp; Admin Management System)</p>
+
+            <h3>1.2 Mục tiêu sản phẩm</h3>
             <ul>
-                <li><strong>HR Core:</strong> Vòng đời nhân viên, tuyển dụng, nghỉ phép, chấm công, lương, hiệu suất.
-                </li>
-                <li><strong>Hành chính:</strong> Quản lý tài sản, mua sắm nội bộ, văn bản.</li>
-                <li><strong>Tuân thủ:</strong> Quy định công ty, tuân thủ pháp luật lao động.</li>
+                <li>Chuẩn hóa 100% quy trình HCNS</li>
+                <li>Số hóa toàn bộ hồ sơ và biểu mẫu</li>
+                <li>Giảm 40–60% thao tác thủ công</li>
+                <li>Kiểm soát tuân thủ pháp lý</li>
+                <li>Sẵn sàng tích hợp ERP &amp; AI Agent</li>
             </ul>
 
-            <h2 id="data-models">3. Core Data Models (32+ Tables)</h2>
+            <h3>1.3 Implementation Status</h3>
+            <p><span class="badge badge-green">FULLY IMPLEMENTED</span> — All core HR functions and 32 data models are production-ready.</p>
+
+            <!-- SECTION 2 -->
+            <h2 id="scope">2. Phạm vi hệ thống</h2>
+            <p>Hệ thống bao gồm 3 nhóm chính:</p>
+            <ol>
+                <li><strong>HR Core</strong> — Employee lifecycle, recruitment, leave, attendance, payroll, performance</li>
+                <li><strong>Administration</strong> — Asset management, procurement, documents</li>
+                <li><strong>Compliance &amp; Governance</strong> — Policies, legal compliance, labor reporting</li>
+            </ol>
+
+            <!-- SECTION 3 -->
+            <h2 id="roles">3. Vai trò người dùng</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr><th>Vai trò</th><th>Quyền</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>HR Admin</strong></td><td>Full access (employees, recruitment, payroll, etc.)</td></tr>
+                        <tr><td><strong>HR Manager</strong></td><td>Approval workflows, team reports, analytics</td></tr>
+                        <tr><td><strong>Line Manager</strong></td><td>Team reviews, leave approval, KPI assignments</td></tr>
+                        <tr><td><strong>Employee</strong></td><td>Self-service (leave requests, profile view, etc.)</td></tr>
+                        <tr><td><strong>Accountant</strong></td><td>Payroll records, salary history, insurance data</td></tr>
+                        <tr><td><strong>CEO/Director</strong></td><td>Strategic dashboard, org charts, analytics</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- SECTION 4 -->
+            <h2 id="data-models">4. Core Data Models (32 Implemented)</h2>
+
+            <!-- 4.1–4.3 Employee & Org -->
+            <h3 id="models-employee-org">Employee &amp; Org (4.1–4.3)</h3>
+
+            <h4>4.1 Employee</h4>
+            <p class="model-desc">Employee master record with personal info.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Employee ID</td></tr>
+                        <tr><td><code>user_id</code></td><td>UUID</td><td>Associated user account</td></tr>
+                        <tr><td><code>name</code></td><td>String</td><td>Tên nhân viên</td></tr>
+                        <tr><td><code>email</code></td><td>String</td><td>Email cá nhân/công ty</td></tr>
+                        <tr><td><code>department_id</code></td><td>UUID</td><td>Department assignment</td></tr>
+                        <tr><td><code>position</code></td><td>String</td><td>Chức vụ</td></tr>
+                        <tr><td><code>hire_date</code></td><td>Date</td><td>Ngày vào làm</td></tr>
+                        <tr><td><code>date_of_birth</code></td><td>Date</td><td>Ngày sinh</td></tr>
+                        <tr><td><code>address</code></td><td>String</td><td>Địa chỉ hiện tại</td></tr>
+                        <tr><td><code>national_id</code></td><td>String</td><td>Số CMND/CCCD</td></tr>
+                        <tr><td><code>bank_account_number</code></td><td>String</td><td>Số tài khoản ngân hàng</td></tr>
+                        <tr><td><code>bank_name</code></td><td>String</td><td>Tên ngân hàng</td></tr>
+                        <tr><td><code>phone</code></td><td>String</td><td>Số điện thoại</td></tr>
+                        <tr><td><code>employee_status</code></td><td>Enum</td><td>active, inactive, probation</td></tr>
+                        <tr><td><code>workspace_id</code></td><td>UUID</td><td>Workspace ID</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>4.2 Department</h4>
+            <p class="model-desc">Hierarchical department structure.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Department ID</td></tr>
+                        <tr><td><code>name</code></td><td>String</td><td>Tên phòng ban</td></tr>
+                        <tr><td><code>code</code></td><td>String</td><td>Mã phòng ban</td></tr>
+                        <tr><td><code>description</code></td><td>Text</td><td>Mô tả chức năng</td></tr>
+                        <tr><td><code>parent_department_id</code></td><td>UUID</td><td>Parent department (tree)</td></tr>
+                        <tr><td><code>manager_id</code></td><td>UUID</td><td>Department head</td></tr>
+                        <tr><td><code>workspace_id</code></td><td>UUID</td><td>Workspace ID</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>4.3 Position</h4>
+            <p class="model-desc">Job positions and headcount management.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Position ID</td></tr>
+                        <tr><td><code>title</code></td><td>String</td><td>Tên vị trí</td></tr>
+                        <tr><td><code>department_id</code></td><td>UUID</td><td>Home department</td></tr>
+                        <tr><td><code>headcount_limit</code></td><td>Integer</td><td>Định biên</td></tr>
+                        <tr><td><code>description</code></td><td>Text</td><td>Mô tả công việc</td></tr>
+                        <tr><td><code>is_active</code></td><td>Boolean</td><td>Đang tuyển hay không</td></tr>
+                        <tr><td><code>workspace_id</code></td><td>UUID</td><td>Workspace ID</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 4.4 Contracts -->
+            <h3 id="models-contracts">Contracts (4.4)</h3>
+
+            <h4>4.4 Contract</h4>
+            <p class="model-desc">Employment contracts with salary info.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Contract ID</td></tr>
+                        <tr><td><code>employee_id</code></td><td>UUID</td><td>Associated employee</td></tr>
+                        <tr><td><code>contract_type</code></td><td>Enum</td><td>probation, fixed_term, indefinite</td></tr>
+                        <tr><td><code>start_date</code></td><td>Date</td><td>Ngày bắt đầu</td></tr>
+                        <tr><td><code>end_date</code></td><td>Date</td><td>Ngày kết thúc</td></tr>
+                        <tr><td><code>base_salary</code></td><td>Float</td><td>Lương cơ bản (VND)</td></tr>
+                        <tr><td><code>allowances</code></td><td>JSONB</td><td>Phụ cấp chi tiết (JSON)</td></tr>
+                        <tr><td><code>status</code></td><td>Enum</td><td>active, expired, terminated</td></tr>
+                        <tr><td><code>file_url</code></td><td>String</td><td>Scanned contract document</td></tr>
+                        <tr><td><code>notes</code></td><td>Text</td><td>Ghi chú</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 4.5–4.9 Leave & Attendance -->
+            <h3 id="models-leave-attendance">Leave &amp; Attendance (4.5–4.9)</h3>
+
+            <h4>4.5 LeaveRequest</h4>
+            <p class="model-desc">Leave/vacation requests with approval workflow.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Leave Request ID</td></tr>
+                        <tr><td><code>employee_id</code></td><td>UUID</td><td>Requesting employee</td></tr>
+                        <tr><td><code>leave_type_id</code></td><td>UUID</td><td>Type of leave (annual, sick)</td></tr>
+                        <tr><td><code>start_date</code></td><td>Date</td><td>Ngày bắt đầu nghỉ</td></tr>
+                        <tr><td><code>end_date</code></td><td>Date</td><td>Ngày kết thúc nghỉ</td></tr>
+                        <tr><td><code>days</code></td><td>Integer</td><td>Số ngày nghỉ</td></tr>
+                        <tr><td><code>status</code></td><td>Enum</td><td>pending, approved, rejected</td></tr>
+                        <tr><td><code>reviewed_by_id</code></td><td>UUID</td><td>Approver (manager)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>4.6 LeaveType</h4>
+            <p class="model-desc">Leave types (annual, sick, unpaid, maternity).</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Leave Type ID</td></tr>
+                        <tr><td><code>name</code></td><td>String</td><td>Tên loại nghỉ</td></tr>
+                        <tr><td><code>description</code></td><td>Text</td><td>Mô tả chính sách</td></tr>
+                        <tr><td><code>max_days_per_year</code></td><td>Integer</td><td>Tối đa ngày/năm</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>4.7 AttendanceRecord</h4>
+            <p class="model-desc">Daily attendance tracking.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Attendance Record ID</td></tr>
+                        <tr><td><code>employee_id</code></td><td>UUID</td><td>Employee</td></tr>
+                        <tr><td><code>date</code></td><td>Date</td><td>Ngày công</td></tr>
+                        <tr><td><code>check_in</code></td><td>Time</td><td>Giờ vào</td></tr>
+                        <tr><td><code>check_out</code></td><td>Time</td><td>Giờ ra</td></tr>
+                        <tr><td><code>status</code></td><td>Enum</td><td>present, absent, late, half_day, holiday, leave</td></tr>
+                        <tr><td><code>total_hours</code></td><td>Float</td><td>Tổng giờ làm</td></tr>
+                        <tr><td><code>overtime_hours</code></td><td>Float</td><td>Giờ tăng ca</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>4.8 AttendanceCorrection</h4>
+            <p class="model-desc">Corrections/disputes on attendance records.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Correction ID</td></tr>
+                        <tr><td><code>attendance_record_id</code></td><td>UUID</td><td>Associated record</td></tr>
+                        <tr><td><code>reason</code></td><td>String</td><td>Lý do chỉnh sửa</td></tr>
+                        <tr><td><code>requested_by</code></td><td>UUID</td><td>Employee requesting fix</td></tr>
+                        <tr><td><code>approved_by</code></td><td>UUID</td><td>Manager approval</td></tr>
+                        <tr><td><code>status</code></td><td>Enum</td><td>pending, approved</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>4.9 OvertimeRequest</h4>
+            <p class="model-desc">Overtime requests and approval.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Overtime Request ID</td></tr>
+                        <tr><td><code>employee_id</code></td><td>UUID</td><td>Employee</td></tr>
+                        <tr><td><code>date</code></td><td>Date</td><td>Ngày tăng ca</td></tr>
+                        <tr><td><code>hours</code></td><td>Float</td><td>Số giờ tăng ca</td></tr>
+                        <tr><td><code>reason</code></td><td>String</td><td>Lý do tăng ca</td></tr>
+                        <tr><td><code>status</code></td><td>Enum</td><td>pending, approved</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 4.10–4.13 Recruitment -->
+            <h3 id="models-recruitment">Recruitment (4.10–4.13)</h3>
+
+            <h4>4.10 RecruitmentRequest</h4>
+            <p class="model-desc">Recruitment requisitions.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Recruitment Request ID</td></tr>
+                        <tr><td><code>title</code></td><td>String</td><td>Vị trí tuyển dụng</td></tr>
+                        <tr><td><code>department_id</code></td><td>UUID</td><td>Department requesting</td></tr>
+                        <tr><td><code>position_id</code></td><td>UUID</td><td>Associated position</td></tr>
+                        <tr><td><code>quantity</code></td><td>Integer</td><td>Số lượng cần tuyển</td></tr>
+                        <tr><td><code>reason</code></td><td>String</td><td>Lý do tuyển dụng</td></tr>
+                        <tr><td><code>requirements</code></td><td>Text</td><td>Yêu cầu công việc</td></tr>
+                        <tr><td><code>deadline</code></td><td>Date</td><td>Hạn chót nhận hồ sơ</td></tr>
+                        <tr><td><code>status</code></td><td>Enum</td><td>draft, open, closed, cancelled</td></tr>
+                        <tr><td><code>salary_range_min</code></td><td>Float</td><td>Mức lương tối thiểu (VND)</td></tr>
+                        <tr><td><code>salary_range_max</code></td><td>Float</td><td>Mức lương tối đa (VND)</td></tr>
+                        <tr><td><code>requester_id</code></td><td>UUID</td><td>Person requesting</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>4.11 Candidate</h4>
+            <p class="model-desc">Job applicants and candidates.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Candidate ID</td></tr>
+                        <tr><td><code>recruitment_request_id</code></td><td>UUID</td><td>Associated recruitment request</td></tr>
+                        <tr><td><code>name</code></td><td>String</td><td>Tên ứng viên</td></tr>
+                        <tr><td><code>email</code></td><td>String</td><td>Email liên hệ</td></tr>
+                        <tr><td><code>phone</code></td><td>String</td><td>Số điện thoại</td></tr>
+                        <tr><td><code>resume_url</code></td><td>String</td><td>CV file URL</td></tr>
+                        <tr><td><code>status</code></td><td>Enum</td><td>applied, interviewed, offered, hired, rejected</td></tr>
+                        <tr><td><code>notes</code></td><td>Text</td><td>Ghi chú kết quả phỏng vấn</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>4.12 Interview</h4>
+            <p class="model-desc">Interview scheduling and feedback.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Interview ID</td></tr>
+                        <tr><td><code>candidate_id</code></td><td>UUID</td><td>Candidate being interviewed</td></tr>
+                        <tr><td><code>interviewer_id</code></td><td>UUID</td><td>Primary interviewer</td></tr>
+                        <tr><td><code>scheduled_at</code></td><td>DateTime</td><td>Thời gian phỏng vấn</td></tr>
+                        <tr><td><code>duration_minutes</code></td><td>Integer</td><td>Thời lượng (phút)</td></tr>
+                        <tr><td><code>feedback</code></td><td>Text</td><td>Đánh giá chi tiết</td></tr>
+                        <tr><td><code>score</code></td><td>Float</td><td>Điểm số (0–10)</td></tr>
+                        <tr><td><code>status</code></td><td>Enum</td><td>scheduled, completed, no_show</td></tr>
+                        <tr><td><code>room</code></td><td>String</td><td>Phòng họp</td></tr>
+                        <tr><td><code>panel_ids</code></td><td>JSONB</td><td>Multiple interviewers list</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>4.13 Offer</h4>
+            <p class="model-desc">Job offer management.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Offer ID</td></tr>
+                        <tr><td><code>candidate_id</code></td><td>UUID</td><td>Target candidate</td></tr>
+                        <tr><td><code>title</code></td><td>String</td><td>Vị trí được đề nghị</td></tr>
+                        <tr><td><code>job_description</code></td><td>Text</td><td>Mô tả công việc</td></tr>
+                        <tr><td><code>location</code></td><td>String</td><td>Địa điểm làm việc</td></tr>
+                        <tr><td><code>salary</code></td><td>Float</td><td>Mức lương đề nghị (VND)</td></tr>
+                        <tr><td><code>benefits_package</code></td><td>Text</td><td>Chi tiết phúc lợi</td></tr>
+                        <tr><td><code>status</code></td><td>Enum</td><td>draft, extended, accepted, rejected</td></tr>
+                        <tr><td><code>expiration_date</code></td><td>Date</td><td>Hạn chót chấp nhận</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 4.14–4.17 Performance -->
+            <h3 id="models-performance">Performance (4.14–4.17)</h3>
+
+            <h4>4.14 PerformanceReview</h4>
+            <p class="model-desc">Periodic performance evaluations.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Review ID</td></tr>
+                        <tr><td><code>employee_id</code></td><td>UUID</td><td>Employee reviewed</td></tr>
+                        <tr><td><code>reviewer_id</code></td><td>UUID</td><td>Manager/reviewer</td></tr>
+                        <tr><td><code>period</code></td><td>String</td><td>YYYY-MM (e.g., 2024-Q1)</td></tr>
+                        <tr><td><code>overall_score</code></td><td>Float</td><td>Điểm tổng thể (0–10)</td></tr>
+                        <tr><td><code>status</code></td><td>Enum</td><td>draft, completed</td></tr>
+                        <tr><td><code>comments</code></td><td>Text</td><td>Nhận xét chung</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>4.15 ReviewFeedback</h4>
+            <p class="model-desc">Competency-based feedback within reviews.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Feedback ID</td></tr>
+                        <tr><td><code>performance_review_id</code></td><td>UUID</td><td>Associated review</td></tr>
+                        <tr><td><code>competency</code></td><td>String</td><td>Năng lực đánh giá</td></tr>
+                        <tr><td><code>score</code></td><td>Float</td><td>Điểm (0–10)</td></tr>
+                        <tr><td><code>comments</code></td><td>Text</td><td>Nhận xét chi tiết</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>4.16 KpiTemplate</h4>
+            <p class="model-desc">KPI metric templates.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Template ID</td></tr>
+                        <tr><td><code>name</code></td><td>String</td><td>Tên KPI</td></tr>
+                        <tr><td><code>description</code></td><td>Text</td><td>Định nghĩa</td></tr>
+                        <tr><td><code>metric_type</code></td><td>String</td><td>revenue, quality, time, etc.</td></tr>
+                        <tr><td><code>target_value</code></td><td>Float</td><td>Giá trị mục tiêu</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>4.17 KpiAssignment</h4>
+            <p class="model-desc">KPI assignments to employees.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Assignment ID</td></tr>
+                        <tr><td><code>employee_id</code></td><td>UUID</td><td>Assigned employee</td></tr>
+                        <tr><td><code>kpi_template_id</code></td><td>UUID</td><td>KPI being assigned</td></tr>
+                        <tr><td><code>period</code></td><td>String</td><td>YYYY-Q (e.g., 2024-Q1)</td></tr>
+                        <tr><td><code>target_value</code></td><td>Float</td><td>Target for period</td></tr>
+                        <tr><td><code>actual_value</code></td><td>Float</td><td>Actual achievement</td></tr>
+                        <tr><td><code>status</code></td><td>Enum</td><td>open, completed</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 4.18–4.19 Training -->
+            <h3 id="models-training">Training (4.18–4.19)</h3>
+
+            <h4>4.18 TrainingProgram</h4>
+            <p class="model-desc">Training programs and courses.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Program ID</td></tr>
+                        <tr><td><code>title</code></td><td>String</td><td>Tên khóa học</td></tr>
+                        <tr><td><code>description</code></td><td>Text</td><td>Nội dung khóa học</td></tr>
+                        <tr><td><code>category</code></td><td>String</td><td>Loại (technical, soft)</td></tr>
+                        <tr><td><code>duration_hours</code></td><td>Integer</td><td>Thời lượng (giờ)</td></tr>
+                        <tr><td><code>cost</code></td><td>Float</td><td>Chi phí (VND)</td></tr>
+                        <tr><td><code>start_date</code></td><td>Date</td><td>Ngày bắt đầu</td></tr>
+                        <tr><td><code>end_date</code></td><td>Date</td><td>Ngày kết thúc</td></tr>
+                        <tr><td><code>status</code></td><td>Enum</td><td>draft, active, completed</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>4.19 TrainingEnrollment</h4>
+            <p class="model-desc">Employee enrollment in training programs.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Enrollment ID</td></tr>
+                        <tr><td><code>employee_id</code></td><td>UUID</td><td>Enrolled employee</td></tr>
+                        <tr><td><code>training_program_id</code></td><td>UUID</td><td>Training program</td></tr>
+                        <tr><td><code>enrollment_date</code></td><td>Date</td><td>Ngày ghi danh</td></tr>
+                        <tr><td><code>completion_date</code></td><td>Date</td><td>Ngày hoàn thành</td></tr>
+                        <tr><td><code>status</code></td><td>Enum</td><td>enrolled, in_progress, completed, dropped</td></tr>
+                        <tr><td><code>certificate_url</code></td><td>String</td><td>Certificate file URL</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 4.20–4.22 Compensation -->
+            <h3 id="models-compensation">Compensation (4.20–4.22)</h3>
+
+            <h4>4.20 PayrollRecord</h4>
+            <p class="model-desc">Monthly payroll records.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Payroll Record ID</td></tr>
+                        <tr><td><code>employee_id</code></td><td>UUID</td><td>Employee</td></tr>
+                        <tr><td><code>period</code></td><td>String</td><td>YYYY-MM</td></tr>
+                        <tr><td><code>gross_salary</code></td><td>Float</td><td>Lương bruto (VND)</td></tr>
+                        <tr><td><code>deductions</code></td><td>Float</td><td>Tổng khấu trừ (VND)</td></tr>
+                        <tr><td><code>net_salary</code></td><td>Float</td><td>Lương ròng (VND)</td></tr>
+                        <tr><td><code>status</code></td><td>Enum</td><td>draft, approved, paid</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>4.21 SalaryHistory</h4>
+            <p class="model-desc">Track salary changes over time.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>History Entry ID</td></tr>
+                        <tr><td><code>employee_id</code></td><td>UUID</td><td>Employee</td></tr>
+                        <tr><td><code>effective_date</code></td><td>Date</td><td>Ngày hiệu lực</td></tr>
+                        <tr><td><code>salary</code></td><td>Float</td><td>New salary (VND)</td></tr>
+                        <tr><td><code>reason</code></td><td>String</td><td>Lý do thay đổi (raise, promotion)</td></tr>
+                        <tr><td><code>approved_by</code></td><td>UUID</td><td>Approver</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>4.22 InsuranceRecord</h4>
+            <p class="model-desc">Employee insurance (health, social, unemployment).</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Insurance Record ID</td></tr>
+                        <tr><td><code>employee_id</code></td><td>UUID</td><td>Employee</td></tr>
+                        <tr><td><code>insurance_type</code></td><td>String</td><td>health, social, unemployment</td></tr>
+                        <tr><td><code>policy_number</code></td><td>String</td><td>Mã chứng chỉ bảo hiểm</td></tr>
+                        <tr><td><code>provider</code></td><td>String</td><td>Nhà cung cấp</td></tr>
+                        <tr><td><code>coverage_amount</code></td><td>Float</td><td>Mức bảo hiểm (VND)</td></tr>
+                        <tr><td><code>start_date</code></td><td>Date</td><td>Ngày bắt đầu</td></tr>
+                        <tr><td><code>end_date</code></td><td>Date</td><td>Ngày kết thúc</td></tr>
+                        <tr><td><code>status</code></td><td>Enum</td><td>active, expired</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 4.23–4.24 Assets -->
+            <h3 id="models-assets">Assets (4.23–4.24)</h3>
+
+            <h4>4.23 Asset</h4>
+            <p class="model-desc">Company assets (laptops, phones, etc.).</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Asset ID</td></tr>
+                        <tr><td><code>name</code></td><td>String</td><td>Tên tài sản</td></tr>
+                        <tr><td><code>asset_type</code></td><td>String</td><td>laptop, phone, etc.</td></tr>
+                        <tr><td><code>serial_number</code></td><td>String</td><td>Mã serial/model</td></tr>
+                        <tr><td><code>purchase_date</code></td><td>Date</td><td>Ngày mua</td></tr>
+                        <tr><td><code>cost</code></td><td>Float</td><td>Giá mua (VND)</td></tr>
+                        <tr><td><code>status</code></td><td>Enum</td><td>available, assigned, retired</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>4.24 AssetAssignment</h4>
+            <p class="model-desc">Track asset assignments to employees.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Assignment ID</td></tr>
+                        <tr><td><code>asset_id</code></td><td>UUID</td><td>Asset</td></tr>
+                        <tr><td><code>employee_id</code></td><td>UUID</td><td>Assigned to</td></tr>
+                        <tr><td><code>assignment_date</code></td><td>Date</td><td>Ngày giao</td></tr>
+                        <tr><td><code>return_date</code></td><td>Date</td><td>Ngày trả (nếu có)</td></tr>
+                        <tr><td><code>condition</code></td><td>String</td><td>Tình trạng khi nhận</td></tr>
+                        <tr><td><code>notes</code></td><td>Text</td><td>Ghi chú khác</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 4.25–4.28 Onboarding/Offboarding -->
+            <h3 id="models-onboarding-offboarding">Onboarding/Offboarding (4.25–4.28)</h3>
+
+            <h4>4.25 OnboardingChecklist</h4>
+            <p class="model-desc">Employee onboarding tasks.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Checklist ID</td></tr>
+                        <tr><td><code>employee_id</code></td><td>UUID</td><td>New employee</td></tr>
+                        <tr><td><code>task_list</code></td><td>JSONB</td><td>Tasks array (JSON)</td></tr>
+                        <tr><td><code>completion_date</code></td><td>Date</td><td>Ngày hoàn thành</td></tr>
+                        <tr><td><code>status</code></td><td>Enum</td><td>draft, in_progress, completed</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>4.26 Resignation</h4>
+            <p class="model-desc">Employee resignations and offboarding initiation.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Resignation ID</td></tr>
+                        <tr><td><code>employee_id</code></td><td>UUID</td><td>Resigning employee</td></tr>
+                        <tr><td><code>resignation_date</code></td><td>Date</td><td>Ngày xin nghỉ</td></tr>
+                        <tr><td><code>effective_date</code></td><td>Date</td><td>Ngày cuối cùng</td></tr>
+                        <tr><td><code>reason</code></td><td>Text</td><td>Lý do từ chức</td></tr>
+                        <tr><td><code>status</code></td><td>Enum</td><td>pending, approved, completed</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>4.27 Handover</h4>
+            <p class="model-desc">Task handover during offboarding.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Handover ID</td></tr>
+                        <tr><td><code>resigning_employee_id</code></td><td>UUID</td><td>Employee leaving</td></tr>
+                        <tr><td><code>new_employee_id</code></td><td>UUID</td><td>New owner</td></tr>
+                        <tr><td><code>task_list</code></td><td>Text</td><td>Tasks to handover</td></tr>
+                        <tr><td><code>completion_date</code></td><td>Date</td><td>Ngày hoàn thành</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>4.28 ExitInterview</h4>
+            <p class="model-desc">Exit interview feedback.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Interview ID</td></tr>
+                        <tr><td><code>employee_id</code></td><td>UUID</td><td>Departing employee</td></tr>
+                        <tr><td><code>interviewer_id</code></td><td>UUID</td><td>HR conducting</td></tr>
+                        <tr><td><code>date</code></td><td>Date</td><td>Ngày phỏng vấn</td></tr>
+                        <tr><td><code>feedback</code></td><td>Text</td><td>Nhận xét chi tiết</td></tr>
+                        <tr><td><code>overall_satisfaction</code></td><td>Float</td><td>Đánh giá (0–10)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 4.29–4.32 Documents & Procurement -->
+            <h3 id="models-docs-procurement">Documents &amp; Procurement (4.29–4.32)</h3>
+
+            <h4>4.29 HrmDocument</h4>
+            <p class="model-desc">HR documents and file storage.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Document ID</td></tr>
+                        <tr><td><code>employee_id</code></td><td>UUID</td><td>Associated employee</td></tr>
+                        <tr><td><code>document_type</code></td><td>String</td><td>CV, contract, etc.</td></tr>
+                        <tr><td><code>file_url</code></td><td>String</td><td>S3/Cloud storage URL</td></tr>
+                        <tr><td><code>upload_date</code></td><td>DateTime</td><td>Ngày tải lên</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>4.30 PurchaseRequest</h4>
+            <p class="model-desc">Internal purchase requisitions.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Request ID</td></tr>
+                        <tr><td><code>requester_id</code></td><td>UUID</td><td>Employee requesting</td></tr>
+                        <tr><td><code>title</code></td><td>String</td><td>Tiêu đề yêu cầu</td></tr>
+                        <tr><td><code>description</code></td><td>Text</td><td>Chi tiết yêu cầu</td></tr>
+                        <tr><td><code>total_amount</code></td><td>Float</td><td>Tổng tiền (VND)</td></tr>
+                        <tr><td><code>status</code></td><td>Enum</td><td>draft, submitted, approved, completed</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>4.31 PurchaseItem</h4>
+            <p class="model-desc">Line items within purchase requests.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Item ID</td></tr>
+                        <tr><td><code>purchase_request_id</code></td><td>UUID</td><td>Parent request</td></tr>
+                        <tr><td><code>item_name</code></td><td>String</td><td>Tên mặt hàng</td></tr>
+                        <tr><td><code>quantity</code></td><td>Integer</td><td>Số lượng</td></tr>
+                        <tr><td><code>unit_price</code></td><td>Float</td><td>Đơn giá (VND)</td></tr>
+                        <tr><td><code>status</code></td><td>Enum</td><td>pending, approved</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>4.32 WorkspaceSettings (HRM-specific)</h4>
+            <p class="model-desc">HR configuration per workspace.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>UUID</td><td>Setting ID</td></tr>
+                        <tr><td><code>workspace_id</code></td><td>UUID</td><td>Workspace</td></tr>
+                        <tr><td><code>vacation_days_per_year</code></td><td>Integer</td><td>Annual leave policy</td></tr>
+                        <tr><td><code>sick_leave_days_per_year</code></td><td>Integer</td><td>Sick leave policy</td></tr>
+                        <tr><td><code>standard_work_hours</code></td><td>Float</td><td>Daily hours (e.g., 8)</td></tr>
+                        <tr><td><code>currency</code></td><td>String</td><td>VND</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- SECTION 5 -->
+            <h2 id="api-endpoints">5. API Endpoints</h2>
+
+            <h3>Employee Management</h3>
+<pre>GET    /api/v1/hrm/employees                 # List employees
+POST   /api/v1/hrm/employees                 # Create employee
+GET    /api/v1/hrm/employees/{id}            # Get detail
+PUT    /api/v1/hrm/employees/{id}            # Update employee
+DELETE /api/v1/hrm/employees/{id}            # Delete employee
+GET    /api/v1/hrm/employees/{id}/detail     # Full profile with contracts</pre>
+
+            <h3>Department Management</h3>
+<pre>GET    /api/v1/hrm/departments               # List departments
+POST   /api/v1/hrm/departments               # Create department
+GET    /api/v1/hrm/departments/{id}          # Get detail
+PUT    /api/v1/hrm/departments/{id}          # Update department
+DELETE /api/v1/hrm/departments/{id}          # Delete department
+GET    /api/v1/hrm/departments/tree          # Hierarchical org chart
+GET    /api/v1/hrm/departments/{id}/headcount # Headcount stats</pre>
+
+            <h3>Position Management</h3>
+<pre>GET    /api/v1/hrm/positions                 # List positions
+POST   /api/v1/hrm/positions                 # Create position
+GET    /api/v1/hrm/positions/{id}            # Get detail
+PUT    /api/v1/hrm/positions/{id}            # Update position
+DELETE /api/v1/hrm/positions/{id}            # Delete position</pre>
+
+            <h3>Contract Management</h3>
+<pre>GET    /api/v1/hrm/contracts                 # List contracts
+POST   /api/v1/hrm/contracts                 # Create contract
+GET    /api/v1/hrm/contracts/{id}            # Get detail
+PUT    /api/v1/hrm/contracts/{id}            # Update contract
+GET    /api/v1/hrm/salary-history            # Salary change history</pre>
+
+            <h3>Leave Management</h3>
+<pre>GET    /api/v1/hrm/leave-requests            # List leave requests
+POST   /api/v1/hrm/leave-requests            # Create request
+GET    /api/v1/hrm/leave-requests/{id}       # Get detail
+PUT    /api/v1/hrm/leave-requests/{id}       # Update request
+POST   /api/v1/hrm/leave-requests/{id}/approve # Manager approval
+POST   /api/v1/hrm/leave-requests/{id}/reject  # Manager rejection
+GET    /api/v1/hrm/leave-types               # Leave types list</pre>
+
+            <h3>Attendance Management</h3>
+<pre>GET    /api/v1/hrm/attendance-records        # List records
+POST   /api/v1/hrm/attendance-records        # Create record
+GET    /api/v1/hrm/attendance-records/{id}   # Get detail
+PUT    /api/v1/hrm/attendance-records/{id}   # Update record
+GET    /api/v1/hrm/attendance-records/summary # Monthly summary
+POST   /api/v1/hrm/attendance-corrections    # Request correction
+POST   /api/v1/hrm/attendance-corrections/{id}/approve # Approve correction
+POST   /api/v1/hrm/attendance-corrections/{id}/reject  # Reject correction</pre>
+
+            <h3>Overtime Management</h3>
+<pre>GET    /api/v1/hrm/overtime-requests         # List overtime
+POST   /api/v1/hrm/overtime-requests         # Create request
+PUT    /api/v1/hrm/overtime-requests/{id}    # Update request</pre>
+
+            <h3>Recruitment Management</h3>
+<pre>GET    /api/v1/hrm/recruitment-requests      # List requisitions
+POST   /api/v1/hrm/recruitment-requests      # Create request
+GET    /api/v1/hrm/recruitment-requests/{id} # Get detail
+PUT    /api/v1/hrm/recruitment-requests/{id} # Update request
+GET    /api/v1/hrm/candidates                # List candidates
+POST   /api/v1/hrm/candidates                # Create candidate
+GET    /api/v1/hrm/candidates/{id}           # Get detail
+PUT    /api/v1/hrm/candidates/{id}           # Update candidate
+POST   /api/v1/hrm/candidates/{id}/move      # Move in pipeline</pre>
+
+            <h3>Interview Management</h3>
+<pre>GET    /api/v1/hrm/interviews                # List interviews
+POST   /api/v1/hrm/interviews                # Create interview
+GET    /api/v1/hrm/interviews/{id}           # Get detail
+PUT    /api/v1/hrm/interviews/{id}           # Update interview</pre>
+
+            <h3>Offer Management</h3>
+<pre>GET    /api/v1/hrm/offers                    # List offers
+POST   /api/v1/hrm/offers                    # Create offer
+GET    /api/v1/hrm/offers/{id}               # Get detail
+PUT    /api/v1/hrm/offers/{id}               # Update offer</pre>
+
+            <h3>Performance Management</h3>
+<pre>GET    /api/v1/hrm/performance-reviews       # List reviews
+POST   /api/v1/hrm/performance-reviews       # Create review
+GET    /api/v1/hrm/performance-reviews/{id}  # Get detail
+PUT    /api/v1/hrm/performance-reviews/{id}  # Update review
+GET    /api/v1/hrm/kpi-templates             # List KPI templates
+GET    /api/v1/hrm/kpi-assignments           # List KPI assignments
+POST   /api/v1/hrm/kpi-assignments           # Assign KPI
+PUT    /api/v1/hrm/kpi-assignments/{id}      # Update KPI assignment</pre>
+
+            <h3>Training Management</h3>
+<pre>GET    /api/v1/hrm/training-programs         # List programs
+POST   /api/v1/hrm/training-programs         # Create program
+GET    /api/v1/hrm/training-programs/{id}    # Get detail
+PUT    /api/v1/hrm/training-programs/{id}    # Update program
+GET    /api/v1/hrm/training-enrollments      # List enrollments
+POST   /api/v1/hrm/training-enrollments      # Create enrollment
+PUT    /api/v1/hrm/training-enrollments/{id} # Update enrollment</pre>
+
+            <h3>Payroll Management</h3>
+<pre>GET    /api/v1/hrm/payroll-records           # List payroll records
+POST   /api/v1/hrm/payroll-records           # Create payroll
+GET    /api/v1/hrm/payroll-records/{id}      # Get detail
+PUT    /api/v1/hrm/payroll-records/{id}      # Update payroll</pre>
+
+            <h3>Insurance Management</h3>
+<pre>GET    /api/v1/hrm/insurance-records         # List insurance
+POST   /api/v1/hrm/insurance-records         # Create record
+GET    /api/v1/hrm/insurance-records/{id}    # Get detail
+PUT    /api/v1/hrm/insurance-records/{id}    # Update record</pre>
+
+            <h3>Asset Management</h3>
+<pre>GET    /api/v1/hrm/assets                    # List assets
+POST   /api/v1/hrm/assets                    # Create asset
+GET    /api/v1/hrm/assets/{id}               # Get detail
+PUT    /api/v1/hrm/assets/{id}               # Update asset
+GET    /api/v1/hrm/asset-assignments         # List assignments
+POST   /api/v1/hrm/asset-assignments         # Create assignment
+PUT    /api/v1/hrm/asset-assignments/{id}    # Update assignment</pre>
+
+            <h3>Onboarding</h3>
+<pre>GET    /api/v1/hrm/onboarding-checklists      # List checklists
+POST   /api/v1/hrm/onboarding-checklists      # Create checklist
+PUT    /api/v1/hrm/onboarding-checklists/{id} # Update checklist</pre>
+
+            <h3>Offboarding</h3>
+<pre>GET    /api/v1/hrm/resignations              # List resignations
+POST   /api/v1/hrm/resignations              # Create resignation
+PUT    /api/v1/hrm/resignations/{id}         # Update resignation
+GET    /api/v1/hrm/handovers                 # List handovers
+POST   /api/v1/hrm/handovers                 # Create handover
+PUT    /api/v1/hrm/handovers/{id}            # Update handover
+GET    /api/v1/hrm/exit-interviews           # List exit interviews
+POST   /api/v1/hrm/exit-interviews           # Create interview
+PUT    /api/v1/hrm/exit-interviews/{id}      # Update interview</pre>
+
+            <h3>Procurement</h3>
+<pre>GET    /api/v1/hrm/purchase-requests         # List requests
+POST   /api/v1/hrm/purchase-requests         # Create request
+GET    /api/v1/hrm/purchase-requests/{id}    # Get detail
+PUT    /api/v1/hrm/purchase-requests/{id}    # Update request</pre>
+
+            <h3>Documents</h3>
+<pre>GET    /api/v1/hrm/documents                 # List documents
+POST   /api/v1/hrm/documents                 # Upload document
+GET    /api/v1/hrm/documents/{id}            # Get document
+DELETE /api/v1/hrm/documents/{id}            # Delete document</pre>
+
+            <!-- SECTION 6 -->
+            <h2 id="frontend-pages">6. Frontend Pages (23+)</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr><th>Page</th><th>Purpose</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>HRM Dashboard</strong></td><td>Strategic KPIs, org chart, analytics</td></tr>
+                        <tr><td><strong>Employees List</strong></td><td>Search, create, view employees</td></tr>
+                        <tr><td><strong>Employee Detail</strong></td><td>Profile, contracts, salary history</td></tr>
+                        <tr><td><strong>Departments List</strong></td><td>Department management</td></tr>
+                        <tr><td><strong>Departments Org Chart</strong></td><td>Visual organizational hierarchy</td></tr>
+                        <tr><td><strong>Positions List</strong></td><td>Position and headcount management</td></tr>
+                        <tr><td><strong>Leave Requests List</strong></td><td>Manage and approve leave</td></tr>
+                        <tr><td><strong>Attendance List</strong></td><td>Daily attendance tracking</td></tr>
+                        <tr><td><strong>Attendance Summary</strong></td><td>Monthly summary and corrections</td></tr>
+                        <tr><td><strong>Recruitment List</strong></td><td>Manage job requisitions</td></tr>
+                        <tr><td><strong>Recruitment Detail</strong></td><td>Requisition with linked candidates</td></tr>
+                        <tr><td><strong>Candidate Pipeline</strong></td><td>Kanban: Applied → Interviewed → Offered → Hired</td></tr>
+                        <tr><td><strong>Interview Management</strong></td><td>Schedule and record interviews</td></tr>
+                        <tr><td><strong>Offers Management</strong></td><td>Create and track job offers</td></tr>
+                        <tr><td><strong>Performance Reviews</strong></td><td>Create and manage reviews</td></tr>
+                        <tr><td><strong>KPI Management</strong></td><td>Assign and track KPIs</td></tr>
+                        <tr><td><strong>Training List</strong></td><td>Browse and enroll in training</td></tr>
+                        <tr><td><strong>Payroll List</strong></td><td>View and manage payroll records</td></tr>
+                        <tr><td><strong>Insurance List</strong></td><td>Manage insurance records</td></tr>
+                        <tr><td><strong>Assets List</strong></td><td>Track company assets</td></tr>
+                        <tr><td><strong>Assets Assignments</strong></td><td>Manage asset allocations</td></tr>
+                        <tr><td><strong>Onboarding List</strong></td><td>Track new employee onboarding</td></tr>
+                        <tr><td><strong>Offboarding List</strong></td><td>Manage resignations and exit process</td></tr>
+                        <tr><td><strong>Procurement List</strong></td><td>Purchase requests and approvals</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- SECTION 7 -->
+            <h2 id="key-features">7. Key Features Implemented</h2>
+
+            <h3>Employee Lifecycle</h3>
+            <ul>
+                <li><strong>Recruitment:</strong> Job requests → Candidates → Interviews → Offers → Hire</li>
+                <li><strong>Onboarding:</strong> Checklist tasks, asset assignment, orientation</li>
+                <li><strong>Active Employment:</strong> Profile, contracts, leave, attendance, training</li>
+                <li><strong>Offboarding:</strong> Resignation request → Handover → Exit interview → Archive</li>
+            </ul>
+
+            <h3>Leave &amp; Attendance</h3>
+            <ul>
+                <li>Leave request workflow (employee → manager approval)</li>
+                <li>Annual/sick/maternity leave types with policy</li>
+                <li>Daily attendance tracking (check-in/out, status)</li>
+                <li>Monthly attendance summary reports</li>
+                <li>Attendance correction workflow</li>
+                <li>Overtime request tracking</li>
+            </ul>
+
+            <h3>Recruitment Pipeline</h3>
+            <ul>
+                <li>Recruitment requisitions (open, in-progress, closed)</li>
+                <li>Candidate pipeline (applied → interviewed → offered → hired/rejected)</li>
+                <li>Interview scheduling with panel support</li>
+                <li>Job offers with salary and benefits</li>
+                <li>Candidate notes and evaluation tracking</li>
+            </ul>
+
+            <h3>Performance Management</h3>
+            <ul>
+                <li>Periodic performance reviews (quarterly/annual)</li>
+                <li>Competency-based feedback scoring</li>
+                <li>KPI templates and assignments per period</li>
+                <li>KPI actual value tracking</li>
+                <li>Review completion workflows</li>
+            </ul>
+
+            <h3>Training &amp; Development</h3>
+            <ul>
+                <li>Training program management (category, cost, duration)</li>
+                <li>Employee enrollment in programs</li>
+                <li>Completion tracking and certificates</li>
+                <li>Career path planning</li>
+            </ul>
+
+            <h3>Compensation &amp; Benefits</h3>
+            <ul>
+                <li>Contract management (type, salary, allowances, duration)</li>
+                <li>Salary history tracking with change reasons</li>
+                <li>Payroll record generation (gross, deductions, net)</li>
+                <li>Insurance record management (health, social, unemployment)</li>
+            </ul>
+
+            <h3>Assets &amp; Procurement</h3>
+            <ul>
+                <li>Asset tracking (type, serial number, cost, status)</li>
+                <li>Asset assignment to employees with condition notes</li>
+                <li>Return and maintenance tracking</li>
+                <li>Internal purchase requests with approval</li>
+                <li>Purchase items line tracking</li>
+            </ul>
+
+            <h3>Organizational Structure</h3>
+            <ul>
+                <li>Hierarchical department tree</li>
+                <li>Position definitions with headcount limits</li>
+                <li>Department headcount tracking</li>
+                <li>Manager assignments</li>
+            </ul>
+
+            <h3>Compliance &amp; Documentation</h3>
+            <ul>
+                <li>Employee documents storage (CV, contracts, etc.)</li>
+                <li>Audit log of all changes</li>
+                <li>Resignation and offboarding workflow</li>
+                <li>Exit interviews and feedback</li>
+                <li>Policy acknowledgment tracking</li>
+            </ul>
+
+            <!-- SECTION 8 -->
+            <h2 id="candidate-pipeline">8. Candidate Pipeline Workflow</h2>
+<pre>Recruitment Request Created
+    ↓
+Job Opening Posted
+    ↓
+Candidates Applied
+    ↓
+Candidates Interviewed (interview records + scores)
+    ↓
+Offers Extended
+    ↓
+Offer Accepted
+    ↓
+Employee Created &amp; Onboarded</pre>
+
+            <!-- SECTION 9 -->
+            <h2 id="employee-status">9. Employee Status Flow</h2>
+<pre>Prospective (Offer Pending)
+    ↓
+Active (Probation / Regular / Contract)
+    ↓
+Inactive (Left, Retired, Suspended)</pre>
+
+            <!-- SECTION 10 -->
+            <h2 id="permissions">10. Role-Based Permissions</h2>
             <div class="table-wrap">
                 <table>
                     <thead>
                         <tr>
-                            <th>Entity</th>
-                            <th>Key Fields</th>
-                            <th>Description</th>
+                            <th>Feature</th>
+                            <th>HR Admin</th>
+                            <th>HR Manager</th>
+                            <th>Line Mgr</th>
+                            <th>Employee</th>
+                            <th>Accountant</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Employee</td>
-                            <td>user_id, name, email, department_id, hire_date</td>
-                            <td>Hồ sơ nhân viên</td>
+                            <td><strong>Employee CRUD</strong></td>
+                            <td><span class="badge badge-green">Yes</span></td>
+                            <td>No</td>
+                            <td>No</td>
+                            <td>No</td>
+                            <td>No</td>
                         </tr>
                         <tr>
-                            <td>Department</td>
-                            <td>name, code, manager_id, parent_id</td>
-                            <td>Phòng ban & Sơ đồ tổ chức</td>
+                            <td><strong>Approve leave</strong></td>
+                            <td><span class="badge badge-green">Yes</span></td>
+                            <td><span class="badge badge-green">Yes</span></td>
+                            <td><span class="badge badge-green">Yes</span></td>
+                            <td>No</td>
+                            <td>No</td>
                         </tr>
                         <tr>
-                            <td>LeaveRequest</td>
-                            <td>employee_id, type_id, start_date, status</td>
-                            <td>Yêu cầu nghỉ phép</td>
+                            <td><strong>View payroll</strong></td>
+                            <td><span class="badge badge-green">Yes</span></td>
+                            <td><span class="badge badge-green">Yes</span></td>
+                            <td>No</td>
+                            <td>Own only</td>
+                            <td><span class="badge badge-green">Yes</span></td>
                         </tr>
                         <tr>
-                            <td>PayrollRecord</td>
-                            <td>employee_id, period, gross, net, status</td>
-                            <td>Bảng lương hàng tháng</td>
+                            <td><strong>Recruitment</strong></td>
+                            <td><span class="badge badge-green">Yes</span></td>
+                            <td><span class="badge badge-green">Yes</span></td>
+                            <td>No</td>
+                            <td>No</td>
+                            <td>No</td>
                         </tr>
                         <tr>
-                            <td>Recruitment</td>
-                            <td>title, quantity, requirements, deadline</td>
-                            <td>Quản lý tuyển dụng</td>
+                            <td><strong>Performance reviews</strong></td>
+                            <td><span class="badge badge-green">Yes</span></td>
+                            <td><span class="badge badge-green">Yes</span></td>
+                            <td><span class="badge badge-green">Yes</span></td>
+                            <td>Own only</td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Training enrollment</strong></td>
+                            <td><span class="badge badge-green">Yes</span></td>
+                            <td><span class="badge badge-green">Yes</span></td>
+                            <td>No</td>
+                            <td><span class="badge badge-green">Yes</span></td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Org chart</strong></td>
+                            <td><span class="badge badge-green">Yes</span></td>
+                            <td><span class="badge badge-green">Yes</span></td>
+                            <td><span class="badge badge-green">Yes</span></td>
+                            <td><span class="badge badge-green">Yes</span></td>
+                            <td>No</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <h2 id="endpoints">4. API Endpoints</h2>
-            <p>Hệ thống cung cấp REST API đầy đủ cho các module con:</p>
+            <!-- SECTION 11 -->
+            <h2 id="success-metrics">11. Success Metrics</h2>
             <ul>
-                <li><code>/api/v1/hrm/employees</code> - Nhân sự</li>
-                <li><code>/api/v1/hrm/departments</code> - Phòng ban</li>
-                <li><code>/api/v1/hrm/leave-requests</code> - Nghỉ phép</li>
-                <li><code>/api/v1/hrm/payroll-records</code> - Tính lương</li>
+                <li>100% quy trình số hóa</li>
+                <li>Giảm 60% Excel rời rạc</li>
+                <li>100% phê duyệt online</li>
+                <li>Giảm 30% sai sót tính lương</li>
+                <li>Data completeness &gt; 95%</li>
             </ul>
 
-            <h2 id="pages">5. Frontend Pages (23+)</h2>
-            <p>Hệ thống bao gồm Dashboard chiến lược, Danh sách nhân sự, Pipeline tuyển dụng (Kanban), Sơ đồ tổ chức
-                trực quan (Org Chart) và các trang quản lý tài sản, mua sắm.</p>
+            <!-- SECTION 12 -->
+            <h2 id="future">12. Future Enhancements</h2>
+            <ul>
+                <li>AI agent for contract expiry alerts</li>
+                <li>Anomaly detection for unusual overtime</li>
+                <li>Recruitment demand forecasting (ML-based)</li>
+                <li>Attrition analysis and predictive models</li>
+                <li>Advanced analytics dashboards</li>
+                <li>Integration with accounting system</li>
+                <li>E-signature on contracts</li>
+                <li>Mobile app for employees</li>
+            </ul>
 
         </div>
     </main>
 
     <script>
-        // Mock simple interactivity for the template
-        document.querySelectorAll('.sidebar-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
+        // Theme query parameter handling
+        (function () {
+            var params = new URLSearchParams(window.location.search);
+            var theme = params.get('theme');
+            if (theme === 'dark' || theme === 'light') {
+                document.documentElement.setAttribute('data-theme', theme);
+                document.body.setAttribute('data-theme', theme);
+            }
+        })();
+
+        // Dark mode toggle
+        var dt = document.getElementById('darkToggle');
+        var sun = document.getElementById('sunIcon');
+        var moon = document.getElementById('moonIcon');
+        var label = document.getElementById('darkToggleLabel');
+
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            document.body.setAttribute('data-theme', theme);
+            sun.style.display = theme === 'dark' ? 'none' : 'block';
+            moon.style.display = theme === 'dark' ? 'block' : 'none';
+            label.textContent = theme === 'dark' ? 'Light' : 'Dark';
+        }
+
+        var initialTheme = document.body.getAttribute('data-theme') || 'light';
+        applyTheme(initialTheme);
+
+        dt.addEventListener('click', function () {
+            var current = document.body.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+
+        // Hamburger / sidebar
+        var hamburger = document.getElementById('hamburgerBtn');
+        var sidebar = document.getElementById('sidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+
+        hamburger.addEventListener('click', function () {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        });
+
+        overlay.addEventListener('click', function () {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('open');
+        });
+
+        // Collapsible sidebar sections
+        function toggleSection(header) {
+            header.parentElement.classList.toggle('collapsed');
+        }
+
+        // Scroll spy
+        var allAnchors = document.querySelectorAll('.main [id]');
+        var allLinks = document.querySelectorAll('.sidebar-link[href^="#"]');
+
+        function onScroll() {
+            var scrollY = window.scrollY + 80;
+            var current = '';
+            allAnchors.forEach(function (el) {
+                if (el.offsetTop <= scrollY) {
+                    current = el.id;
+                }
+            });
+            allLinks.forEach(function (link) {
+                link.classList.remove('spy-active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('spy-active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+
+        // Close sidebar on link click (mobile)
+        allLinks.forEach(function (link) {
+            link.addEventListener('click', function () {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('open');
             });
         });
     </script>
