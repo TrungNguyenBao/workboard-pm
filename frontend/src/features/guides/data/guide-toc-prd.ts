@@ -2,11 +2,41 @@ import type { GuideConfig } from './guide-toc'
 
 export const PRD_CONFIG: GuideConfig = {
     id: 'prd',
-    file: 'prd-crm.html',
+    file: 'prd-pms.html',
     labelEn: 'Product Requirements (PRD)',
     labelVi: 'Yêu Cầu Sản Phẩm (PRD)',
     icon: 'ClipboardList',
     sections: [
+        {
+            labelEn: 'PMS — Overview',
+            labelVi: 'PMS — Tổng Quan',
+            items: [
+                { id: 'pms-overview', hash: 'overview', labelEn: 'Product Overview', labelVi: 'Tổng Quan Sản Phẩm', file: 'prd-pms.html' },
+                { id: 'pms-scope', hash: 'scope', labelEn: 'System Scope', labelVi: 'Phạm Vi Hệ Thống', file: 'prd-pms.html' },
+                { id: 'pms-roles', hash: 'roles', labelEn: 'User Roles', labelVi: 'Vai Trò Người Dùng', file: 'prd-pms.html' },
+            ],
+        },
+        {
+            labelEn: 'PMS — Data & API',
+            labelVi: 'PMS — Dữ Liệu & API',
+            items: [
+                { id: 'pms-data-models', hash: 'data-models', labelEn: 'Data Models (16)', labelVi: 'Mô Hình Dữ Liệu (16)', file: 'prd-pms.html' },
+                { id: 'pms-api-endpoints', hash: 'api-endpoints', labelEn: 'API Endpoints', labelVi: 'API Endpoints', file: 'prd-pms.html' },
+                { id: 'pms-frontend-pages', hash: 'frontend-pages', labelEn: 'Frontend Pages (15+)', labelVi: 'Trang Giao Diện (15+)', file: 'prd-pms.html' },
+            ],
+        },
+        {
+            labelEn: 'PMS — Features & Workflows',
+            labelVi: 'PMS — Tính Năng & Quy Trình',
+            items: [
+                { id: 'pms-key-features', hash: 'key-features', labelEn: 'Key Features', labelVi: 'Tính Năng Chính', file: 'prd-pms.html' },
+                { id: 'pms-task-lifecycle', hash: 'task-lifecycle', labelEn: 'Task Lifecycle', labelVi: 'Vòng Đời Task', file: 'prd-pms.html' },
+                { id: 'pms-sprint-workflow', hash: 'sprint-workflow', labelEn: 'Sprint Workflow', labelVi: 'Quy Trình Sprint', file: 'prd-pms.html' },
+                { id: 'pms-permissions', hash: 'permissions', labelEn: 'Role-Based Permissions', labelVi: 'Phân Quyền Theo Vai Trò', file: 'prd-pms.html' },
+                { id: 'pms-success-metrics', hash: 'success-metrics', labelEn: 'Success Metrics', labelVi: 'Chỉ Số Thành Công', file: 'prd-pms.html' },
+                { id: 'pms-future', hash: 'future', labelEn: 'Future Enhancements', labelVi: 'Phát Triển Tương Lai', file: 'prd-pms.html' },
+            ],
+        },
         {
             labelEn: 'CRM — Overview',
             labelVi: 'CRM — Tổng Quan',

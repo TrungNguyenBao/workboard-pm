@@ -1,6 +1,6 @@
 # A-ERP — Development Roadmap
 
-**Last updated:** 2026-03-09
+**Last updated:** 2026-03-11
 
 ---
 
@@ -332,3 +332,19 @@ Full HRM module compliance with business logic, approval workflows, RBAC, and in
 | All migrations applied and tested | Done |
 | All endpoints wired and routers registered | Done |
 | Email notifications working with html.escape for security | Done |
+
+---
+
+## Phase 15 — PMS Product Documentation & Guide Content (Complete)
+
+Comprehensive Product Requirements Document (PRD) and Standard Operating Procedures (SOP) for Project Management System.
+
+| Item | Status |
+|---|---|
+| Documentation: Create PMS_PRD.md (605 lines with 16 data models, 10 API groups, 5 user roles) | Done |
+| Documentation: Create SOP_PMS.md (169 lines with 10 sections for operational procedures) | Done |
+| Documentation: Create HTML guide rendering (`docs/prd-pms.html`, 2004 lines, 84KB) | Done |
+| Documentation: Update frontend guide TOC config (`guide-toc-pms.ts`) with 9 section groups (3 PMS + 3 CRM + 3 HRM) | Done |
+| Documentation: Vietnamese-language SOP aligned with HRM and WSM documentation | Done |
+| Documentation: Verify all product features match implementation status | Done |
+| Documentation: Update project changelog and roadmap | Done |

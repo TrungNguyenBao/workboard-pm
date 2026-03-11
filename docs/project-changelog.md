@@ -5,6 +5,25 @@ Format: `## [version] — YYYY-MM-DD` with grouped entries.
 
 ---
 
+## [2.6.0] — 2026-03-11
+
+### Added — PMS Product Documentation & Guide Content
+
+**Documentation & Content Systems**
+- **PMS_PRD.md** — Comprehensive Product Requirements Document (605 lines) covering 16 data models, 10 API endpoint groups, and 5 user roles with detailed specifications for Projects, Tasks, Sprints, Goals, Custom Fields, and Collaboration features.
+- **SOP_PMS.md** — Standard Operating Procedures document (169 lines) in Vietnamese with 10 sections detailing: project setup workflows, task management, Kanban operations, Agile/Sprint planning, goal tracking, and team collaboration guidelines.
+- **HTML Guide Rendering** — `docs/prd-pms.html` (2004 lines, 84KB) provides web-accessible PRD with styled markup for guides system.
+- **Updated Guide TOC** — Frontend `guide-toc-pms.ts` configuration now includes 9 section groups: 3 PMS sections + 3 CRM sections + 3 HRM sections with proper nesting and navigation structure.
+
+### Details
+- PMS_PRD.md documents all production-ready features: Projects, Tasks (with recurring/custom fields), Sprints, Epics, Goals, Activities, Comments, and comprehensive RBAC
+- SOP_PMS.md provides step-by-step operational guidelines for workspace admins, project owners, editors, commenters, and viewers
+- Guide content integrates with system-wide SOP/PRD documentation strategy for HRM (Phase 14) and CRM (Unreleased)
+- All documentation follows codebase architectural patterns and naming conventions
+- Vietnamese-language SOP aligns with HRM and WSM (Warehouse) documentation in same language
+
+---
+
 ## [2.5.0] — 2026-03-09
 
 ### Added — HRM SOP Compliance (Phases 1-3)

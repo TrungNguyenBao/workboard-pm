@@ -1,0 +1,2004 @@
+<!DOCTYPE html>
+<html lang="vi" data-lang="vi" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PMS PRD — A-ERP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            --color-primary: #5E6AD2;
+            --color-primary-hover: #4F55C4;
+            --color-accent: #F28C38;
+            --color-success: #22C55E;
+            --color-warning: #F59E0B;
+            --color-danger: #EF4444;
+            --color-info: #38BDF8;
+            --bg-page: #FFFFFF;
+            --bg-surface: #F9F9FB;
+            --bg-elevated: #FFFFFF;
+            --border-default: #E4E4E7;
+            --text-primary: #18181B;
+            --text-secondary: #52525B;
+            --text-tertiary: #A1A1AA;
+            --radius-xs: 4px;
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+            --shadow-elevated: 0 4px 12px rgba(0, 0, 0, .10);
+            --sidebar-width: 260px;
+            --topbar-height: 52px;
+            --dur: 150ms;
+        }
+
+        [data-theme="dark"] {
+            --bg-page: #0F0F12;
+            --bg-surface: #1A1A1F;
+            --bg-elevated: #25252B;
+            --border-default: rgba(255, 255, 255, .10);
+            --text-primary: #FAFAFA;
+            --text-secondary: #A1A1AA;
+            --text-tertiary: #52525B;
+            --color-primary: #6E78E8;
+            --color-primary-hover: #7D87EE;
+            --color-accent: #F5A05A;
+            --color-success: #4ADE80;
+            --color-warning: #FBB532;
+            --color-danger: #F87171;
+            --color-info: #7DD3FC;
+            --shadow-elevated: 0 4px 12px rgba(0, 0, 0, .40);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 14px;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-page);
+            transition: background var(--dur) ease, color var(--dur) ease;
+        }
+
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--topbar-height);
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border-default);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .topbar-brand {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--color-primary);
+            letter-spacing: -.3px;
+            flex-shrink: 0;
+        }
+
+        .topbar-brand span {
+            color: var(--text-primary);
+            font-weight: 400;
+        }
+
+        .topbar-subtitle {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            border-left: 1px solid var(--border-default);
+            padding-left: 12px;
+            margin-left: 4px;
+        }
+
+        .topbar-spacer {
+            flex: 1;
+        }
+
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 6px;
+            border-radius: var(--radius-sm);
+        }
+
+        .hamburger:hover {
+            background: var(--bg-elevated);
+        }
+
+        .dark-toggle {
+            background: none;
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 6px 10px;
+            font-size: 13px;
+            font-family: var(--font-sans);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background var(--dur) ease, border-color var(--dur) ease;
+        }
+
+        .dark-toggle:hover {
+            background: var(--bg-elevated);
+            border-color: var(--text-tertiary);
+        }
+
+        .sidebar {
+            position: fixed;
+            top: var(--topbar-height);
+            left: 0;
+            width: var(--sidebar-width);
+            height: calc(100vh - var(--topbar-height));
+            background: var(--bg-surface);
+            border-right: 1px solid var(--border-default);
+            overflow-y: auto;
+            overflow-x: hidden;
+            z-index: 90;
+            transition: transform var(--dur) ease;
+            padding: 16px 0 32px;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border-default);
+            border-radius: 2px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 16px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .sidebar-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            color: var(--text-tertiary);
+        }
+
+        .sidebar-chevron {
+            color: var(--text-tertiary);
+            transition: transform var(--dur) ease;
+        }
+
+        .sidebar-section.collapsed .sidebar-chevron {
+            transform: rotate(-90deg);
+        }
+
+        .sidebar-section.collapsed .sidebar-section-items {
+            display: none;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px 6px 24px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            cursor: pointer;
+            transition: background var(--dur) ease, color var(--dur) ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            line-height: 1.4;
+        }
+
+        .sidebar-link:hover {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+        }
+
+        .sidebar-link.active,
+        .sidebar-link.spy-active {
+            background: rgba(94, 106, 210, .10);
+            color: var(--color-primary);
+            font-weight: 500;
+        }
+
+        [data-theme="dark"] .sidebar-link.active,
+        [data-theme="dark"] .sidebar-link.spy-active {
+            background: rgba(110, 120, 232, .15);
+        }
+
+        .sidebar-link-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--text-tertiary);
+            flex-shrink: 0;
+            margin-left: 4px;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .40);
+            z-index: 89;
+        }
+
+        .main {
+            margin-left: var(--sidebar-width);
+            margin-top: var(--topbar-height);
+            padding: 40px 48px;
+            max-width: calc(100% - var(--sidebar-width));
+            min-height: calc(100vh - var(--topbar-height));
+        }
+
+        .content-area {
+            max-width: 820px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1.2;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -.4px;
+        }
+
+        h2 {
+            font-size: 22px;
+            font-weight: 600;
+            line-height: 1.3;
+            color: var(--text-primary);
+            margin-top: 52px;
+            margin-bottom: 16px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-default);
+            letter-spacing: -.3px;
+        }
+
+        h2:first-child {
+            margin-top: 0;
+            border-top: none;
+            padding-top: 0;
+        }
+
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.4;
+            color: var(--text-primary);
+            margin-top: 32px;
+            margin-bottom: 10px;
+        }
+
+        h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            line-height: 1.7;
+        }
+
+        p:last-child {
+            margin-bottom: 0;
+        }
+
+        ul,
+        ol {
+            padding-left: 20px;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        li {
+            margin-bottom: 4px;
+            line-height: 1.6;
+        }
+
+        li strong {
+            color: var(--text-primary);
+        }
+
+        a {
+            color: var(--color-primary);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-xs);
+            padding: 1px 5px;
+            color: var(--color-primary);
+        }
+
+        [data-theme="dark"] code {
+            background: var(--bg-elevated);
+        }
+
+        pre {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            overflow-x: auto;
+            margin: 16px 0;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+
+        [data-theme="dark"] pre {
+            background: var(--bg-elevated);
+        }
+
+        .page-header {
+            margin-bottom: 40px;
+            padding-bottom: 28px;
+            border-bottom: 1px solid var(--border-default);
+        }
+
+        .page-header-meta {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-top: 8px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            text-align: left;
+            padding: 8px 12px;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            color: var(--text-tertiary);
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border-default);
+        }
+
+        td {
+            padding: 9px 12px;
+            border-bottom: 1px solid var(--border-default);
+            color: var(--text-secondary);
+            vertical-align: top;
+            line-height: 1.5;
+        }
+
+        td strong {
+            color: var(--text-primary);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: var(--bg-surface);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .3px;
+        }
+
+        .badge-success {
+            background: rgba(34, 197, 94, .12);
+            color: var(--color-success);
+        }
+
+        .flow-block {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            padding: 14px 18px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin: 12px 0 20px;
+        }
+
+        [data-theme="dark"] .flow-block {
+            background: var(--bg-elevated);
+        }
+
+        @media(max-width:768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 95;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay.open {
+                display: block;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .topbar-subtitle {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+                max-width: 100%;
+                padding: 24px 20px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body data-theme="light">
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <header class="topbar">
+        <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+        </button>
+        <span class="topbar-brand">A-ERP <span>Docs</span></span>
+        <span class="topbar-subtitle">PMS PRD</span>
+        <span class="topbar-spacer"></span>
+        <button class="dark-toggle" id="darkToggle">
+            <svg id="sunIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2">
+                <circle cx="12" cy="12" r="4" />
+                <path
+                    d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+            </svg>
+            <svg id="moonIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" style="display:none">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+            <span id="darkToggleLabel">Dark</span>
+        </button>
+    </header>
+
+    <nav class="sidebar" id="sidebar">
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-header" onclick="toggleSection(this)">
+                <span class="sidebar-section-title">Overview</span>
+                <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="sidebar-section-items">
+                <a class="sidebar-link" href="#overview"><span class="sidebar-link-dot"></span>1. Tổng quan sản phẩm</a>
+                <a class="sidebar-link" href="#scope"><span class="sidebar-link-dot"></span>2. Phạm vi hệ thống</a>
+                <a class="sidebar-link" href="#roles"><span class="sidebar-link-dot"></span>3. Vai trò người dùng</a>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-header" onclick="toggleSection(this)">
+                <span class="sidebar-section-title">Data Models</span>
+                <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="sidebar-section-items">
+                <a class="sidebar-link" href="#data-models"><span class="sidebar-link-dot"></span>4. Core Data Models (16)</a>
+                <a class="sidebar-link" href="#model-project"><span class="sidebar-link-dot"></span>Project</a>
+                <a class="sidebar-link" href="#model-membership"><span class="sidebar-link-dot"></span>ProjectMembership</a>
+                <a class="sidebar-link" href="#model-section"><span class="sidebar-link-dot"></span>Section</a>
+                <a class="sidebar-link" href="#model-task"><span class="sidebar-link-dot"></span>Task</a>
+                <a class="sidebar-link" href="#model-dependency"><span class="sidebar-link-dot"></span>TaskDependency</a>
+                <a class="sidebar-link" href="#model-tasktag"><span class="sidebar-link-dot"></span>TaskTag</a>
+                <a class="sidebar-link" href="#model-follower"><span class="sidebar-link-dot"></span>TaskFollower</a>
+                <a class="sidebar-link" href="#model-sprint"><span class="sidebar-link-dot"></span>Sprint</a>
+                <a class="sidebar-link" href="#model-goal"><span class="sidebar-link-dot"></span>Goal</a>
+                <a class="sidebar-link" href="#model-goal-project"><span class="sidebar-link-dot"></span>GoalProjectLink</a>
+                <a class="sidebar-link" href="#model-goal-task"><span class="sidebar-link-dot"></span>GoalTaskLink</a>
+                <a class="sidebar-link" href="#model-custom-field"><span class="sidebar-link-dot"></span>CustomFieldDefinition</a>
+                <a class="sidebar-link" href="#model-comment"><span class="sidebar-link-dot"></span>Comment</a>
+                <a class="sidebar-link" href="#model-attachment"><span class="sidebar-link-dot"></span>Attachment</a>
+                <a class="sidebar-link" href="#model-activity"><span class="sidebar-link-dot"></span>ActivityLog</a>
+                <a class="sidebar-link" href="#model-tag"><span class="sidebar-link-dot"></span>Tag</a>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-header" onclick="toggleSection(this)">
+                <span class="sidebar-section-title">API</span>
+                <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="sidebar-section-items">
+                <a class="sidebar-link" href="#api-endpoints"><span class="sidebar-link-dot"></span>5. API Endpoints</a>
+                <a class="sidebar-link" href="#frontend-pages"><span class="sidebar-link-dot"></span>6. Frontend Pages</a>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-header" onclick="toggleSection(this)">
+                <span class="sidebar-section-title">Features</span>
+                <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="sidebar-section-items">
+                <a class="sidebar-link" href="#key-features"><span class="sidebar-link-dot"></span>7. Key Features</a>
+                <a class="sidebar-link" href="#success-metrics"><span class="sidebar-link-dot"></span>11. Success Metrics</a>
+                <a class="sidebar-link" href="#future"><span class="sidebar-link-dot"></span>12. Future Enhancements</a>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-header" onclick="toggleSection(this)">
+                <span class="sidebar-section-title">Workflows</span>
+                <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="sidebar-section-items">
+                <a class="sidebar-link" href="#task-lifecycle"><span class="sidebar-link-dot"></span>8. Task Lifecycle</a>
+                <a class="sidebar-link" href="#sprint-workflow"><span class="sidebar-link-dot"></span>9. Sprint Workflow</a>
+                <a class="sidebar-link" href="#permissions"><span class="sidebar-link-dot"></span>10. Permissions</a>
+            </div>
+        </div>
+
+    </nav>
+
+    <main class="main">
+        <div class="content-area">
+
+            <div class="page-header">
+                <h1>PMS Product Requirements</h1>
+                <p class="page-header-meta">Project Management System — Full Specification &mdash; Status: <span class="badge badge-success">Fully Implemented</span> &mdash; Last updated: 2026-03-11</p>
+            </div>
+
+            <!-- 1. Tổng quan sản phẩm -->
+            <h2 id="overview">1. Tổng quan sản phẩm</h2>
+
+            <h3>1.1 Tên sản phẩm</h3>
+            <p>Hệ thống Quản lý Dự án (Project Management System &mdash; PMS)</p>
+
+            <h3>1.2 Mục tiêu sản phẩm</h3>
+            <ul>
+                <li>Quản lý toàn bộ vòng đời dự án từ lập kế hoạch đến hoàn thành</li>
+                <li>Hỗ trợ cả phương pháp Agile (sprint, backlog, velocity) và truyền thống (kanban, list)</li>
+                <li>Tăng năng suất nhóm 40&ndash;60% qua task automation và real-time collaboration</li>
+                <li>Theo dõi tiến độ mục tiêu (Goals) liên kết với dự án và task</li>
+                <li>Sẵn sàng tích hợp AI Agent và MCP protocol</li>
+            </ul>
+
+            <h3>1.3 Implementation Status</h3>
+            <p><strong>FULLY IMPLEMENTED</strong> &mdash; All core project management functions and 16 data models are production-ready.</p>
+
+            <!-- 2. Phạm vi hệ thống -->
+            <h2 id="scope">2. Phạm vi hệ thống</h2>
+            <p>Hệ thống bao gồm 4 nhóm chính:</p>
+            <ol>
+                <li><strong>Project &amp; Task Management</strong> &mdash; Projects, sections, tasks, subtasks, dependencies, drag-drop ordering</li>
+                <li><strong>Agile Tools</strong> &mdash; Sprints, epics, story points, backlog, burndown charts, velocity tracking</li>
+                <li><strong>Goals &amp; OKR</strong> &mdash; Workspace-level goals linked to projects and tasks with auto-calculated progress</li>
+                <li><strong>Collaboration</strong> &mdash; Comments (rich-text), attachments, activity logs, tags, task followers, custom fields</li>
+            </ol>
+
+            <!-- 3. Vai trò người dùng -->
+            <h2 id="roles">3. Vai trò người dùng</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Vai trò</th>
+                            <th>Quyền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Workspace Admin</strong></td>
+                            <td>Full access to all projects in workspace; manage members, tags, goals</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Project Owner</strong></td>
+                            <td>Full CRUD on project, sections, tasks; manage memberships and custom fields</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Editor</strong></td>
+                            <td>Create/edit/delete tasks and comments; manage sections</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Commenter</strong></td>
+                            <td>View tasks; add comments only; cannot edit tasks</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Viewer</strong></td>
+                            <td>Read-only access to project content; cannot create or modify anything</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 4. Core Data Models -->
+            <h2 id="data-models">4. Core Data Models (16 Implemented)</h2>
+
+            <h3 id="model-project">4.1 Project</h3>
+            <p><strong>Mô tả:</strong> Master record for a project within a workspace.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id</code></td>
+                            <td>UUID</td>
+                            <td>Project ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>workspace_id</code></td>
+                            <td>UUID</td>
+                            <td>Workspace</td>
+                        </tr>
+                        <tr>
+                            <td><code>team_id</code></td>
+                            <td>UUID</td>
+                            <td>Team (optional)</td>
+                        </tr>
+                        <tr>
+                            <td><code>owner_id</code></td>
+                            <td>UUID</td>
+                            <td>Project owner</td>
+                        </tr>
+                        <tr>
+                            <td><code>name</code></td>
+                            <td>String</td>
+                            <td>Tên dự án</td>
+                        </tr>
+                        <tr>
+                            <td><code>description</code></td>
+                            <td>String</td>
+                            <td>Mô tả dự án</td>
+                        </tr>
+                        <tr>
+                            <td><code>color</code></td>
+                            <td>String</td>
+                            <td>Màu sắc (#hex)</td>
+                        </tr>
+                        <tr>
+                            <td><code>icon</code></td>
+                            <td>String</td>
+                            <td>Icon (optional)</td>
+                        </tr>
+                        <tr>
+                            <td><code>visibility</code></td>
+                            <td>Enum</td>
+                            <td><code>team</code>, <code>private</code>, <code>public</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>is_archived</code></td>
+                            <td>Boolean</td>
+                            <td>Lưu trữ</td>
+                        </tr>
+                        <tr>
+                            <td><code>project_type</code></td>
+                            <td>Enum</td>
+                            <td><code>kanban</code>, <code>list</code>, <code>board</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 id="model-membership">4.2 ProjectMembership</h3>
+            <p><strong>Mô tả:</strong> Role-based membership of users within a project.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id</code></td>
+                            <td>UUID</td>
+                            <td>Membership ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>project_id</code></td>
+                            <td>UUID</td>
+                            <td>Project</td>
+                        </tr>
+                        <tr>
+                            <td><code>user_id</code></td>
+                            <td>UUID</td>
+                            <td>Member</td>
+                        </tr>
+                        <tr>
+                            <td><code>role</code></td>
+                            <td>Enum</td>
+                            <td><code>owner</code>, <code>editor</code>, <code>commenter</code>, <code>viewer</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 id="model-section">4.3 Section</h3>
+            <p><strong>Mô tả:</strong> Columns or groupings within a project (e.g., Kanban columns).</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id</code></td>
+                            <td>UUID</td>
+                            <td>Section ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>project_id</code></td>
+                            <td>UUID</td>
+                            <td>Project</td>
+                        </tr>
+                        <tr>
+                            <td><code>name</code></td>
+                            <td>String</td>
+                            <td>Tên cột/nhóm</td>
+                        </tr>
+                        <tr>
+                            <td><code>color</code></td>
+                            <td>String</td>
+                            <td>Màu sắc</td>
+                        </tr>
+                        <tr>
+                            <td><code>position</code></td>
+                            <td>Float</td>
+                            <td>Vị trí (fractional indexing)</td>
+                        </tr>
+                        <tr>
+                            <td><code>wip_limit</code></td>
+                            <td>Integer</td>
+                            <td>Giới hạn WIP</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 id="model-task">4.4 Task</h3>
+            <p><strong>Mô tả:</strong> Core work item with full agile and recurring task support.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id</code></td>
+                            <td>UUID</td>
+                            <td>Task ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>project_id</code></td>
+                            <td>UUID</td>
+                            <td>Project</td>
+                        </tr>
+                        <tr>
+                            <td><code>section_id</code></td>
+                            <td>UUID</td>
+                            <td>Section (optional)</td>
+                        </tr>
+                        <tr>
+                            <td><code>assignee_id</code></td>
+                            <td>UUID</td>
+                            <td>Người được giao</td>
+                        </tr>
+                        <tr>
+                            <td><code>created_by_id</code></td>
+                            <td>UUID</td>
+                            <td>Người tạo</td>
+                        </tr>
+                        <tr>
+                            <td><code>parent_id</code></td>
+                            <td>UUID</td>
+                            <td>Parent task (subtasks)</td>
+                        </tr>
+                        <tr>
+                            <td><code>title</code></td>
+                            <td>String</td>
+                            <td>Tiêu đề task</td>
+                        </tr>
+                        <tr>
+                            <td><code>description</code></td>
+                            <td>Text</td>
+                            <td>Mô tả chi tiết</td>
+                        </tr>
+                        <tr>
+                            <td><code>status</code></td>
+                            <td>Enum</td>
+                            <td><code>incomplete</code>, <code>complete</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>priority</code></td>
+                            <td>Enum</td>
+                            <td><code>none</code>, <code>low</code>, <code>medium</code>, <code>high</code>, <code>urgent</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>position</code></td>
+                            <td>Float</td>
+                            <td>Vị trí (fractional indexing)</td>
+                        </tr>
+                        <tr>
+                            <td><code>start_date</code></td>
+                            <td>DateTime</td>
+                            <td>Ngày bắt đầu</td>
+                        </tr>
+                        <tr>
+                            <td><code>due_date</code></td>
+                            <td>DateTime</td>
+                            <td>Ngày hết hạn</td>
+                        </tr>
+                        <tr>
+                            <td><code>completed_at</code></td>
+                            <td>DateTime</td>
+                            <td>Ngày hoàn thành</td>
+                        </tr>
+                        <tr>
+                            <td><code>recurrence_rule</code></td>
+                            <td>String</td>
+                            <td>Quy tắc lặp lại</td>
+                        </tr>
+                        <tr>
+                            <td><code>recurrence_cron_expr</code></td>
+                            <td>String</td>
+                            <td>Cron expression</td>
+                        </tr>
+                        <tr>
+                            <td><code>recurrence_end_date</code></td>
+                            <td>DateTime</td>
+                            <td>Ngày kết thúc lặp</td>
+                        </tr>
+                        <tr>
+                            <td><code>parent_recurring_id</code></td>
+                            <td>UUID</td>
+                            <td>Parent recurring task</td>
+                        </tr>
+                        <tr>
+                            <td><code>last_generated_date</code></td>
+                            <td>DateTime</td>
+                            <td>Ngày tạo task lặp cuối</td>
+                        </tr>
+                        <tr>
+                            <td><code>search_vector</code></td>
+                            <td>TSVECTOR</td>
+                            <td>Full-text search</td>
+                        </tr>
+                        <tr>
+                            <td><code>custom_fields</code></td>
+                            <td>JSONB</td>
+                            <td>Trường tùy chỉnh</td>
+                        </tr>
+                        <tr>
+                            <td><code>sprint_id</code></td>
+                            <td>UUID</td>
+                            <td>Sprint (agile)</td>
+                        </tr>
+                        <tr>
+                            <td><code>epic_id</code></td>
+                            <td>UUID</td>
+                            <td>Epic parent</td>
+                        </tr>
+                        <tr>
+                            <td><code>story_points</code></td>
+                            <td>Integer</td>
+                            <td>Điểm story (agile)</td>
+                        </tr>
+                        <tr>
+                            <td><code>task_type</code></td>
+                            <td>Enum</td>
+                            <td><code>task</code>, <code>bug</code>, <code>story</code>, <code>epic</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 id="model-dependency">4.5 TaskDependency</h3>
+            <p><strong>Mô tả:</strong> Blocking relationships between tasks.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id</code></td>
+                            <td>UUID</td>
+                            <td>Dependency ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>blocking_task_id</code></td>
+                            <td>UUID</td>
+                            <td>Task chặn</td>
+                        </tr>
+                        <tr>
+                            <td><code>blocked_task_id</code></td>
+                            <td>UUID</td>
+                            <td>Task bị chặn</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 id="model-tasktag">4.6 TaskTag</h3>
+            <p><strong>Mô tả:</strong> Join table linking tasks to tags (many-to-many).</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>task_id</code></td>
+                            <td>UUID</td>
+                            <td>Task</td>
+                        </tr>
+                        <tr>
+                            <td><code>tag_id</code></td>
+                            <td>UUID</td>
+                            <td>Tag</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 id="model-follower">4.7 TaskFollower</h3>
+            <p><strong>Mô tả:</strong> Join table for users following a task for notifications.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>task_id</code></td>
+                            <td>UUID</td>
+                            <td>Task</td>
+                        </tr>
+                        <tr>
+                            <td><code>user_id</code></td>
+                            <td>UUID</td>
+                            <td>Follower</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 id="model-sprint">4.8 Sprint</h3>
+            <p><strong>Mô tả:</strong> Time-boxed agile sprint within a project.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id</code></td>
+                            <td>UUID</td>
+                            <td>Sprint ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>project_id</code></td>
+                            <td>UUID</td>
+                            <td>Project</td>
+                        </tr>
+                        <tr>
+                            <td><code>name</code></td>
+                            <td>String</td>
+                            <td>Tên sprint</td>
+                        </tr>
+                        <tr>
+                            <td><code>goal</code></td>
+                            <td>Text</td>
+                            <td>Mục tiêu sprint</td>
+                        </tr>
+                        <tr>
+                            <td><code>start_date</code></td>
+                            <td>DateTime</td>
+                            <td>Ngày bắt đầu</td>
+                        </tr>
+                        <tr>
+                            <td><code>end_date</code></td>
+                            <td>DateTime</td>
+                            <td>Ngày kết thúc</td>
+                        </tr>
+                        <tr>
+                            <td><code>status</code></td>
+                            <td>Enum</td>
+                            <td><code>planning</code>, <code>active</code>, <code>completed</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>created_by_id</code></td>
+                            <td>UUID</td>
+                            <td>Người tạo</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 id="model-goal">4.9 Goal</h3>
+            <p><strong>Mô tả:</strong> Workspace-level objectives with progress tracking (OKR-style).</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id</code></td>
+                            <td>UUID</td>
+                            <td>Goal ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>workspace_id</code></td>
+                            <td>UUID</td>
+                            <td>Workspace</td>
+                        </tr>
+                        <tr>
+                            <td><code>owner_id</code></td>
+                            <td>UUID</td>
+                            <td>Người sở hữu</td>
+                        </tr>
+                        <tr>
+                            <td><code>title</code></td>
+                            <td>String</td>
+                            <td>Tiêu đề mục tiêu</td>
+                        </tr>
+                        <tr>
+                            <td><code>description</code></td>
+                            <td>Text</td>
+                            <td>Mô tả</td>
+                        </tr>
+                        <tr>
+                            <td><code>status</code></td>
+                            <td>Enum</td>
+                            <td><code>on_track</code>, <code>at_risk</code>, <code>off_track</code>, <code>achieved</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>progress_value</code></td>
+                            <td>Float</td>
+                            <td>Tiến độ (0&ndash;100)</td>
+                        </tr>
+                        <tr>
+                            <td><code>calculation_method</code></td>
+                            <td>Enum</td>
+                            <td><code>manual</code>, <code>automatic</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>color</code></td>
+                            <td>String</td>
+                            <td>Màu sắc</td>
+                        </tr>
+                        <tr>
+                            <td><code>due_date</code></td>
+                            <td>DateTime</td>
+                            <td>Ngày hết hạn</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 id="model-goal-project">4.10 GoalProjectLink</h3>
+            <p><strong>Mô tả:</strong> Join table linking goals to contributing projects.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>goal_id</code></td>
+                            <td>UUID</td>
+                            <td>Goal</td>
+                        </tr>
+                        <tr>
+                            <td><code>project_id</code></td>
+                            <td>UUID</td>
+                            <td>Project</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 id="model-goal-task">4.11 GoalTaskLink</h3>
+            <p><strong>Mô tả:</strong> Join table linking goals to contributing tasks.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>goal_id</code></td>
+                            <td>UUID</td>
+                            <td>Goal</td>
+                        </tr>
+                        <tr>
+                            <td><code>task_id</code></td>
+                            <td>UUID</td>
+                            <td>Task</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 id="model-custom-field">4.12 CustomFieldDefinition</h3>
+            <p><strong>Mô tả:</strong> Project-specific custom field definitions.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id</code></td>
+                            <td>UUID</td>
+                            <td>Field definition ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>project_id</code></td>
+                            <td>UUID</td>
+                            <td>Project</td>
+                        </tr>
+                        <tr>
+                            <td><code>created_by_id</code></td>
+                            <td>UUID</td>
+                            <td>Người tạo</td>
+                        </tr>
+                        <tr>
+                            <td><code>name</code></td>
+                            <td>String</td>
+                            <td>Tên trường</td>
+                        </tr>
+                        <tr>
+                            <td><code>field_type</code></td>
+                            <td>Enum</td>
+                            <td><code>text</code>, <code>number</code>, <code>date</code>, <code>select</code>, <code>multi_select</code>, <code>checkbox</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>required</code></td>
+                            <td>Boolean</td>
+                            <td>Bắt buộc</td>
+                        </tr>
+                        <tr>
+                            <td><code>description</code></td>
+                            <td>String</td>
+                            <td>Mô tả</td>
+                        </tr>
+                        <tr>
+                            <td><code>options</code></td>
+                            <td>JSONB</td>
+                            <td>Tùy chọn (cho select/multi_select)</td>
+                        </tr>
+                        <tr>
+                            <td><code>position</code></td>
+                            <td>Float</td>
+                            <td>Vị trí hiển thị</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 id="model-comment">4.13 Comment</h3>
+            <p><strong>Mô tả:</strong> Rich-text comments on tasks (Tiptap editor).</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id</code></td>
+                            <td>UUID</td>
+                            <td>Comment ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>task_id</code></td>
+                            <td>UUID</td>
+                            <td>Task</td>
+                        </tr>
+                        <tr>
+                            <td><code>author_id</code></td>
+                            <td>UUID</td>
+                            <td>Tác giả</td>
+                        </tr>
+                        <tr>
+                            <td><code>body</code></td>
+                            <td>Text</td>
+                            <td>Nội dung (rich-text HTML/JSON Tiptap)</td>
+                        </tr>
+                        <tr>
+                            <td><code>body_text</code></td>
+                            <td>Text</td>
+                            <td>Plain text (for search)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 id="model-attachment">4.14 Attachment</h3>
+            <p><strong>Mô tả:</strong> File attachments on tasks.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id</code></td>
+                            <td>UUID</td>
+                            <td>Attachment ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>task_id</code></td>
+                            <td>UUID</td>
+                            <td>Task</td>
+                        </tr>
+                        <tr>
+                            <td><code>uploaded_by_id</code></td>
+                            <td>UUID</td>
+                            <td>Người tải lên</td>
+                        </tr>
+                        <tr>
+                            <td><code>filename</code></td>
+                            <td>String</td>
+                            <td>Tên file</td>
+                        </tr>
+                        <tr>
+                            <td><code>storage_path</code></td>
+                            <td>String</td>
+                            <td>Đường dẫn lưu trữ</td>
+                        </tr>
+                        <tr>
+                            <td><code>mime_type</code></td>
+                            <td>String</td>
+                            <td>MIME type</td>
+                        </tr>
+                        <tr>
+                            <td><code>size_bytes</code></td>
+                            <td>Integer</td>
+                            <td>Kích thước (bytes)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 id="model-activity">4.15 ActivityLog</h3>
+            <p><strong>Mô tả:</strong> Audit trail for all changes in projects and tasks.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id</code></td>
+                            <td>UUID</td>
+                            <td>Log ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>workspace_id</code></td>
+                            <td>UUID</td>
+                            <td>Workspace</td>
+                        </tr>
+                        <tr>
+                            <td><code>project_id</code></td>
+                            <td>UUID</td>
+                            <td>Project (optional)</td>
+                        </tr>
+                        <tr>
+                            <td><code>entity_type</code></td>
+                            <td>String</td>
+                            <td>Loại thực thể</td>
+                        </tr>
+                        <tr>
+                            <td><code>entity_id</code></td>
+                            <td>UUID</td>
+                            <td>ID thực thể</td>
+                        </tr>
+                        <tr>
+                            <td><code>actor_id</code></td>
+                            <td>UUID</td>
+                            <td>Người thực hiện</td>
+                        </tr>
+                        <tr>
+                            <td><code>action</code></td>
+                            <td>String</td>
+                            <td>Hành động</td>
+                        </tr>
+                        <tr>
+                            <td><code>changes</code></td>
+                            <td>JSONB</td>
+                            <td>Chi tiết thay đổi</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 id="model-tag">4.16 Tag</h3>
+            <p><strong>Mô tả:</strong> Workspace-level labels for categorizing tasks.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id</code></td>
+                            <td>UUID</td>
+                            <td>Tag ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>workspace_id</code></td>
+                            <td>UUID</td>
+                            <td>Workspace</td>
+                        </tr>
+                        <tr>
+                            <td><code>name</code></td>
+                            <td>String</td>
+                            <td>Tên tag</td>
+                        </tr>
+                        <tr>
+                            <td><code>color</code></td>
+                            <td>String</td>
+                            <td>Màu sắc</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 5. API Endpoints -->
+            <h2 id="api-endpoints">5. API Endpoints</h2>
+
+            <h3>Project Management</h3>
+            <pre>POST   /api/v1/pms/workspaces/{workspace_id}/projects       # Create project
+GET    /api/v1/pms/workspaces/{workspace_id}/projects       # List projects
+GET    /api/v1/pms/projects/{project_id}                    # Get detail
+PATCH  /api/v1/pms/projects/{project_id}                    # Update project
+DELETE /api/v1/pms/projects/{project_id}                    # Delete project
+GET    /api/v1/pms/projects/{project_id}/stats              # Project statistics</pre>
+
+            <h3>Section Management</h3>
+            <pre>GET    /api/v1/pms/projects/{project_id}/sections           # List sections
+POST   /api/v1/pms/projects/{project_id}/sections           # Create section
+PATCH  /api/v1/pms/projects/{project_id}/sections/{id}      # Update section
+DELETE /api/v1/pms/projects/{project_id}/sections/{id}      # Delete section</pre>
+
+            <h3>Task Management</h3>
+            <pre>POST   /api/v1/pms/projects/{project_id}/tasks              # Create task
+GET    /api/v1/pms/projects/{project_id}/tasks              # List tasks
+GET    /api/v1/pms/projects/{project_id}/tasks/search       # Full-text search
+GET    /api/v1/pms/projects/{project_id}/tasks/{id}         # Get task
+PATCH  /api/v1/pms/projects/{project_id}/tasks/{id}         # Update task
+DELETE /api/v1/pms/projects/{project_id}/tasks/{id}         # Delete task
+PATCH  /api/v1/pms/projects/{project_id}/tasks/{id}/move    # Move/reorder task
+GET    /api/v1/pms/projects/{project_id}/tasks/{id}/tags    # Get task tags
+POST   /api/v1/pms/projects/{project_id}/tasks/{id}/tags/{tag_id}    # Add tag
+DELETE /api/v1/pms/projects/{project_id}/tasks/{id}/tags/{tag_id}    # Remove tag
+POST   /api/v1/pms/projects/{project_id}/tasks/{id}/followers        # Follow task
+DELETE /api/v1/pms/projects/{project_id}/tasks/{id}/followers        # Unfollow task</pre>
+
+            <h3>Sprint Management</h3>
+            <pre>POST   /api/v1/pms/projects/{project_id}/sprints            # Create sprint
+GET    /api/v1/pms/projects/{project_id}/sprints            # List sprints
+GET    /api/v1/pms/projects/{project_id}/sprints/{id}       # Get sprint
+PATCH  /api/v1/pms/projects/{project_id}/sprints/{id}       # Update sprint
+DELETE /api/v1/pms/projects/{project_id}/sprints/{id}       # Delete sprint
+POST   /api/v1/pms/projects/{project_id}/sprints/{id}/start     # Start sprint
+POST   /api/v1/pms/projects/{project_id}/sprints/{id}/complete  # Complete sprint
+GET    /api/v1/pms/projects/{project_id}/sprints/{id}/board     # Sprint board
+GET    /api/v1/pms/projects/{project_id}/backlog                # Backlog items
+GET    /api/v1/pms/projects/{project_id}/sprints/{id}/burndown  # Burndown chart
+GET    /api/v1/pms/projects/{project_id}/velocity               # Velocity chart</pre>
+
+            <h3>Goal Management</h3>
+            <pre>POST   /api/v1/pms/workspaces/{workspace_id}/goals              # Create goal
+GET    /api/v1/pms/workspaces/{workspace_id}/goals              # List goals
+GET    /api/v1/pms/workspaces/{workspace_id}/goals/{id}         # Get goal
+PATCH  /api/v1/pms/workspaces/{workspace_id}/goals/{id}         # Update goal
+DELETE /api/v1/pms/workspaces/{workspace_id}/goals/{id}         # Delete goal
+POST   /api/v1/pms/workspaces/{workspace_id}/goals/{id}/projects         # Link project
+DELETE /api/v1/pms/workspaces/{workspace_id}/goals/{id}/projects/{pid}   # Unlink project
+POST   /api/v1/pms/workspaces/{workspace_id}/goals/{id}/tasks            # Link task
+DELETE /api/v1/pms/workspaces/{workspace_id}/goals/{id}/tasks/{tid}      # Unlink task
+GET    /api/v1/pms/workspaces/{workspace_id}/goals/{id}/projects         # List linked projects
+GET    /api/v1/pms/workspaces/{workspace_id}/goals/{id}/tasks            # List linked tasks</pre>
+
+            <h3>Comment Management</h3>
+            <pre>POST   /api/v1/pms/projects/{project_id}/tasks/{task_id}/comments        # Create comment
+GET    /api/v1/pms/projects/{project_id}/tasks/{task_id}/comments        # List comments
+PATCH  /api/v1/pms/projects/{project_id}/tasks/{task_id}/comments/{id}   # Update comment
+DELETE /api/v1/pms/projects/{project_id}/tasks/{task_id}/comments/{id}   # Delete comment</pre>
+
+            <h3>Attachment Management</h3>
+            <pre>POST   /api/v1/pms/projects/{project_id}/tasks/{task_id}/attachments                 # Upload
+GET    /api/v1/pms/projects/{project_id}/tasks/{task_id}/attachments                 # List
+GET    /api/v1/pms/projects/{project_id}/tasks/{task_id}/attachments/{id}/download   # Download
+DELETE /api/v1/pms/projects/{project_id}/tasks/{task_id}/attachments/{id}            # Delete</pre>
+
+            <h3>Custom Fields</h3>
+            <pre>POST   /api/v1/pms/projects/{project_id}/custom-fields       # Create definition
+GET    /api/v1/pms/projects/{project_id}/custom-fields       # List definitions
+PATCH  /api/v1/pms/projects/{project_id}/custom-fields/{id}  # Update definition
+DELETE /api/v1/pms/projects/{project_id}/custom-fields/{id}  # Delete definition</pre>
+
+            <h3>Activity Log</h3>
+            <pre>GET    /api/v1/pms/projects/{project_id}/activity            # Project activity
+GET    /api/v1/pms/tasks/{task_id}/activity                  # Task activity</pre>
+
+            <h3>Tag Management</h3>
+            <pre>POST   /api/v1/pms/workspaces/{workspace_id}/tags            # Create tag
+GET    /api/v1/pms/workspaces/{workspace_id}/tags            # List tags</pre>
+
+            <!-- 6. Frontend Pages -->
+            <h2 id="frontend-pages">6. Frontend Pages (15+)</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Page</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>PMS Dashboard</strong></td>
+                            <td>KPI cards, task distribution, burndown preview</td>
+                        </tr>
+                        <tr>
+                            <td><strong>My Tasks</strong></td>
+                            <td>Personal task list across all projects</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Projects List</strong></td>
+                            <td>Browse and manage projects in workspace</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Project Detail</strong></td>
+                            <td>Sections, tasks, timeline view</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Kanban Board</strong></td>
+                            <td>Drag-drop task board organized by sections</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Task Detail</strong></td>
+                            <td>Full task with comments, attachments, custom fields</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sprint Board</strong></td>
+                            <td>Sprint-scoped kanban view</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Backlog</strong></td>
+                            <td>Unassigned tasks for sprint planning</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Burndown Chart</strong></td>
+                            <td>Sprint progress visualization</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Velocity Chart</strong></td>
+                            <td>Team velocity across sprints</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Goals List</strong></td>
+                            <td>Workspace goals with progress bars</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Goal Detail</strong></td>
+                            <td>Goal with linked projects and tasks</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Custom Fields</strong></td>
+                            <td>Configure project-specific custom fields</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Calendar View</strong></td>
+                            <td>Task timeline and due dates on calendar</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Timeline / Gantt</strong></td>
+                            <td>Project timeline visualization with task dependencies</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 7. Key Features Implemented -->
+            <h2 id="key-features">7. Key Features Implemented</h2>
+
+            <h3>Project Management</h3>
+            <ul>
+                <li>Three project types: <strong>kanban</strong> (drag-drop columns), <strong>list</strong> (flat view), <strong>board</strong> (grid)</li>
+                <li>Project visibility: team, private, public</li>
+                <li>Archive/restore projects</li>
+                <li>Project-level statistics endpoint (task counts, completion rate)</li>
+                <li>Color and icon customization per project</li>
+            </ul>
+
+            <h3>Task Management</h3>
+            <ul>
+                <li>Full CRUD with fractional indexing positions for drag-drop reordering</li>
+                <li>Task priorities: none, low, medium, high, urgent</li>
+                <li>Task types: task, bug, story, epic</li>
+                <li>Subtasks via <code>parent_id</code> self-referential relationship</li>
+                <li>Task dependencies (blocking/blocked relationships)</li>
+                <li>Move/reorder across sections with position recalculation</li>
+                <li>Tags and multi-tag support per task</li>
+                <li>Task followers (subscribe to notifications)</li>
+            </ul>
+
+            <h3>Recurring Tasks</h3>
+            <ul>
+                <li>Cron-expression-based recurrence rules</li>
+                <li>Configurable recurrence end date</li>
+                <li>Auto-generated recurring task instances tracked via <code>parent_recurring_id</code></li>
+                <li><code>last_generated_date</code> to prevent duplicate generation</li>
+            </ul>
+
+            <h3>Agile Tools</h3>
+            <ul>
+                <li><strong>Sprints</strong>: planning &rarr; active &rarr; completed lifecycle</li>
+                <li><strong>Backlog</strong>: tasks not assigned to any sprint</li>
+                <li><strong>Story points</strong> on tasks for capacity planning</li>
+                <li><strong>Epics</strong>: tasks with <code>task_type = epic</code> act as parent containers</li>
+                <li><strong>Burndown chart</strong>: remaining story points over sprint timeline</li>
+                <li><strong>Velocity chart</strong>: completed story points per sprint</li>
+            </ul>
+
+            <h3>Full-Text Search</h3>
+            <ul>
+                <li>PostgreSQL <code>tsvector</code> trigger on task <code>title</code> + <code>description</code></li>
+                <li>Indexed search via <code>/tasks/search</code> endpoint</li>
+                <li>Supports phrase and keyword queries</li>
+            </ul>
+
+            <h3>Goals &amp; OKR</h3>
+            <ul>
+                <li>Workspace-level goals with status: on_track, at_risk, off_track, achieved</li>
+                <li>Two calculation methods: <strong>manual</strong> (direct update) or <strong>automatic</strong> (derived from linked tasks)</li>
+                <li>Link goals to multiple projects and tasks</li>
+                <li>Progress value (0&ndash;100) with color indicator</li>
+            </ul>
+
+            <h3>Custom Fields</h3>
+            <ul>
+                <li>Six field types: text, number, date, select, multi_select, checkbox</li>
+                <li>Per-project field definitions with ordering via <code>position</code></li>
+                <li>Field values stored as <code>JSONB</code> on tasks for schema flexibility</li>
+                <li>Required field validation support</li>
+            </ul>
+
+            <h3>Collaboration</h3>
+            <ul>
+                <li><strong>Rich-text comments</strong> via Tiptap editor (HTML/JSON body)</li>
+                <li><code>body_text</code> plain-text mirror for search</li>
+                <li><strong>File attachments</strong>: upload, download, MIME type tracking, size in bytes</li>
+                <li><strong>Activity log</strong>: every change recorded with actor, action, and JSONB diff</li>
+            </ul>
+
+            <h3>RBAC</h3>
+            <ul>
+                <li>Project roles: owner, editor, commenter, viewer</li>
+                <li>Workspace admin overrides project-level roles</li>
+                <li>Commenter role: read + comment only, no task edits</li>
+                <li>Viewer role: strict read-only</li>
+            </ul>
+
+            <!-- 8. Task Lifecycle Workflow -->
+            <h2 id="task-lifecycle">8. Task Lifecycle Workflow</h2>
+            <pre>Task Created (status: incomplete)
+    |
+    ├── Assigned to member
+    ├── Priority set (none/low/medium/high/urgent)
+    ├── Due date and start date configured
+    ├── Added to Section (Kanban column)
+    ├── Tagged and followed
+    |
+    ├── Moved across Sections (drag-drop, fractional index)
+    ├── Comments added (rich-text)
+    ├── Attachments uploaded
+    ├── Custom fields filled
+    |
+    ├── [Optional] Added to Sprint
+    ├── [Optional] Linked to Epic (epic_id)
+    ├── [Optional] Dependencies set (blocking/blocked)
+    ├── [Optional] Subtasks created (parent_id)
+    |
+    └── Marked Complete (status: complete, completed_at set)
+            |
+            └── [If recurring] Next instance auto-generated via cron</pre>
+
+            <!-- 9. Sprint Workflow -->
+            <h2 id="sprint-workflow">9. Sprint Workflow</h2>
+            <pre>Sprint Created (status: planning)
+    |
+    ├── Tasks moved from Backlog to Sprint
+    ├── Story points assigned to tasks
+    ├── Sprint goal defined
+    |
+Sprint Started (status: active)
+    |
+    ├── Sprint Board active (kanban scoped to sprint)
+    ├── Burndown chart tracks remaining points daily
+    ├── Tasks completed → story points decrease
+    |
+Sprint Completed (status: completed)
+    |
+    ├── Incomplete tasks moved back to Backlog
+    ├── Velocity recorded (total completed story points)
+    └── Velocity Chart updated for historical comparison</pre>
+
+            <!-- 10. Role-Based Permissions -->
+            <h2 id="permissions">10. Role-Based Permissions</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Workspace Admin</th>
+                            <th>Project Owner</th>
+                            <th>Editor</th>
+                            <th>Commenter</th>
+                            <th>Viewer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Create/delete project</td>
+                            <td>Yes</td>
+                            <td>No</td>
+                            <td>No</td>
+                            <td>No</td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td>Manage memberships</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                            <td>No</td>
+                            <td>No</td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td>Create/edit tasks</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                            <td>No</td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td>Delete tasks</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                            <td>No</td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td>Move/reorder tasks</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                            <td>No</td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td>Add comments</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td>Upload attachments</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                            <td>No</td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td>Manage sections</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                            <td>No</td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td>Manage custom fields</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                            <td>No</td>
+                            <td>No</td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td>Manage sprints</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                            <td>No</td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td>View project/tasks</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                        </tr>
+                        <tr>
+                            <td>Manage goals</td>
+                            <td>Yes</td>
+                            <td>No</td>
+                            <td>No</td>
+                            <td>No</td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td>Manage tags</td>
+                            <td>Yes</td>
+                            <td>No</td>
+                            <td>No</td>
+                            <td>No</td>
+                            <td>No</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 11. Success Metrics -->
+            <h2 id="success-metrics">11. Success Metrics</h2>
+            <ul>
+                <li>100% task lifecycle số hóa, không dùng Excel</li>
+                <li>Giảm 50% thời gian họp standup nhờ Kanban board real-time</li>
+                <li>100% sprint planning qua backlog và story points</li>
+                <li>Burndown và velocity accuracy &gt; 95%</li>
+                <li>Full-text search response &lt; 200ms</li>
+                <li>Goal progress tự động cập nhật khi task hoàn thành (automatic mode)</li>
+            </ul>
+
+            <!-- 12. Future Enhancements -->
+            <h2 id="future">12. Future Enhancements</h2>
+            <ul>
+                <li>AI agent tự động gợi ý assignee và deadline dựa trên workload</li>
+                <li>Natural language task creation (Agent MCP integration)</li>
+                <li>Gantt chart với critical path highlighting</li>
+                <li>Time tracking per task (actual vs estimated)</li>
+                <li>Advanced reporting (project health, SLA compliance)</li>
+                <li>Slack/Teams notification integration</li>
+                <li>Git integration (link commits to tasks)</li>
+                <li>Mobile app với offline task management</li>
+            </ul>
+
+        </div>
+    </main>
+
+    <script>
+        // Theme query param handling — reads ?theme=dark or ?theme=light from URL
+        (function () {
+            var params = new URLSearchParams(window.location.search);
+            var themeParam = params.get('theme');
+            if (themeParam === 'dark' || themeParam === 'light') {
+                document.body.setAttribute('data-theme', themeParam);
+                document.documentElement.setAttribute('data-theme', themeParam);
+            }
+        })();
+
+        // Dark mode toggle
+        var dt = document.getElementById('darkToggle');
+        var sun = document.getElementById('sunIcon');
+        var moon = document.getElementById('moonIcon');
+        var label = document.getElementById('darkToggleLabel');
+
+        function applyTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            document.documentElement.setAttribute('data-theme', theme);
+            sun.style.display = theme === 'dark' ? 'none' : 'block';
+            moon.style.display = theme === 'dark' ? 'block' : 'none';
+            label.textContent = theme === 'dark' ? 'Light' : 'Dark';
+        }
+
+        // Init icons to match current theme
+        var initTheme = document.body.getAttribute('data-theme') || 'light';
+        applyTheme(initTheme);
+
+        dt.addEventListener('click', function () {
+            var current = document.body.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+
+        // Hamburger / sidebar toggle
+        var hamburger = document.getElementById('hamburgerBtn');
+        var sidebar = document.getElementById('sidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+
+        hamburger.addEventListener('click', function () {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        });
+
+        overlay.addEventListener('click', function () {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('open');
+        });
+
+        // Sidebar section collapse toggle
+        function toggleSection(header) {
+            var section = header.closest('.sidebar-section');
+            section.classList.toggle('collapsed');
+        }
+
+        // Scroll-spy: highlight sidebar link for visible section
+        (function () {
+            var links = document.querySelectorAll('.sidebar-link[href^="#"]');
+            var sections = [];
+
+            links.forEach(function (link) {
+                var id = link.getAttribute('href').slice(1);
+                var el = document.querySelector('.main #' + id);
+                if (el) sections.push({ id: id, el: el, link: link });
+            });
+
+            function onScroll() {
+                var scrollY = window.scrollY + 80;
+                var active = null;
+                sections.forEach(function (s) {
+                    if (s.el.offsetTop <= scrollY) active = s;
+                });
+                links.forEach(function (l) { l.classList.remove('spy-active'); });
+                if (active) active.link.classList.add('spy-active');
+            }
+
+            window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll();
+        })();
+    </script>
+
+</body>
+
+</html>
