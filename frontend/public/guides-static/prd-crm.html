@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="vi" data-lang="vi" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM PRD — A-ERP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            --color-primary: #5E6AD2;
+            --color-primary-hover: #4F55C4;
+            --color-accent: #F28C38;
+            --color-success: #22C55E;
+            --color-warning: #F59E0B;
+            --color-danger: #EF4444;
+            --color-info: #38BDF8;
+            --bg-page: #FFFFFF;
+            --bg-surface: #F9F9FB;
+            --bg-elevated: #FFFFFF;
+            --border-default: #E4E4E7;
+            --text-primary: #18181B;
+            --text-secondary: #52525B;
+            --text-tertiary: #A1A1AA;
+            --radius-xs: 4px;
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+            --shadow-elevated: 0 4px 12px rgba(0, 0, 0, .10);
+            --sidebar-width: 260px;
+            --topbar-height: 52px;
+            --dur: 150ms;
+        }
+
+        [data-theme="dark"] {
+            --bg-page: #0F0F12;
+            --bg-surface: #1A1A1F;
+            --bg-elevated: #25252B;
+            --border-default: rgba(255, 255, 255, .10);
+            --text-primary: #FAFAFA;
+            --text-secondary: #A1A1AA;
+            --text-tertiary: #52525B;
+            --color-primary: #6E78E8;
+            --color-primary-hover: #7D87EE;
+            --color-accent: #F5A05A;
+            --color-success: #4ADE80;
+            --color-warning: #FBB532;
+            --color-danger: #F87171;
+            --color-info: #7DD3FC;
+            --shadow-elevated: 0 4px 12px rgba(0, 0, 0, .40);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 14px;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-page);
+            transition: background var(--dur) ease, color var(--dur) ease;
+        }
+
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--topbar-height);
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border-default);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .topbar-brand {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--color-primary);
+            letter-spacing: -.3px;
+            flex-shrink: 0;
+        }
+
+        .topbar-brand span {
+            color: var(--text-primary);
+            font-weight: 400;
+        }
+
+        .topbar-subtitle {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            border-left: 1px solid var(--border-default);
+            padding-left: 12px;
+            margin-left: 4px;
+        }
+
+        .topbar-spacer {
+            flex: 1;
+        }
+
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 6px;
+            border-radius: var(--radius-sm);
+        }
+
+        .hamburger:hover {
+            background: var(--bg-elevated);
+        }
+
+        .dark-toggle {
+            background: none;
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 6px 10px;
+            font-size: 13px;
+            font-family: var(--font-sans);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background var(--dur) ease, border-color var(--dur) ease;
+        }
+
+        .dark-toggle:hover {
+            background: var(--bg-elevated);
+            border-color: var(--text-tertiary);
+        }
+
+        .sidebar {
+            position: fixed;
+            top: var(--topbar-height);
+            left: 0;
+            width: var(--sidebar-width);
+            height: calc(100vh - var(--topbar-height));
+            background: var(--bg-surface);
+            border-right: 1px solid var(--border-default);
+            overflow-y: auto;
+            overflow-x: hidden;
+            z-index: 90;
+            transition: transform var(--dur) ease;
+            padding: 16px 0 32px;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border-default);
+            border-radius: 2px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 16px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .sidebar-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            color: var(--text-tertiary);
+        }
+
+        .sidebar-chevron {
+            color: var(--text-tertiary);
+            transition: transform var(--dur) ease;
+        }
+
+        .sidebar-section.collapsed .sidebar-chevron {
+            transform: rotate(-90deg);
+        }
+
+        .sidebar-section.collapsed .sidebar-section-items {
+            display: none;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px 6px 24px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            cursor: pointer;
+            transition: background var(--dur) ease, color var(--dur) ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            line-height: 1.4;
+        }
+
+        .sidebar-link:hover {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+        }
+
+        .sidebar-link.active,
+        .sidebar-link.spy-active {
+            background: rgba(94, 106, 210, .10);
+            color: var(--color-primary);
+            font-weight: 500;
+        }
+
+        [data-theme="dark"] .sidebar-link.active,
+        [data-theme="dark"] .sidebar-link.spy-active {
+            background: rgba(110, 120, 232, .15);
+        }
+
+        .sidebar-link-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--text-tertiary);
+            flex-shrink: 0;
+            margin-left: 4px;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .40);
+            z-index: 89;
+        }
+
+        .main {
+            margin-left: var(--sidebar-width);
+            margin-top: var(--topbar-height);
+            padding: 40px 48px;
+            max-width: calc(100% - var(--sidebar-width));
+            min-height: calc(100vh - var(--topbar-height));
+        }
+
+        .content-area {
+            max-width: 820px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1.2;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -.4px;
+        }
+
+        h2 {
+            font-size: 22px;
+            font-weight: 600;
+            line-height: 1.3;
+            color: var(--text-primary);
+            margin-top: 52px;
+            margin-bottom: 16px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-default);
+            letter-spacing: -.3px;
+        }
+
+        h2:first-child {
+            margin-top: 0;
+            border-top: none;
+            padding-top: 0;
+        }
+
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.4;
+            color: var(--text-primary);
+            margin-top: 32px;
+            margin-bottom: 10px;
+        }
+
+        h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            line-height: 1.7;
+        }
+
+        p:last-child {
+            margin-bottom: 0;
+        }
+
+        ul,
+        ol {
+            padding-left: 20px;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        li {
+            margin-bottom: 4px;
+            line-height: 1.6;
+        }
+
+        li strong {
+            color: var(--text-primary);
+        }
+
+        a {
+            color: var(--color-primary);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-xs);
+            padding: 1px 5px;
+            color: var(--color-primary);
+        }
+
+        [data-theme="dark"] code {
+            background: var(--bg-elevated);
+        }
+
+        pre {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            overflow-x: auto;
+            margin: 16px 0;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+
+        [data-theme="dark"] pre {
+            background: var(--bg-elevated);
+        }
+
+        .page-header {
+            margin-bottom: 40px;
+            padding-bottom: 28px;
+            border-bottom: 1px solid var(--border-default);
+        }
+
+        .page-header-meta {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-top: 8px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            text-align: left;
+            padding: 8px 12px;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            color: var(--text-tertiary);
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border-default);
+        }
+
+        td {
+            padding: 9px 12px;
+            border-bottom: 1px solid var(--border-default);
+            color: var(--text-secondary);
+            vertical-align: top;
+            line-height: 1.5;
+        }
+
+        td strong {
+            color: var(--text-primary);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: var(--bg-surface);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .3px;
+        }
+
+        .badge-success {
+            background: rgba(34, 197, 94, .12);
+            color: var(--color-success);
+        }
+
+        .flow-block {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            padding: 14px 18px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin: 12px 0 20px;
+        }
+
+        [data-theme="dark"] .flow-block {
+            background: var(--bg-elevated);
+        }
+
+        @media(max-width:768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 95;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay.open {
+                display: block;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .topbar-subtitle {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+                max-width: 100%;
+                padding: 24px 20px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body data-theme="light">
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <header class="topbar">
+        <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+        </button>
+        <span class="topbar-brand">A-ERP <span>Docs</span></span>
+        <span class="topbar-subtitle">CRM PRD</span>
+        <span class="topbar-spacer"></span>
+        <button class="dark-toggle" id="darkToggle">
+            <svg id="sunIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2">
+                <circle cx="12" cy="12" r="4" />
+                <path
+                    d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+            </svg>
+            <svg id="moonIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" style="display:none">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+            <span id="darkToggleLabel">Dark</span>
+        </button>
+    </header>
+
+    <nav class="sidebar" id="sidebar">
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-header" onclick="toggleSection(this)">
+                <span class="sidebar-section-title">Overview</span>
+                <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="sidebar-section-items">
+                <a class="sidebar-link" href="#overview"><span class="sidebar-link-dot"></span>1. Product Overview</a>
+                <a class="sidebar-link" href="#stakeholders"><span class="sidebar-link-dot"></span>2. Stakeholders</a>
+                <a class="sidebar-link" href="#scope"><span class="sidebar-link-dot"></span>3. System Scope</a>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-header" onclick="toggleSection(this)">
+                <span class="sidebar-section-title">Data Models</span>
+                <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="sidebar-section-items">
+                <a class="sidebar-link" href="#data-models"><span class="sidebar-link-dot"></span>4. Core Data Models</a>
+                <a class="sidebar-link" href="#model-contact"><span class="sidebar-link-dot"></span>Contact</a>
+                <a class="sidebar-link" href="#model-lead"><span class="sidebar-link-dot"></span>Lead</a>
+                <a class="sidebar-link" href="#model-deal"><span class="sidebar-link-dot"></span>Deal</a>
+                <a class="sidebar-link" href="#model-account"><span class="sidebar-link-dot"></span>Account</a>
+                <a class="sidebar-link" href="#model-activity"><span class="sidebar-link-dot"></span>Activity</a>
+                <a class="sidebar-link" href="#model-campaign"><span class="sidebar-link-dot"></span>Campaign</a>
+                <a class="sidebar-link" href="#model-ticket"><span class="sidebar-link-dot"></span>Ticket</a>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-header" onclick="toggleSection(this)">
+                <span class="sidebar-section-title">API</span>
+                <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="sidebar-section-items">
+                <a class="sidebar-link" href="#api-endpoints"><span class="sidebar-link-dot"></span>5. API Endpoints</a>
+                <a class="sidebar-link" href="#frontend-pages"><span class="sidebar-link-dot"></span>6. Frontend Pages</a>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-header" onclick="toggleSection(this)">
+                <span class="sidebar-section-title">Features</span>
+                <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="sidebar-section-items">
+                <a class="sidebar-link" href="#lead-scoring"><span class="sidebar-link-dot"></span>7. Lead Scoring</a>
+                <a class="sidebar-link" href="#key-features"><span class="sidebar-link-dot"></span>8. Key Features</a>
+                <a class="sidebar-link" href="#data-quality"><span class="sidebar-link-dot"></span>9. Data Quality</a>
+                <a class="sidebar-link" href="#future"><span class="sidebar-link-dot"></span>10. Future Enhancements</a>
+                <a class="sidebar-link" href="#success-metrics"><span class="sidebar-link-dot"></span>11. Success Metrics</a>
+            </div>
+        </div>
+
+    </nav>
+
+    <main class="main">
+        <div class="content-area">
+
+            <div class="page-header">
+                <h1>CRM Product Requirements</h1>
+                <p class="page-header-meta">Customer Relationship Management — Full Specification &mdash; Status: <span class="badge badge-success">Fully Implemented</span> &mdash; Last updated: 2026-03-11</p>
+            </div>
+
+            <!-- 1. Product Overview -->
+            <h2 id="overview">1. Product Overview</h2>
+
+            <h3>1.1 Product Name</h3>
+            <p>CRM Module &mdash; Enterprise Resource Platform</p>
+
+            <h3>1.2 Purpose</h3>
+            <p>Build a CRM system to manage the entire customer lifecycle from marketing, lead generation, and sales opportunities through to post-sales customer care.</p>
+
+            <h3>1.3 Objectives</h3>
+            <ul>
+                <li>Standardize the sales process</li>
+                <li>Increase Lead &rarr; Customer conversion rate</li>
+                <li>Manage revenue pipeline</li>
+                <li>Track sales activities</li>
+                <li>Increase customer lifetime value (LTV)</li>
+            </ul>
+
+            <h3>1.4 Implementation Status</h3>
+            <p><strong>FULLY IMPLEMENTED</strong> &mdash; All core features and data models are production-ready.</p>
+
+            <!-- 2. Stakeholders -->
+            <h2 id="stakeholders">2. Stakeholders</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Role</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Sales</strong></td>
+                            <td>Manage and close deals</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Marketing</strong></td>
+                            <td>Create leads and campaigns</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sales Manager</strong></td>
+                            <td>Manage pipeline and KPIs</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Support</strong></td>
+                            <td>Customer care and support tickets</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Admin</strong></td>
+                            <td>System administration</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 3. System Scope -->
+            <h2 id="scope">3. System Scope</h2>
+
+            <h3>In Scope</h3>
+            <ul>
+                <li>Lead management (CRUD, duplicate detection, auto-scoring, distribution)</li>
+                <li>Deal management (pipeline, stage tracking, closing workflows)</li>
+                <li>Contact management (customer database, 360 view)</li>
+                <li>Account management (customer organization, health scores)</li>
+                <li>Activity tracking (calls, emails, meetings, demos, follow-ups)</li>
+                <li>Campaign management (creation, budget tracking, lead source)</li>
+                <li>Ticket management (customer support, issue tracking)</li>
+                <li>CRM analytics &amp; reporting</li>
+                <li>Data quality monitoring</li>
+                <li>Governance alerts</li>
+            </ul>
+
+            <h3>Out of Scope</h3>
+            <ul>
+                <li>Accounting integration</li>
+                <li>Advanced marketing automation</li>
+                <li>Email deliverability system</li>
+                <li>Phone integration with PBX</li>
+            </ul>
+
+            <!-- 4. Core Data Models -->
+            <h2 id="data-models">4. Core Data Models</h2>
+
+            <h3 id="model-contact">4.1 Contact</h3>
+            <p><strong>Description:</strong> Individual contacts associated with accounts.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id</code></td>
+                            <td>UUID</td>
+                            <td>Contact ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>name</code></td>
+                            <td>String</td>
+                            <td>Full name</td>
+                        </tr>
+                        <tr>
+                            <td><code>email</code></td>
+                            <td>String</td>
+                            <td>Email address</td>
+                        </tr>
+                        <tr>
+                            <td><code>phone</code></td>
+                            <td>String</td>
+                            <td>Phone number</td>
+                        </tr>
+                        <tr>
+                            <td><code>company</code></td>
+                            <td>String</td>
+                            <td>Company name</td>
+                        </tr>
+                        <tr>
+                            <td><code>account_id</code></td>
+                            <td>UUID</td>
+                            <td>Account association</td>
+                        </tr>
+                        <tr>
+                            <td><code>workspace_id</code></td>
+                            <td>UUID</td>
+                            <td>Workspace ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>created_at</code></td>
+                            <td>DateTime</td>
+                            <td>Creation timestamp</td>
+                        </tr>
+                        <tr>
+                            <td><code>updated_at</code></td>
+                            <td>DateTime</td>
+                            <td>Last updated timestamp</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 id="model-lead">4.2 Lead</h3>
+            <p><strong>Description:</strong> Prospective customers from marketing sources.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id</code></td>
+                            <td>UUID</td>
+                            <td>Lead ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>name</code></td>
+                            <td>String</td>
+                            <td>Customer name</td>
+                        </tr>
+                        <tr>
+                            <td><code>email</code></td>
+                            <td>String</td>
+                            <td>Email address</td>
+                        </tr>
+                        <tr>
+                            <td><code>phone</code></td>
+                            <td>String</td>
+                            <td>Phone number</td>
+                        </tr>
+                        <tr>
+                            <td><code>source</code></td>
+                            <td>Enum</td>
+                            <td>Lead source: <code>website</code>, <code>ads</code>, <code>referral</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>status</code></td>
+                            <td>Enum</td>
+                            <td><code>New</code>, <code>Contacted</code>, <code>Qualified</code>, <code>Lost</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>score</code></td>
+                            <td>Integer</td>
+                            <td>Lead score (auto-calculated, 0&ndash;100)</td>
+                        </tr>
+                        <tr>
+                            <td><code>contacted_at</code></td>
+                            <td>DateTime</td>
+                            <td>First contact timestamp</td>
+                        </tr>
+                        <tr>
+                            <td><code>assigned_at</code></td>
+                            <td>DateTime</td>
+                            <td>Assignment timestamp to sales rep</td>
+                        </tr>
+                        <tr>
+                            <td><code>owner_id</code></td>
+                            <td>UUID</td>
+                            <td>Assigned sales rep</td>
+                        </tr>
+                        <tr>
+                            <td><code>campaign_id</code></td>
+                            <td>UUID</td>
+                            <td>Associated campaign</td>
+                        </tr>
+                        <tr>
+                            <td><code>workspace_id</code></td>
+                            <td>UUID</td>
+                            <td>Workspace ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>created_at</code></td>
+                            <td>DateTime</td>
+                            <td>Creation timestamp</td>
+                        </tr>
+                        <tr>
+                            <td><code>updated_at</code></td>
+                            <td>DateTime</td>
+                            <td>Last updated timestamp</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>Lead Status Flow</h4>
+            <div class="flow-block">New &rarr; Contacted &rarr; Qualified &rarr; Opportunity &rarr; Lost / Disqualified</div>
+
+            <h4>Lead Features</h4>
+            <ul>
+                <li><strong>Duplicate Detection:</strong> Automatic duplicate lead detection</li>
+                <li><strong>Auto Scoring:</strong> Lead score calculated based on interactions</li>
+                <li><strong>Lead Distribution:</strong> Round-robin assignment to sales team</li>
+                <li><strong>Conversion:</strong> Convert to deal when qualified</li>
+                <li><strong>Stale Detection:</strong> Alert on no activity &gt; 30 days</li>
+            </ul>
+
+            <h3 id="model-deal">4.3 Deal</h3>
+            <p><strong>Description:</strong> Sales opportunities in pipeline.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id</code></td>
+                            <td>UUID</td>
+                            <td>Deal ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>title</code></td>
+                            <td>String</td>
+                            <td>Deal name</td>
+                        </tr>
+                        <tr>
+                            <td><code>value</code></td>
+                            <td>Float</td>
+                            <td>Deal value (VND)</td>
+                        </tr>
+                        <tr>
+                            <td><code>stage</code></td>
+                            <td>Enum</td>
+                            <td>Pipeline stage (see below)</td>
+                        </tr>
+                        <tr>
+                            <td><code>probability</code></td>
+                            <td>Float</td>
+                            <td>Win probability (0.0 &ndash; 1.0)</td>
+                        </tr>
+                        <tr>
+                            <td><code>expected_close_date</code></td>
+                            <td>DateTime</td>
+                            <td>Expected close date</td>
+                        </tr>
+                        <tr>
+                            <td><code>loss_reason</code></td>
+                            <td>String</td>
+                            <td>Reason for loss (if closed lost)</td>
+                        </tr>
+                        <tr>
+                            <td><code>closed_at</code></td>
+                            <td>DateTime</td>
+                            <td>Close timestamp</td>
+                        </tr>
+                        <tr>
+                            <td><code>last_activity_date</code></td>
+                            <td>DateTime</td>
+                            <td>Most recent activity timestamp</td>
+                        </tr>
+                        <tr>
+                            <td><code>owner_id</code></td>
+                            <td>UUID</td>
+                            <td>Sales owner</td>
+                        </tr>
+                        <tr>
+                            <td><code>last_updated_by</code></td>
+                            <td>UUID</td>
+                            <td>Last editor</td>
+                        </tr>
+                        <tr>
+                            <td><code>contact_id</code></td>
+                            <td>UUID</td>
+                            <td>Contact association</td>
+                        </tr>
+                        <tr>
+                            <td><code>lead_id</code></td>
+                            <td>UUID</td>
+                            <td>Source lead (if converted)</td>
+                        </tr>
+                        <tr>
+                            <td><code>account_id</code></td>
+                            <td>UUID</td>
+                            <td>Account association</td>
+                        </tr>
+                        <tr>
+                            <td><code>workspace_id</code></td>
+                            <td>UUID</td>
+                            <td>Workspace ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>created_at</code></td>
+                            <td>DateTime</td>
+                            <td>Creation timestamp</td>
+                        </tr>
+                        <tr>
+                            <td><code>updated_at</code></td>
+                            <td>DateTime</td>
+                            <td>Last updated timestamp</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>Pipeline Stages</h4>
+            <div class="flow-block">Qualified Lead &rarr; Needs Analysis &rarr; Proposal &rarr; Negotiation &rarr; Closed Won / Closed Lost</div>
+
+            <h4>Deal Features</h4>
+            <ul>
+                <li><strong>Stage Tracking:</strong> Move through pipeline stages</li>
+                <li><strong>Probability Management:</strong> Update win probability</li>
+                <li><strong>Closing Workflow:</strong> Record loss reason and close deal</li>
+                <li><strong>Stale Detection:</strong> Alert on no activity &gt; 60 days</li>
+                <li><strong>Activity History:</strong> All activities on deal tracked</li>
+            </ul>
+
+            <h3 id="model-account">4.4 Account</h3>
+            <p><strong>Description:</strong> Customer organizations.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id</code></td>
+                            <td>UUID</td>
+                            <td>Account ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>name</code></td>
+                            <td>String</td>
+                            <td>Customer name</td>
+                        </tr>
+                        <tr>
+                            <td><code>industry</code></td>
+                            <td>String</td>
+                            <td>Business industry</td>
+                        </tr>
+                        <tr>
+                            <td><code>total_revenue</code></td>
+                            <td>Float</td>
+                            <td>Total revenue (VND)</td>
+                        </tr>
+                        <tr>
+                            <td><code>status</code></td>
+                            <td>Enum</td>
+                            <td><code>Active</code>, <code>Inactive</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>website</code></td>
+                            <td>String</td>
+                            <td>Website URL</td>
+                        </tr>
+                        <tr>
+                            <td><code>address</code></td>
+                            <td>String</td>
+                            <td>Physical address</td>
+                        </tr>
+                        <tr>
+                            <td><code>source_deal_id</code></td>
+                            <td>UUID</td>
+                            <td>Original deal that created this account</td>
+                        </tr>
+                        <tr>
+                            <td><code>next_follow_up_date</code></td>
+                            <td>DateTime</td>
+                            <td>Next follow-up date</td>
+                        </tr>
+                        <tr>
+                            <td><code>health_score</code></td>
+                            <td>Integer</td>
+                            <td>Account health (0&ndash;100)</td>
+                        </tr>
+                        <tr>
+                            <td><code>workspace_id</code></td>
+                            <td>UUID</td>
+                            <td>Workspace ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>created_at</code></td>
+                            <td>DateTime</td>
+                            <td>Creation timestamp</td>
+                        </tr>
+                        <tr>
+                            <td><code>updated_at</code></td>
+                            <td>DateTime</td>
+                            <td>Last updated timestamp</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>Account 360 View</h4>
+            <p>The account detail page includes a comprehensive 360-degree view:</p>
+            <ul>
+                <li>Contacts associated with account</li>
+                <li>All deals (won, lost, open)</li>
+                <li>Activity timeline (calls, emails, meetings)</li>
+                <li>Support tickets</li>
+                <li>Contracts and revenue history</li>
+            </ul>
+
+            <h3 id="model-activity">4.5 Activity</h3>
+            <p><strong>Description:</strong> Sales interactions tracked across leads, deals, contacts, and accounts.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id</code></td>
+                            <td>UUID</td>
+                            <td>Activity ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>type</code></td>
+                            <td>Enum</td>
+                            <td><code>call</code>, <code>email</code>, <code>meeting</code>, <code>demo</code>, <code>follow_up</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>subject</code></td>
+                            <td>String</td>
+                            <td>Activity subject/title</td>
+                        </tr>
+                        <tr>
+                            <td><code>notes</code></td>
+                            <td>Text</td>
+                            <td>Detailed notes</td>
+                        </tr>
+                        <tr>
+                            <td><code>date</code></td>
+                            <td>DateTime</td>
+                            <td>Activity timestamp</td>
+                        </tr>
+                        <tr>
+                            <td><code>outcome</code></td>
+                            <td>String</td>
+                            <td>Result (e.g., <code>interested</code>, <code>not ready</code>)</td>
+                        </tr>
+                        <tr>
+                            <td><code>next_action_date</code></td>
+                            <td>DateTime</td>
+                            <td>Next action timestamp</td>
+                        </tr>
+                        <tr>
+                            <td><code>owner_id</code></td>
+                            <td>UUID</td>
+                            <td>Sales owner</td>
+                        </tr>
+                        <tr>
+                            <td><code>contact_id</code></td>
+                            <td>UUID</td>
+                            <td>Contact (optional)</td>
+                        </tr>
+                        <tr>
+                            <td><code>deal_id</code></td>
+                            <td>UUID</td>
+                            <td>Deal (optional)</td>
+                        </tr>
+                        <tr>
+                            <td><code>lead_id</code></td>
+                            <td>UUID</td>
+                            <td>Lead (optional)</td>
+                        </tr>
+                        <tr>
+                            <td><code>workspace_id</code></td>
+                            <td>UUID</td>
+                            <td>Workspace ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>created_at</code></td>
+                            <td>DateTime</td>
+                            <td>Creation timestamp</td>
+                        </tr>
+                        <tr>
+                            <td><code>updated_at</code></td>
+                            <td>DateTime</td>
+                            <td>Last updated timestamp</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 id="model-campaign">4.6 Campaign</h3>
+            <p><strong>Description:</strong> Marketing campaigns that generate leads.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id</code></td>
+                            <td>UUID</td>
+                            <td>Campaign ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>name</code></td>
+                            <td>String</td>
+                            <td>Campaign name</td>
+                        </tr>
+                        <tr>
+                            <td><code>type</code></td>
+                            <td>Enum</td>
+                            <td><code>email</code>, <code>ads</code>, <code>event</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>budget</code></td>
+                            <td>Float</td>
+                            <td>Allocated budget (VND)</td>
+                        </tr>
+                        <tr>
+                            <td><code>actual_cost</code></td>
+                            <td>Float</td>
+                            <td>Actual cost incurred (VND)</td>
+                        </tr>
+                        <tr>
+                            <td><code>start_date</code></td>
+                            <td>DateTime</td>
+                            <td>Campaign start date</td>
+                        </tr>
+                        <tr>
+                            <td><code>end_date</code></td>
+                            <td>DateTime</td>
+                            <td>Campaign end date</td>
+                        </tr>
+                        <tr>
+                            <td><code>status</code></td>
+                            <td>Enum</td>
+                            <td><code>draft</code>, <code>running</code>, <code>closed</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>workspace_id</code></td>
+                            <td>UUID</td>
+                            <td>Workspace ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>created_at</code></td>
+                            <td>DateTime</td>
+                            <td>Creation timestamp</td>
+                        </tr>
+                        <tr>
+                            <td><code>updated_at</code></td>
+                            <td>DateTime</td>
+                            <td>Last updated timestamp</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 id="model-ticket">4.7 Ticket</h3>
+            <p><strong>Description:</strong> Customer support tickets.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id</code></td>
+                            <td>UUID</td>
+                            <td>Ticket ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>subject</code></td>
+                            <td>String</td>
+                            <td>Issue title</td>
+                        </tr>
+                        <tr>
+                            <td><code>description</code></td>
+                            <td>Text</td>
+                            <td>Detailed description</td>
+                        </tr>
+                        <tr>
+                            <td><code>priority</code></td>
+                            <td>Enum</td>
+                            <td><code>low</code>, <code>medium</code>, <code>high</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>status</code></td>
+                            <td>Enum</td>
+                            <td><code>open</code>, <code>in_progress</code>, <code>resolved</code>, <code>closed</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>resolved_at</code></td>
+                            <td>DateTime</td>
+                            <td>Resolution timestamp</td>
+                        </tr>
+                        <tr>
+                            <td><code>closed_at</code></td>
+                            <td>DateTime</td>
+                            <td>Close timestamp</td>
+                        </tr>
+                        <tr>
+                            <td><code>resolution_notes</code></td>
+                            <td>Text</td>
+                            <td>Resolution notes</td>
+                        </tr>
+                        <tr>
+                            <td><code>contact_id</code></td>
+                            <td>UUID</td>
+                            <td>Contact association</td>
+                        </tr>
+                        <tr>
+                            <td><code>account_id</code></td>
+                            <td>UUID</td>
+                            <td>Account association</td>
+                        </tr>
+                        <tr>
+                            <td><code>assigned_to</code></td>
+                            <td>UUID</td>
+                            <td>Support staff assigned</td>
+                        </tr>
+                        <tr>
+                            <td><code>workspace_id</code></td>
+                            <td>UUID</td>
+                            <td>Workspace ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>created_at</code></td>
+                            <td>DateTime</td>
+                            <td>Creation timestamp</td>
+                        </tr>
+                        <tr>
+                            <td><code>updated_at</code></td>
+                            <td>DateTime</td>
+                            <td>Last updated timestamp</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 5. API Endpoints -->
+            <h2 id="api-endpoints">5. API Endpoints</h2>
+
+            <h3>Lead Management</h3>
+            <pre>GET    /api/v1/crm/leads                    # List leads
+POST   /api/v1/crm/leads                    # Create lead
+GET    /api/v1/crm/leads/{id}               # Get lead detail
+PUT    /api/v1/crm/leads/{id}               # Update lead
+DELETE /api/v1/crm/leads/{id}               # Delete lead
+POST   /api/v1/crm/leads/{id}/convert       # Convert to deal
+POST   /api/v1/crm/leads/distribute         # Auto-assign leads
+GET    /api/v1/crm/leads/stale              # Get stale leads</pre>
+
+            <h3>Deal Management</h3>
+            <pre>GET    /api/v1/crm/deals                    # List deals
+POST   /api/v1/crm/deals                    # Create deal
+GET    /api/v1/crm/deals/{id}               # Get deal detail
+PUT    /api/v1/crm/deals/{id}               # Update deal
+DELETE /api/v1/crm/deals/{id}               # Delete deal
+POST   /api/v1/crm/deals/{id}/close         # Close deal (won/lost)
+GET    /api/v1/crm/deals/stale              # Get stale deals
+GET    /api/v1/crm/deals/pipeline           # Pipeline summary</pre>
+
+            <h3>Contact Management</h3>
+            <pre>GET    /api/v1/crm/contacts                 # List contacts
+POST   /api/v1/crm/contacts                 # Create contact
+GET    /api/v1/crm/contacts/{id}            # Get contact detail
+PUT    /api/v1/crm/contacts/{id}            # Update contact
+DELETE /api/v1/crm/contacts/{id}            # Delete contact</pre>
+
+            <h3>Account Management</h3>
+            <pre>GET    /api/v1/crm/accounts                 # List accounts
+POST   /api/v1/crm/accounts                 # Create account
+GET    /api/v1/crm/accounts/{id}            # Get account detail
+PUT    /api/v1/crm/accounts/{id}            # Update account
+DELETE /api/v1/crm/accounts/{id}            # Delete account
+GET    /api/v1/crm/accounts/{id}/360        # Account 360 view
+GET    /api/v1/crm/accounts/follow-ups      # Get follow-ups due</pre>
+
+            <h3>Activity Management</h3>
+            <pre>GET    /api/v1/crm/activities               # List activities
+POST   /api/v1/crm/activities               # Create activity
+GET    /api/v1/crm/activities/{id}          # Get activity detail
+PUT    /api/v1/crm/activities/{id}          # Update activity
+DELETE /api/v1/crm/activities/{id}          # Delete activity</pre>
+
+            <h3>Campaign Management</h3>
+            <pre>GET    /api/v1/crm/campaigns                # List campaigns
+POST   /api/v1/crm/campaigns                # Create campaign
+GET    /api/v1/crm/campaigns/{id}           # Get campaign detail
+PUT    /api/v1/crm/campaigns/{id}           # Update campaign
+DELETE /api/v1/crm/campaigns/{id}           # Delete campaign</pre>
+
+            <h3>Ticket Management</h3>
+            <pre>GET    /api/v1/crm/tickets                  # List tickets
+POST   /api/v1/crm/tickets                  # Create ticket
+GET    /api/v1/crm/tickets/{id}             # Get ticket detail
+PUT    /api/v1/crm/tickets/{id}             # Update ticket
+DELETE /api/v1/crm/tickets/{id}             # Delete ticket</pre>
+
+            <h3>Analytics &amp; Reporting</h3>
+            <pre>GET    /api/v1/crm/analytics                # Dashboard metrics
+GET    /api/v1/crm/data-quality/report      # Data quality report
+GET    /api/v1/crm/governance/alerts        # Governance alerts</pre>
+
+            <!-- 6. Frontend Pages -->
+            <h2 id="frontend-pages">6. Frontend Pages</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Page</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>CRM Dashboard</strong></td>
+                            <td>KPI cards, stage breakdown, sales funnel</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Contacts List</strong></td>
+                            <td>Search, create, edit, delete contacts</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Deals Pipeline</strong></td>
+                            <td>Kanban view of deals by stage</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Deals List</strong></td>
+                            <td>Tabular view with filters</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Leads List</strong></td>
+                            <td>Lead status, source, owner filters</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Accounts List</strong></td>
+                            <td>Account status filtering</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Account Detail</strong></td>
+                            <td>360 view with contacts, deals, activities</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Activities List</strong></td>
+                            <td>Timeline of all activities</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Campaigns List</strong></td>
+                            <td>Campaign status and ROI tracking</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tickets List</strong></td>
+                            <td>Priority and status filtering</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 7. Lead Scoring & Distribution -->
+            <h2 id="lead-scoring">7. Lead Scoring &amp; Distribution</h2>
+
+            <h3>Lead Scoring</h3>
+            <p>Automatic scoring is applied based on customer engagement signals:</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Email opens</td>
+                            <td>+5 points</td>
+                        </tr>
+                        <tr>
+                            <td>Link clicks</td>
+                            <td>+10 points</td>
+                        </tr>
+                        <tr>
+                            <td>Form submissions</td>
+                            <td>+15 points</td>
+                        </tr>
+                        <tr>
+                            <td>Demo requests</td>
+                            <td>+20 points</td>
+                        </tr>
+                        <tr>
+                            <td>Call engagement</td>
+                            <td>+15 points</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>Score Levels</h4>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Score Range</th>
+                            <th>Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0 &ndash; 30</td>
+                            <td>Cold</td>
+                        </tr>
+                        <tr>
+                            <td>30 &ndash; 60</td>
+                            <td>Warm</td>
+                        </tr>
+                        <tr>
+                            <td>60+</td>
+                            <td>Hot</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Lead Distribution</h3>
+            <p><strong>Strategy:</strong> Round-robin assignment to available sales team members.</p>
+            <p>This approach prevents:</p>
+            <ul>
+                <li>Overloading a single sales rep</li>
+                <li>Lead queue buildup</li>
+                <li>Unfair workload distribution</li>
+            </ul>
+
+            <!-- 8. Key Features -->
+            <h2 id="key-features">8. Key Features</h2>
+
+            <h3>Lead Management</h3>
+            <ul>
+                <li>Automatic duplicate detection (email + phone)</li>
+                <li>Lead scoring system (auto-calculated)</li>
+                <li>Lead distribution (round-robin)</li>
+                <li>Conversion to deal workflow</li>
+                <li>Stale lead alerts (30+ days no activity)</li>
+            </ul>
+
+            <h3>Deal Management</h3>
+            <ul>
+                <li>Pipeline visualization (Kanban by stage)</li>
+                <li>Probability tracking</li>
+                <li>Deal closing with loss reason capture</li>
+                <li>Stale deal detection (60+ days)</li>
+                <li>Deal velocity analytics</li>
+            </ul>
+
+            <h3>Customer 360</h3>
+            <ul>
+                <li>All contacts at account</li>
+                <li>All deals (won, lost, open)</li>
+                <li>Full activity timeline</li>
+                <li>Support tickets</li>
+                <li>Health score indicator</li>
+            </ul>
+
+            <h3>Analytics &amp; Reporting</h3>
+            <ul>
+                <li>Revenue by period</li>
+                <li>Deal win rate</li>
+                <li>Pipeline value by stage</li>
+                <li>Lead source attribution</li>
+                <li>Sales funnel metrics</li>
+                <li>Data quality scoring</li>
+                <li>Governance alerts (missing fields, overdue activities)</li>
+            </ul>
+
+            <!-- 9. Data Quality & Governance -->
+            <h2 id="data-quality">9. Data Quality &amp; Governance</h2>
+
+            <h3>Data Quality Report</h3>
+            <p>The data quality report tracks the following dimensions across the workspace:</p>
+            <ul>
+                <li>Duplicate leads / contacts</li>
+                <li>Missing email or phone</li>
+                <li>Incomplete deal information</li>
+                <li>Stale records (no update &gt; 90 days)</li>
+                <li>Quality score by workspace</li>
+            </ul>
+
+            <h3>Governance Alerts</h3>
+            <p>Automated alerts are triggered for the following conditions:</p>
+            <ul>
+                <li>Overdue follow-ups</li>
+                <li>Stale leads / deals</li>
+                <li>Missing deal values</li>
+                <li>Unassigned leads</li>
+                <li>High-value deals with no activity</li>
+            </ul>
+
+            <!-- 10. Future Enhancements -->
+            <h2 id="future">10. Future Enhancements</h2>
+            <ul>
+                <li>AI Lead scoring (ML-based)</li>
+                <li>Sales AI assistant (recommendations, forecasting)</li>
+                <li>Predictive revenue forecasting (deal probability)</li>
+                <li>Automated customer insights (churn prediction)</li>
+                <li>Email integration (calendar sync, email logging)</li>
+                <li>Phone system integration</li>
+                <li>Advanced workflow automation</li>
+            </ul>
+
+            <!-- 11. Success Metrics -->
+            <h2 id="success-metrics">11. Success Metrics</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Target</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Lead conversion rate</td>
+                            <td>+20%</td>
+                        </tr>
+                        <tr>
+                            <td>Sales productivity</td>
+                            <td>+30%</td>
+                        </tr>
+                        <tr>
+                            <td>Pipeline visibility</td>
+                            <td>100%</td>
+                        </tr>
+                        <tr>
+                            <td>Customer retention</td>
+                            <td>+15%</td>
+                        </tr>
+                        <tr>
+                            <td>Data quality score</td>
+                            <td>&gt;90%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Theme query param handling — reads ?theme=dark or ?theme=light from URL
+        (function () {
+            var params = new URLSearchParams(window.location.search);
+            var themeParam = params.get('theme');
+            if (themeParam === 'dark' || themeParam === 'light') {
+                document.body.setAttribute('data-theme', themeParam);
+                document.documentElement.setAttribute('data-theme', themeParam);
+            }
+        })();
+
+        // Dark mode toggle
+        var dt = document.getElementById('darkToggle');
+        var sun = document.getElementById('sunIcon');
+        var moon = document.getElementById('moonIcon');
+        var label = document.getElementById('darkToggleLabel');
+
+        function applyTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            document.documentElement.setAttribute('data-theme', theme);
+            sun.style.display = theme === 'dark' ? 'none' : 'block';
+            moon.style.display = theme === 'dark' ? 'block' : 'none';
+            label.textContent = theme === 'dark' ? 'Light' : 'Dark';
+        }
+
+        // Init icons to match current theme
+        var initTheme = document.body.getAttribute('data-theme') || 'light';
+        applyTheme(initTheme);
+
+        dt.addEventListener('click', function () {
+            var current = document.body.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+
+        // Hamburger / sidebar toggle
+        var hamburger = document.getElementById('hamburgerBtn');
+        var sidebar = document.getElementById('sidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+
+        hamburger.addEventListener('click', function () {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        });
+
+        overlay.addEventListener('click', function () {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('open');
+        });
+
+        // Sidebar section collapse toggle
+        function toggleSection(header) {
+            var section = header.closest('.sidebar-section');
+            section.classList.toggle('collapsed');
+        }
+
+        // Scroll-spy: highlight sidebar link for visible section
+        (function () {
+            var links = document.querySelectorAll('.sidebar-link[href^="#"]');
+            var sections = [];
+
+            links.forEach(function (link) {
+                var id = link.getAttribute('href').slice(1);
+                var el = document.getElementById(id);
+                if (el) sections.push({ id: id, el: el, link: link });
+            });
+
+            function onScroll() {
+                var scrollY = window.scrollY + 80;
+                var active = null;
+                sections.forEach(function (s) {
+                    if (s.el.offsetTop <= scrollY) active = s;
+                });
+                links.forEach(function (l) { l.classList.remove('spy-active'); });
+                if (active) active.link.classList.add('spy-active');
+            }
+
+            window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll();
+        })();
+    </script>
+
+</body>
+
+</html>

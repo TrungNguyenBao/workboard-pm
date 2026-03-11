@@ -17,6 +17,7 @@ services:
     volumes:
       - ./backend:/app
       - /app/.venv
+      - ./docs:/docs:ro
     command: uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
   frontend:
@@ -30,6 +31,7 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
+      - ./docs:/docs:ro
 
   postgres:
     image: postgres:15-alpine

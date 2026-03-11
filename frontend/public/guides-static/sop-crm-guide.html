@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="vi" data-lang="vi" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOP Quản lý Khách hàng &amp; Bán hàng — CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--font-sans:'DM Sans',system-ui,-apple-system,sans-serif;--font-mono:'JetBrains Mono','Fira Code',monospace;--color-primary:#5E6AD2;--color-primary-hover:#4F55C4;--color-accent:#F28C38;--color-success:#22C55E;--color-warning:#F59E0B;--color-danger:#EF4444;--color-info:#38BDF8;--bg-page:#FFFFFF;--bg-surface:#F9F9FB;--bg-elevated:#FFFFFF;--border-default:#E4E4E7;--text-primary:#18181B;--text-secondary:#52525B;--text-tertiary:#A1A1AA;--radius-xs:4px;--radius-sm:6px;--radius-md:8px;--radius-lg:12px;--radius-full:9999px;--shadow-elevated:0 4px 12px rgba(0,0,0,.10);--sidebar-width:260px;--topbar-height:52px;--dur:150ms;}
+[data-theme="dark"]{--bg-page:#0F0F12;--bg-surface:#1A1A1F;--bg-elevated:#25252B;--border-default:rgba(255,255,255,.10);--text-primary:#FAFAFA;--text-secondary:#A1A1AA;--text-tertiary:#52525B;--color-primary:#6E78E8;--color-primary-hover:#7D87EE;--color-accent:#F5A05A;--color-success:#4ADE80;--color-warning:#FBB532;--color-danger:#F87171;--color-info:#7DD3FC;--shadow-elevated:0 4px 12px rgba(0,0,0,.40);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;font-size:14px;}
+body{font-family:var(--font-sans);font-size:14px;line-height:1.6;color:var(--text-primary);background:var(--bg-page);transition:background var(--dur) ease,color var(--dur) ease;}
+.topbar{position:fixed;top:0;left:0;right:0;height:var(--topbar-height);background:var(--bg-surface);border-bottom:1px solid var(--border-default);display:flex;align-items:center;padding:0 16px;gap:12px;z-index:100;}
+.topbar-brand{font-size:16px;font-weight:700;color:var(--color-primary);letter-spacing:-.3px;flex-shrink:0;}
+.topbar-brand span{color:var(--text-primary);font-weight:400;}
+.topbar-subtitle{font-size:12px;color:var(--text-tertiary);border-left:1px solid var(--border-default);padding-left:12px;margin-left:4px;}
+.topbar-spacer{flex:1;}
+.hamburger{display:none;background:none;border:none;cursor:pointer;color:var(--text-secondary);padding:6px;border-radius:var(--radius-sm);}
+.hamburger:hover{background:var(--bg-elevated);}
+.dark-toggle{background:none;border:1px solid var(--border-default);border-radius:var(--radius-sm);cursor:pointer;color:var(--text-secondary);padding:6px 10px;font-size:13px;font-family:var(--font-sans);display:flex;align-items:center;gap:6px;transition:background var(--dur) ease,border-color var(--dur) ease;}
+.dark-toggle:hover{background:var(--bg-elevated);border-color:var(--text-tertiary);}
+.sidebar{position:fixed;top:var(--topbar-height);left:0;width:var(--sidebar-width);height:calc(100vh - var(--topbar-height));background:var(--bg-surface);border-right:1px solid var(--border-default);overflow-y:auto;overflow-x:hidden;z-index:90;transition:transform var(--dur) ease;padding:16px 0 32px;}
+.sidebar::-webkit-scrollbar{width:4px;}.sidebar::-webkit-scrollbar-thumb{background:var(--border-default);border-radius:2px;}
+.sidebar-section{margin-bottom:8px;}
+.sidebar-section-header{display:flex;align-items:center;justify-content:space-between;padding:6px 16px;cursor:pointer;user-select:none;}
+.sidebar-section-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--text-tertiary);}
+.sidebar-chevron{color:var(--text-tertiary);transition:transform var(--dur) ease;}
+.sidebar-section.collapsed .sidebar-chevron{transform:rotate(-90deg);}
+.sidebar-section.collapsed .sidebar-section-items{display:none;}
+.sidebar-link{display:flex;align-items:center;gap:8px;padding:6px 16px 6px 24px;font-size:13px;color:var(--text-secondary);text-decoration:none;cursor:pointer;transition:background var(--dur) ease,color var(--dur) ease;border:none;background:none;width:100%;text-align:left;line-height:1.4;}
+.sidebar-link:hover{background:var(--bg-elevated);color:var(--text-primary);}
+.sidebar-link.active,.sidebar-link.spy-active{background:rgba(94,106,210,.10);color:var(--color-primary);font-weight:500;}
+[data-theme="dark"] .sidebar-link.active,[data-theme="dark"] .sidebar-link.spy-active{background:rgba(110,120,232,.15);}
+.sidebar-link-dot{width:5px;height:5px;border-radius:50%;background:var(--text-tertiary);flex-shrink:0;margin-left:4px;}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.40);z-index:89;}
+.main{margin-left:var(--sidebar-width);margin-top:var(--topbar-height);padding:40px 48px;max-width:calc(100% - var(--sidebar-width));min-height:calc(100vh - var(--topbar-height));}
+.content-area{max-width:820px;margin:0 auto;}
+h1{font-size:28px;font-weight:700;line-height:1.2;color:var(--text-primary);margin-bottom:8px;letter-spacing:-.4px;}
+h2{font-size:22px;font-weight:600;line-height:1.3;color:var(--text-primary);margin-top:52px;margin-bottom:16px;padding-top:20px;border-top:1px solid var(--border-default);letter-spacing:-.3px;}
+h2:first-child{margin-top:0;border-top:none;padding-top:0;}
+h3{font-size:16px;font-weight:600;line-height:1.4;color:var(--text-primary);margin-top:32px;margin-bottom:10px;}
+h4{font-size:14px;font-weight:600;color:var(--text-primary);margin-top:20px;margin-bottom:8px;}
+p{color:var(--text-secondary);margin-bottom:12px;line-height:1.7;}p:last-child{margin-bottom:0;}
+ul,ol{padding-left:20px;margin-bottom:12px;color:var(--text-secondary);}
+li{margin-bottom:4px;line-height:1.6;}li strong{color:var(--text-primary);}
+a{color:var(--color-primary);text-decoration:none;}a:hover{text-decoration:underline;}
+code{font-family:var(--font-mono);font-size:12px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-xs);padding:1px 5px;color:var(--color-primary);}
+[data-theme="dark"] code{background:var(--bg-elevated);}
+.page-header{margin-bottom:40px;padding-bottom:28px;border-bottom:1px solid var(--border-default);}
+.page-header-meta{font-size:13px;color:var(--text-tertiary);margin-top:8px;}
+.table-wrap{overflow-x:auto;margin-bottom:20px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;padding:8px 12px;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--text-tertiary);background:var(--bg-surface);border-bottom:1px solid var(--border-default);}
+td{padding:9px 12px;border-bottom:1px solid var(--border-default);color:var(--text-secondary);vertical-align:top;line-height:1.5;}
+td strong{color:var(--text-primary);}tr:last-child td{border-bottom:none;}tr:hover td{background:var(--bg-surface);}
+.callout{display:flex;gap:12px;padding:14px 16px;border-radius:var(--radius-md);margin:20px 0;border-left:3px solid;}
+.callout-icon{font-size:16px;line-height:1.5;flex-shrink:0;}
+.callout-body{flex:1;font-size:13px;line-height:1.6;}
+.callout-body strong{display:block;margin-bottom:2px;}
+.callout-body p{margin:0;font-size:13px;}
+.callout-tip{background:rgba(34,197,94,.07);border-color:var(--color-success);}
+.callout-tip .callout-body{color:#166534;}[data-theme="dark"] .callout-tip .callout-body{color:#86efac;}
+.callout-info{background:rgba(56,189,248,.07);border-color:var(--color-info);}
+.callout-info .callout-body{color:#075985;}[data-theme="dark"] .callout-info .callout-body{color:#7dd3fc;}
+.callout-warning{background:rgba(245,158,11,.07);border-color:var(--color-warning);}
+.callout-warning .callout-body{color:#92400e;}[data-theme="dark"] .callout-warning .callout-body{color:#fcd34d;}
+.callout-danger{background:rgba(239,68,68,.07);border-color:var(--color-danger);}
+.callout-danger .callout-body{color:#991B1B;}[data-theme="dark"] .callout-danger .callout-body{color:#fca5a5;}
+.callout-note{background:rgba(94,106,210,.07);border-color:var(--color-primary);}
+.callout-note .callout-body{color:#3730a3;}[data-theme="dark"] .callout-note .callout-body{color:#a5b4fc;}
+.back-to-top{position:fixed;bottom:28px;right:28px;width:40px;height:40px;background:var(--color-primary);color:#fff;border:none;border-radius:var(--radius-full);cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:var(--shadow-elevated);z-index:200;transition:background var(--dur) ease,transform var(--dur) ease;}
+.back-to-top:hover{background:var(--color-primary-hover);transform:translateY(-2px);}
+.back-to-top.visible{display:flex;}
+.section-intro{color:var(--text-secondary);font-size:14px;margin-bottom:24px;line-height:1.7;}
+.step-list{list-style:none;padding:0;counter-reset:step;}
+.step-list li{counter-increment:step;display:flex;gap:14px;margin-bottom:14px;align-items:flex-start;}
+.step-list li::before{content:counter(step);display:flex;align-items:center;justify-content:center;width:24px;height:24px;min-width:24px;background:var(--color-primary);color:#fff;border-radius:var(--radius-full);font-size:11px;font-weight:700;margin-top:2px;}
+.step-list li span{color:var(--text-secondary);font-size:14px;line-height:1.6;}
+.status-flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:16px 0;padding:14px 16px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-md);}
+.sp{display:inline-flex;align-items:center;padding:4px 10px;border-radius:var(--radius-full);font-size:11px;font-weight:600;font-family:var(--font-mono);letter-spacing:.3px;white-space:nowrap;}
+.sp-draft{background:rgba(161,161,170,.15);color:var(--text-secondary);border:1px solid var(--border-default);}
+.sp-blue{background:rgba(56,189,248,.12);color:#0284C7;border:1px solid rgba(56,189,248,.30);}
+.sp-green{background:rgba(34,197,94,.12);color:#15803D;border:1px solid rgba(34,197,94,.30);}
+.sp-amber{background:rgba(245,158,11,.12);color:#B45309;border:1px solid rgba(245,158,11,.30);}
+.sp-red{background:rgba(239,68,68,.12);color:#B91C1C;border:1px solid rgba(239,68,68,.30);}
+.sp-purple{background:rgba(94,106,210,.12);color:var(--color-primary);border:1px solid rgba(94,106,210,.30);}
+.sp-orange{background:rgba(242,140,56,.12);color:#C2410C;border:1px solid rgba(242,140,56,.30);}
+[data-theme="dark"] .sp-blue{color:#7DD3FC;}[data-theme="dark"] .sp-green{color:#4ADE80;}
+[data-theme="dark"] .sp-amber{color:#FBB532;}[data-theme="dark"] .sp-red{color:#F87171;}[data-theme="dark"] .sp-orange{color:#FB923C;}
+.flow-arr{color:var(--text-tertiary);font-size:14px;font-weight:700;padding:0 2px;}
+.roles-row{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 16px;}
+.role-tag{display:inline-flex;align-items:center;padding:3px 10px;background:rgba(94,106,210,.08);color:var(--color-primary);border-radius:var(--radius-full);font-size:12px;font-weight:500;}
+.feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:20px 0;}
+.feature-card{background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:16px;}
+.feature-card-title{font-weight:600;font-size:13px;color:var(--text-primary);margin-bottom:4px;}
+.feature-card-desc{font-size:12px;color:var(--text-secondary);line-height:1.5;}
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:20px 0;}
+.kpi-card{background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:16px 20px;display:flex;align-items:center;gap:14px;}
+.kpi-value{font-size:22px;font-weight:700;color:var(--color-primary);font-family:var(--font-mono);flex-shrink:0;}
+.kpi-label{font-size:12px;color:var(--text-secondary);line-height:1.4;}
+.golden-list{list-style:none;padding:0;}
+.golden-list li{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-md);margin-bottom:8px;}
+.gl-icon{color:var(--color-accent);font-size:16px;flex-shrink:0;margin-top:1px;}
+.gl-text{color:var(--text-secondary);font-size:13px;line-height:1.6;}
+.gl-text strong{color:var(--text-primary);}
+.module-tag{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 6px;border-radius:var(--radius-xs);margin-right:6px;vertical-align:middle;}
+.mod-sales{background:rgba(94,106,210,.12);color:var(--color-primary);}
+.mod-mkt{background:rgba(34,197,94,.12);color:#16A34A;}
+.mod-support{background:rgba(245,158,11,.12);color:#D97706;}
+.mod-mgmt{background:rgba(239,68,68,.12);color:#DC2626;}
+[data-theme="dark"] .mod-mkt{color:#4ADE80;}[data-theme="dark"] .mod-support{color:#FBB532;}[data-theme="dark"] .mod-mgmt{color:#F87171;}
+html[data-lang="en"] .lang-vi{display:none;}
+html[data-lang="vi"] .lang-en{display:none;}
+.lang-toggle{display:flex;align-items:center;gap:2px;border:1px solid var(--border-default);border-radius:var(--radius-full);padding:2px;background:var(--bg-elevated);margin-left:4px;}
+.lang-toggle button{padding:2px 10px;border:none;border-radius:var(--radius-full);background:transparent;color:var(--text-secondary);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font-sans);transition:all var(--dur) ease;}
+.lang-toggle button.active{background:var(--color-primary);color:#fff;}
+@media(max-width:768px){.sidebar{transform:translateX(-100%);z-index:95;}.sidebar.open{transform:translateX(0);}.sidebar-overlay.open{display:block;}.hamburger{display:flex;}.topbar-subtitle{display:none;}.main{margin-left:0;max-width:100%;padding:24px 20px;}.feature-grid,.kpi-grid{grid-template-columns:1fr;}h1{font-size:22px;}h2{font-size:18px;}}
+@media print{.sidebar,.topbar,.back-to-top,.dark-toggle,.hamburger{display:none!important;}.main{margin:0;padding:20px;max-width:100%;}h2{page-break-before:always;}h2:first-child{page-break-before:avoid;}.callout{break-inside:avoid;}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <span class="topbar-brand">A-ERP <span>SOP</span></span>
+  <span class="topbar-subtitle lang-vi">Hướng dẫn — Quản lý Khách hàng &amp; Bán hàng</span>
+  <span class="topbar-subtitle lang-en">Guide — Customer Relations &amp; Sales Management</span>
+  <span class="topbar-spacer"></span>
+  <button class="dark-toggle" id="darkToggle">
+    <svg id="sunIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+    <svg id="moonIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <span id="darkToggleLabel">Dark</span>
+  </button>
+  <div class="lang-toggle">
+    <button id="langVi" class="active">VI</button>
+    <button id="langEn">EN</button>
+  </div>
+</header>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-section" id="sec-intro">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-intro')">
+      <span class="sidebar-section-title" data-vi="Giới thiệu" data-en="Introduction">Giới thiệu</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#overview" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Tổng quan" data-en="Overview">Tổng quan</span></a>
+      <a class="sidebar-link" href="#roles" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Vai trò &amp; Trách nhiệm" data-en="Roles &amp; Responsibilities">Vai trò &amp; Trách nhiệm</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-lead">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-lead')">
+      <span class="sidebar-section-title" data-vi="Quản lý Lead" data-en="Lead Management">Quản lý Lead</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#lead-fields" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Cấu trúc Lead" data-en="Lead Structure">Cấu trúc Lead</span></a>
+      <a class="sidebar-link" href="#lead-scoring" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Đánh giá &amp; Phân bổ" data-en="Scoring &amp; Distribution">Đánh giá &amp; Phân bổ</span></a>
+      <a class="sidebar-link" href="#lead-conversion" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Chuyển đổi Lead" data-en="Lead Conversion">Chuyển đổi Lead</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-deal">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-deal')">
+      <span class="sidebar-section-title" data-vi="Quản lý Deal" data-en="Deal Management">Quản lý Deal</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#deal-fields" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Cấu trúc Deal" data-en="Deal Structure">Cấu trúc Deal</span></a>
+      <a class="sidebar-link" href="#pipeline-stages" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Giai đoạn Pipeline" data-en="Pipeline Stages">Giai đoạn Pipeline</span></a>
+      <a class="sidebar-link" href="#deal-closing" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Đóng Deal" data-en="Deal Closing">Đóng Deal</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-account">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-account')">
+      <span class="sidebar-section-title" data-vi="Quản lý Khách hàng" data-en="Account Management">Quản lý Khách hàng</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#account-fields" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Cấu trúc Account" data-en="Account Structure">Cấu trúc Account</span></a>
+      <a class="sidebar-link" href="#account-360" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Account 360 View" data-en="Account 360 View">Account 360 View</span></a>
+      <a class="sidebar-link" href="#contact-activity" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Contact &amp; Activity" data-en="Contact &amp; Activity">Contact &amp; Activity</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-campaign">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-campaign')">
+      <span class="sidebar-section-title" data-vi="Campaign &amp; Ticket" data-en="Campaign &amp; Ticket">Campaign &amp; Ticket</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#campaign-mgt" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Campaign Management" data-en="Campaign Management">Campaign Management</span></a>
+      <a class="sidebar-link" href="#ticket-mgt" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Support Tickets" data-en="Support Tickets">Support Tickets</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-analytics">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-analytics')">
+      <span class="sidebar-section-title" data-vi="Analytics &amp; Tham chiếu" data-en="Analytics &amp; Reference">Analytics &amp; Tham chiếu</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#analytics" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Báo cáo &amp; KPI" data-en="Reporting &amp; KPI">Báo cáo &amp; KPI</span></a>
+      <a class="sidebar-link" href="#data-quality" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Chất lượng Dữ liệu" data-en="Data Quality">Chất lượng Dữ liệu</span></a>
+      <a class="sidebar-link" href="#api-endpoints" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="API Endpoints" data-en="API Endpoints">API Endpoints</span></a>
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+<div class="content-area">
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="lang-vi">
+    <h1>Hướng dẫn Quản lý Khách hàng &amp; Bán hàng</h1>
+    <p class="page-header-meta">CRM • Sales • Marketing — Phiên bản 1.0 • Triển khai đầy đủ</p>
+  </div>
+  <div class="lang-en">
+    <h1>Customer Relations &amp; Sales Management Guide</h1>
+    <p class="page-header-meta">CRM • Sales • Marketing — Version 1.0 • Fully Implemented</p>
+  </div>
+</div>
+
+<!-- ===== INTRODUCTION ===== -->
+<h2 id="overview">
+  <span class="lang-vi">Tổng quan hệ thống</span>
+  <span class="lang-en">System Overview</span>
+</h2>
+
+<div class="lang-vi">
+  <p class="section-intro">Hệ thống CRM quản lý toàn bộ vòng đời khách hàng từ Lead, Opportunity, Deal đến Account và chăm sóc sau bán hàng. Chuẩn hóa quy trình bán hàng, tăng tỷ lệ chuyển đổi và tối đa hóa giá trị vòng đời khách hàng.</p>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-card-title">Mục tiêu</div>
+      <div class="feature-card-desc">Chuẩn hóa quy trình, tăng tỷ lệ chuyển Lead → Customer +20%, giảm thao tác thủ công</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">Phạm vi</div>
+      <div class="feature-card-desc">Lead, Deal, Contact, Account, Activity, Campaign, Ticket — áp dụng cho Sales, Marketing, Support</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">Tính năng chính</div>
+      <div class="feature-card-desc">Duplicate detection, Auto scoring, Pipeline kanban, 360 view, Activity tracking, Analytics</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">Status: Triển khai đầy đủ</div>
+      <div class="feature-card-desc">Tất cả tính năng core sản xuất sẵn sàng. 7+ API groups, 10+ trang frontend</div>
+    </div>
+  </div>
+</div>
+<div class="lang-en">
+  <p class="section-intro">The CRM system manages the entire customer lifecycle from Lead, Opportunity, Deal to Account and post-sale support. Standardizes sales processes, increases conversion rates and maximizes customer lifetime value.</p>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-card-title">Objectives</div>
+      <div class="feature-card-desc">Standardize process, increase Lead → Customer conversion +20%, reduce manual work</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">Scope</div>
+      <div class="feature-card-desc">Lead, Deal, Contact, Account, Activity, Campaign, Ticket — applies to Sales, Marketing, Support</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">Key Features</div>
+      <div class="feature-card-desc">Duplicate detection, Auto scoring, Pipeline kanban, 360 view, Activity tracking, Analytics</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">Status: Fully Implemented</div>
+      <div class="feature-card-desc">All core features production-ready. 7+ API groups, 10+ frontend pages</div>
+    </div>
+  </div>
+</div>
+
+<!-- ROLES -->
+<h2 id="roles">
+  <span class="lang-vi">Vai trò &amp; Trách nhiệm</span>
+  <span class="lang-en">Roles &amp; Responsibilities</span>
+</h2>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Vai trò</span><span class="lang-en">Role</span></th>
+      <th><span class="lang-vi">Trách nhiệm</span><span class="lang-en">Responsibilities</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong><span class="lang-vi">Sales Rep</span><span class="lang-en">Sales Rep</span></strong></td>
+      <td><span class="lang-vi">Quản lý Lead, Deal, Activity. Ghi nhận đầy đủ hoạt động. Tuân thủ pipeline discipline</span><span class="lang-en">Manage Lead, Deal, Activity. Fully log activities. Maintain pipeline discipline</span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">Sales Manager</span><span class="lang-en">Sales Manager</span></strong></td>
+      <td><span class="lang-vi">Giám sát pipeline, KPI, phê duyệt deal lớn, quản lý team performance</span><span class="lang-en">Oversee pipeline, KPI, approve large deals, manage team performance</span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">Marketing</span><span class="lang-en">Marketing</span></strong></td>
+      <td><span class="lang-vi">Tạo Lead, quản lý Campaign, theo dõi ROI, cung cấp lead quality reporting</span><span class="lang-en">Generate Lead, manage Campaign, track ROI, provide lead quality reporting</span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">Support</span><span class="lang-en">Support</span></strong></td>
+      <td><span class="lang-vi">Quản lý Ticket, chăm sóc khách hàng, theo dõi resolution time</span><span class="lang-en">Manage Ticket, customer care, track resolution time</span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">Admin</span><span class="lang-en">Admin</span></strong></td>
+      <td><span class="lang-vi">Cấu hình hệ thống, quản lý người dùng, đảm bảo tuân thủ dữ liệu</span><span class="lang-en">Configure system, manage users, ensure data governance</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ===== LEAD MANAGEMENT ===== -->
+<h2 id="lead-fields">
+  <span class="module-tag mod-sales">Sales</span>
+  <span class="lang-vi">Quản lý Lead — Cấu trúc dữ liệu</span>
+  <span class="lang-en">Lead Management — Data Structure</span>
+</h2>
+
+<div class="lang-vi"><p class="section-intro">Lead là khách hàng tiềm năng từ nguồn marketing. Mỗi Lead theo dõi trạng thái, điểm số, và chủ sở hữu.</p></div>
+<div class="lang-en"><p class="section-intro">Lead is a prospective customer from marketing sources. Each Lead tracks status, score, and owner.</p></div>
+
+<h3><span class="lang-vi">Trường Lead</span><span class="lang-en">Lead Fields</span></h3>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Trường</span><span class="lang-en">Field</span></th>
+      <th><span class="lang-vi">Loại</span><span class="lang-en">Type</span></th>
+      <th><span class="lang-vi">Mô tả</span><span class="lang-en">Description</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>name</code></td><td>String</td><td><span class="lang-vi">Tên khách hàng</span><span class="lang-en">Customer name</span></td></tr>
+    <tr><td><code>email</code></td><td>String</td><td><span class="lang-vi">Email liên hệ</span><span class="lang-en">Contact email</span></td></tr>
+    <tr><td><code>phone</code></td><td>String</td><td><span class="lang-vi">Số điện thoại</span><span class="lang-en">Phone number</span></td></tr>
+    <tr><td><code>source</code></td><td>Enum</td><td><span class="lang-vi">Nguồn (website, ads, referral)</span><span class="lang-en">Source (website, ads, referral)</span></td></tr>
+    <tr><td><code>status</code></td><td>Enum</td><td><span class="lang-vi">New, Contacted, Qualified, Lost</span><span class="lang-en">New, Contacted, Qualified, Lost</span></td></tr>
+    <tr><td><code>score</code></td><td>Integer</td><td><span class="lang-vi">Lead score 0-100 (tự động tính)</span><span class="lang-en">Lead score 0-100 (auto-calculated)</span></td></tr>
+    <tr><td><code>owner_id</code></td><td>UUID</td><td><span class="lang-vi">Sales phụ trách</span><span class="lang-en">Sales owner</span></td></tr>
+    <tr><td><code>campaign_id</code></td><td>UUID</td><td><span class="lang-vi">Chiến dịch liên quan</span><span class="lang-en">Associated campaign</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3><span class="lang-vi">Trạng thái Lead</span><span class="lang-en">Lead Status Flow</span></h3>
+<div class="status-flow">
+  <span class="sp sp-draft"><span class="lang-vi">New</span><span class="lang-en">New</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-blue"><span class="lang-vi">Contacted</span><span class="lang-en">Contacted</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-blue"><span class="lang-vi">Qualified</span><span class="lang-en">Qualified</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-green"><span class="lang-vi">Opp</span><span class="lang-en">Opp</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-red"><span class="lang-vi">Lost</span><span class="lang-en">Lost</span></span>
+</div>
+
+<h3><span class="lang-vi">Tính năng Lead</span><span class="lang-en">Lead Features</span></h3>
+<ul>
+  <li><strong><span class="lang-vi">Duplicate Detection:</span><span class="lang-en">Duplicate Detection:</span></strong> <span class="lang-vi">Phát hiện tự động lead trùng lặp theo email + phone</span><span class="lang-en">Automatic duplicate detection by email + phone</span></li>
+  <li><strong><span class="lang-vi">Auto Scoring:</span><span class="lang-en">Auto Scoring:</span></strong> <span class="lang-vi">Điểm tự động dựa trên tương tác (email opens, clicks, form submissions, demos)</span><span class="lang-en">Automatic scoring based on interactions (email opens, clicks, form submissions, demos)</span></li>
+  <li><strong><span class="lang-vi">Lead Distribution:</span><span class="lang-en">Lead Distribution:</span></strong> <span class="lang-vi">Phân bổ round-robin cho team Sales</span><span class="lang-en">Round-robin assignment to Sales team</span></li>
+  <li><strong><span class="lang-vi">Stale Detection:</span><span class="lang-en">Stale Detection:</span></strong> <span class="lang-vi">Cảnh báo nếu không có hoạt động &gt;30 ngày</span><span class="lang-en">Alert if no activity &gt;30 days</span></li>
+</ul>
+
+<!-- LEAD SCORING -->
+<h2 id="lead-scoring">
+  <span class="lang-vi">Lead Scoring &amp; Distribution</span>
+  <span class="lang-en">Lead Scoring &amp; Distribution</span>
+</h2>
+
+<h3><span class="lang-vi">Công thức Scoring</span><span class="lang-en">Scoring Formula</span></h3>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Tương tác</span><span class="lang-en">Interaction</span></th>
+      <th><span class="lang-vi">Điểm</span><span class="lang-en">Points</span></th>
+      <th><span class="lang-vi">Tần suất</span><span class="lang-en">Frequency</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><span class="lang-vi">Email opens</span><span class="lang-en">Email opens</span></td><td>+5</td><td><span class="lang-vi">Mỗi lần</span><span class="lang-en">Per open</span></td></tr>
+    <tr><td><span class="lang-vi">Link clicks</span><span class="lang-en">Link clicks</span></td><td>+10</td><td><span class="lang-vi">Mỗi lần</span><span class="lang-en">Per click</span></td></tr>
+    <tr><td><span class="lang-vi">Form submissions</span><span class="lang-en">Form submissions</span></td><td>+15</td><td><span class="lang-vi">Mỗi lần</span><span class="lang-en">Per submission</span></td></tr>
+    <tr><td><span class="lang-vi">Demo requests</span><span class="lang-en">Demo requests</span></td><td>+20</td><td><span class="lang-vi">Mỗi lần</span><span class="lang-en">Per request</span></td></tr>
+    <tr><td><span class="lang-vi">Call engagement</span><span class="lang-en">Call engagement</span></td><td>+15</td><td><span class="lang-vi">Mỗi lần</span><span class="lang-en">Per call</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3><span class="lang-vi">Cấp độ Lead</span><span class="lang-en">Lead Temperature Levels</span></h3>
+<div class="golden-list">
+  <li>
+    <div class="gl-icon">❄️</div>
+    <div class="gl-text"><strong><span class="lang-vi">Cold (0-30):</span><span class="lang-en">Cold (0-30):</span></strong> <span class="lang-vi">Mới tạo, chưa tương tác. Ưu tiên: Liên hệ đầu tiên</span><span class="lang-en">Newly created, no interaction. Priority: Initial contact</span></div>
+  </li>
+  <li>
+    <div class="gl-icon">🌤️</div>
+    <div class="gl-text"><strong><span class="lang-vi">Warm (30-60):</span><span class="lang-en">Warm (30-60):</span></strong> <span class="lang-vi">Một số tương tác. Ưu tiên: Qualification call</span><span class="lang-en">Some interactions. Priority: Qualification call</span></div>
+  </li>
+  <li>
+    <div class="gl-icon">🔥</div>
+    <div class="gl-text"><strong><span class="lang-vi">Hot (60+):</span><span class="lang-en">Hot (60+):</span></strong> <span class="lang-vi">Nhiều tương tác / demo. Ưu tiên: Chuyển đổi ngay</span><span class="lang-en">High engagement / demo. Priority: Immediate conversion</span></div>
+  </li>
+</div>
+
+<h3><span class="lang-vi">Phân bổ Lead</span><span class="lang-en">Lead Distribution Strategy</span></h3>
+<div class="callout callout-tip">
+  <div class="callout-icon">💡</div>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Round-Robin Assignment:</span><span class="lang-en">Round-Robin Assignment:</span></strong>
+    <p><span class="lang-vi">CRM tự động gán Lead cho Sales Rep tiếp theo có sẵn (không quá tải, công bằng)</span><span class="lang-en">CRM automatically assigns Lead to next available Sales Rep (fair, no overload)</span></p>
+  </div>
+</div>
+
+<!-- LEAD CONVERSION -->
+<h2 id="lead-conversion">
+  <span class="lang-vi">Chuyển đổi Lead → Opportunity/Deal</span>
+  <span class="lang-en">Lead Conversion to Opportunity/Deal</span>
+</h2>
+
+<ol class="step-list">
+  <li><span><span class="lang-vi">Sales Rep xác nhận Lead đủ điều kiện (score &gt;30, liên hệ được)</span><span class="lang-en">Sales Rep confirms Lead is qualified (score &gt;30, contactable)</span></span></li>
+  <li><span><span class="lang-vi">Nhấn "Convert to Deal" trong Lead detail page</span><span class="lang-en">Click "Convert to Deal" in Lead detail page</span></span></li>
+  <li><span><span class="lang-vi">CRM tạo Deal mới, liên kết với Lead gốc và Contact</span><span class="lang-en">CRM creates new Deal, links to source Lead and Contact</span></span></li>
+  <li><span><span class="lang-vi">Deal vào stage "Qualified Lead" trong Pipeline</span><span class="lang-en">Deal enters "Qualified Lead" stage in Pipeline</span></span></li>
+</ol>
+
+<!-- ===== DEAL MANAGEMENT ===== -->
+<h2 id="deal-fields">
+  <span class="module-tag mod-sales">Sales</span>
+  <span class="lang-vi">Quản lý Deal — Cấu trúc dữ liệu</span>
+  <span class="lang-en">Deal Management — Data Structure</span>
+</h2>
+
+<div class="lang-vi"><p class="section-intro">Deal là cơ hội bán hàng trong pipeline. Mỗi Deal theo dõi giá trị, giai đoạn, xác suất, và ngày đóng dự kiến.</p></div>
+<div class="lang-en"><p class="section-intro">Deal is a sales opportunity in the pipeline. Each Deal tracks value, stage, probability, and expected close date.</p></div>
+
+<h3><span class="lang-vi">Trường Deal</span><span class="lang-en">Deal Fields</span></h3>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Trường</span><span class="lang-en">Field</span></th>
+      <th><span class="lang-vi">Loại</span><span class="lang-en">Type</span></th>
+      <th><span class="lang-vi">Mô tả</span><span class="lang-en">Description</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>title</code></td><td>String</td><td><span class="lang-vi">Tên deal (tên project/sản phẩm)</span><span class="lang-en">Deal name</span></td></tr>
+    <tr><td><code>value</code></td><td>Float</td><td><span class="lang-vi">Giá trị deal (VND)</span><span class="lang-en">Deal value (VND)</span></td></tr>
+    <tr><td><code>stage</code></td><td>Enum</td><td><span class="lang-vi">Pipeline stage (xem dưới)</span><span class="lang-en">Pipeline stage (see below)</span></td></tr>
+    <tr><td><code>probability</code></td><td>Float</td><td><span class="lang-vi">Xác suất chốt (0.0-1.0 hay %)</span><span class="lang-en">Win probability (0.0-1.0 or %)</span></td></tr>
+    <tr><td><code>expected_close_date</code></td><td>DateTime</td><td><span class="lang-vi">Ngày dự kiến chốt</span><span class="lang-en">Expected close date</span></td></tr>
+    <tr><td><code>owner_id</code></td><td>UUID</td><td><span class="lang-vi">Sales owner/responsible</span><span class="lang-en">Sales owner/responsible</span></td></tr>
+    <tr><td><code>contact_id</code></td><td>UUID</td><td><span class="lang-vi">Contact chính yếu</span><span class="lang-en">Primary contact</span></td></tr>
+    <tr><td><code>account_id</code></td><td>UUID</td><td><span class="lang-vi">Account/công ty</span><span class="lang-en">Account/company</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- PIPELINE STAGES -->
+<h2 id="pipeline-stages">
+  <span class="lang-vi">Giai đoạn Pipeline</span>
+  <span class="lang-en">Pipeline Stages</span>
+</h2>
+
+<div class="status-flow">
+  <span class="sp sp-blue"><span class="lang-vi">Qualified Lead</span><span class="lang-en">Qualified Lead</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-blue"><span class="lang-vi">Needs Analysis</span><span class="lang-en">Needs Analysis</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-blue"><span class="lang-vi">Proposal</span><span class="lang-en">Proposal</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-blue"><span class="lang-vi">Negotiation</span><span class="lang-en">Negotiation</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-green"><span class="lang-vi">Won</span><span class="lang-en">Won</span></span>
+  <span class="flow-arr">|</span>
+  <span class="sp sp-red"><span class="lang-vi">Lost</span><span class="lang-en">Lost</span></span>
+</div>
+
+<h3><span class="lang-vi">Mô tả từng giai đoạn</span><span class="lang-en">Stage Descriptions</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr>
+    <td><strong><span class="lang-vi">Qualified Lead:</span><span class="lang-en">Qualified Lead:</span></strong> <span class="lang-vi">Lead vừa chuyển đổi, chưa phân tích nhu cầu chi tiết</span><span class="lang-en">Recently converted Lead, needs analysis not yet complete</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Needs Analysis:</span><span class="lang-en">Needs Analysis:</span></strong> <span class="lang-vi">Sales hiểu rõ nhu cầu khách, chuẩn bị đề xuất</span><span class="lang-en">Sales understands customer needs, preparing proposal</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Proposal:</span><span class="lang-en">Proposal:</span></strong> <span class="lang-vi">Đã gửi proposal/báo giá cho khách</span><span class="lang-en">Proposal/quote sent to customer</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Negotiation:</span><span class="lang-en">Negotiation:</span></strong> <span class="lang-vi">Khách đang xem xét, đang thương lượng giá/điều khoản</span><span class="lang-en">Customer reviewing, negotiating terms/price</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Closed Won:</span><span class="lang-en">Closed Won:</span></strong> <span class="lang-vi">Chốt thành công, hợp đồng ký</span><span class="lang-en">Successfully closed, contract signed</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Closed Lost:</span><span class="lang-en">Closed Lost:</span></strong> <span class="lang-vi">Mất deal, ghi lý do (competitor, budget, etc.)</span><span class="lang-en">Lost deal, record reason (competitor, budget, etc.)</span></td>
+  </tr>
+</tbody>
+</table>
+
+<!-- DEAL CLOSING -->
+<h2 id="deal-closing">
+  <span class="lang-vi">Quy trình Đóng Deal</span>
+  <span class="lang-en">Deal Closing Workflow</span>
+</h2>
+
+<h3><span class="lang-vi">Đóng Won (Chốt thành công)</span><span class="lang-en">Closing Won (Successful)</span></h3>
+<ol class="step-list">
+  <li><span><span class="lang-vi">Sales hoàn thành thương lượng và khách ký hợp đồng</span><span class="lang-en">Sales completes negotiation and customer signs contract</span></span></li>
+  <li><span><span class="lang-vi">Sales Rep cập nhật Deal: stage → "Closed Won", probability → 100%</span><span class="lang-en">Sales Rep updates Deal: stage → "Closed Won", probability → 100%</span></span></li>
+  <li><span><span class="lang-vi">Nhập ngày chốt thực tế (closed_at)</span><span class="lang-en">Enter actual close date (closed_at)</span></span></li>
+  <li><span><span class="lang-vi">CRM tự động tạo Account nếu chưa tồn tại</span><span class="lang-en">CRM automatically creates Account if not exists</span></span></li>
+  <li><span><span class="lang-vi">Account được liên kết với Deal, revenue được cộng vào Account</span><span class="lang-en">Account linked to Deal, revenue added to Account total</span></span></li>
+</ol>
+
+<h3><span class="lang-vi">Đóng Lost (Mất Deal)</span><span class="lang-en">Closing Lost</span></h3>
+<ol class="step-list">
+  <li><span><span class="lang-vi">Sales Rep xác nhận mất deal</span><span class="lang-en">Sales Rep confirms deal is lost</span></span></li>
+  <li><span><span class="lang-vi">Cập nhật stage → "Closed Lost", probability → 0%</span><span class="lang-en">Update stage → "Closed Lost", probability → 0%</span></span></li>
+  <li><span><span class="lang-vi">Ghi lý do mất deal: competitor, budget, timeline, decision changed, etc.</span><span class="lang-en">Record loss reason: competitor, budget, timeline, decision changed, etc.</span></span></li>
+  <li><span><span class="lang-vi">Tùy chọn: Tạo follow-up activity hoặc lead lại cho lần sau</span><span class="lang-en">Optional: Create follow-up activity or re-queue for future</span></span></li>
+</ol>
+
+<!-- ===== ACCOUNT MANAGEMENT ===== -->
+<h2 id="account-fields">
+  <span class="module-tag mod-sales">Sales</span>
+  <span class="lang-vi">Quản lý Tài khoản Khách hàng</span>
+  <span class="lang-en">Account Management</span>
+</h2>
+
+<div class="lang-vi"><p class="section-intro">Account là tổ chức khách hàng. Chứa thông tin công ty, danh sách contacts, tất cả deals, activities, health score.</p></div>
+<div class="lang-en"><p class="section-intro">Account is a customer organization. Contains company info, contacts list, all deals, activities, health score.</p></div>
+
+<h3><span class="lang-vi">Trường Account</span><span class="lang-en">Account Fields</span></h3>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Trường</span><span class="lang-en">Field</span></th>
+      <th><span class="lang-vi">Loại</span><span class="lang-en">Type</span></th>
+      <th><span class="lang-vi">Mô tả</span><span class="lang-en">Description</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>name</code></td><td>String</td><td><span class="lang-vi">Tên công ty</span><span class="lang-en">Company name</span></td></tr>
+    <tr><td><code>industry</code></td><td>String</td><td><span class="lang-vi">Ngành kinh doanh</span><span class="lang-en">Industry</span></td></tr>
+    <tr><td><code>status</code></td><td>Enum</td><td><span class="lang-vi">Active, Inactive</span><span class="lang-en">Active, Inactive</span></td></tr>
+    <tr><td><code>website</code></td><td>String</td><td><span class="lang-vi">Website công ty</span><span class="lang-en">Company website</span></td></tr>
+    <tr><td><code>address</code></td><td>String</td><td><span class="lang-vi">Địa chỉ</span><span class="lang-en">Address</span></td></tr>
+    <tr><td><code>total_revenue</code></td><td>Float</td><td><span class="lang-vi">Tổng doanh thu từ account (VND)</span><span class="lang-en">Total revenue from account (VND)</span></td></tr>
+    <tr><td><code>health_score</code></td><td>Integer</td><td><span class="lang-vi">Health score (0-100). Tự động tính từ activities, deals</span><span class="lang-en">Health score (0-100). Auto-calculated from activities, deals</span></td></tr>
+    <tr><td><code>next_follow_up_date</code></td><td>DateTime</td><td><span class="lang-vi">Ngày follow-up tiếp theo được lên lịch</span><span class="lang-en">Next scheduled follow-up</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ACCOUNT 360 -->
+<h2 id="account-360">
+  <span class="lang-vi">Account 360 View</span>
+  <span class="lang-en">Account 360 View</span>
+</h2>
+
+<div class="lang-vi"><p class="section-intro">Trang Account detail cung cấp cái nhìn 360 độ về khách hàng, bao gồm tất cả contacts, deals, activities, tickets và health indicators.</p></div>
+<div class="lang-en"><p class="section-intro">Account detail page provides 360-degree customer view including all contacts, deals, activities, tickets and health indicators.</p></div>
+
+<div class="feature-grid">
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="lang-vi">Danh sách Contact</span><span class="lang-en">Contacts List</span></div>
+    <div class="feature-card-desc"><span class="lang-vi">Tất cả contacts liên quan. Xem tên, title, email, phone. Thêm/sửa/xóa contact.</span><span class="lang-en">All related contacts. View name, title, email, phone. Add/edit/delete contact.</span></div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="lang-vi">Deals (Won/Open/Lost)</span><span class="lang-en">Deals (Won/Open/Lost)</span></div>
+    <div class="feature-card-desc"><span class="lang-vi">Tất cả deals với account. Tiền tệ chiến thắng, mở, mất. Pipeline value tổng.</span><span class="lang-en">All deals with account. Separate Won, Open, Lost. Total pipeline value.</span></div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="lang-vi">Activity Timeline</span><span class="lang-en">Activity Timeline</span></div>
+    <div class="feature-card-desc"><span class="lang-vi">Chronological feed of calls, emails, meetings, demos. Tìm kiếm và lọc nhanh.</span><span class="lang-en">Chronological feed of calls, emails, meetings, demos. Quick search/filter.</span></div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="lang-vi">Support Tickets</span><span class="lang-en">Support Tickets</span></div>
+    <div class="feature-card-desc"><span class="lang-vi">Tickets mở/đã đóng. Priority, status, resolution time tracking.</span><span class="lang-en">Open/closed tickets. Priority, status, resolution time.</span></div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="lang-vi">Health Score</span><span class="lang-en">Health Score</span></div>
+    <div class="feature-card-desc"><span class="lang-vi">Indicator 0-100 dựa trên activity frequency, deal outcomes, support tickets.</span><span class="lang-en">Indicator 0-100 based on activity frequency, deal outcomes, support tickets.</span></div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="lang-vi">Lịch sử Hợp đồng</span><span class="lang-en">Contract History</span></div>
+    <div class="feature-card-desc"><span class="lang-vi">Danh sách tất cả các hợp đồng ký kết, ngày bắt đầu, hết hạn, mở rộng.</span><span class="lang-en">List all contracts signed, start date, expiry, renewals.</span></div>
+  </div>
+</div>
+
+<!-- CONTACT & ACTIVITY -->
+<h2 id="contact-activity">
+  <span class="lang-vi">Contact &amp; Activity Management</span>
+  <span class="lang-en">Contact &amp; Activity Management</span>
+</h2>
+
+<h3><span class="lang-vi">Contact</span><span class="lang-en">Contact</span></h3>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Trường</span><span class="lang-en">Field</span></th>
+      <th><span class="lang-vi">Mô tả</span><span class="lang-en">Description</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>name</code></td><td><span class="lang-vi">Tên liên hệ đầy đủ</span><span class="lang-en">Full contact name</span></td></tr>
+    <tr><td><code>email</code></td><td><span class="lang-vi">Email cá nhân/công ty</span><span class="lang-en">Personal/work email</span></td></tr>
+    <tr><td><code>phone</code></td><td><span class="lang-vi">Số điện thoại liên hệ</span><span class="lang-en">Contact phone</span></td></tr>
+    <tr><td><code>title</code></td><td><span class="lang-vi">Chức vụ (Decision maker?)</span><span class="lang-en">Job title (Decision maker?)</span></td></tr>
+    <tr><td><code>account_id</code></td><td><span class="lang-vi">Liên kết Account</span><span class="lang-en">Linked Account</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3><span class="lang-vi">Activity Types</span><span class="lang-en">Activity Types</span></h3>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Loại</span><span class="lang-en">Type</span></th>
+      <th><span class="lang-vi">Mô tả</span><span class="lang-en">Description</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>Call</strong></td><td><span class="lang-vi">Cuộc gọi điện thoại. Ghi thời gian, độ dài, kết quả</span><span class="lang-en">Phone call. Record time, duration, outcome</span></td></tr>
+    <tr><td><strong>Email</strong></td><td><span class="lang-vi">Email gửi/nhận. Liên kết thread, attachments</span><span class="lang-en">Email sent/received. Link thread, attachments</span></td></tr>
+    <tr><td><strong>Meeting</strong></td><td><span class="lang-vi">Cuộc họp. Thời gian, location, attendees, notes</span><span class="lang-en">Meeting. Time, location, attendees, notes</span></td></tr>
+    <tr><td><strong>Demo</strong></td><td><span class="lang-vi">Demo sản phẩm. Ghi feedback, giải pháp được quan tâm</span><span class="lang-en">Product demo. Record feedback, interests</span></td></tr>
+    <tr><td><strong>Follow-up</strong></td><td><span class="lang-vi">Hoạt động follow-up được lên lịch. Ghi nhắn nhở</span><span class="lang-en">Scheduled follow-up. Record reminder</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ===== CAMPAIGN & TICKET ===== -->
+<h2 id="campaign-mgt">
+  <span class="module-tag mod-mkt">Mkt</span>
+  <span class="lang-vi">Campaign Management</span>
+  <span class="lang-en">Campaign Management</span>
+</h2>
+
+<div class="lang-vi"><p class="section-intro">Campaign quản lý các chiến dịch marketing. Mỗi campaign theo dõi budget, actual cost, lead generation, ROI.</p></div>
+<div class="lang-en"><p class="section-intro">Campaign manages marketing campaigns. Each tracks budget, actual cost, lead generation, ROI.</p></div>
+
+<h3><span class="lang-vi">Trường Campaign</span><span class="lang-en">Campaign Fields</span></h3>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Trường</span><span class="lang-en">Field</span></th>
+      <th><span class="lang-vi">Loại</span><span class="lang-en">Type</span></th>
+      <th><span class="lang-vi">Mô tả</span><span class="lang-en">Description</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>name</code></td><td>String</td><td><span class="lang-vi">Tên campaign</span><span class="lang-en">Campaign name</span></td></tr>
+    <tr><td><code>type</code></td><td>Enum</td><td><span class="lang-vi">email, ads, event, webinar, etc.</span><span class="lang-en">email, ads, event, webinar, etc.</span></td></tr>
+    <tr><td><code>budget</code></td><td>Float</td><td><span class="lang-vi">Ngân sách dự tính (VND)</span><span class="lang-en">Planned budget (VND)</span></td></tr>
+    <tr><td><code>actual_cost</code></td><td>Float</td><td><span class="lang-vi">Chi phí thực tế (VND)</span><span class="lang-en">Actual spend (VND)</span></td></tr>
+    <tr><td><code>start_date</code></td><td>Date</td><td><span class="lang-vi">Ngày bắt đầu</span><span class="lang-en">Start date</span></td></tr>
+    <tr><td><code>end_date</code></td><td>Date</td><td><span class="lang-vi">Ngày kết thúc</span><span class="lang-en">End date</span></td></tr>
+    <tr><td><code>status</code></td><td>Enum</td><td><span class="lang-vi">draft, running, closed</span><span class="lang-en">draft, running, closed</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- TICKET MANAGEMENT -->
+<h2 id="ticket-mgt">
+  <span class="module-tag mod-support">Support</span>
+  <span class="lang-vi">Support Ticket Management</span>
+  <span class="lang-en">Support Ticket Management</span>
+</h2>
+
+<div class="lang-vi"><p class="section-intro">Ticket quản lý yêu cầu hỗ trợ khách hàng. Theo dõi priority, status, resolution time, SLA compliance.</p></div>
+<div class="lang-en"><p class="section-intro">Ticket manages customer support requests. Track priority, status, resolution time, SLA compliance.</p></div>
+
+<h3><span class="lang-vi">Trường Ticket</span><span class="lang-en">Ticket Fields</span></h3>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Trường</span><span class="lang-en">Field</span></th>
+      <th><span class="lang-vi">Loại</span><span class="lang-en">Type</span></th>
+      <th><span class="lang-vi">Mô tả</span><span class="lang-en">Description</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>subject</code></td><td>String</td><td><span class="lang-vi">Tiêu đề vấn đề</span><span class="lang-en">Issue subject</span></td></tr>
+    <tr><td><code>description</code></td><td>Text</td><td><span class="lang-vi">Mô tả chi tiết</span><span class="lang-en">Detailed description</span></td></tr>
+    <tr><td><code>priority</code></td><td>Enum</td><td><span class="lang-vi">low, medium, high, critical</span><span class="lang-en">low, medium, high, critical</span></td></tr>
+    <tr><td><code>status</code></td><td>Enum</td><td><span class="lang-vi">open, in_progress, resolved, closed</span><span class="lang-en">open, in_progress, resolved, closed</span></td></tr>
+    <tr><td><code>assigned_to</code></td><td>UUID</td><td><span class="lang-vi">Support staff phụ trách</span><span class="lang-en">Assigned support staff</span></td></tr>
+    <tr><td><code>contact_id</code></td><td>UUID</td><td><span class="lang-vi">Contact yêu cầu hỗ trợ</span><span class="lang-en">Requesting contact</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ===== ANALYTICS & REPORTING ===== -->
+<h2 id="analytics">
+  <span class="module-tag mod-sales">Sales</span>
+  <span class="lang-vi">Analytics, Reporting &amp; KPI</span>
+  <span class="lang-en">Analytics, Reporting &amp; KPI</span>
+</h2>
+
+<div class="lang-vi"><p class="section-intro">CRM cung cấp dashboard analytics, báo cáo pipeline, KPI tracking và forecasting.</p></div>
+<div class="lang-en"><p class="section-intro">CRM provides analytics dashboards, pipeline reporting, KPI tracking and forecasting.</p></div>
+
+<h3><span class="lang-vi">KPI Dashboard</span><span class="lang-en">KPI Dashboard</span></h3>
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-value"><span class="lang-vi">+20%</span><span class="lang-en">+20%</span></div>
+    <div class="kpi-label"><span class="lang-vi">Tăng tỷ lệ chuyển đổi Lead → Customer</span><span class="lang-en">Lead → Customer conversion increase</span></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value"><span class="lang-vi">+30%</span><span class="lang-en">+30%</span></div>
+    <div class="kpi-label"><span class="lang-vi">Tăng năng suất Sales</span><span class="lang-en">Sales productivity increase</span></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value"><span class="lang-vi">100%</span><span class="lang-en">100%</span></div>
+    <div class="kpi-label"><span class="lang-vi">Pipeline visibility (mỗi deal được theo dõi)</span><span class="lang-en">Pipeline visibility (every deal tracked)</span></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value"><span class="lang-vi">+15%</span><span class="lang-en">+15%</span></div>
+    <div class="kpi-label"><span class="lang-vi">Tăng customer retention</span><span class="lang-en">Customer retention increase</span></div>
+  </div>
+</div>
+
+<h3><span class="lang-vi">Báo cáo chính</span><span class="lang-en">Key Reports</span></h3>
+<ul>
+  <li><strong><span class="lang-vi">Revenue by Period:</span><span class="lang-en">Revenue by Period:</span></strong> <span class="lang-vi">Doanh thu hàng tháng/quý từ deals đã chốt</span><span class="lang-en">Monthly/quarterly revenue from closed deals</span></li>
+  <li><strong><span class="lang-vi">Win Rate:</span><span class="lang-en">Win Rate:</span></strong> <span class="lang-vi">% deals chốt so với total entered pipeline</span><span class="lang-en">% deals won vs. total entered pipeline</span></li>
+  <li><strong><span class="lang-vi">Pipeline Value by Stage:</span><span class="lang-en">Pipeline Value by Stage:</span></strong> <span class="lang-vi">Tổng value từng stage, weighted by probability</span><span class="lang-en">Total value per stage, weighted by probability</span></li>
+  <li><strong><span class="lang-vi">Lead Source Attribution:</span><span class="lang-en">Lead Source Attribution:</span></strong> <span class="lang-vi">Nguồn lead nào chuyển đổi tốt nhất</span><span class="lang-en">Which lead sources convert best</span></li>
+  <li><strong><span class="lang-vi">Sales Funnel:</span><span class="lang-en">Sales Funnel:</span></strong> <span class="lang-vi">Lead → Opportunity → Deal → Closed Won. Drop-off analysis.</span><span class="lang-en">Lead → Opportunity → Deal → Closed Won. Drop-off analysis.</span></li>
+  <li><strong><span class="lang-vi">Deal Velocity:</span><span class="lang-en">Deal Velocity:</span></strong> <span class="lang-vi">Trung bình ngày từ Qualified Lead đến Closed Won</span><span class="lang-en">Average days from Qualified Lead to Closed Won</span></li>
+</ul>
+
+<!-- DATA QUALITY -->
+<h2 id="data-quality">
+  <span class="lang-vi">Data Quality &amp; Governance</span>
+  <span class="lang-en">Data Quality &amp; Governance</span>
+</h2>
+
+<div class="lang-vi"><p class="section-intro">CRM giám sát chất lượng dữ liệu và phát hiện các vấn đề quản lý dữ liệu tự động.</p></div>
+<div class="lang-en"><p class="section-intro">CRM monitors data quality and automatically detects data governance issues.</p></div>
+
+<h3><span class="lang-vi">Data Quality Checks</span><span class="lang-en">Data Quality Checks</span></h3>
+<div class="golden-list">
+  <li>
+    <div class="gl-icon">⚠️</div>
+    <div class="gl-text"><strong><span class="lang-vi">Duplicate Leads/Contacts:</span><span class="lang-en">Duplicate Leads/Contacts:</span></strong> <span class="lang-vi">Phát hiện tự động bản ghi trùng lặp</span><span class="lang-en">Automatically detect duplicate records</span></div>
+  </li>
+  <li>
+    <div class="gl-icon">⚠️</div>
+    <div class="gl-text"><strong><span class="lang-vi">Missing Email/Phone:</span><span class="lang-en">Missing Email/Phone:</span></strong> <span class="lang-vi">Lead/Contact không có email hoặc phone</span><span class="lang-en">Lead/Contact missing email or phone</span></div>
+  </li>
+  <li>
+    <div class="gl-icon">⚠️</div>
+    <div class="gl-text"><strong><span class="lang-vi">Incomplete Deals:</span><span class="lang-en">Incomplete Deals:</span></strong> <span class="lang-vi">Deal thiếu expected_close_date hoặc value</span><span class="lang-en">Deal missing expected_close_date or value</span></div>
+  </li>
+  <li>
+    <div class="gl-icon">⚠️</div>
+    <div class="gl-text"><strong><span class="lang-vi">Stale Records:</span><span class="lang-en">Stale Records:</span></strong> <span class="lang-vi">Bản ghi không cập nhật &gt;90 ngày</span><span class="lang-en">Records not updated &gt;90 days</span></div>
+  </li>
+  <li>
+    <div class="gl-icon">📊</div>
+    <div class="gl-text"><strong><span class="lang-vi">Quality Score:</span><span class="lang-en">Quality Score:</span></strong> <span class="lang-vi">Điểm tổng hợp cho workspace (target &gt;90%)</span><span class="lang-en">Overall score per workspace (target &gt;90%)</span></div>
+  </li>
+</div>
+
+<h3><span class="lang-vi">Governance Alerts</span><span class="lang-en">Governance Alerts</span></h3>
+<ul>
+  <li><span class="lang-vi">Overdue follow-ups (quá hạn 5+ ngày)</span><span class="lang-en">Overdue follow-ups (5+ days past due)</span></li>
+  <li><span class="lang-vi">Stale leads/deals (no activity &gt;30/60 days)</span><span class="lang-en">Stale leads/deals (no activity &gt;30/60 days)</span></li>
+  <li><span class="lang-vi">Missing deal values (0 hoặc null)</span><span class="lang-en">Missing deal values (0 or null)</span></li>
+  <li><span class="lang-vi">Unassigned leads (owner_id = null)</span><span class="lang-en">Unassigned leads (owner_id = null)</span></li>
+  <li><span class="lang-vi">High-value deals with no activity (&gt;$100k, no touch &gt;14 days)</span><span class="lang-en">High-value deals with no activity (&gt;$100k, no touch &gt;14 days)</span></li>
+</ul>
+
+<!-- ===== API REFERENCE ===== -->
+<h2 id="api-endpoints">
+  <span class="lang-vi">API Reference</span>
+  <span class="lang-en">API Reference</span>
+</h2>
+
+<div class="lang-vi"><p class="section-intro">Tất cả CRM endpoints tuân theo RESTful convention. Base URL: <code>/api/v1/crm</code></p></div>
+<div class="lang-en"><p class="section-intro">All CRM endpoints follow RESTful convention. Base URL: <code>/api/v1/crm</code></p></div>
+
+<h3><span class="lang-vi">Lead Endpoints</span><span class="lang-en">Lead Endpoints</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr><td><code>GET /leads</code></td><td><span class="lang-vi">Danh sách leads (filter, sort, paginate)</span><span class="lang-en">List leads (filter, sort, paginate)</span></td></tr>
+  <tr><td><code>POST /leads</code></td><td><span class="lang-vi">Tạo lead mới</span><span class="lang-en">Create new lead</span></td></tr>
+  <tr><td><code>GET /leads/{id}</code></td><td><span class="lang-vi">Chi tiết lead</span><span class="lang-en">Lead detail</span></td></tr>
+  <tr><td><code>PUT /leads/{id}</code></td><td><span class="lang-vi">Cập nhật lead</span><span class="lang-en">Update lead</span></td></tr>
+  <tr><td><code>DELETE /leads/{id}</code></td><td><span class="lang-vi">Xóa lead</span><span class="lang-en">Delete lead</span></td></tr>
+  <tr><td><code>POST /leads/{id}/convert</code></td><td><span class="lang-vi">Chuyển đổi lead thành deal</span><span class="lang-en">Convert lead to deal</span></td></tr>
+  <tr><td><code>POST /leads/distribute</code></td><td><span class="lang-vi">Phân bổ leads chưa gán (round-robin)</span><span class="lang-en">Distribute unassigned leads (round-robin)</span></td></tr>
+  <tr><td><code>GET /leads/stale</code></td><td><span class="lang-vi">Danh sách leads stale (&gt;30 ngày ko hoạt động)</span><span class="lang-en">List stale leads (&gt;30 days no activity)</span></td></tr>
+</tbody>
+</table>
+
+<h3><span class="lang-vi">Deal Endpoints</span><span class="lang-en">Deal Endpoints</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr><td><code>GET /deals</code></td><td><span class="lang-vi">Danh sách deals (filter by stage, owner, status)</span><span class="lang-en">List deals (filter by stage, owner, status)</span></td></tr>
+  <tr><td><code>POST /deals</code></td><td><span class="lang-vi">Tạo deal mới</span><span class="lang-en">Create new deal</span></td></tr>
+  <tr><td><code>GET /deals/{id}</code></td><td><span class="lang-vi">Chi tiết deal (full activity history)</span><span class="lang-en">Deal detail (full activity history)</span></td></tr>
+  <tr><td><code>PUT /deals/{id}</code></td><td><span class="lang-vi">Cập nhật deal (stage, probability, etc.)</span><span class="lang-en">Update deal (stage, probability, etc.)</span></td></tr>
+  <tr><td><code>POST /deals/{id}/close</code></td><td><span class="lang-vi">Đóng deal (won/lost với lý do nếu lost)</span><span class="lang-en">Close deal (won/lost with reason if lost)</span></td></tr>
+  <tr><td><code>GET /deals/pipeline</code></td><td><span class="lang-vi">Pipeline summary (stage breakdown, total value, count)</span><span class="lang-en">Pipeline summary (stage breakdown, total value, count)</span></td></tr>
+  <tr><td><code>GET /deals/stale</code></td><td><span class="lang-vi">Danh sách stale deals (&gt;60 ngày)</span><span class="lang-en">List stale deals (&gt;60 days)</span></td></tr>
+</tbody>
+</table>
+
+<h3><span class="lang-vi">Contact, Account, Activity, Campaign, Ticket Endpoints</span><span class="lang-en">Contact, Account, Activity, Campaign, Ticket Endpoints</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr><td><code>GET /contacts</code> <code>POST /contacts</code> <code>GET /contacts/{id}</code> <code>PUT /contacts/{id}</code> <code>DELETE /contacts/{id}</code></td><td><span class="lang-vi">CRUD contacts</span><span class="lang-en">CRUD contacts</span></td></tr>
+  <tr><td><code>GET /accounts</code> <code>POST /accounts</code> <code>GET /accounts/{id}</code> <code>PUT /accounts/{id}</code></td><td><span class="lang-vi">CRUD accounts + GET /accounts/{id}/360 (360 view)</span><span class="lang-en">CRUD accounts + GET /accounts/{id}/360 (360 view)</span></td></tr>
+  <tr><td><code>GET /activities</code> <code>POST /activities</code> <code>GET /activities/{id}</code> <code>PUT /activities/{id}</code></td><td><span class="lang-vi">CRUD activities (call, email, meeting, demo, follow-up)</span><span class="lang-en">CRUD activities (call, email, meeting, demo, follow-up)</span></td></tr>
+  <tr><td><code>GET /campaigns</code> <code>POST /campaigns</code> <code>GET /campaigns/{id}</code> <code>PUT /campaigns/{id}</code></td><td><span class="lang-vi">CRUD campaigns (manage marketing campaigns)</span><span class="lang-en">CRUD campaigns (manage marketing campaigns)</span></td></tr>
+  <tr><td><code>GET /tickets</code> <code>POST /tickets</code> <code>GET /tickets/{id}</code> <code>PUT /tickets/{id}</code></td><td><span class="lang-vi">CRUD tickets (customer support)</span><span class="lang-en">CRUD tickets (customer support)</span></td></tr>
+</tbody>
+</table>
+
+<h3><span class="lang-vi">Analytics & Governance</span><span class="lang-en">Analytics & Governance</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr><td><code>GET /analytics</code></td><td><span class="lang-vi">Dashboard metrics (revenue, win rate, pipeline value, etc.)</span><span class="lang-en">Dashboard metrics (revenue, win rate, pipeline value, etc.)</span></td></tr>
+  <tr><td><code>GET /data-quality/report</code></td><td><span class="lang-vi">Data quality scoring (duplicates, missing fields, stale records)</span><span class="lang-en">Data quality scoring (duplicates, missing fields, stale records)</span></td></tr>
+  <tr><td><code>GET /governance/alerts</code></td><td><span class="lang-vi">Governance alerts (overdue, stale, unassigned, high-value at risk)</span><span class="lang-en">Governance alerts (overdue, stale, unassigned, high-value at risk)</span></td></tr>
+</tbody>
+</table>
+
+<!-- CLOSING -->
+<div class="callout callout-info">
+  <div class="callout-icon">ℹ️</div>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Hỗ trợ thêm:</span><span class="lang-en">Further Support:</span></strong>
+    <p><span class="lang-vi">Để được hỗ trợ hoặc báo cáo vấn đề, vui lòng liên hệ admin CRM hoặc tạo support ticket trong hệ thống.</span><span class="lang-en">For support or to report issues, please contact CRM admin or create a support ticket in the system.</span></p>
+  </div>
+</div>
+
+</div>
+</main>
+
+<button class="back-to-top" id="backToTop">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<script>
+document.getElementById('darkToggle').addEventListener('click', function() {
+  const html = document.documentElement;
+  const isDark = html.dataset.theme === 'dark';
+  html.dataset.theme = isDark ? 'light' : 'dark';
+  const label = document.getElementById('darkToggleLabel');
+  const sunIcon = document.getElementById('sunIcon');
+  const moonIcon = document.getElementById('moonIcon');
+  if (isDark) {
+    label.textContent = 'Dark';
+    sunIcon.style.display = 'block';
+    moonIcon.style.display = 'none';
+  } else {
+    label.textContent = 'Light';
+    sunIcon.style.display = 'none';
+    moonIcon.style.display = 'block';
+  }
+});
+document.getElementById('langVi').addEventListener('click', function() {
+  document.documentElement.lang = 'vi';
+  document.documentElement.dataset.lang = 'vi';
+  this.classList.add('active');
+  document.getElementById('langEn').classList.remove('active');
+});
+document.getElementById('langEn').addEventListener('click', function() {
+  document.documentElement.lang = 'en';
+  document.documentElement.dataset.lang = 'en';
+  this.classList.add('active');
+  document.getElementById('langVi').classList.remove('active');
+});
+function toggleSection(id) {
+  const section = document.getElementById(id);
+  section.classList.toggle('collapsed');
+}
+function closeSidebarMobile() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  sidebar.classList.remove('open');
+  overlay.classList.remove('open');
+}
+document.getElementById('hamburgerBtn').addEventListener('click', function() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('open');
+});
+document.getElementById('sidebarOverlay').addEventListener('click', closeSidebarMobile);
+const backToTopBtn = document.getElementById('backToTop');
+window.addEventListener('scroll', function() {
+  backToTopBtn.classList.toggle('visible', window.scrollY > 500);
+});
+backToTopBtn.addEventListener('click', function() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+const sidebarLinks = document.querySelectorAll('.sidebar-link');
+window.addEventListener('scroll', function() {
+  let current = '';
+  document.querySelectorAll('h2').forEach(section => {
+    const sectionTop = section.offsetTop;
+    const sectionHeight = section.clientHeight;
+    if (window.pageYOffset >= sectionTop - 200) {
+      current = section.getAttribute('id');
+    }
+  });
+  sidebarLinks.forEach(link => {
+    link.classList.remove('spy-active');
+    if (link.getAttribute('href').substring(1) === current) {
+      link.classList.add('spy-active');
+    }
+  });
+});
+</script>
+</body>
+</html>

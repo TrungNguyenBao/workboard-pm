@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="vi" data-lang="vi" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOP Quản lý Kho — WMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--font-sans:'DM Sans',system-ui,-apple-system,sans-serif;--font-mono:'JetBrains Mono','Fira Code',monospace;--color-primary:#5E6AD2;--color-primary-hover:#4F55C4;--color-accent:#F28C38;--color-success:#22C55E;--color-warning:#F59E0B;--color-danger:#EF4444;--color-info:#38BDF8;--bg-page:#FFFFFF;--bg-surface:#F9F9FB;--bg-elevated:#FFFFFF;--border-default:#E4E4E7;--text-primary:#18181B;--text-secondary:#52525B;--text-tertiary:#A1A1AA;--radius-xs:4px;--radius-sm:6px;--radius-md:8px;--radius-lg:12px;--radius-full:9999px;--shadow-elevated:0 4px 12px rgba(0,0,0,.10);--sidebar-width:260px;--topbar-height:52px;--dur:150ms;}
+[data-theme="dark"]{--bg-page:#0F0F12;--bg-surface:#1A1A1F;--bg-elevated:#25252B;--border-default:rgba(255,255,255,.10);--text-primary:#FAFAFA;--text-secondary:#A1A1AA;--text-tertiary:#52525B;--color-primary:#6E78E8;--color-primary-hover:#7D87EE;--color-accent:#F5A05A;--color-success:#4ADE80;--color-warning:#FBB532;--color-danger:#F87171;--color-info:#7DD3FC;--shadow-elevated:0 4px 12px rgba(0,0,0,.40);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;font-size:14px;}
+body{font-family:var(--font-sans);font-size:14px;line-height:1.6;color:var(--text-primary);background:var(--bg-page);transition:background var(--dur) ease,color var(--dur) ease;}
+.topbar{position:fixed;top:0;left:0;right:0;height:var(--topbar-height);background:var(--bg-surface);border-bottom:1px solid var(--border-default);display:flex;align-items:center;padding:0 16px;gap:12px;z-index:100;}
+.topbar-brand{font-size:16px;font-weight:700;color:var(--color-primary);letter-spacing:-.3px;flex-shrink:0;}
+.topbar-brand span{color:var(--text-primary);font-weight:400;}
+.topbar-subtitle{font-size:12px;color:var(--text-tertiary);border-left:1px solid var(--border-default);padding-left:12px;margin-left:4px;}
+.topbar-spacer{flex:1;}
+.hamburger{display:none;background:none;border:none;cursor:pointer;color:var(--text-secondary);padding:6px;border-radius:var(--radius-sm);}
+.hamburger:hover{background:var(--bg-elevated);}
+.dark-toggle{background:none;border:1px solid var(--border-default);border-radius:var(--radius-sm);cursor:pointer;color:var(--text-secondary);padding:6px 10px;font-size:13px;font-family:var(--font-sans);display:flex;align-items:center;gap:6px;transition:background var(--dur) ease,border-color var(--dur) ease;}
+.dark-toggle:hover{background:var(--bg-elevated);border-color:var(--text-tertiary);}
+.sidebar{position:fixed;top:var(--topbar-height);left:0;width:var(--sidebar-width);height:calc(100vh - var(--topbar-height));background:var(--bg-surface);border-right:1px solid var(--border-default);overflow-y:auto;overflow-x:hidden;z-index:90;transition:transform var(--dur) ease;padding:16px 0 32px;}
+.sidebar::-webkit-scrollbar{width:4px;}.sidebar::-webkit-scrollbar-thumb{background:var(--border-default);border-radius:2px;}
+.sidebar-section{margin-bottom:8px;}
+.sidebar-section-header{display:flex;align-items:center;justify-content:space-between;padding:6px 16px;cursor:pointer;user-select:none;}
+.sidebar-section-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--text-tertiary);}
+.sidebar-chevron{color:var(--text-tertiary);transition:transform var(--dur) ease;}
+.sidebar-section.collapsed .sidebar-chevron{transform:rotate(-90deg);}
+.sidebar-section.collapsed .sidebar-section-items{display:none;}
+.sidebar-link{display:flex;align-items:center;gap:8px;padding:6px 16px 6px 24px;font-size:13px;color:var(--text-secondary);text-decoration:none;cursor:pointer;transition:background var(--dur) ease,color var(--dur) ease;border:none;background:none;width:100%;text-align:left;line-height:1.4;}
+.sidebar-link:hover{background:var(--bg-elevated);color:var(--text-primary);}
+.sidebar-link.active,.sidebar-link.spy-active{background:rgba(94,106,210,.10);color:var(--color-primary);font-weight:500;}
+[data-theme="dark"] .sidebar-link.active,[data-theme="dark"] .sidebar-link.spy-active{background:rgba(110,120,232,.15);}
+.sidebar-link-dot{width:5px;height:5px;border-radius:50%;background:var(--text-tertiary);flex-shrink:0;margin-left:4px;}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.40);z-index:89;}
+.main{margin-left:var(--sidebar-width);margin-top:var(--topbar-height);padding:40px 48px;max-width:calc(100% - var(--sidebar-width));min-height:calc(100vh - var(--topbar-height));}
+.content-area{max-width:820px;margin:0 auto;}
+h1{font-size:28px;font-weight:700;line-height:1.2;color:var(--text-primary);margin-bottom:8px;letter-spacing:-.4px;}
+h2{font-size:22px;font-weight:600;line-height:1.3;color:var(--text-primary);margin-top:52px;margin-bottom:16px;padding-top:20px;border-top:1px solid var(--border-default);letter-spacing:-.3px;}
+h2:first-child{margin-top:0;border-top:none;padding-top:0;}
+h3{font-size:16px;font-weight:600;line-height:1.4;color:var(--text-primary);margin-top:32px;margin-bottom:10px;}
+h4{font-size:14px;font-weight:600;color:var(--text-primary);margin-top:20px;margin-bottom:8px;}
+p{color:var(--text-secondary);margin-bottom:12px;line-height:1.7;}p:last-child{margin-bottom:0;}
+ul,ol{padding-left:20px;margin-bottom:12px;color:var(--text-secondary);}
+li{margin-bottom:4px;line-height:1.6;}li strong{color:var(--text-primary);}
+a{color:var(--color-primary);text-decoration:none;}a:hover{text-decoration:underline;}
+code{font-family:var(--font-mono);font-size:12px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-xs);padding:1px 5px;color:var(--color-primary);}
+[data-theme="dark"] code{background:var(--bg-elevated);}
+.page-header{margin-bottom:40px;padding-bottom:28px;border-bottom:1px solid var(--border-default);}
+.page-header-meta{font-size:13px;color:var(--text-tertiary);margin-top:8px;}
+.table-wrap{overflow-x:auto;margin-bottom:20px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;padding:8px 12px;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--text-tertiary);background:var(--bg-surface);border-bottom:1px solid var(--border-default);}
+td{padding:9px 12px;border-bottom:1px solid var(--border-default);color:var(--text-secondary);vertical-align:top;line-height:1.5;}
+td strong{color:var(--text-primary);}tr:last-child td{border-bottom:none;}tr:hover td{background:var(--bg-surface);}
+.callout{display:flex;gap:12px;padding:14px 16px;border-radius:var(--radius-md);margin:20px 0;border-left:3px solid;}
+.callout-icon{font-size:16px;line-height:1.5;flex-shrink:0;}
+.callout-body{flex:1;font-size:13px;line-height:1.6;}
+.callout-body strong{display:block;margin-bottom:2px;}
+.callout-body p{margin:0;font-size:13px;}
+.callout-tip{background:rgba(34,197,94,.07);border-color:var(--color-success);}
+.callout-tip .callout-body{color:#166534;}[data-theme="dark"] .callout-tip .callout-body{color:#86efac;}
+.callout-info{background:rgba(56,189,248,.07);border-color:var(--color-info);}
+.callout-info .callout-body{color:#075985;}[data-theme="dark"] .callout-info .callout-body{color:#7dd3fc;}
+.callout-warning{background:rgba(245,158,11,.07);border-color:var(--color-warning);}
+.callout-warning .callout-body{color:#92400e;}[data-theme="dark"] .callout-warning .callout-body{color:#fcd34d;}
+.callout-danger{background:rgba(239,68,68,.07);border-color:var(--color-danger);}
+.callout-danger .callout-body{color:#991B1B;}[data-theme="dark"] .callout-danger .callout-body{color:#fca5a5;}
+.callout-note{background:rgba(94,106,210,.07);border-color:var(--color-primary);}
+.callout-note .callout-body{color:#3730a3;}[data-theme="dark"] .callout-note .callout-body{color:#a5b4fc;}
+.back-to-top{position:fixed;bottom:28px;right:28px;width:40px;height:40px;background:var(--color-primary);color:#fff;border:none;border-radius:var(--radius-full);cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:var(--shadow-elevated);z-index:200;transition:background var(--dur) ease,transform var(--dur) ease;}
+.back-to-top:hover{background:var(--color-primary-hover);transform:translateY(-2px);}
+.back-to-top.visible{display:flex;}
+.section-intro{color:var(--text-secondary);font-size:14px;margin-bottom:24px;line-height:1.7;}
+.step-list{list-style:none;padding:0;counter-reset:step;}
+.step-list li{counter-increment:step;display:flex;gap:14px;margin-bottom:14px;align-items:flex-start;}
+.step-list li::before{content:counter(step);display:flex;align-items:center;justify-content:center;width:24px;height:24px;min-width:24px;background:var(--color-primary);color:#fff;border-radius:var(--radius-full);font-size:11px;font-weight:700;margin-top:2px;}
+.step-list li span{color:var(--text-secondary);font-size:14px;line-height:1.6;}
+.status-flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:16px 0;padding:14px 16px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-md);}
+.sp{display:inline-flex;align-items:center;padding:4px 10px;border-radius:var(--radius-full);font-size:11px;font-weight:600;font-family:var(--font-mono);letter-spacing:.3px;white-space:nowrap;}
+.sp-draft{background:rgba(161,161,170,.15);color:var(--text-secondary);border:1px solid var(--border-default);}
+.sp-blue{background:rgba(56,189,248,.12);color:#0284C7;border:1px solid rgba(56,189,248,.30);}
+.sp-green{background:rgba(34,197,94,.12);color:#15803D;border:1px solid rgba(34,197,94,.30);}
+.sp-amber{background:rgba(245,158,11,.12);color:#B45309;border:1px solid rgba(245,158,11,.30);}
+.sp-red{background:rgba(239,68,68,.12);color:#B91C1C;border:1px solid rgba(239,68,68,.30);}
+.sp-purple{background:rgba(94,106,210,.12);color:var(--color-primary);border:1px solid rgba(94,106,210,.30);}
+.sp-orange{background:rgba(242,140,56,.12);color:#C2410C;border:1px solid rgba(242,140,56,.30);}
+[data-theme="dark"] .sp-blue{color:#7DD3FC;}[data-theme="dark"] .sp-green{color:#4ADE80;}
+[data-theme="dark"] .sp-amber{color:#FBB532;}[data-theme="dark"] .sp-red{color:#F87171;}[data-theme="dark"] .sp-orange{color:#FB923C;}
+.flow-arr{color:var(--text-tertiary);font-size:14px;font-weight:700;padding:0 2px;}
+.roles-row{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 16px;}
+.role-tag{display:inline-flex;align-items:center;padding:3px 10px;background:rgba(94,106,210,.08);color:var(--color-primary);border-radius:var(--radius-full);font-size:12px;font-weight:500;}
+.feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:20px 0;}
+.feature-card{background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:16px;}
+.feature-card-title{font-weight:600;font-size:13px;color:var(--text-primary);margin-bottom:4px;}
+.feature-card-desc{font-size:12px;color:var(--text-secondary);line-height:1.5;}
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:20px 0;}
+.kpi-card{background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:16px 20px;display:flex;align-items:center;gap:14px;}
+.kpi-value{font-size:22px;font-weight:700;color:var(--color-primary);font-family:var(--font-mono);flex-shrink:0;}
+.kpi-label{font-size:12px;color:var(--text-secondary);line-height:1.4;}
+.golden-list{list-style:none;padding:0;}
+.golden-list li{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-md);margin-bottom:8px;}
+.gl-icon{color:var(--color-accent);font-size:16px;flex-shrink:0;margin-top:1px;}
+.gl-text{color:var(--text-secondary);font-size:13px;line-height:1.6;}
+.gl-text strong{color:var(--text-primary);}
+.module-tag{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 6px;border-radius:var(--radius-xs);margin-right:6px;vertical-align:middle;}
+.mod-wh{background:rgba(34,197,94,.12);color:#16A34A;}
+.mod-product{background:rgba(56,189,248,.12);color:#0284C7;}
+.mod-inv{background:rgba(245,158,11,.12);color:#D97706;}
+.mod-device{background:rgba(94,106,210,.12);color:var(--color-primary);}
+.mod-supplier{background:rgba(161,161,170,.15);color:var(--text-secondary);}
+.mod-analytics{background:rgba(161,161,170,.15);color:var(--text-secondary);}
+[data-theme="dark"] .mod-wh{color:#4ADE80;}[data-theme="dark"] .mod-product{color:#7DD3FC;}
+[data-theme="dark"] .mod-inv{color:#FBB532;}[data-theme="dark"] .mod-device{color:#a5b4fc;}
+.view-matrix{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;}
+.view-matrix th{text-align:center;padding:8px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--text-tertiary);background:var(--bg-surface);border-bottom:1px solid var(--border-default);}
+.view-matrix th:first-child{text-align:left;}
+.view-matrix td{padding:8px 12px;border-bottom:1px solid var(--border-default);text-align:center;color:var(--text-secondary);}
+.view-matrix td:first-child{text-align:left;font-weight:500;color:var(--text-primary);}
+.view-matrix tr:last-child td{border-bottom:none;}
+.check{color:var(--color-success);font-weight:700;}
+.dash{color:var(--text-tertiary);}
+html[data-lang="en"] .lang-vi{display:none;}
+html[data-lang="vi"] .lang-en{display:none;}
+.lang-toggle{display:flex;align-items:center;gap:2px;border:1px solid var(--border-default);border-radius:var(--radius-full);padding:2px;background:var(--bg-elevated);margin-left:4px;}
+.lang-toggle button{padding:2px 10px;border:none;border-radius:var(--radius-full);background:transparent;color:var(--text-secondary);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font-sans);transition:all var(--dur) ease;}
+.lang-toggle button.active{background:var(--color-primary);color:#fff;}
+@media(max-width:768px){.sidebar{transform:translateX(-100%);z-index:95;}.sidebar.open{transform:translateX(0);}.sidebar-overlay.open{display:block;}.hamburger{display:flex;}.topbar-subtitle{display:none;}.main{margin-left:0;max-width:100%;padding:24px 20px;}.feature-grid,.kpi-grid{grid-template-columns:1fr;}h1{font-size:22px;}h2{font-size:18px;}}
+@media print{.sidebar,.topbar,.back-to-top,.dark-toggle,.hamburger{display:none!important;}.main{margin:0;padding:20px;max-width:100%;}h2{page-break-before:always;}h2:first-child{page-break-before:avoid;}.callout{break-inside:avoid;}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <span class="topbar-brand">A-ERP <span>SOP</span></span>
+  <span class="topbar-subtitle lang-vi">Quy trình vận hành — Quản lý Kho</span>
+  <span class="topbar-subtitle lang-en">Operations SOP — Warehouse Management</span>
+  <span class="topbar-spacer"></span>
+  <button class="dark-toggle" id="darkToggle">
+    <svg id="sunIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+    <svg id="moonIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <span id="darkToggleLabel">Dark</span>
+  </button>
+  <div class="lang-toggle">
+    <button id="langVi" class="active">VI</button>
+    <button id="langEn">EN</button>
+  </div>
+</header>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-section" id="sec-intro">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-intro')">
+      <span class="sidebar-section-title" data-vi="Giới thiệu" data-en="Introduction">Giới thiệu</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#tong-quan" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Tổng quan hệ thống" data-en="System Overview">Tổng quan hệ thống</span></a>
+      <a class="sidebar-link" href="#vai-tro" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Vai trò &amp; Trách nhiệm" data-en="Roles &amp; Responsibilities">Vai trò &amp; Trách nhiệm</span></a>
+      <a class="sidebar-link" href="#tinh-nang" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Ma trận Tính năng" data-en="Feature Matrix">Ma trận Tính năng</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-setup">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-setup')">
+      <span class="sidebar-section-title" data-vi="Thiết lập" data-en="Setup">Thiết lập</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#sop01" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 01 — Thiết lập Kho hàng" data-en="SOP 01 — Warehouse Setup">SOP 01 — Thiết lập Kho hàng</span></a>
+      <a class="sidebar-link" href="#sop02" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 02 — Danh mục Sản phẩm" data-en="SOP 02 — Product Catalog">SOP 02 — Danh mục Sản phẩm</span></a>
+      <a class="sidebar-link" href="#sop03" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 03 — Nhà cung cấp" data-en="SOP 03 — Suppliers">SOP 03 — Nhà cung cấp</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-inventory">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-inventory')">
+      <span class="sidebar-section-title" data-vi="Tồn kho" data-en="Inventory">Tồn kho</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#sop04" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 04 — Quản lý Tồn kho" data-en="SOP 04 — Inventory Management">SOP 04 — Quản lý Tồn kho</span></a>
+      <a class="sidebar-link" href="#sop05" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 05 — Cảnh báo Tồn thấp" data-en="SOP 05 — Low Stock Alerts">SOP 05 — Cảnh báo Tồn thấp</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-devices">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-devices')">
+      <span class="sidebar-section-title" data-vi="Thiết bị" data-en="Devices">Thiết bị</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#sop06" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 06 — Đăng ký Thiết bị Serial" data-en="SOP 06 — Serial Device Registration">SOP 06 — Đăng ký Thiết bị Serial</span></a>
+      <a class="sidebar-link" href="#sop07" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 07 — Vòng đời Thiết bị" data-en="SOP 07 — Device Lifecycle">SOP 07 — Vòng đời Thiết bị</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-analytics">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-analytics')">
+      <span class="sidebar-section-title" data-vi="Analytics" data-en="Analytics">Analytics</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#sop08" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="SOP 08 — Dashboard &amp; Báo cáo" data-en="SOP 08 — Dashboard &amp; Reports">SOP 08 — Dashboard &amp; Báo cáo</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-ref">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-ref')">
+      <span class="sidebar-section-title" data-vi="Tham chiếu" data-en="Reference">Tham chiếu</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#kpi" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="KPI vận hành" data-en="Operational KPIs">KPI vận hành</span></a>
+      <a class="sidebar-link" href="#role-summary" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Tổng hợp theo Vai trò" data-en="Summary by Role">Tổng hợp theo Vai trò</span></a>
+      <a class="sidebar-link" href="#nguyen-tac-vang" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Nguyên tắc vàng" data-en="Golden Principles">Nguyên tắc vàng</span></a>
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+<div class="content-area">
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="lang-vi">
+    <h1>SOP Quản lý Kho — WMS</h1>
+    <p class="page-header-meta">Kho hàng • Sản phẩm • Tồn kho • Thiết bị Serial • Nhà cung cấp — Phiên bản 1.0</p>
+  </div>
+  <div class="lang-en">
+    <h1>Warehouse Management SOP — WMS</h1>
+    <p class="page-header-meta">Warehouses • Products • Inventory • Serial Devices • Suppliers — Version 1.0</p>
+  </div>
+</div>
+
+<!-- ===== OVERVIEW ===== -->
+<h2 id="tong-quan">
+  <span class="lang-vi">Tổng quan hệ thống</span>
+  <span class="lang-en">System Overview</span>
+</h2>
+<div class="lang-vi">
+  <p class="section-intro">Module WMS (Warehouse Management System) cung cấp nền tảng quản lý kho hàng toàn diện — từ danh mục sản phẩm, kiểm soát tồn kho theo ngưỡng cảnh báo, đến theo dõi thiết bị theo số serial và quản lý nhà cung cấp.</p>
+  <div class="feature-grid">
+    <div class="feature-card"><div class="feature-card-title">Mục đích</div><div class="feature-card-desc">Quản lý tập trung kho hàng, kiểm soát tồn kho, theo dõi thiết bị serial và duy trì danh sách nhà cung cấp theo workspace.</div></div>
+    <div class="feature-card"><div class="feature-card-title">Phạm vi áp dụng</div><div class="feature-card-desc">Kho hàng vật lý, catalog sản phẩm (serial &amp; non-serial), inventory items với ngưỡng tồn thấp, thiết bị có serial, danh sách nhà cung cấp.</div></div>
+    <div class="feature-card"><div class="feature-card-title">Tích hợp hệ thống</div><div class="feature-card-desc">RBAC theo workspace, real-time dashboard với KPI cards &amp; biểu đồ tồn kho, tìm kiếm &amp; phân trang đồng nhất.</div></div>
+    <div class="feature-card"><div class="feature-card-title">Nguyên tắc nền tảng</div><div class="feature-card-desc">Serial là định danh duy nhất của thiết bị. Không xóa dữ liệu — chỉ deactivate. Tồn kho luôn phản ánh số lượng thực tế.</div></div>
+  </div>
+</div>
+<div class="lang-en">
+  <p class="section-intro">The WMS (Warehouse Management System) module provides a comprehensive warehouse management platform — from product catalog, inventory control with stock alert thresholds, to serial device tracking and supplier management.</p>
+  <div class="feature-grid">
+    <div class="feature-card"><div class="feature-card-title">Purpose</div><div class="feature-card-desc">Centralized management of warehouses, inventory control, serial device tracking, and supplier maintenance per workspace.</div></div>
+    <div class="feature-card"><div class="feature-card-title">Scope</div><div class="feature-card-desc">Physical warehouses, product catalog (serial &amp; non-serial), inventory items with low-stock thresholds, serial-tracked devices, supplier list.</div></div>
+    <div class="feature-card"><div class="feature-card-title">System Integration</div><div class="feature-card-desc">Workspace RBAC, real-time dashboard with KPI cards &amp; inventory charts, consistent search &amp; pagination across all views.</div></div>
+    <div class="feature-card"><div class="feature-card-title">Core Principles</div><div class="feature-card-desc">Serial is the unique identity of a device. No hard deletes — deactivate only. Inventory always reflects actual quantities.</div></div>
+  </div>
+</div>
+
+<!-- ===== ROLES ===== -->
+<h2 id="vai-tro">
+  <span class="lang-vi">Vai trò &amp; Trách nhiệm</span>
+  <span class="lang-en">Roles &amp; Responsibilities</span>
+</h2>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Vai trò</span><span class="lang-en">Role</span></th>
+      <th><span class="lang-vi">Phạm vi</span><span class="lang-en">Scope</span></th>
+      <th><span class="lang-vi">Trách nhiệm chính</span><span class="lang-en">Main Responsibilities</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Workspace Admin</strong></td>
+      <td><span class="lang-vi">Toàn workspace</span><span class="lang-en">Full workspace</span></td>
+      <td><span class="lang-vi">Tạo &amp; quản lý kho hàng, sản phẩm, nhà cung cấp. Cấu hình ngưỡng tồn kho. Quản lý thành viên WMS.</span><span class="lang-en">Create &amp; manage warehouses, products, suppliers. Configure stock thresholds. Manage WMS workspace members.</span></td>
+    </tr>
+    <tr>
+      <td><strong>WMS Manager</strong></td>
+      <td><span class="lang-vi">Toàn WMS</span><span class="lang-en">Full WMS</span></td>
+      <td><span class="lang-vi">Quản lý inventory items, đăng ký &amp; cập nhật thiết bị serial, theo dõi tồn kho, xử lý cảnh báo tồn thấp.</span><span class="lang-en">Manage inventory items, register &amp; update serial devices, monitor stock levels, handle low-stock alerts.</span></td>
+    </tr>
+    <tr>
+      <td><strong>Warehouse Staff</strong></td>
+      <td><span class="lang-vi">Kho được phân công</span><span class="lang-en">Assigned warehouse</span></td>
+      <td><span class="lang-vi">Cập nhật số lượng tồn kho. Đăng ký thiết bị mới. Cập nhật trạng thái thiết bị. Không tạo/xóa kho hay sản phẩm.</span><span class="lang-en">Update inventory quantities. Register new devices. Update device status. Cannot create/delete warehouses or products.</span></td>
+    </tr>
+    <tr>
+      <td><strong>Viewer</strong></td>
+      <td><span class="lang-vi">Toàn WMS</span><span class="lang-en">Full WMS</span></td>
+      <td><span class="lang-vi">Chỉ xem — không thể tạo, sửa hay xóa bất kỳ dữ liệu WMS nào.</span><span class="lang-en">Read-only — cannot create, edit, or delete any WMS data.</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ===== FEATURE MATRIX ===== -->
+<h2 id="tinh-nang">
+  <span class="lang-vi">Ma trận Tính năng</span>
+  <span class="lang-en">Feature Matrix</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">Tổng hợp các tính năng WMS và quyền truy cập theo từng vai trò.</p></div>
+<div class="lang-en"><p class="section-intro">Summary of WMS features and access permissions by role.</p></div>
+<div class="table-wrap">
+<table class="view-matrix">
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Tính năng</span><span class="lang-en">Feature</span></th>
+      <th>Admin</th>
+      <th>Manager</th>
+      <th>Staff</th>
+      <th>Viewer</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="lang-vi">Tạo / Sửa Kho hàng</span><span class="lang-en">Create / Edit Warehouses</span></td>
+      <td><span class="check">✓</span></td>
+      <td><span class="dash">—</span></td>
+      <td><span class="dash">—</span></td>
+      <td><span class="dash">—</span></td>
+    </tr>
+    <tr>
+      <td><span class="lang-vi">Tạo / Sửa Sản phẩm</span><span class="lang-en">Create / Edit Products</span></td>
+      <td><span class="check">✓</span></td>
+      <td><span class="check">✓</span></td>
+      <td><span class="dash">—</span></td>
+      <td><span class="dash">—</span></td>
+    </tr>
+    <tr>
+      <td><span class="lang-vi">Tạo / Sửa Nhà cung cấp</span><span class="lang-en">Create / Edit Suppliers</span></td>
+      <td><span class="check">✓</span></td>
+      <td><span class="check">✓</span></td>
+      <td><span class="dash">—</span></td>
+      <td><span class="dash">—</span></td>
+    </tr>
+    <tr>
+      <td><span class="lang-vi">Quản lý Tồn kho (Inventory Items)</span><span class="lang-en">Manage Inventory Items</span></td>
+      <td><span class="check">✓</span></td>
+      <td><span class="check">✓</span></td>
+      <td><span class="check">✓</span></td>
+      <td><span class="dash">—</span></td>
+    </tr>
+    <tr>
+      <td><span class="lang-vi">Đăng ký / Sửa Thiết bị Serial</span><span class="lang-en">Register / Edit Serial Devices</span></td>
+      <td><span class="check">✓</span></td>
+      <td><span class="check">✓</span></td>
+      <td><span class="check">✓</span></td>
+      <td><span class="dash">—</span></td>
+    </tr>
+    <tr>
+      <td><span class="lang-vi">Xem Dashboard &amp; Analytics</span><span class="lang-en">View Dashboard &amp; Analytics</span></td>
+      <td><span class="check">✓</span></td>
+      <td><span class="check">✓</span></td>
+      <td><span class="check">✓</span></td>
+      <td><span class="check">✓</span></td>
+    </tr>
+    <tr>
+      <td><span class="lang-vi">Deactivate Kho / Sản phẩm / NCC</span><span class="lang-en">Deactivate Warehouse / Product / Supplier</span></td>
+      <td><span class="check">✓</span></td>
+      <td><span class="dash">—</span></td>
+      <td><span class="dash">—</span></td>
+      <td><span class="dash">—</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ===== SOP 01 ===== -->
+<h2 id="sop01">
+  <span class="module-tag mod-wh">Warehouse</span>
+  <span class="lang-vi">SOP 01 — Thiết lập Kho hàng</span>
+  <span class="lang-en">SOP 01 — Warehouse Setup</span>
+</h2>
+<div class="lang-vi">
+  <p class="section-intro">Workspace Admin tạo và cấu hình kho hàng trước khi bắt đầu quản lý tồn kho. Mỗi kho có thể đại diện cho một địa điểm vật lý hoặc khu vực lưu trữ riêng biệt.</p>
+</div>
+<div class="lang-en">
+  <p class="section-intro">Workspace Admin creates and configures warehouses before starting inventory management. Each warehouse can represent a physical location or separate storage area.</p>
+</div>
+
+<div class="roles-row">
+  <span class="role-tag">Workspace Admin</span>
+</div>
+
+<h4><span class="lang-vi">Thông tin Kho hàng</span><span class="lang-en">Warehouse Fields</span></h4>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Trường</span><span class="lang-en">Field</span></th>
+      <th><span class="lang-vi">Bắt buộc</span><span class="lang-en">Required</span></th>
+      <th><span class="lang-vi">Mô tả</span><span class="lang-en">Description</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>Name</strong></td><td><span style="color:var(--color-success);">✓</span></td><td><span class="lang-vi">Tên định danh kho hàng</span><span class="lang-en">Unique warehouse name</span></td></tr>
+    <tr><td><strong>Location</strong></td><td><span class="lang-vi">Tuỳ chọn</span><span class="lang-en">Optional</span></td><td><span class="lang-vi">Mô tả vị trí (tầng, tòa nhà, thành phố)</span><span class="lang-en">Location description (floor, building, city)</span></td></tr>
+    <tr><td><strong>Address</strong></td><td><span class="lang-vi">Tuỳ chọn</span><span class="lang-en">Optional</span></td><td><span class="lang-vi">Địa chỉ đầy đủ của kho</span><span class="lang-en">Full address of the warehouse</span></td></tr>
+    <tr><td><strong>Manager</strong></td><td><span class="lang-vi">Tuỳ chọn</span><span class="lang-en">Optional</span></td><td><span class="lang-vi">Tên người phụ trách kho</span><span class="lang-en">Name of warehouse manager</span></td></tr>
+    <tr><td><strong>Description</strong></td><td><span class="lang-vi">Tuỳ chọn</span><span class="lang-en">Optional</span></td><td><span class="lang-vi">Ghi chú thêm về kho</span><span class="lang-en">Additional notes about the warehouse</span></td></tr>
+    <tr><td><strong>Active</strong></td><td>—</td><td><span class="lang-vi">Trạng thái hoạt động (mặc định: Active)</span><span class="lang-en">Active status (default: Active)</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Truy cập WMS → Warehouses</span><span class="lang-en">Navigate to WMS → Warehouses</span></strong> — <span class="lang-vi">Từ menu module, chọn WMS rồi vào trang Warehouses.</span><span class="lang-en">From the module menu, select WMS then navigate to the Warehouses page.</span></span></li>
+  <li><span><strong><span class="lang-vi">Nhấn "New Warehouse"</span><span class="lang-en">Click "New Warehouse"</span></strong> — <span class="lang-vi">Mở form tạo kho hàng mới.</span><span class="lang-en">Opens the new warehouse creation form.</span></span></li>
+  <li><span><strong><span class="lang-vi">Điền thông tin kho</span><span class="lang-en">Fill warehouse details</span></strong> — <span class="lang-vi">Nhập tên (bắt buộc), vị trí, địa chỉ, người phụ trách.</span><span class="lang-en">Enter name (required), location, address, manager name.</span></span></li>
+  <li><span><strong><span class="lang-vi">Lưu và xác nhận</span><span class="lang-en">Save and confirm</span></strong> — <span class="lang-vi">Nhấn Submit. Kho sẽ xuất hiện trong danh sách với trạng thái Active.</span><span class="lang-en">Click Submit. The warehouse appears in the list with Active status.</span></span></li>
+</ol>
+
+<div class="callout callout-info">
+  <span class="callout-icon">ℹ</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Deactivate thay vì xóa</span><span class="lang-en">Deactivate Instead of Delete</span></strong>
+    <p><span class="lang-vi">Khi kho không còn sử dụng, chỉnh sửa và tắt trạng thái Active. Không xóa kho đã có inventory items để tránh mất dữ liệu lịch sử.</span><span class="lang-en">When a warehouse is no longer in use, edit and disable the Active status. Do not delete warehouses with existing inventory items to preserve historical data.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 02 ===== -->
+<h2 id="sop02">
+  <span class="module-tag mod-product">Product</span>
+  <span class="lang-vi">SOP 02 — Danh mục Sản phẩm</span>
+  <span class="lang-en">SOP 02 — Product Catalog</span>
+</h2>
+<div class="lang-vi">
+  <p class="section-intro">Sản phẩm là nền tảng của WMS — mọi inventory item và thiết bị đều liên kết với một sản phẩm. Phân loại đúng ngay từ đầu (serial-tracked hay không) để tránh nhầm lẫn logic.</p>
+</div>
+<div class="lang-en">
+  <p class="section-intro">Products are the foundation of WMS — all inventory items and devices link to a product. Classify correctly from the start (serial-tracked or not) to avoid logic confusion later.</p>
+</div>
+
+<div class="roles-row">
+  <span class="role-tag">Workspace Admin</span>
+  <span class="role-tag">WMS Manager</span>
+</div>
+
+<h4><span class="lang-vi">Loại sản phẩm</span><span class="lang-en">Product Types</span></h4>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Loại</span><span class="lang-en">Type</span></th>
+      <th><span class="lang-vi">Serial Tracked</span><span class="lang-en">Serial Tracked</span></th>
+      <th><span class="lang-vi">Quản lý qua</span><span class="lang-en">Managed Via</span></th>
+      <th><span class="lang-vi">Ví dụ</span><span class="lang-en">Examples</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong><span class="lang-vi">Thiết bị có Serial</span><span class="lang-en">Serial Device</span></strong></td>
+      <td><span style="color:var(--color-success);font-weight:600;">✓ Có</span></td>
+      <td><span class="lang-vi">Devices (serial number)</span><span class="lang-en">Devices (serial number)</span></td>
+      <td><span class="lang-vi">Camera, NVR, Server, Laptop</span><span class="lang-en">Camera, NVR, Server, Laptop</span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">Phụ kiện / Vật tư</span><span class="lang-en">Accessory / Supply</span></strong></td>
+      <td><span class="dash">— Không</span></td>
+      <td><span class="lang-vi">Inventory Items (số lượng)</span><span class="lang-en">Inventory Items (quantity)</span></td>
+      <td><span class="lang-vi">Cáp, Adapter, Chân đế, Vật tư tiêu hao</span><span class="lang-en">Cables, Adapters, Mounts, Consumables</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Truy cập WMS → Products</span><span class="lang-en">Navigate to WMS → Products</span></strong> — <span class="lang-vi">Vào trang danh sách sản phẩm.</span><span class="lang-en">Go to the products list page.</span></span></li>
+  <li><span><strong><span class="lang-vi">Nhấn "New Product"</span><span class="lang-en">Click "New Product"</span></strong> — <span class="lang-vi">Mở form tạo sản phẩm.</span><span class="lang-en">Opens the product creation form.</span></span></li>
+  <li><span><strong><span class="lang-vi">Nhập SKU và tên sản phẩm</span><span class="lang-en">Enter SKU and product name</span></strong> — <span class="lang-vi">SKU phải là mã duy nhất trong workspace. Tên mô tả rõ sản phẩm.</span><span class="lang-en">SKU must be unique within the workspace. Name should clearly describe the product.</span></span></li>
+  <li><span><strong><span class="lang-vi">Chọn Category &amp; Unit</span><span class="lang-en">Select Category &amp; Unit</span></strong> — <span class="lang-vi">Chọn danh mục (equipment, accessory, supply...) và đơn vị tính (pcs, m, kg...).</span><span class="lang-en">Select category (equipment, accessory, supply...) and unit (pcs, m, kg...).</span></span></li>
+  <li><span><strong><span class="lang-vi">Bật/tắt Serial Tracked</span><span class="lang-en">Toggle Serial Tracked</span></strong> — <span class="lang-vi">Bật nếu sản phẩm cần theo dõi từng đơn vị theo serial. Sau khi tạo không nên thay đổi cài đặt này.</span><span class="lang-en">Enable if the product needs individual tracking by serial number. Avoid changing this setting after creation.</span></span></li>
+  <li><span><strong><span class="lang-vi">Lưu sản phẩm</span><span class="lang-en">Save product</span></strong> — <span class="lang-vi">Nhấn Submit. Sản phẩm sẵn sàng để tạo inventory items hoặc đăng ký devices.</span><span class="lang-en">Click Submit. Product is ready for inventory items or device registration.</span></span></li>
+</ol>
+
+<div class="callout callout-danger">
+  <span class="callout-icon">🚫</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Không thay đổi Serial Tracked sau khi có dữ liệu</span><span class="lang-en">Do Not Change Serial Tracked After Data Exists</span></strong>
+    <p><span class="lang-vi">Thay đổi cài đặt <code>is_serial_tracked</code> khi đã có devices hoặc inventory items liên kết sẽ gây mất nhất quán dữ liệu nghiêm trọng.</span><span class="lang-en">Changing <code>is_serial_tracked</code> when devices or inventory items already exist will cause serious data inconsistencies.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 03 ===== -->
+<h2 id="sop03">
+  <span class="module-tag mod-supplier">Supplier</span>
+  <span class="lang-vi">SOP 03 — Quản lý Nhà cung cấp</span>
+  <span class="lang-en">SOP 03 — Supplier Management</span>
+</h2>
+<div class="lang-vi">
+  <p class="section-intro">Duy trì danh sách nhà cung cấp để tham chiếu khi nhập hàng và quản lý quan hệ đối tác. Thông tin nhà cung cấp đóng vai trò hỗ trợ cho các quy trình mua hàng.</p>
+</div>
+<div class="lang-en">
+  <p class="section-intro">Maintain a supplier list for reference during stock procurement and partner relationship management. Supplier information supports procurement workflows.</p>
+</div>
+
+<div class="roles-row">
+  <span class="role-tag">Workspace Admin</span>
+  <span class="role-tag">WMS Manager</span>
+</div>
+
+<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Truy cập WMS → Suppliers</span><span class="lang-en">Navigate to WMS → Suppliers</span></strong> — <span class="lang-vi">Vào trang danh sách nhà cung cấp.</span><span class="lang-en">Go to the suppliers list page.</span></span></li>
+  <li><span><strong><span class="lang-vi">Nhấn "New Supplier"</span><span class="lang-en">Click "New Supplier"</span></strong> — <span class="lang-vi">Mở form tạo nhà cung cấp mới.</span><span class="lang-en">Opens the new supplier creation form.</span></span></li>
+  <li><span><strong><span class="lang-vi">Nhập thông tin liên hệ</span><span class="lang-en">Enter contact information</span></strong> — <span class="lang-vi">Tên (bắt buộc), email liên hệ, số điện thoại, địa chỉ.</span><span class="lang-en">Name (required), contact email, phone number, address.</span></span></li>
+  <li><span><strong><span class="lang-vi">Lưu nhà cung cấp</span><span class="lang-en">Save supplier</span></strong> — <span class="lang-vi">Nhấn Submit. NCC xuất hiện trong danh sách với trạng thái Active.</span><span class="lang-en">Click Submit. Supplier appears in the list with Active status.</span></span></li>
+</ol>
+
+<div class="callout callout-tip">
+  <span class="callout-icon">✓</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Tìm kiếm nhanh</span><span class="lang-en">Quick Search</span></strong>
+    <p><span class="lang-vi">Sử dụng thanh tìm kiếm trên trang Suppliers để lọc theo tên. Kết quả cập nhật ngay khi gõ, hỗ trợ tìm nhanh trong danh sách dài.</span><span class="lang-en">Use the search bar on the Suppliers page to filter by name. Results update as you type, supporting fast lookup in long lists.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 04 ===== -->
+<h2 id="sop04">
+  <span class="module-tag mod-inv">Inventory</span>
+  <span class="lang-vi">SOP 04 — Quản lý Tồn kho</span>
+  <span class="lang-en">SOP 04 — Inventory Management</span>
+</h2>
+<div class="lang-vi">
+  <p class="section-intro">Inventory items theo dõi số lượng của từng sản phẩm tại từng kho hàng. Đây là trung tâm kiểm soát tồn kho của hệ thống WMS.</p>
+</div>
+<div class="lang-en">
+  <p class="section-intro">Inventory items track the quantity of each product at each warehouse. This is the central stock control layer of the WMS system.</p>
+</div>
+
+<div class="roles-row">
+  <span class="role-tag">WMS Manager</span>
+  <span class="role-tag">Warehouse Staff</span>
+</div>
+
+<h4><span class="lang-vi">Cấu trúc Inventory Item</span><span class="lang-en">Inventory Item Structure</span></h4>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Trường</span><span class="lang-en">Field</span></th>
+      <th><span class="lang-vi">Mô tả</span><span class="lang-en">Description</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>SKU</strong></td><td><span class="lang-vi">Mã SKU item (có thể khác SKU sản phẩm nếu cần phân biệt lô hàng)</span><span class="lang-en">Item SKU (can differ from product SKU for batch distinction)</span></td></tr>
+    <tr><td><strong>Name</strong></td><td><span class="lang-vi">Tên mô tả inventory item</span><span class="lang-en">Descriptive name of the inventory item</span></td></tr>
+    <tr><td><strong>Quantity</strong></td><td><span class="lang-vi">Số lượng tồn hiện tại (số nguyên ≥ 0)</span><span class="lang-en">Current stock quantity (integer ≥ 0)</span></td></tr>
+    <tr><td><strong>Unit</strong></td><td><span class="lang-vi">Đơn vị tính (pcs, m, kg, cuộn...)</span><span class="lang-en">Unit of measure (pcs, m, kg, roll...)</span></td></tr>
+    <tr><td><strong>Warehouse</strong></td><td><span class="lang-vi">Kho chứa item này</span><span class="lang-en">Warehouse holding this item</span></td></tr>
+    <tr><td><strong>Product</strong></td><td><span class="lang-vi">Sản phẩm liên kết (tùy chọn)</span><span class="lang-en">Linked product (optional)</span></td></tr>
+    <tr><td><strong>Min Threshold</strong></td><td><span class="lang-vi">Ngưỡng tồn tối thiểu để kích hoạt cảnh báo</span><span class="lang-en">Minimum stock threshold to trigger alerts</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Truy cập WMS → Inventory</span><span class="lang-en">Navigate to WMS → Inventory</span></strong> — <span class="lang-vi">Vào trang danh sách inventory items.</span><span class="lang-en">Go to the inventory items list page.</span></span></li>
+  <li><span><strong><span class="lang-vi">Nhấn "New Item"</span><span class="lang-en">Click "New Item"</span></strong> — <span class="lang-vi">Mở form tạo inventory item mới.</span><span class="lang-en">Opens the new inventory item form.</span></span></li>
+  <li><span><strong><span class="lang-vi">Chọn Warehouse &amp; Product</span><span class="lang-en">Select Warehouse &amp; Product</span></strong> — <span class="lang-vi">Chọn kho chứa và sản phẩm tương ứng (nếu có).</span><span class="lang-en">Select the warehouse and linked product (if applicable).</span></span></li>
+  <li><span><strong><span class="lang-vi">Nhập SKU, tên, số lượng &amp; đơn vị</span><span class="lang-en">Enter SKU, name, quantity &amp; unit</span></strong> — <span class="lang-vi">Điền đầy đủ thông tin tồn kho ban đầu.</span><span class="lang-en">Fill in the initial stock information.</span></span></li>
+  <li><span><strong><span class="lang-vi">Đặt ngưỡng tồn thấp (Min Threshold)</span><span class="lang-en">Set low-stock threshold (Min Threshold)</span></strong> — <span class="lang-vi">Nhập số lượng tối thiểu. Hệ thống sẽ đánh dấu item khi tồn ≤ ngưỡng này.</span><span class="lang-en">Enter minimum quantity. System will flag the item when stock ≤ this threshold.</span></span></li>
+  <li><span><strong><span class="lang-vi">Lưu item</span><span class="lang-en">Save item</span></strong> — <span class="lang-vi">Nhấn Submit để hoàn tất.</span><span class="lang-en">Click Submit to complete.</span></span></li>
+</ol>
+
+<div class="callout callout-warning">
+  <span class="callout-icon">⚠</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Cập nhật số lượng đúng thực tế</span><span class="lang-en">Keep Quantities Accurate</span></strong>
+    <p><span class="lang-vi">Luôn cập nhật số lượng tồn kho ngay khi có thay đổi (nhập hàng, xuất hàng, kiểm kho). Tồn kho không chính xác sẽ gây ra cảnh báo sai và quyết định mua hàng không đúng.</span><span class="lang-en">Always update inventory quantities immediately when changes occur (stock-in, stock-out, physical count). Inaccurate stock leads to false alerts and incorrect procurement decisions.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 05 ===== -->
+<h2 id="sop05">
+  <span class="module-tag mod-inv">Inventory</span>
+  <span class="lang-vi">SOP 05 — Cảnh báo Tồn kho Thấp</span>
+  <span class="lang-en">SOP 05 — Low Stock Alerts</span>
+</h2>
+<div class="lang-vi">
+  <p class="section-intro">Hệ thống tự động đánh dấu inventory items khi số lượng tồn bằng hoặc dưới ngưỡng <code>min_threshold</code>. Theo dõi dashboard để phát hiện và xử lý kịp thời.</p>
+</div>
+<div class="lang-en">
+  <p class="section-intro">The system automatically flags inventory items when stock falls at or below the <code>min_threshold</code>. Monitor the dashboard to detect and respond in time.</p>
+</div>
+
+<div class="roles-row">
+  <span class="role-tag">WMS Manager</span>
+  <span class="role-tag">Warehouse Staff</span>
+</div>
+
+<h4><span class="lang-vi">Quy trình xử lý cảnh báo</span><span class="lang-en">Alert Response Process</span></h4>
+<div class="status-flow">
+  <span class="sp sp-red">Tồn ≤ Threshold</span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-amber">Phát hiện trên Dashboard</span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-blue">Lên kế hoạch nhập hàng</span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-green">Cập nhật Quantity</span>
+</div>
+
+<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Kiểm tra Dashboard định kỳ</span><span class="lang-en">Check Dashboard Regularly</span></strong> — <span class="lang-vi">Xem biểu đồ "Top Inventory by Quantity" để phát hiện items có tồn kho thấp.</span><span class="lang-en">Check the "Top Inventory by Quantity" chart to identify items with low stock.</span></span></li>
+  <li><span><strong><span class="lang-vi">Lọc Inventory Items theo quantity thấp</span><span class="lang-en">Filter Inventory Items by Low Quantity</span></strong> — <span class="lang-vi">Vào trang Inventory, kiểm tra các items có quantity gần hoặc dưới threshold.</span><span class="lang-en">Go to the Inventory page, check items with quantity near or below threshold.</span></span></li>
+  <li><span><strong><span class="lang-vi">Xác nhận nhu cầu nhập hàng</span><span class="lang-en">Confirm Restock Need</span></strong> — <span class="lang-vi">Đánh giá mức độ khẩn cấp và số lượng cần nhập thêm.</span><span class="lang-en">Assess urgency and quantity needed for restocking.</span></span></li>
+  <li><span><strong><span class="lang-vi">Cập nhật số lượng sau khi nhập hàng</span><span class="lang-en">Update Quantity After Restocking</span></strong> — <span class="lang-vi">Sửa inventory item để cập nhật quantity mới. Cảnh báo sẽ tự tắt khi quantity &gt; threshold.</span><span class="lang-en">Edit the inventory item to update the new quantity. The alert clears automatically when quantity &gt; threshold.</span></span></li>
+</ol>
+
+<div class="callout callout-tip">
+  <span class="callout-icon">✓</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Đặt threshold thực tế</span><span class="lang-en">Set Realistic Thresholds</span></strong>
+    <p><span class="lang-vi">Threshold = số lượng đủ dùng trong thời gian chờ nhập hàng (lead time). Ví dụ: nếu lead time 2 tuần và tiêu thụ 10 pcs/tuần → threshold tối thiểu = 20.</span><span class="lang-en">Threshold = quantity sufficient for the restocking lead time. Example: if lead time is 2 weeks and consumption is 10 pcs/week → minimum threshold = 20.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 06 ===== -->
+<h2 id="sop06">
+  <span class="module-tag mod-device">Device</span>
+  <span class="lang-vi">SOP 06 — Đăng ký Thiết bị Serial</span>
+  <span class="lang-en">SOP 06 — Serial Device Registration</span>
+</h2>
+<div class="lang-vi">
+  <p class="section-intro">Thiết bị serial là tài sản được theo dõi riêng lẻ theo số serial. Mỗi thiết bị phải được đăng ký với serial number duy nhất trong workspace trước khi đưa vào sử dụng.</p>
+</div>
+<div class="lang-en">
+  <p class="section-intro">Serial devices are assets tracked individually by serial number. Each device must be registered with a unique serial number in the workspace before use.</p>
+</div>
+
+<div class="roles-row">
+  <span class="role-tag">WMS Manager</span>
+  <span class="role-tag">Warehouse Staff</span>
+</div>
+
+<h4><span class="lang-vi">Điều kiện tiên quyết</span><span class="lang-en">Prerequisites</span></h4>
+<ul>
+  <li><span class="lang-vi">Sản phẩm tương ứng đã được tạo với <code>is_serial_tracked = true</code></span><span class="lang-en">Corresponding product created with <code>is_serial_tracked = true</code></span></li>
+  <li><span class="lang-vi">Kho tiếp nhận đã được thiết lập (SOP 01)</span><span class="lang-en">Receiving warehouse already set up (SOP 01)</span></li>
+</ul>
+
+<h4><span class="lang-vi">Các bước thực hiện</span><span class="lang-en">Procedure Steps</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Truy cập WMS → Devices</span><span class="lang-en">Navigate to WMS → Devices</span></strong> — <span class="lang-vi">Vào trang danh sách thiết bị.</span><span class="lang-en">Go to the devices list page.</span></span></li>
+  <li><span><strong><span class="lang-vi">Nhấn "New Device"</span><span class="lang-en">Click "New Device"</span></strong> — <span class="lang-vi">Mở form đăng ký thiết bị.</span><span class="lang-en">Opens the device registration form.</span></span></li>
+  <li><span><strong><span class="lang-vi">Nhập Serial Number</span><span class="lang-en">Enter Serial Number</span></strong> — <span class="lang-vi">Quét barcode hoặc nhập thủ công. Hệ thống kiểm tra serial chưa tồn tại trong workspace.</span><span class="lang-en">Scan barcode or type manually. System validates the serial does not already exist in the workspace.</span></span></li>
+  <li><span><strong><span class="lang-vi">Chọn Product &amp; Warehouse</span><span class="lang-en">Select Product &amp; Warehouse</span></strong> — <span class="lang-vi">Gắn thiết bị với sản phẩm serial-tracked và kho tiếp nhận.</span><span class="lang-en">Link device to the serial-tracked product and receiving warehouse.</span></span></li>
+  <li><span><strong><span class="lang-vi">Trạng thái ban đầu: in_stock</span><span class="lang-en">Initial Status: in_stock</span></strong> — <span class="lang-vi">Thiết bị mới đăng ký tự động có trạng thái <code>in_stock</code>.</span><span class="lang-en">Newly registered device automatically gets status <code>in_stock</code>.</span></span></li>
+  <li><span><strong><span class="lang-vi">Thêm ghi chú (tuỳ chọn)</span><span class="lang-en">Add notes (optional)</span></strong> — <span class="lang-vi">Ghi thông tin liên quan: ngày nhập, firmware version, vị trí thùng hàng...</span><span class="lang-en">Record relevant info: receipt date, firmware version, packaging location...</span></span></li>
+  <li><span><strong><span class="lang-vi">Lưu thiết bị</span><span class="lang-en">Save device</span></strong> — <span class="lang-vi">Nhấn Submit. Thiết bị xuất hiện trong danh sách với status <code>in_stock</code>.</span><span class="lang-en">Click Submit. Device appears in the list with status <code>in_stock</code>.</span></span></li>
+</ol>
+
+<div class="callout callout-danger">
+  <span class="callout-icon">🚫</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Serial phải là duy nhất</span><span class="lang-en">Serial Must Be Unique</span></strong>
+    <p><span class="lang-vi">Hệ thống chặn đăng ký serial đã tồn tại. Không tạo serial giả (ví dụ: "SN001", "TEST") — chỉ nhập serial thực từ thiết bị vật lý. Serial là định danh vĩnh viễn của thiết bị.</span><span class="lang-en">System blocks registration of existing serials. Do not create fake serials (e.g., "SN001", "TEST") — only enter actual serials from physical devices. Serial is the permanent identity of the device.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 07 ===== -->
+<h2 id="sop07">
+  <span class="module-tag mod-device">Device</span>
+  <span class="lang-vi">SOP 07 — Vòng đời Thiết bị</span>
+  <span class="lang-en">SOP 07 — Device Lifecycle</span>
+</h2>
+<div class="lang-vi">
+  <p class="section-intro">Mỗi thiết bị có trạng thái phản ánh vị trí và tình trạng hiện tại. Cập nhật trạng thái kịp thời giúp quản lý chính xác tài sản theo serial.</p>
+</div>
+<div class="lang-en">
+  <p class="section-intro">Each device has a status reflecting its current location and condition. Timely status updates ensure accurate asset management by serial.</p>
+</div>
+
+<div class="roles-row">
+  <span class="role-tag">WMS Manager</span>
+  <span class="role-tag">Warehouse Staff</span>
+</div>
+
+<h4><span class="lang-vi">Trạng thái thiết bị</span><span class="lang-en">Device Status Values</span></h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin:16px 0;">
+  <div style="padding:8px 10px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-sm);text-align:center;font-size:11px;font-family:var(--font-mono);font-weight:500;color:var(--text-secondary);">in_stock</div>
+  <div style="padding:8px 10px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:var(--radius-sm);text-align:center;font-size:11px;font-family:var(--font-mono);font-weight:500;color:#B45309;">reserved</div>
+  <div style="padding:8px 10px;background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25);border-radius:var(--radius-sm);text-align:center;font-size:11px;font-family:var(--font-mono);font-weight:500;color:#0284C7;">deployed</div>
+  <div style="padding:8px 10px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:var(--radius-sm);text-align:center;font-size:11px;font-family:var(--font-mono);font-weight:500;color:#15803D;">activated</div>
+  <div style="padding:8px 10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--radius-sm);text-align:center;font-size:11px;font-family:var(--font-mono);font-weight:500;color:#B91C1C;">maintenance</div>
+  <div style="padding:8px 10px;background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25);border-radius:var(--radius-sm);text-align:center;font-size:11px;font-family:var(--font-mono);font-weight:500;color:#0284C7;">poc</div>
+  <div style="padding:8px 10px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-sm);text-align:center;font-size:11px;font-family:var(--font-mono);font-weight:500;color:var(--text-secondary);">internal_use</div>
+  <div style="padding:8px 10px;background:rgba(161,161,170,.12);border:1px solid var(--border-default);border-radius:var(--radius-sm);text-align:center;font-size:11px;font-family:var(--font-mono);font-weight:500;color:var(--text-tertiary);">retired</div>
+</div>
+
+<h4><span class="lang-vi">Luồng trạng thái điển hình</span><span class="lang-en">Typical Status Flow</span></h4>
+<div class="status-flow">
+  <span class="sp sp-draft">in_stock</span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-blue">deployed</span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-green">activated</span>
+  <span class="flow-arr"> / </span>
+  <span class="sp sp-red">maintenance</span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-draft">retired</span>
+</div>
+
+<h4><span class="lang-vi">Các bước cập nhật trạng thái</span><span class="lang-en">Status Update Steps</span></h4>
+<ol class="step-list">
+  <li><span><strong><span class="lang-vi">Tìm thiết bị theo serial</span><span class="lang-en">Find device by serial</span></strong> — <span class="lang-vi">Dùng thanh tìm kiếm trên trang Devices để tra cứu serial number.</span><span class="lang-en">Use the search bar on the Devices page to look up the serial number.</span></span></li>
+  <li><span><strong><span class="lang-vi">Nhấn Edit (biểu tượng bút)</span><span class="lang-en">Click Edit (pencil icon)</span></strong> — <span class="lang-vi">Mở form chỉnh sửa thiết bị.</span><span class="lang-en">Opens the device edit form.</span></span></li>
+  <li><span><strong><span class="lang-vi">Cập nhật Status &amp; Warehouse</span><span class="lang-en">Update Status &amp; Warehouse</span></strong> — <span class="lang-vi">Chọn trạng thái mới. Cập nhật warehouse nếu thiết bị chuyển kho.</span><span class="lang-en">Select new status. Update warehouse if device moves to a different location.</span></span></li>
+  <li><span><strong><span class="lang-vi">Thêm ghi chú vào Notes</span><span class="lang-en">Add note to Notes</span></strong> — <span class="lang-vi">Ghi lý do thay đổi trạng thái, ngày thay đổi, người thực hiện.</span><span class="lang-en">Record reason for status change, date, and person responsible.</span></span></li>
+  <li><span><strong><span class="lang-vi">Lưu thay đổi</span><span class="lang-en">Save changes</span></strong> — <span class="lang-vi">Nhấn Submit để xác nhận.</span><span class="lang-en">Click Submit to confirm.</span></span></li>
+</ol>
+
+<div class="callout callout-note">
+  <span class="callout-icon">📖</span>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Không bao giờ xóa thiết bị</span><span class="lang-en">Never Delete Devices</span></strong>
+    <p><span class="lang-vi">Thiết bị hết thời hạn sử dụng → chuyển trạng thái <code>retired</code>. Thiết bị lỗi vĩnh viễn → <code>retired</code>. Serial là hồ sơ vĩnh viễn của tài sản. Xóa serial sẽ mất lịch sử tài sản.</span><span class="lang-en">End-of-life devices → set status to <code>retired</code>. Permanently faulty devices → <code>retired</code>. Serial is the permanent asset record. Deleting serials loses asset history.</span></p>
+  </div>
+</div>
+
+<!-- ===== SOP 08 ===== -->
+<h2 id="sop08">
+  <span class="module-tag mod-analytics">Analytics</span>
+  <span class="lang-vi">SOP 08 — Dashboard &amp; Báo cáo</span>
+  <span class="lang-en">SOP 08 — Dashboard &amp; Reports</span>
+</h2>
+<div class="lang-vi">
+  <p class="section-intro">Dashboard WMS cung cấp cái nhìn tổng quan tức thời về toàn bộ hệ thống kho hàng. Sử dụng dashboard hàng ngày để theo dõi sức khỏe kho.</p>
+</div>
+<div class="lang-en">
+  <p class="section-intro">The WMS Dashboard provides an instant overview of the entire warehouse system. Use the dashboard daily to monitor warehouse health.</p>
+</div>
+
+<div class="roles-row">
+  <span class="role-tag">Tất cả vai trò / All Roles</span>
+</div>
+
+<h4><span class="lang-vi">Các chỉ số trên Dashboard</span><span class="lang-en">Dashboard Metrics</span></h4>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">KPI Card</span><span class="lang-en">KPI Card</span></th>
+      <th><span class="lang-vi">Ý nghĩa</span><span class="lang-en">Meaning</span></th>
+      <th><span class="lang-vi">Hành động khi cao/thấp bất thường</span><span class="lang-en">Action When Abnormal</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Products</strong></td>
+      <td><span class="lang-vi">Tổng sản phẩm active trong catalog</span><span class="lang-en">Total active products in catalog</span></td>
+      <td><span class="lang-vi">Kiểm tra sản phẩm duplicate hoặc inactive</span><span class="lang-en">Check for duplicate or inactive products</span></td>
+    </tr>
+    <tr>
+      <td><strong>Warehouses</strong></td>
+      <td><span class="lang-vi">Số kho đang hoạt động</span><span class="lang-en">Number of active warehouses</span></td>
+      <td><span class="lang-vi">Xác nhận kho deactivate có chủ ý</span><span class="lang-en">Confirm intentional warehouse deactivation</span></td>
+    </tr>
+    <tr>
+      <td><strong>Inventory Items</strong></td>
+      <td><span class="lang-vi">Tổng số loại mặt hàng đang quản lý</span><span class="lang-en">Total types of items being managed</span></td>
+      <td><span class="lang-vi">Đảm bảo không có item mồ côi (không có warehouse)</span><span class="lang-en">Ensure no orphaned items (without warehouse)</span></td>
+    </tr>
+    <tr>
+      <td><strong>Suppliers</strong></td>
+      <td><span class="lang-vi">Số nhà cung cấp active</span><span class="lang-en">Number of active suppliers</span></td>
+      <td><span class="lang-vi">Xem xét consolidate NCC không còn hoạt động</span><span class="lang-en">Consider consolidating inactive suppliers</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h4><span class="lang-vi">Biểu đồ Top Inventory by Quantity</span><span class="lang-en">Top Inventory by Quantity Chart</span></h4>
+<div class="lang-vi"><p>Biểu đồ bar chart hiển thị các inventory items có số lượng cao nhất. Sử dụng biểu đồ này để:</p></div>
+<div class="lang-en"><p>The bar chart displays inventory items with the highest quantities. Use this chart to:</p></div>
+<ul>
+  <li><span class="lang-vi">Phát hiện items có tồn kho quá cao (over-stock)</span><span class="lang-en">Identify over-stocked items</span></li>
+  <li><span class="lang-vi">So sánh phân bổ tồn kho giữa các mặt hàng</span><span class="lang-en">Compare stock distribution across items</span></li>
+  <li><span class="lang-vi">Phát hiện bất thường (item bỗng nhiên không còn xuất hiện = về 0)</span><span class="lang-en">Detect anomalies (item suddenly disappears = dropped to 0)</span></li>
+</ul>
+
+<!-- ===== KPI ===== -->
+<h2 id="kpi">
+  <span class="lang-vi">KPI Vận hành</span>
+  <span class="lang-en">Operational KPIs</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">Các chỉ số hiệu suất để đánh giá chất lượng quản lý kho hàng trên A-ERP WMS.</p></div>
+<div class="lang-en"><p class="section-intro">Performance indicators to evaluate warehouse management quality on A-ERP WMS.</p></div>
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-value">100%</div>
+    <div class="kpi-label">
+      <strong><span class="lang-vi">Tồn kho được cập nhật</span><span class="lang-en">Inventory Up-to-date</span></strong><br>
+      <span class="lang-vi">Mọi thay đổi tồn kho phải được cập nhật trong ngày</span>
+      <span class="lang-en">All inventory changes must be updated same-day</span>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">0</div>
+    <div class="kpi-label">
+      <strong><span class="lang-vi">Serial trùng lặp</span><span class="lang-en">Duplicate Serials</span></strong><br>
+      <span class="lang-vi">Không có serial number nào xuất hiện 2 lần trong hệ thống</span>
+      <span class="lang-en">No serial number appears more than once in the system</span>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">&lt;24h</div>
+    <div class="kpi-label">
+      <strong><span class="lang-vi">Phản hồi cảnh báo tồn thấp</span><span class="lang-en">Low-stock Alert Response</span></strong><br>
+      <span class="lang-vi">Cảnh báo tồn thấp phải được xử lý trong vòng 24 giờ</span>
+      <span class="lang-en">Low-stock alerts must be addressed within 24 hours</span>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">100%</div>
+    <div class="kpi-label">
+      <strong><span class="lang-vi">Thiết bị có status cập nhật</span><span class="lang-en">Devices with Current Status</span></strong><br>
+      <span class="lang-vi">Tất cả thiết bị phải có status phản ánh đúng tình trạng thực tế</span>
+      <span class="lang-en">All devices must have a status that accurately reflects their actual condition</span>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">0</div>
+    <div class="kpi-label">
+      <strong><span class="lang-vi">Sản phẩm không có warehouse</span><span class="lang-en">Orphaned Inventory Items</span></strong><br>
+      <span class="lang-vi">Không có inventory item nào không gắn với kho hàng hợp lệ</span>
+      <span class="lang-en">No inventory items without a valid linked warehouse</span>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">&lt;1s</div>
+    <div class="kpi-label">
+      <strong><span class="lang-vi">Tra cứu Serial</span><span class="lang-en">Serial Lookup</span></strong><br>
+      <span class="lang-vi">Thời gian tìm kiếm bất kỳ serial trên trang Devices dưới 1 giây</span>
+      <span class="lang-en">Search for any serial on the Devices page in under 1 second</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ROLE SUMMARY ===== -->
+<h2 id="role-summary">
+  <span class="lang-vi">Tổng hợp theo Vai trò</span>
+  <span class="lang-en">Summary by Role</span>
+</h2>
+<div class="lang-vi"><p class="section-intro">Mỗi vai trò đảm nhận các SOP cụ thể trong vận hành WMS hàng ngày.</p></div>
+<div class="lang-en"><p class="section-intro">Each role owns specific SOPs in daily WMS operations.</p></div>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Vai trò</span><span class="lang-en">Role</span></th>
+      <th><span class="lang-vi">SOPs liên quan</span><span class="lang-en">Related SOPs</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Workspace Admin</strong></td>
+      <td><span class="lang-vi">SOP 01 (Kho), SOP 02 (Sản phẩm), SOP 03 (NCC), SOP 08 (Dashboard)</span><span class="lang-en">SOP 01 (Warehouse), SOP 02 (Products), SOP 03 (Suppliers), SOP 08 (Dashboard)</span></td>
+    </tr>
+    <tr>
+      <td><strong>WMS Manager</strong></td>
+      <td><span class="lang-vi">SOP 02–08 — toàn bộ vận hành WMS hàng ngày</span><span class="lang-en">SOP 02–08 — full daily WMS operations</span></td>
+    </tr>
+    <tr>
+      <td><strong>Warehouse Staff</strong></td>
+      <td><span class="lang-vi">SOP 04 (Tồn kho), SOP 05 (Cảnh báo), SOP 06 (Đăng ký thiết bị), SOP 07 (Lifecycle)</span><span class="lang-en">SOP 04 (Inventory), SOP 05 (Alerts), SOP 06 (Device registration), SOP 07 (Lifecycle)</span></td>
+    </tr>
+    <tr>
+      <td><strong>Viewer</strong></td>
+      <td><span class="lang-vi">Chỉ xem tất cả các SOP trên — không tạo hay chỉnh sửa</span><span class="lang-en">Read-only across all SOPs above — no create or edit</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ===== GOLDEN PRINCIPLES ===== -->
+<h2 id="nguyen-tac-vang">
+  <span class="lang-vi">Nguyên tắc Vàng</span>
+  <span class="lang-en">Golden Principles</span>
+</h2>
+<ul class="golden-list">
+  <li>
+    <span class="gl-icon">★</span>
+    <span class="gl-text"><strong><span class="lang-vi">Serial là danh tính vĩnh viễn của thiết bị</span><span class="lang-en">Serial is the permanent identity of a device</span></strong> — <span class="lang-vi">Mỗi thiết bị serial-tracked có một serial duy nhất. Không trùng lặp, không xóa. Tra cứu theo serial là cách duy nhất để biết tình trạng và vị trí tài sản.</span><span class="lang-en">Each serial-tracked device has one unique serial. No duplication, no deletion. Serial lookup is the only way to know asset status and location.</span></span>
+  </li>
+  <li>
+    <span class="gl-icon">★</span>
+    <span class="gl-text"><strong><span class="lang-vi">Phân loại đúng từ đầu — serial hay non-serial</span><span class="lang-en">Classify correctly from the start — serial or non-serial</span></strong> — <span class="lang-vi">Sản phẩm serial-tracked được quản lý qua Devices. Sản phẩm non-serial được quản lý qua Inventory Items theo số lượng. Hai logic này không thể hoán đổi sau khi đã có dữ liệu.</span><span class="lang-en">Serial-tracked products are managed via Devices. Non-serial products are managed via Inventory Items by quantity. These two logics cannot be swapped once data exists.</span></span>
+  </li>
+  <li>
+    <span class="gl-icon">★</span>
+    <span class="gl-text"><strong><span class="lang-vi">Tồn kho phản ánh thực tế</span><span class="lang-en">Inventory reflects reality</span></strong> — <span class="lang-vi">Số lượng inventory items phải luôn phản ánh số hàng thực tế trong kho. Cập nhật ngay khi nhập/xuất hàng. Tồn kho không đồng bộ gây ra quyết định sai.</span><span class="lang-en">Inventory item quantities must always reflect actual physical stock. Update immediately on stock-in/out. Out-of-sync inventory leads to wrong decisions.</span></span>
+  </li>
+  <li>
+    <span class="gl-icon">★</span>
+    <span class="gl-text"><strong><span class="lang-vi">Deactivate thay vì xóa</span><span class="lang-en">Deactivate instead of delete</span></strong> — <span class="lang-vi">Kho, sản phẩm, nhà cung cấp không còn dùng → deactivate. Thiết bị hết thời hạn → retired. Không xóa dữ liệu để giữ lịch sử kiểm toán đầy đủ.</span><span class="lang-en">Unused warehouses, products, suppliers → deactivate. End-of-life devices → retired. Never delete data to maintain complete audit history.</span></span>
+  </li>
+  <li>
+    <span class="gl-icon">★</span>
+    <span class="gl-text"><strong><span class="lang-vi">Threshold là biện pháp phòng ngừa</span><span class="lang-en">Thresholds are preventive measures</span></strong> — <span class="lang-vi">Đặt <code>min_threshold</code> dựa trên lead time thực tế và tốc độ tiêu thụ. Cảnh báo tồn thấp là tín hiệu cần hành động ngay — không được bỏ qua hay trì hoãn.</span><span class="lang-en">Set <code>min_threshold</code> based on actual lead time and consumption rate. Low-stock alerts are signals requiring immediate action — never ignore or delay.</span></span>
+  </li>
+</ul>
+
+</div>
+</main>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<script>
+// Dark mode toggle
+(function(){
+  var html = document.documentElement;
+  var toggle = document.getElementById('darkToggle');
+  var sunIcon = document.getElementById('sunIcon');
+  var moonIcon = document.getElementById('moonIcon');
+  var label = document.getElementById('darkToggleLabel');
+  function applyTheme(dark){
+    html.setAttribute('data-theme', dark ? 'dark' : 'light');
+    sunIcon.style.display = dark ? 'none' : '';
+    moonIcon.style.display = dark ? '' : 'none';
+    label.textContent = dark ? 'Light' : 'Dark';
+  }
+  var stored = localStorage.getItem('aerpTheme');
+  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(stored ? stored === 'dark' : prefersDark);
+  toggle.addEventListener('click', function(){
+    var nowDark = html.getAttribute('data-theme') !== 'dark';
+    applyTheme(nowDark);
+    localStorage.setItem('aerpTheme', nowDark ? 'dark' : 'light');
+  });
+})();
+
+// Sidebar collapse
+function toggleSection(id){
+  var sec = document.getElementById(id);
+  if(sec) sec.classList.toggle('collapsed');
+}
+
+// Mobile sidebar
+var sidebar = document.getElementById('sidebar');
+var overlay = document.getElementById('sidebarOverlay');
+var hamburger = document.getElementById('hamburgerBtn');
+function openSidebar(){ sidebar.classList.add('open'); overlay.classList.add('open'); }
+function closeSidebar(){ sidebar.classList.remove('open'); overlay.classList.remove('open'); }
+function closeSidebarMobile(){ if(window.innerWidth < 768) closeSidebar(); }
+if(hamburger) hamburger.addEventListener('click', function(){ sidebar.classList.contains('open') ? closeSidebar() : openSidebar(); });
+if(overlay) overlay.addEventListener('click', closeSidebar);
+
+// Back to top
+var btt = document.getElementById('backToTop');
+window.addEventListener('scroll', function(){ btt.classList.toggle('visible', window.scrollY > 400); }, {passive:true});
+btt.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+
+// ScrollSpy
+(function(){
+  var headings = document.querySelectorAll('h2[id], h3[id]');
+  var links = document.querySelectorAll('.sidebar-link');
+  var linkMap = {};
+  links.forEach(function(link){
+    var href = link.getAttribute('href');
+    if(href && href.startsWith('#')) linkMap[href.slice(1)] = link;
+  });
+  var current = null;
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        if(current) current.classList.remove('active','spy-active');
+        var link = linkMap[entry.target.id];
+        if(link){ link.classList.add('active','spy-active'); current = link;
+          var sidebarEl = document.getElementById('sidebar');
+          var linkTop = link.offsetTop;
+          if(linkTop < sidebarEl.scrollTop || linkTop > sidebarEl.scrollTop + sidebarEl.clientHeight - 60){
+            sidebarEl.scrollTo({top: linkTop - 80, behavior:'smooth'});
+          }
+        }
+      }
+    });
+  }, {rootMargin:'-60px 0px -70% 0px', threshold:0});
+  headings.forEach(function(h){ observer.observe(h); });
+})();
+
+// Smooth scroll
+document.querySelectorAll('.sidebar-link[href^="#"]').forEach(function(link){
+  link.addEventListener('click', function(e){
+    e.preventDefault();
+    var id = this.getAttribute('href').slice(1);
+    var target = document.getElementById(id);
+    if(target){
+      var top = target.getBoundingClientRect().top + window.scrollY - 72;
+      window.scrollTo({top:top, behavior:'smooth'});
+    }
+  });
+});
+
+// Language toggle
+function setLang(lang){
+  document.documentElement.setAttribute('data-lang', lang);
+  document.documentElement.setAttribute('lang', lang === 'vi' ? 'vi' : 'en');
+  localStorage.setItem('sop-lang', lang);
+  var enBtn = document.getElementById('langEn');
+  var viBtn = document.getElementById('langVi');
+  if(enBtn) enBtn.classList.toggle('active', lang === 'en');
+  if(viBtn) viBtn.classList.toggle('active', lang === 'vi');
+  document.querySelectorAll('[data-en][data-vi]').forEach(function(el){
+    el.textContent = el.getAttribute('data-' + lang) || el.getAttribute('data-en');
+  });
+}
+document.getElementById('langEn').addEventListener('click', function(){ setLang('en'); });
+document.getElementById('langVi').addEventListener('click', function(){ setLang('vi'); });
+(function(){
+  var saved = localStorage.getItem('sop-lang');
+  if(saved) setLang(saved); else setLang('vi');
+})();
+</script>
+</body>
+</html>

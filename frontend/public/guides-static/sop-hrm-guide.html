@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="vi" data-lang="vi" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOP Quản lý Hành chính Nhân sự — HRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--font-sans:'DM Sans',system-ui,-apple-system,sans-serif;--font-mono:'JetBrains Mono','Fira Code',monospace;--color-primary:#5E6AD2;--color-primary-hover:#4F55C4;--color-accent:#F28C38;--color-success:#22C55E;--color-warning:#F59E0B;--color-danger:#EF4444;--color-info:#38BDF8;--bg-page:#FFFFFF;--bg-surface:#F9F9FB;--bg-elevated:#FFFFFF;--border-default:#E4E4E7;--text-primary:#18181B;--text-secondary:#52525B;--text-tertiary:#A1A1AA;--radius-xs:4px;--radius-sm:6px;--radius-md:8px;--radius-lg:12px;--radius-full:9999px;--shadow-elevated:0 4px 12px rgba(0,0,0,.10);--sidebar-width:260px;--topbar-height:52px;--dur:150ms;}
+[data-theme="dark"]{--bg-page:#0F0F12;--bg-surface:#1A1A1F;--bg-elevated:#25252B;--border-default:rgba(255,255,255,.10);--text-primary:#FAFAFA;--text-secondary:#A1A1AA;--text-tertiary:#52525B;--color-primary:#6E78E8;--color-primary-hover:#7D87EE;--color-accent:#F5A05A;--color-success:#4ADE80;--color-warning:#FBB532;--color-danger:#F87171;--color-info:#7DD3FC;--shadow-elevated:0 4px 12px rgba(0,0,0,.40);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;font-size:14px;}
+body{font-family:var(--font-sans);font-size:14px;line-height:1.6;color:var(--text-primary);background:var(--bg-page);transition:background var(--dur) ease,color var(--dur) ease;}
+.topbar{position:fixed;top:0;left:0;right:0;height:var(--topbar-height);background:var(--bg-surface);border-bottom:1px solid var(--border-default);display:flex;align-items:center;padding:0 16px;gap:12px;z-index:100;}
+.topbar-brand{font-size:16px;font-weight:700;color:var(--color-primary);letter-spacing:-.3px;flex-shrink:0;}
+.topbar-brand span{color:var(--text-primary);font-weight:400;}
+.topbar-subtitle{font-size:12px;color:var(--text-tertiary);border-left:1px solid var(--border-default);padding-left:12px;margin-left:4px;}
+.topbar-spacer{flex:1;}
+.hamburger{display:none;background:none;border:none;cursor:pointer;color:var(--text-secondary);padding:6px;border-radius:var(--radius-sm);}
+.hamburger:hover{background:var(--bg-elevated);}
+.dark-toggle{background:none;border:1px solid var(--border-default);border-radius:var(--radius-sm);cursor:pointer;color:var(--text-secondary);padding:6px 10px;font-size:13px;font-family:var(--font-sans);display:flex;align-items:center;gap:6px;transition:background var(--dur) ease,border-color var(--dur) ease;}
+.dark-toggle:hover{background:var(--bg-elevated);border-color:var(--text-tertiary);}
+.sidebar{position:fixed;top:var(--topbar-height);left:0;width:var(--sidebar-width);height:calc(100vh - var(--topbar-height));background:var(--bg-surface);border-right:1px solid var(--border-default);overflow-y:auto;overflow-x:hidden;z-index:90;transition:transform var(--dur) ease;padding:16px 0 32px;}
+.sidebar::-webkit-scrollbar{width:4px;}.sidebar::-webkit-scrollbar-thumb{background:var(--border-default);border-radius:2px;}
+.sidebar-section{margin-bottom:8px;}
+.sidebar-section-header{display:flex;align-items:center;justify-content:space-between;padding:6px 16px;cursor:pointer;user-select:none;}
+.sidebar-section-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--text-tertiary);}
+.sidebar-chevron{color:var(--text-tertiary);transition:transform var(--dur) ease;}
+.sidebar-section.collapsed .sidebar-chevron{transform:rotate(-90deg);}
+.sidebar-section.collapsed .sidebar-section-items{display:none;}
+.sidebar-link{display:flex;align-items:center;gap:8px;padding:6px 16px 6px 24px;font-size:13px;color:var(--text-secondary);text-decoration:none;cursor:pointer;transition:background var(--dur) ease,color var(--dur) ease;border:none;background:none;width:100%;text-align:left;line-height:1.4;}
+.sidebar-link:hover{background:var(--bg-elevated);color:var(--text-primary);}
+.sidebar-link.active,.sidebar-link.spy-active{background:rgba(94,106,210,.10);color:var(--color-primary);font-weight:500;}
+[data-theme="dark"] .sidebar-link.active,[data-theme="dark"] .sidebar-link.spy-active{background:rgba(110,120,232,.15);}
+.sidebar-link-dot{width:5px;height:5px;border-radius:50%;background:var(--text-tertiary);flex-shrink:0;margin-left:4px;}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.40);z-index:89;}
+.main{margin-left:var(--sidebar-width);margin-top:var(--topbar-height);padding:40px 48px;max-width:calc(100% - var(--sidebar-width));min-height:calc(100vh - var(--topbar-height));}
+.content-area{max-width:820px;margin:0 auto;}
+h1{font-size:28px;font-weight:700;line-height:1.2;color:var(--text-primary);margin-bottom:8px;letter-spacing:-.4px;}
+h2{font-size:22px;font-weight:600;line-height:1.3;color:var(--text-primary);margin-top:52px;margin-bottom:16px;padding-top:20px;border-top:1px solid var(--border-default);letter-spacing:-.3px;}
+h2:first-child{margin-top:0;border-top:none;padding-top:0;}
+h3{font-size:16px;font-weight:600;line-height:1.4;color:var(--text-primary);margin-top:32px;margin-bottom:10px;}
+h4{font-size:14px;font-weight:600;color:var(--text-primary);margin-top:20px;margin-bottom:8px;}
+p{color:var(--text-secondary);margin-bottom:12px;line-height:1.7;}p:last-child{margin-bottom:0;}
+ul,ol{padding-left:20px;margin-bottom:12px;color:var(--text-secondary);}
+li{margin-bottom:4px;line-height:1.6;}li strong{color:var(--text-primary);}
+a{color:var(--color-primary);text-decoration:none;}a:hover{text-decoration:underline;}
+code{font-family:var(--font-mono);font-size:12px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-xs);padding:1px 5px;color:var(--color-primary);}
+[data-theme="dark"] code{background:var(--bg-elevated);}
+.page-header{margin-bottom:40px;padding-bottom:28px;border-bottom:1px solid var(--border-default);}
+.page-header-meta{font-size:13px;color:var(--text-tertiary);margin-top:8px;}
+.table-wrap{overflow-x:auto;margin-bottom:20px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;padding:8px 12px;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--text-tertiary);background:var(--bg-surface);border-bottom:1px solid var(--border-default);}
+td{padding:9px 12px;border-bottom:1px solid var(--border-default);color:var(--text-secondary);vertical-align:top;line-height:1.5;}
+td strong{color:var(--text-primary);}tr:last-child td{border-bottom:none;}tr:hover td{background:var(--bg-surface);}
+.callout{display:flex;gap:12px;padding:14px 16px;border-radius:var(--radius-md);margin:20px 0;border-left:3px solid;}
+.callout-icon{font-size:16px;line-height:1.5;flex-shrink:0;}
+.callout-body{flex:1;font-size:13px;line-height:1.6;}
+.callout-body strong{display:block;margin-bottom:2px;}
+.callout-body p{margin:0;font-size:13px;}
+.callout-tip{background:rgba(34,197,94,.07);border-color:var(--color-success);}
+.callout-tip .callout-body{color:#166534;}[data-theme="dark"] .callout-tip .callout-body{color:#86efac;}
+.callout-info{background:rgba(56,189,248,.07);border-color:var(--color-info);}
+.callout-info .callout-body{color:#075985;}[data-theme="dark"] .callout-info .callout-body{color:#7dd3fc;}
+.callout-warning{background:rgba(245,158,11,.07);border-color:var(--color-warning);}
+.callout-warning .callout-body{color:#92400e;}[data-theme="dark"] .callout-warning .callout-body{color:#fcd34d;}
+.callout-danger{background:rgba(239,68,68,.07);border-color:var(--color-danger);}
+.callout-danger .callout-body{color:#991B1B;}[data-theme="dark"] .callout-danger .callout-body{color:#fca5a5;}
+.callout-note{background:rgba(94,106,210,.07);border-color:var(--color-primary);}
+.callout-note .callout-body{color:#3730a3;}[data-theme="dark"] .callout-note .callout-body{color:#a5b4fc;}
+.back-to-top{position:fixed;bottom:28px;right:28px;width:40px;height:40px;background:var(--color-primary);color:#fff;border:none;border-radius:var(--radius-full);cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:var(--shadow-elevated);z-index:200;transition:background var(--dur) ease,transform var(--dur) ease;}
+.back-to-top:hover{background:var(--color-primary-hover);transform:translateY(-2px);}
+.back-to-top.visible{display:flex;}
+.section-intro{color:var(--text-secondary);font-size:14px;margin-bottom:24px;line-height:1.7;}
+.step-list{list-style:none;padding:0;counter-reset:step;}
+.step-list li{counter-increment:step;display:flex;gap:14px;margin-bottom:14px;align-items:flex-start;}
+.step-list li::before{content:counter(step);display:flex;align-items:center;justify-content:center;width:24px;height:24px;min-width:24px;background:var(--color-primary);color:#fff;border-radius:var(--radius-full);font-size:11px;font-weight:700;margin-top:2px;}
+.step-list li span{color:var(--text-secondary);font-size:14px;line-height:1.6;}
+.status-flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:16px 0;padding:14px 16px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-md);}
+.sp{display:inline-flex;align-items:center;padding:4px 10px;border-radius:var(--radius-full);font-size:11px;font-weight:600;font-family:var(--font-mono);letter-spacing:.3px;white-space:nowrap;}
+.sp-draft{background:rgba(161,161,170,.15);color:var(--text-secondary);border:1px solid var(--border-default);}
+.sp-blue{background:rgba(56,189,248,.12);color:#0284C7;border:1px solid rgba(56,189,248,.30);}
+.sp-green{background:rgba(34,197,94,.12);color:#15803D;border:1px solid rgba(34,197,94,.30);}
+.sp-amber{background:rgba(245,158,11,.12);color:#B45309;border:1px solid rgba(245,158,11,.30);}
+.sp-red{background:rgba(239,68,68,.12);color:#B91C1C;border:1px solid rgba(239,68,68,.30);}
+.sp-purple{background:rgba(94,106,210,.12);color:var(--color-primary);border:1px solid rgba(94,106,210,.30);}
+.sp-orange{background:rgba(242,140,56,.12);color:#C2410C;border:1px solid rgba(242,140,56,.30);}
+[data-theme="dark"] .sp-blue{color:#7DD3FC;}[data-theme="dark"] .sp-green{color:#4ADE80;}
+[data-theme="dark"] .sp-amber{color:#FBB532;}[data-theme="dark"] .sp-red{color:#F87171;}[data-theme="dark"] .sp-orange{color:#FB923C;}
+.flow-arr{color:var(--text-tertiary);font-size:14px;font-weight:700;padding:0 2px;}
+.roles-row{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 16px;}
+.role-tag{display:inline-flex;align-items:center;padding:3px 10px;background:rgba(94,106,210,.08);color:var(--color-primary);border-radius:var(--radius-full);font-size:12px;font-weight:500;}
+.feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:20px 0;}
+.feature-card{background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:16px;}
+.feature-card-title{font-weight:600;font-size:13px;color:var(--text-primary);margin-bottom:4px;}
+.feature-card-desc{font-size:12px;color:var(--text-secondary);line-height:1.5;}
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:20px 0;}
+.kpi-card{background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:16px 20px;display:flex;align-items:center;gap:14px;}
+.kpi-value{font-size:22px;font-weight:700;color:var(--color-primary);font-family:var(--font-mono);flex-shrink:0;}
+.kpi-label{font-size:12px;color:var(--text-secondary);line-height:1.4;}
+.golden-list{list-style:none;padding:0;}
+.golden-list li{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-md);margin-bottom:8px;}
+.gl-icon{color:var(--color-accent);font-size:16px;flex-shrink:0;margin-top:1px;}
+.gl-text{color:var(--text-secondary);font-size:13px;line-height:1.6;}
+.gl-text strong{color:var(--text-primary);}
+.module-tag{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 6px;border-radius:var(--radius-xs);margin-right:6px;vertical-align:middle;}
+.mod-hr{background:rgba(59,130,246,.12);color:#1E40AF;}
+.mod-recruit{background:rgba(34,197,94,.12);color:#16A34A;}
+.mod-admin{background:rgba(245,158,11,.12);color:#D97706;}
+.mod-finance{background:rgba(239,68,68,.12);color:#DC2626;}
+[data-theme="dark"] .mod-recruit{color:#4ADE80;}[data-theme="dark"] .mod-admin{color:#FBB532;}[data-theme="dark"] .mod-finance{color:#F87171;}
+html[data-lang="en"] .lang-vi{display:none;}
+html[data-lang="vi"] .lang-en{display:none;}
+.lang-toggle{display:flex;align-items:center;gap:2px;border:1px solid var(--border-default);border-radius:var(--radius-full);padding:2px;background:var(--bg-elevated);margin-left:4px;}
+.lang-toggle button{padding:2px 10px;border:none;border-radius:var(--radius-full);background:transparent;color:var(--text-secondary);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font-sans);transition:all var(--dur) ease;}
+.lang-toggle button.active{background:var(--color-primary);color:#fff;}
+@media(max-width:768px){.sidebar{transform:translateX(-100%);z-index:95;}.sidebar.open{transform:translateX(0);}.sidebar-overlay.open{display:block;}.hamburger{display:flex;}.topbar-subtitle{display:none;}.main{margin-left:0;max-width:100%;padding:24px 20px;}.feature-grid,.kpi-grid{grid-template-columns:1fr;}h1{font-size:22px;}h2{font-size:18px;}}
+@media print{.sidebar,.topbar,.back-to-top,.dark-toggle,.hamburger{display:none!important;}.main{margin:0;padding:20px;max-width:100%;}h2{page-break-before:always;}h2:first-child{page-break-before:avoid;}.callout{break-inside:avoid;}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <span class="topbar-brand">A-ERP <span>SOP</span></span>
+  <span class="topbar-subtitle lang-vi">Hướng dẫn — Quản lý Hành chính Nhân sự</span>
+  <span class="topbar-subtitle lang-en">Guide — Human Resources &amp; Administration</span>
+  <span class="topbar-spacer"></span>
+  <button class="dark-toggle" id="darkToggle">
+    <svg id="sunIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+    <svg id="moonIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <span id="darkToggleLabel">Dark</span>
+  </button>
+  <div class="lang-toggle">
+    <button id="langVi" class="active">VI</button>
+    <button id="langEn">EN</button>
+  </div>
+</header>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-section" id="sec-intro">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-intro')">
+      <span class="sidebar-section-title" data-vi="Giới thiệu" data-en="Introduction">Giới thiệu</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#overview" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Tổng quan" data-en="Overview">Tổng quan</span></a>
+      <a class="sidebar-link" href="#roles" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Vai trò &amp; Quyền" data-en="Roles &amp; Permissions">Vai trò &amp; Quyền</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-org">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-org')">
+      <span class="sidebar-section-title" data-vi="Tổ chức &amp; Nhân viên" data-en="Organization &amp; Employee">Tổ chức &amp; Nhân viên</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#org-structure" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Cấu trúc Tổ chức" data-en="Org Structure">Cấu trúc Tổ chức</span></a>
+      <a class="sidebar-link" href="#employee-lifecycle" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Vòng đời Nhân viên" data-en="Employee Lifecycle">Vòng đời Nhân viên</span></a>
+      <a class="sidebar-link" href="#contract-salary" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Hợp đồng &amp; Lương" data-en="Contract &amp; Salary">Hợp đồng &amp; Lương</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-recruitment">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-recruitment')">
+      <span class="sidebar-section-title" data-vi="Tuyển dụng" data-en="Recruitment">Tuyển dụng</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#recruitment-pipeline" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Pipeline Tuyển dụng" data-en="Recruitment Pipeline">Pipeline Tuyển dụng</span></a>
+      <a class="sidebar-link" href="#interview-offer" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Phỏng vấn &amp; Offer" data-en="Interview &amp; Offer">Phỏng vấn &amp; Offer</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-leave">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-leave')">
+      <span class="sidebar-section-title" data-vi="Nghỉ phép &amp; Chấm công" data-en="Leave &amp; Attendance">Nghỉ phép &amp; Chấm công</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#leave-mgt" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Quản lý Nghỉ phép" data-en="Leave Management">Quản lý Nghỉ phép</span></a>
+      <a class="sidebar-link" href="#attendance-mgt" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Quản lý Chấm công" data-en="Attendance Management">Quản lý Chấm công</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-performance">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-performance')">
+      <span class="sidebar-section-title" data-vi="Hiệu suất &amp; KPI" data-en="Performance &amp; KPI">Hiệu suất &amp; KPI</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#performance-review" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Performance Review" data-en="Performance Review">Performance Review</span></a>
+      <a class="sidebar-link" href="#kpi-training" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="KPI &amp; Training" data-en="KPI &amp; Training">KPI &amp; Training</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-offboarding">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-offboarding')">
+      <span class="sidebar-section-title" data-vi="Offboarding &amp; Tài sản" data-en="Offboarding &amp; Asset">Offboarding &amp; Tài sản</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#offboarding-process" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Quy trình Offboarding" data-en="Offboarding Process">Quy trình Offboarding</span></a>
+      <a class="sidebar-link" href="#asset-management" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Quản lý Tài sản" data-en="Asset Management">Quản lý Tài sản</span></a>
+    </div>
+  </div>
+  <div class="sidebar-section" id="sec-api">
+    <div class="sidebar-section-header" onclick="toggleSection('sec-api')">
+      <span class="sidebar-section-title" data-vi="Tham chiếu" data-en="Reference">Tham chiếu</span>
+      <svg class="sidebar-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sidebar-section-items">
+      <a class="sidebar-link" href="#api-endpoints" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="API Endpoints" data-en="API Endpoints">API Endpoints</span></a>
+      <a class="sidebar-link" href="#permissions" onclick="closeSidebarMobile()"><span class="sidebar-link-dot"></span><span data-vi="Bảng Quyền hạn" data-en="Permission Matrix">Bảng Quyền hạn</span></a>
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+<div class="content-area">
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="lang-vi">
+    <h1>Hướng dẫn Quản lý Hành chính Nhân sự</h1>
+    <p class="page-header-meta">HR • Administration • Payroll — Phiên bản 1.0 • Triển khai đầy đủ (32 data models)</p>
+  </div>
+  <div class="lang-en">
+    <h1>Human Resources &amp; Administration Management Guide</h1>
+    <p class="page-header-meta">HR • Administration • Payroll — Version 1.0 • Fully Implemented (32 data models)</p>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<h2 id="overview">
+  <span class="lang-vi">Tổng quan hệ thống</span>
+  <span class="lang-en">System Overview</span>
+</h2>
+
+<div class="lang-vi">
+  <p class="section-intro">Hệ thống HRM quản lý vòng đời toàn bộ nhân viên từ tuyển dụng, onboarding, quản lý hoạt động, lương thưởng, hiệu suất đến offboarding. Số hóa 100% quy trình HCNS, giảm 40-60% thao tác thủ công, kiểm soát tuân thủ pháp lý.</p>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-card-title">Mục tiêu</div>
+      <div class="feature-card-desc">Chuẩn hóa 100% quy trình, số hóa hồ sơ, giảm thao tác Excel rời rạc 60%, đảm bảo tuân thủ pháp lý</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">Phạm vi</div>
+      <div class="feature-card-desc">Employee lifecycle, Recruitment, Leave, Attendance, Payroll, Performance, Training, Assets, Offboarding</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">Phủ sóng dữ liệu</div>
+      <div class="feature-card-desc">32 data models: Employee, Department, Position, Contract, Leave, Attendance, Recruitment, Interview, Offer, Performance, KPI, Training, Payroll, Insurance, Asset, Offboarding, và hơn nữa</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">Status: Triển khai đầy đủ</div>
+      <div class="feature-card-desc">Tất cả tính năng core sản xuất sẵn sàng. 23+ trang frontend, API đầy đủ, workflow approval tự động</div>
+    </div>
+  </div>
+</div>
+<div class="lang-en">
+  <p class="section-intro">The HRM system manages the entire employee lifecycle from recruitment, onboarding, employment management, compensation, performance to offboarding. Digitizes 100% of HR processes, reduces 40-60% of manual work, ensures legal compliance.</p>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-card-title">Objectives</div>
+      <div class="feature-card-desc">Standardize 100% of processes, digitize records, eliminate 60% of manual Excel work, ensure legal compliance</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">Scope</div>
+      <div class="feature-card-desc">Employee lifecycle, Recruitment, Leave, Attendance, Payroll, Performance, Training, Assets, Offboarding</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">Data Coverage</div>
+      <div class="feature-card-desc">32 data models: Employee, Department, Position, Contract, Leave, Attendance, Recruitment, Interview, Offer, Performance, KPI, Training, Payroll, Insurance, Asset, Offboarding, and more</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-title">Status: Fully Implemented</div>
+      <div class="feature-card-desc">All core features production-ready. 23+ frontend pages, complete API, automated approval workflows</div>
+    </div>
+  </div>
+</div>
+
+<!-- ROLES -->
+<h2 id="roles">
+  <span class="lang-vi">Vai trò &amp; Quyền hạn</span>
+  <span class="lang-en">Roles &amp; Permissions</span>
+</h2>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Vai trò</span><span class="lang-en">Role</span></th>
+      <th><span class="lang-vi">Trách nhiệm</span><span class="lang-en">Responsibilities</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong><span class="lang-vi">HR Admin</span><span class="lang-en">HR Admin</span></strong></td>
+      <td><span class="lang-vi">Full access: Employees, recruitment, payroll, contracts, leave approval, system config</span><span class="lang-en">Full access: Employees, recruitment, payroll, contracts, leave approval, system config</span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">HR Manager</span><span class="lang-en">HR Manager</span></strong></td>
+      <td><span class="lang-vi">Workflow approvals, team reports, recruitment oversight, performance reviews, analytics</span><span class="lang-en">Workflow approvals, team reports, recruitment oversight, performance reviews, analytics</span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">Line Manager</span><span class="lang-en">Line Manager</span></strong></td>
+      <td><span class="lang-vi">Approve leave (team), KPI assignments, performance reviews (team), team analytics</span><span class="lang-en">Approve leave (team), KPI assignments, performance reviews (team), team analytics</span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">Employee</span><span class="lang-en">Employee</span></strong></td>
+      <td><span class="lang-vi">Self-service: View own profile, request leave, view payslip, training enrollment, submit feedback</span><span class="lang-en">Self-service: View own profile, request leave, view payslip, training enrollment, submit feedback</span></td>
+    </tr>
+    <tr>
+      <td><strong><span class="lang-vi">Accountant</span><span class="lang-en">Accountant</span></strong></td>
+      <td><span class="lang-vi">Payroll records, salary history, insurance data, tax reporting</span><span class="lang-en">Payroll records, salary history, insurance data, tax reporting</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ORGANIZATION & EMPLOYEE -->
+<h2 id="org-structure">
+  <span class="module-tag mod-hr">HR</span>
+  <span class="lang-vi">Cấu trúc Tổ chức</span>
+  <span class="lang-en">Organizational Structure</span>
+</h2>
+
+<div class="lang-vi"><p class="section-intro">Hệ thống HRM hỗ trợ cấu trúc tổ chức phân cấp. Mỗi Department có parent (nếu là sub-department), manager, và danh sách nhân viên.</p></div>
+<div class="lang-en"><p class="section-intro">HRM system supports hierarchical organizational structure. Each Department has parent (if sub-department), manager, and employee list.</p></div>
+
+<h3><span class="lang-vi">Department Hierarchy</span><span class="lang-en">Department Hierarchy</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr>
+    <td><strong><span class="lang-vi">Department:</span><span class="lang-en">Department:</span></strong> <span class="lang-vi">Tên phòng ban, mã, mô tả, manager, parent_department_id (nếu có)</span><span class="lang-en">Name, code, description, manager, parent_department_id (if sub-department)</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Position:</span><span class="lang-en">Position:</span></strong> <span class="lang-vi">Tên vị trí, department_id, headcount limit, description, is_active</span><span class="lang-en">Title, department_id, headcount limit, description, is_active</span></td>
+  </tr>
+</tbody>
+</table>
+
+<h3><span class="lang-vi">Org Chart Features</span><span class="lang-en">Org Chart Features</span></h3>
+<ul>
+  <li><strong><span class="lang-vi">Hierarchical Tree:</span><span class="lang-en">Hierarchical Tree:</span></strong> <span class="lang-vi">Xem toàn bộ cấu trúc tổ chức theo cây. Dễ dàng quản lý reporting lines</span><span class="lang-en">View full org structure in tree view. Easy reporting line management</span></li>
+  <li><strong><span class="lang-vi">Headcount Tracking:</span><span class="lang-en">Headcount Tracking:</span></strong> <span class="lang-vi">Theo dõi headcount hiện tại vs. limit. Alert nếu vượt định biên</span><span class="lang-en">Track current headcount vs. limit. Alert if exceeds headcount limit</span></li>
+  <li><strong><span class="lang-vi">Department Filters:</span><span class="lang-en">Department Filters:</span></strong> <span class="lang-vi">Lọc employees theo department, xem team member list nhanh chóng</span><span class="lang-en">Filter employees by department, quickly view team member lists</span></li>
+</ul>
+
+<!-- EMPLOYEE LIFECYCLE -->
+<h2 id="employee-lifecycle">
+  <span class="lang-vi">Vòng đời Nhân viên</span>
+  <span class="lang-en">Employee Lifecycle</span>
+</h2>
+
+<div class="lang-vi"><p class="section-intro">Nhân viên trải qua các giai đoạn: Recruitment → Onboarding → Active (Probation/Regular) → Offboarding → Archive.</p></div>
+<div class="lang-en"><p class="section-intro">Employee progresses through stages: Recruitment → Onboarding → Active (Probation/Regular) → Offboarding → Archive.</p></div>
+
+<div class="status-flow">
+  <span class="sp sp-blue"><span class="lang-vi">Prospective</span><span class="lang-en">Prospective</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-blue"><span class="lang-vi">Probation</span><span class="lang-en">Probation</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-green"><span class="lang-vi">Active</span><span class="lang-en">Active</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-amber"><span class="lang-vi">Resignation</span><span class="lang-en">Resignation</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-red"><span class="lang-vi">Inactive</span><span class="lang-en">Inactive</span></span>
+</div>
+
+<h3><span class="lang-vi">Employee Data Fields</span><span class="lang-en">Employee Data Fields</span></h3>
+<table class="table-wrap">
+<thead>
+  <tr>
+    <th><span class="lang-vi">Trường</span><span class="lang-en">Field</span></th>
+    <th><span class="lang-vi">Loại</span><span class="lang-en">Type</span></th>
+    <th><span class="lang-vi">Mô tả</span><span class="lang-en">Description</span></th>
+  </tr>
+</thead>
+<tbody>
+  <tr><td><code>name</code></td><td>String</td><td><span class="lang-vi">Tên nhân viên</span><span class="lang-en">Full name</span></td></tr>
+  <tr><td><code>email</code></td><td>String</td><td><span class="lang-vi">Email cá nhân/công ty</span><span class="lang-en">Personal/work email</span></td></tr>
+  <tr><td><code>phone</code></td><td>String</td><td><span class="lang-vi">Số điện thoại liên hệ</span><span class="lang-en">Contact phone</span></td></tr>
+  <tr><td><code>date_of_birth</code></td><td>Date</td><td><span class="lang-vi">Ngày sinh</span><span class="lang-en">Date of birth</span></td></tr>
+  <tr><td><code>national_id</code></td><td>String</td><td><span class="lang-vi">Số CMND/CCCD (bắt buộc)</span><span class="lang-en">ID number (required)</span></td></tr>
+  <tr><td><code>department_id</code></td><td>UUID</td><td><span class="lang-vi">Phòng ban hiện tại</span><span class="lang-en">Current department</span></td></tr>
+  <tr><td><code>position</code></td><td>String</td><td><span class="lang-vi">Chức vụ hiện tại</span><span class="lang-en">Current position/title</span></td></tr>
+  <tr><td><code>hire_date</code></td><td>Date</td><td><span class="lang-vi">Ngày vào làm (chính thức)</span><span class="lang-en">Official hire date</span></td></tr>
+  <tr><td><code>employee_status</code></td><td>Enum</td><td><span class="lang-vi">active, inactive, probation</span><span class="lang-en">active, inactive, probation</span></td></tr>
+  <tr><td><code>bank_account_number</code></td><td>String</td><td><span class="lang-vi">Số tài khoản ngân hàng (cho lương)</span><span class="lang-en">Bank account for salary</span></td></tr>
+  <tr><td><code>bank_name</code></td><td>String</td><td><span class="lang-vi">Tên ngân hàng</span><span class="lang-en">Bank name</span></td></tr>
+</tbody>
+</table>
+
+<h3><span class="lang-vi">Onboarding Checklist</span><span class="lang-en">Onboarding Checklist</span></h3>
+<div class="golden-list">
+  <li>
+    <div class="gl-icon">✓</div>
+    <div class="gl-text"><strong><span class="lang-vi">Document Submission:</span><span class="lang-en">Document Submission:</span></strong> <span class="lang-vi">CV, chứng chỉ, hợp đồng signed, insurance forms</span><span class="lang-en">CV, certificates, signed contract, insurance forms</span></div>
+  </li>
+  <li>
+    <div class="gl-icon">✓</div>
+    <div class="gl-text"><strong><span class="lang-vi">System Access:</span><span class="lang-en">System Access:</span></strong> <span class="lang-vi">Tạo account, email, access systems, training</span><span class="lang-en">Create account, email, system access, training</span></div>
+  </li>
+  <li>
+    <div class="gl-icon">✓</div>
+    <div class="gl-text"><strong><span class="lang-vi">Asset Assignment:</span><span class="lang-en">Asset Assignment:</span></strong> <span class="lang-vi">Laptop, phone, access card, office setup</span><span class="lang-en">Laptop, phone, access card, office setup</span></div>
+  </li>
+  <li>
+    <div class="gl-icon">✓</div>
+    <div class="gl-text"><strong><span class="lang-vi">Orientation:</span><span class="lang-en">Orientation:</span></strong> <span class="lang-vi">Company overview, policy briefing, team introductions</span><span class="lang-en">Company overview, policy briefing, team introductions</span></div>
+  </li>
+</div>
+
+<!-- CONTRACT & SALARY -->
+<h2 id="contract-salary">
+  <span class="lang-vi">Hợp đồng &amp; Lương thưởng</span>
+  <span class="lang-en">Contract &amp; Compensation</span>
+</h2>
+
+<h3><span class="lang-vi">Contract Types</span><span class="lang-en">Contract Types</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr>
+    <td><strong><span class="lang-vi">Probation:</span><span class="lang-en">Probation:</span></strong> <span class="lang-vi">Hợp đồng thử việc, thường 3 tháng, lương thấp hơn</span><span class="lang-en">Trial period, usually 3 months, lower salary</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Fixed Term:</span><span class="lang-en">Fixed Term:</span></strong> <span class="lang-vi">Hợp đồng xác định thời hạn (1-3 năm), tự động gia hạn hoặc chuyển vô thời hạn</span><span class="lang-en">Fixed-term (1-3 years), auto-renew or convert to indefinite</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Indefinite:</span><span class="lang-en">Indefinite:</span></strong> <span class="lang-vi">Hợp đồng vô thời hạn (long-term stable)</span><span class="lang-en">Indefinite contract (long-term stable)</span></td>
+  </tr>
+</tbody>
+</table>
+
+<h3><span class="lang-vi">Salary Components</span><span class="lang-en">Salary Components</span></h3>
+<div class="feature-grid">
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="lang-vi">Base Salary</span><span class="lang-en">Base Salary</span></div>
+    <div class="feature-card-desc"><span class="lang-vi">Lương cơ bản hàng tháng. Cập nhật trong contract.</span><span class="lang-en">Monthly base salary. Updated in contract.</span></div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="lang-vi">Allowances</span><span class="lang-en">Allowances</span></div>
+    <div class="feature-card-desc"><span class="lang-vi">Phụ cấp (ăn trưa, xăng, nhà). Lưu dạng JSON flexible.</span><span class="lang-en">Bonuses (meal, transport, housing). Stored as flexible JSON.</span></div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="lang-vi">Deductions</span><span class="lang-en">Deductions</span></div>
+    <div class="feature-card-desc"><span class="lang-vi">Khấu trừ (bảo hiểm, thuế, loan). Tính trong payroll.</span><span class="lang-en">Deductions (insurance, tax, loan). Calculated in payroll.</span></div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="lang-vi">Overtime Pay</span><span class="lang-en">Overtime Pay</span></div>
+    <div class="feature-card-desc"><span class="lang-vi">Tăng ca được tính theo giờ. Thường 1.5x hoặc 2x lương giờ.</span><span class="lang-en">Overtime calculated hourly. Usually 1.5x or 2x hourly rate.</span></div>
+  </div>
+</div>
+
+<h3><span class="lang-vi">Salary History &amp; Payroll</span><span class="lang-en">Salary History &amp; Payroll</span></h3>
+<ul>
+  <li><strong><span class="lang-vi">Salary Change Tracking:</span><span class="lang-en">Salary Change Tracking:</span></strong> <span class="lang-vi">Mỗi thay đổi lương ghi lại effective_date, reason (raise, promotion, etc.), approved_by</span><span class="lang-en">Track all salary changes with effective_date, reason, approver</span></li>
+  <li><strong><span class="lang-vi">Payroll Records:</span><span class="lang-en">Payroll Records:</span></strong> <span class="lang-vi">Tạo hàng tháng (period = YYYY-MM). Ghi gross salary, deductions, net salary, status (draft/approved/paid)</span><span class="lang-en">Generated monthly. Gross, deductions, net, status tracking</span></li>
+  <li><strong><span class="lang-vi">Payslip Access:</span><span class="lang-en">Payslip Access:</span></strong> <span class="lang-vi">Nhân viên có thể xem payslip riêng mình. Có/không download PDF</span><span class="lang-en">Employees can view/download their own payslips</span></li>
+</ul>
+
+<!-- RECRUITMENT -->
+<h2 id="recruitment-pipeline">
+  <span class="module-tag mod-recruit">Recruit</span>
+  <span class="lang-vi">Recruitment Pipeline</span>
+  <span class="lang-en">Recruitment Pipeline</span>
+</h2>
+
+<div class="lang-vi"><p class="section-intro">Quy trình tuyển dụng theo dõi từ Recruitment Request → Candidates → Interviews → Offers → Hires. Mỗi stage có approval workflow.</p></div>
+<div class="lang-en"><p class="section-intro">Recruitment process tracks Recruitment Request → Candidates → Interviews → Offers → Hires. Each stage has approval workflow.</p></div>
+
+<div class="status-flow">
+  <span class="sp sp-draft"><span class="lang-vi">Request Draft</span><span class="lang-en">Request Draft</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-blue"><span class="lang-vi">Open</span><span class="lang-en">Open</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-blue"><span class="lang-vi">Candidates Applied</span><span class="lang-en">Candidates Applied</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-blue"><span class="lang-vi">Interviewed</span><span class="lang-en">Interviewed</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-blue"><span class="lang-vi">Offered</span><span class="lang-en">Offered</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-green"><span class="lang-vi">Hired</span><span class="lang-en">Hired</span></span>
+  <span class="flow-arr">|</span>
+  <span class="sp sp-red"><span class="lang-vi">Rejected</span><span class="lang-en">Rejected</span></span>
+</div>
+
+<h3><span class="lang-vi">Recruitment Request Fields</span><span class="lang-en">Recruitment Request Fields</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr>
+    <td><code>title</code></td>
+    <td><span class="lang-vi">Vị trí tuyển dụng (e.g., Senior Backend Engineer)</span><span class="lang-en">Job title</span></td>
+  </tr>
+  <tr>
+    <td><code>department_id</code></td>
+    <td><span class="lang-vi">Phòng ban cần nhân viên</span><span class="lang-en">Requesting department</span></td>
+  </tr>
+  <tr>
+    <td><code>quantity</code></td>
+    <td><span class="lang-vi">Số lượng cần tuyển</span><span class="lang-en">Number of positions</span></td>
+  </tr>
+  <tr>
+    <td><code>salary_range_min / max</code></td>
+    <td><span class="lang-vi">Mức lương (VND). Hiển thị trên job posting nếu cần</span><span class="lang-en">Salary range for budget</span></td>
+  </tr>
+  <tr>
+    <td><code>deadline</code></td>
+    <td><span class="lang-vi">Hạn chót nhận hồ sơ</span><span class="lang-en">Application deadline</span></td>
+  </tr>
+  <tr>
+    <td><code>requirements</code></td><td><span class="lang-vi">Yêu cầu kỹ năng, kinh nghiệm</span><span class="lang-en">Job requirements</span></td>
+  </tr>
+</tbody>
+</table>
+
+<h3><span class="lang-vi">Candidate Pipeline</span><span class="lang-en">Candidate Pipeline</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr>
+    <td><strong><span class="lang-vi">Applied:</span><span class="lang-en">Applied:</span></strong> <span class="lang-vi">CV nhận được, HR screen sơ bộ</span><span class="lang-en">CV received, HR initial screen</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Interviewed:</span><span class="lang-en">Interviewed:</span></strong> <span class="lang-vi">Phỏng vấn 1 hoặc nhiều lần. Ghi feedback, score 0-10</span><span class="lang-en">Interviewed (1+ rounds). Record feedback, score 0-10</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Offered:</span><span class="lang-en">Offered:</span></strong> <span class="lang-vi">Gửi offer letter. Chờ acceptance với deadline</span><span class="lang-en">Send offer letter. Await acceptance with deadline</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Hired:</span><span class="lang-en">Hired:</span></strong> <span class="lang-vi">Ứng viên chấp nhận. Tạo Employee record, Onboarding checklist</span><span class="lang-en">Offer accepted. Create Employee record, Onboarding</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Rejected:</span><span class="lang-en">Rejected:</span></strong> <span class="lang-vi">Không fit. Ghi reason, lưu CV cho future reference</span><span class="lang-en">Not a fit. Record reason, keep CV for future</span></td>
+  </tr>
+</tbody>
+</table>
+
+<!-- INTERVIEW & OFFER -->
+<h2 id="interview-offer">
+  <span class="lang-vi">Phỏng vấn &amp; Job Offer</span>
+  <span class="lang-en">Interview &amp; Job Offer Management</span>
+</h2>
+
+<h3><span class="lang-vi">Interview Scheduling</span><span class="lang-en">Interview Scheduling</span></h3>
+<div class="callout callout-tip">
+  <div class="callout-icon">💡</div>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Interview Fields:</span><span class="lang-en">Interview Fields:</span></strong>
+    <p><span class="lang-vi">candidate_id, scheduled_at, duration_minutes, interviewer_id, panel_ids (multiple), room, feedback, score (0-10), status (scheduled/completed/no_show)</span><span class="lang-en">candidate_id, scheduled_at, duration_minutes, interviewer_id, panel_ids (multiple), room, feedback, score (0-10), status</span></p>
+  </div>
+</div>
+
+<h3><span class="lang-vi">Offer Letter</span><span class="lang-en">Offer Letter</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr>
+    <td><code>title</code></td><td><span class="lang-vi">Vị trí đề nghị</span><span class="lang-en">Offered position</span></td>
+  </tr>
+  <tr>
+    <td><code>salary</code></td><td><span class="lang-vi">Mức lương đề nghị (VND)</span><span class="lang-en">Proposed salary</span></td>
+  </tr>
+  <tr>
+    <td><code>benefits_package</code></td><td><span class="lang-vi">Chi tiết phúc lợi (ăn, xe, bảo hiểm, etc.)</span><span class="lang-en">Benefits details</span></td>
+  </tr>
+  <tr>
+    <td><code>location</code></td><td><span class="lang-vi">Địa điểm làm việc</span><span class="lang-en">Work location</span></td>
+  </tr>
+  <tr>
+    <td><code>expiration_date</code></td><td><span class="lang-vi">Hạn chót chấp nhận offer (thường 7 ngày)</span><span class="lang-en">Acceptance deadline (usually 7 days)</span></td>
+  </tr>
+  <tr>
+    <td><code>status</code></td><td><span class="lang-vi">draft, extended, accepted, rejected</span><span class="lang-en">draft, extended, accepted, rejected</span></td>
+  </tr>
+</tbody>
+</table>
+
+<!-- LEAVE MANAGEMENT -->
+<h2 id="leave-mgt">
+  <span class="module-tag mod-hr">HR</span>
+  <span class="lang-vi">Quản lý Nghỉ phép</span>
+  <span class="lang-en">Leave Management</span>
+</h2>
+
+<div class="lang-vi"><p class="section-intro">Hệ thống quản lý request nghỉ phép với approval workflow. Mỗi loại nghỉ có policy (tối đa ngày/năm, quy tắc), và tracking balance.</p></div>
+<div class="lang-en"><p class="section-intro">Leave request system with approval workflow. Each leave type has policy (max days/year, rules), and balance tracking.</p></div>
+
+<h3><span class="lang-vi">Leave Types</span><span class="lang-en">Leave Types</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr>
+    <td><strong><span class="lang-vi">Annual Leave:</span><span class="lang-en">Annual Leave:</span></strong> <span class="lang-vi">Nghỉ năm. Default: 12 ngày/năm (theo luật VN). Tích lũy qua năm</span><span class="lang-en">Vacation. Default: 12 days/year (VN law). Carries forward per policy</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Sick Leave:</span><span class="lang-en">Sick Leave:</span></strong> <span class="lang-vi">Bệnh. Default: 30 ngày/năm (có giấy khám bệnh)</span><span class="lang-en">Medical. Default: 30 days/year (with certificate)</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Unpaid Leave:</span><span class="lang-en">Unpaid Leave:</span></strong> <span class="lang-vi">Không lương. Không tính vào lương. Cần approve manager</span><span class="lang-en">Unpaid. No salary impact. Manager approval required</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Maternity:</span><span class="lang-en">Maternity:</span></strong> <span class="lang-vi">Thai sản (theo luật: 4-6 tháng tùy trường hợp)</span><span class="lang-en">Maternity (per law: 4-6 months depending)</span></td>
+  </tr>
+</tbody>
+</table>
+
+<h3><span class="lang-vi">Leave Request Workflow</span><span class="lang-en">Leave Request Workflow</span></h3>
+<ol class="step-list">
+  <li><span><span class="lang-vi">Employee đăng ký request leave (chọn ngày bắt đầu, kết thúc, loại, lý do)</span><span class="lang-en">Employee submits leave request (dates, type, reason)</span></span></li>
+  <li><span><span class="lang-vi">System check balance có đủ không. Nếu không đủ → reject</span><span class="lang-en">System checks balance. Reject if insufficient</span></span></li>
+  <li><span><span class="lang-vi">Gửi approval cho Line Manager</span><span class="lang-en">Send to Line Manager for approval</span></span></li>
+  <li><span><span class="lang-vi">Manager approve/reject. Nếu approve → status = approved, balance trừ đi</span><span class="lang-en">Manager approves/rejects. If approved → balance deducted</span></span></li>
+  <li><span><span class="lang-vi">Payroll system update: mark days as leave trong attendance</span><span class="lang-en">Payroll marks days as leave in attendance records</span></span></li>
+</ol>
+
+<!-- ATTENDANCE -->
+<h2 id="attendance-mgt">
+  <span class="lang-vi">Quản lý Chấm công</span>
+  <span class="lang-en">Attendance Management</span>
+</h2>
+
+<h3><span class="lang-vi">Daily Attendance Record</span><span class="lang-en">Daily Attendance Record</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr>
+    <td><code>date</code></td><td><span class="lang-vi">Ngày công</span><span class="lang-en">Work date</span></td>
+  </tr>
+  <tr>
+    <td><code>check_in / check_out</code></td><td><span class="lang-vi">Thời gian vào/ra (nếu manual hoặc API)</span><span class="lang-en">Check-in/out times</span></td>
+  </tr>
+  <tr>
+    <td><code>total_hours</code></td><td><span class="lang-vi">Tổng giờ làm (tính tự động từ check-in/out)</span><span class="lang-en">Total hours worked (auto-calculated)</span></td>
+  </tr>
+  <tr>
+    <td><code>overtime_hours</code></td><td><span class="lang-vi">Giờ tăng ca (nếu &gt;8 giờ/ngày)</span><span class="lang-en">Overtime hours (if &gt;8 hrs/day)</span></td>
+  </tr>
+  <tr>
+    <td><code>status</code></td><td><span class="lang-vi">present, absent, late, half_day, holiday, leave</span><span class="lang-en">present, absent, late, half_day, holiday, leave</span></td>
+  </tr>
+</tbody>
+</table>
+
+<h3><span class="lang-vi">Attendance Correction Workflow</span><span class="lang-en">Attendance Correction Workflow</span></h3>
+<div class="golden-list">
+  <li>
+    <div class="gl-icon">📝</div>
+    <div class="gl-text"><strong><span class="lang-vi">Employee Request:</span><span class="lang-en">Employee Request:</span></strong> <span class="lang-vi">Yêu cầu chỉnh sửa attendance record (quên check-in, lỗi hệ thống)</span><span class="lang-en">Request correction (forgot check-in, system error)</span></div>
+  </li>
+  <li>
+    <div class="gl-icon">✓</div>
+    <div class="gl-text"><strong><span class="lang-vi">Manager Review:</span><span class="lang-en">Manager Review:</span></strong> <span class="lang-vi">Xem xét lý do, approve/reject</span><span class="lang-en">Review reason, approve or reject</span></div>
+  </li>
+  <li>
+    <div class="gl-icon">📊</div>
+    <div class="gl-text"><strong><span class="lang-vi">Monthly Summary:</span><span class="lang-en">Monthly Summary:</span></strong> <span class="lang-vi">Report tháng: tổng present, absent, late, leave, OT</span><span class="lang-en">Monthly report: total present, absent, late, leave, OT hours</span></div>
+  </li>
+</div>
+
+<!-- PERFORMANCE & KPI -->
+<h2 id="performance-review">
+  <span class="lang-vi">Performance Review</span>
+  <span class="lang-en">Performance Review</span>
+</h2>
+
+<div class="lang-vi"><p class="section-intro">Hệ thống đánh giá hiệu suất định kỳ (quarterly hoặc annual). Mỗi review có competency feedback, overall score, comments từ manager/team.</p></div>
+<div class="lang-en"><p class="section-intro">Periodic performance evaluation (quarterly or annual). Each review includes competency feedback, overall score, manager comments.</p></div>
+
+<h3><span class="lang-vi">Review Structure</span><span class="lang-en">Review Structure</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr>
+    <td><code>period</code></td><td><span class="lang-vi">YYYY-Q (e.g., 2024-Q1) hoặc YYYY-ANNUAL</span><span class="lang-en">YYYY-Q (e.g., 2024-Q1) or YYYY-ANNUAL</span></td>
+  </tr>
+  <tr>
+    <td><code>reviewer_id</code></td><td><span class="lang-vi">Manager/HR conduct review</span><span class="lang-en">Manager or HR conducting review</span></td>
+  </tr>
+  <tr>
+    <td><code>overall_score</code></td><td><span class="lang-vi">Điểm tổng thể 0-10 (hoặc 1-5 scale)</span><span class="lang-en">Overall score 0-10 or 1-5 scale</span></td>
+  </tr>
+  <tr>
+    <td><code>status</code></td><td><span class="lang-vi">draft, completed</span><span class="lang-en">draft, completed</span></td>
+  </tr>
+</tbody>
+</table>
+
+<h3><span class="lang-vi">Competency Feedback</span><span class="lang-en">Competency Feedback</span></h3>
+<div class="feature-grid">
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="lang-vi">Technical Skills</span><span class="lang-en">Technical Skills</span></div>
+    <div class="feature-card-desc"><span class="lang-vi">Năng lực kỹ thuật, expertise, learning ability</span><span class="lang-en">Technical proficiency, expertise, learning ability</span></div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="lang-vi">Communication</span><span class="lang-en">Communication</span></div>
+    <div class="feature-card-desc"><span class="lang-vi">Giao tiếp, lắng nghe, presentation skills</span><span class="lang-en">Communication, listening, presentation skills</span></div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="lang-vi">Teamwork</span><span class="lang-en">Teamwork</span></div>
+    <div class="feature-card-desc"><span class="lang-vi">Collaboration, support colleagues, team player</span><span class="lang-en">Collaboration, support colleagues, team player</span></div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-card-title"><span class="lang-vi">Leadership</span><span class="lang-en">Leadership</span></div>
+    <div class="feature-card-desc"><span class="lang-vi">Initiative, decision-making, mentoring</span><span class="lang-en">Initiative, decision-making, mentoring</span></div>
+  </div>
+</div>
+
+<!-- KPI & TRAINING -->
+<h2 id="kpi-training">
+  <span class="lang-vi">KPI Management &amp; Training</span>
+  <span class="lang-en">KPI Management &amp; Training</span>
+</h2>
+
+<h3><span class="lang-vi">KPI Assignment Workflow</span><span class="lang-en">KPI Assignment Workflow</span></h3>
+<ol class="step-list">
+  <li><span><span class="lang-vi">HR/Manager tạo KPI templates (revenue, quality, time-based metrics)</span><span class="lang-en">HR/Manager creates KPI templates (revenue, quality, time metrics)</span></span></li>
+  <li><span><span class="lang-vi">Assign KPI cho employees cho period (quarterly/annual)</span><span class="lang-en">Assign KPIs to employees for period (quarterly/annual)</span></span></li>
+  <li><span><span class="lang-vi">Employee track actual_value tháng/quý</span><span class="lang-en">Employee tracks actual_value monthly/quarterly</span></span></li>
+  <li><span><span class="lang-vi">Manager review achievement rate (actual / target %)</span><span class="lang-en">Manager reviews achievement rate (actual / target %)</span></span></li>
+  <li><span><span class="lang-vi">KPI score contribute vào performance review overall score</span><span class="lang-en">KPI score contributes to performance review overall score</span></span></li>
+</ol>
+
+<h3><span class="lang-vi">Training &amp; Development</span><span class="lang-en">Training &amp; Development</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr>
+    <td><strong><span class="lang-vi">Training Program:</span><span class="lang-en">Training Program:</span></strong> <span class="lang-vi">Course title, category (technical/soft), duration (hours), cost, start/end date, status</span><span class="lang-en">Course title, category, duration (hours), cost, dates, status</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Enrollment:</span><span class="lang-en">Enrollment:</span></strong> <span class="lang-vi">Employee tự enroll hoặc manager assign. Track completion, certificate URL</span><span class="lang-en">Employee self-enroll or manager assign. Track completion, certificate</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Status:</span><span class="lang-en">Status:</span></strong> <span class="lang-vi">enrolled, in_progress, completed, dropped</span><span class="lang-en">enrolled, in_progress, completed, dropped</span></td>
+  </tr>
+</tbody>
+</table>
+
+<!-- OFFBOARDING & ASSETS -->
+<h2 id="offboarding-process">
+  <span class="lang-vi">Offboarding &amp; Resignation Process</span>
+  <span class="lang-en">Offboarding &amp; Resignation Process</span>
+</h2>
+
+<div class="lang-vi"><p class="section-intro">Quy trình khi nhân viên từ chức hoặc kết thúc hợp đồng. Bao gồm resignation, handover tasks, exit interview, final payroll.</p></div>
+<div class="lang-en"><p class="section-intro">Process when employee resigns or contract ends. Includes resignation, handover, exit interview, final settlement.</p></div>
+
+<div class="status-flow">
+  <span class="sp sp-amber"><span class="lang-vi">Resignation Request</span><span class="lang-en">Resignation Request</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-amber"><span class="lang-vi">Approved</span><span class="lang-en">Approved</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-amber"><span class="lang-vi">Notice Period</span><span class="lang-en">Notice Period</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-amber"><span class="lang-vi">Handover</span><span class="lang-en">Handover</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-red"><span class="lang-vi">Exit Interview</span><span class="lang-en">Exit Interview</span></span>
+  <span class="flow-arr">→</span>
+  <span class="sp sp-red"><span class="lang-vi">Inactive</span><span class="lang-en">Inactive</span></span>
+</div>
+
+<h3><span class="lang-vi">Resignation Workflow</span><span class="lang-en">Resignation Workflow</span></h3>
+<ol class="step-list">
+  <li><span><span class="lang-vi">Employee submit resignation request với effective_date (thường 2-4 tuần)</span><span class="lang-en">Employee submits resignation with effective_date (usually 2-4 weeks)</span></span></li>
+  <li><span><span class="lang-vi">HR/Manager approve → status = approved</span><span class="lang-en">HR/Manager approves → status = approved</span></span></li>
+  <li><span><span class="lang-vi">Create Handover tasks: assign tasks to be transferred</span><span class="lang-en">Create Handover tasks: assign tasks to be transferred</span></span></li>
+  <li><span><span class="lang-vi">Schedule Exit Interview (feedback, satisfaction, suggestions)</span><span class="lang-en">Schedule Exit Interview (feedback, satisfaction, suggestions)</span></span></li>
+  <li><span><span class="lang-vi">On effective_date: Mark employee status = inactive, create final payroll</span><span class="lang-en">On effective_date: Mark status = inactive, create final payroll</span></span></li>
+</ol>
+
+<!-- ASSET MANAGEMENT -->
+<h2 id="asset-management">
+  <span class="lang-vi">Quản lý Tài sản Công ty</span>
+  <span class="lang-en">Company Asset Management</span>
+</h2>
+
+<h3><span class="lang-vi">Asset Types</span><span class="lang-en">Asset Types</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr>
+    <td><strong><span class="lang-vi">Laptop/Desktop:</span><span class="lang-en">Laptop/Desktop:</span></strong> <span class="lang-vi">Serial number, model, purchase_date, cost, warranty, condition</span><span class="lang-en">Serial number, model, purchase_date, cost, warranty, condition</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Phone:</span><span class="lang-en">Phone:</span></strong> <span class="lang-vi">Mobile device, SIM, IMEI, condition</span><span class="lang-en">Mobile device, SIM, IMEI, condition</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Furniture:</span><span class="lang-en">Furniture:</span></strong> <span class="lang-vi">Desk, chair, cabinet, condition</span><span class="lang-en">Desk, chair, cabinet, condition</span></td>
+  </tr>
+  <tr>
+    <td><strong><span class="lang-vi">Access Card:</span><span class="lang-en">Access Card:</span></strong> <span class="lang-vi">ID card, badge, key</span><span class="lang-en">ID card, badge, key</span></td>
+  </tr>
+</tbody>
+</table>
+
+<h3><span class="lang-vi">Asset Assignment &amp; Return</span><span class="lang-en">Asset Assignment &amp; Return</span></h3>
+<div class="golden-list">
+  <li>
+    <div class="gl-icon">📦</div>
+    <div class="gl-text"><strong><span class="lang-vi">On Onboarding:</span><span class="lang-en">On Onboarding:</span></strong> <span class="lang-vi">Giao laptop, phone, card → record assignment_date, condition</span><span class="lang-en">Issue laptop, phone, card → record assignment_date, condition</span></div>
+  </li>
+  <li>
+    <div class="gl-icon">📦</div>
+    <div class="gl-text"><strong><span class="lang-vi">Replacement:</span><span class="lang-en">Replacement:</span></strong> <span class="lang-vi">Nếu asset bị hỏng → create new assignment, return old</span><span class="lang-en">If asset breaks → new assignment, return old one</span></div>
+  </li>
+  <li>
+    <div class="gl-icon">🔄</div>
+    <div class="gl-text"><strong><span class="lang-vi">On Offboarding:</span><span class="lang-en">On Offboarding:</span></strong> <span class="lang-vi">Yêu cầu trả tất cả assets, inspect condition, mark return_date</span><span class="lang-en">Request return of all assets, inspect condition, mark return_date</span></div>
+  </li>
+  <li>
+    <div class="gl-icon">⚠️</div>
+    <div class="gl-text"><strong><span class="lang-vi">Lost/Damaged:</span><span class="lang-en">Lost/Damaged:</span></strong> <span class="lang-vi">Log damage reason. Có thể charge employee nếu do negligence</span><span class="lang-en">Log damage reason. May charge employee if negligence</span></div>
+  </li>
+</div>
+
+<!-- API REFERENCE -->
+<h2 id="api-endpoints">
+  <span class="lang-vi">API Reference — Employee Endpoints</span>
+  <span class="lang-en">API Reference — Employee Endpoints</span>
+</h2>
+
+<div class="lang-vi"><p class="section-intro">Tất cả HRM API tuân theo RESTful convention. Base URL: <code>/api/v1/hrm</code></p></div>
+<div class="lang-en"><p class="section-intro">All HRM APIs follow RESTful convention. Base URL: <code>/api/v1/hrm</code></p></div>
+
+<h3><span class="lang-vi">Employee Management</span><span class="lang-en">Employee Management</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr><td><code>GET /employees</code></td><td><span class="lang-vi">List employees (filter by department, status)</span><span class="lang-en">List employees (filter by department, status)</span></td></tr>
+  <tr><td><code>POST /employees</code></td><td><span class="lang-vi">Create new employee</span><span class="lang-en">Create new employee</span></td></tr>
+  <tr><td><code>GET /employees/{id}</code></td><td><span class="lang-vi">Get employee detail with contracts, salary history</span><span class="lang-en">Get detail with contracts, salary history</span></td></tr>
+  <tr><td><code>PUT /employees/{id}</code></td><td><span class="lang-vi">Update employee info</span><span class="lang-en">Update employee info</span></td></tr>
+  <tr><td><code>DELETE /employees/{id}</code></td><td><span class="lang-vi">Delete employee (archive)</span><span class="lang-en">Delete employee (archive)</span></td></tr>
+</tbody>
+</table>
+
+<h3><span class="lang-vi">Org Structure, Leave, Attendance, Recruitment</span><span class="lang-en">Org Structure, Leave, Attendance, Recruitment</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr><td><code>GET /departments</code>, <code>GET /departments/tree</code></td><td><span class="lang-vi">List depts, hierarchical tree view</span><span class="lang-en">List depts, hierarchical tree</span></td></tr>
+  <tr><td><code>GET /leave-requests</code>, <code>POST /leave-requests</code></td><td><span class="lang-vi">CRUD leave requests, approvals</span><span class="lang-en">CRUD leave requests, approvals</span></td></tr>
+  <tr><td><code>GET /attendance-records</code>, <code>POST /attendance-records</code></td><td><span class="lang-vi">CRUD attendance, corrections, summary</span><span class="lang-en">CRUD attendance, corrections, summary</span></td></tr>
+  <tr><td><code>GET /recruitment-requests</code>, <code>GET /candidates</code></td><td><span class="lang-vi">Manage requisitions, candidates, pipeline</span><span class="lang-en">Manage requisitions, candidates, pipeline</span></td></tr>
+  <tr><td><code>GET /interviews</code>, <code>POST /interviews</code></td><td><span class="lang-vi">Schedule, record interviews</span><span class="lang-en">Schedule, record interviews</span></td></tr>
+  <tr><td><code>GET /offers</code>, <code>POST /offers</code></td><td><span class="lang-vi">Create, track job offers</span><span class="lang-en">Create, track job offers</span></td></tr>
+</tbody>
+</table>
+
+<h3><span class="lang-vi">Performance, Training, Payroll, Assets, Offboarding</span><span class="lang-en">Performance, Training, Payroll, Assets, Offboarding</span></h3>
+<table class="table-wrap">
+<tbody>
+  <tr><td><code>GET /performance-reviews</code>, <code>POST /performance-reviews</code></td><td><span class="lang-vi">Manage performance reviews, feedback</span><span class="lang-en">Manage performance reviews, feedback</span></td></tr>
+  <tr><td><code>GET /kpi-templates</code>, <code>POST /kpi-assignments</code></td><td><span class="lang-vi">Create KPI templates, assign to employees</span><span class="lang-en">Create KPI templates, assign to employees</span></td></tr>
+  <tr><td><code>GET /training-programs</code>, <code>GET /training-enrollments</code></td><td><span class="lang-vi">Manage training programs, enrollments</span><span class="lang-en">Manage training programs, enrollments</span></td></tr>
+  <tr><td><code>GET /payroll-records</code>, <code>POST /payroll-records</code></td><td><span class="lang-vi">Generate, manage monthly payroll</span><span class="lang-en">Generate, manage monthly payroll</span></td></tr>
+  <tr><td><code>GET /assets</code>, <code>GET /asset-assignments</code></td><td><span class="lang-vi">Track company assets, assignments, returns</span><span class="lang-en">Track company assets, assignments, returns</span></td></tr>
+  <tr><td><code>GET /resignations</code>, <code>POST /resignations</code></td><td><span class="lang-vi">Manage resignations, offboarding workflow</span><span class="lang-en">Manage resignations, offboarding workflow</span></td></tr>
+</tbody>
+</table>
+
+<!-- PERMISSIONS MATRIX -->
+<h2 id="permissions">
+  <span class="lang-vi">Role-Based Permissions Matrix</span>
+  <span class="lang-en">Role-Based Permissions Matrix</span>
+</h2>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th><span class="lang-vi">Feature</span><span class="lang-en">Feature</span></th>
+      <th><span class="lang-vi">HR Admin</span><span class="lang-en">HR Admin</span></th>
+      <th><span class="lang-vi">HR Manager</span><span class="lang-en">HR Manager</span></th>
+      <th><span class="lang-vi">Line Mgr</span><span class="lang-en">Line Mgr</span></th>
+      <th><span class="lang-vi">Employee</span><span class="lang-en">Employee</span></th>
+      <th><span class="lang-vi">Accountant</span><span class="lang-en">Accountant</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="lang-vi">Employee CRUD</span><span class="lang-en">Employee CRUD</span></td>
+      <td>✓</td><td>–</td><td>–</td><td>–</td><td>–</td>
+    </tr>
+    <tr>
+      <td><span class="lang-vi">Approve Leave</span><span class="lang-en">Approve Leave</span></td>
+      <td>✓</td><td>✓</td><td>✓ (team)</td><td>–</td><td>–</td>
+    </tr>
+    <tr>
+      <td><span class="lang-vi">View Payroll</span><span class="lang-en">View Payroll</span></td>
+      <td>✓</td><td>✓</td><td>–</td><td>Own only</td><td>✓</td>
+    </tr>
+    <tr>
+      <td><span class="lang-vi">Recruitment Mgmt</span><span class="lang-en">Recruitment Mgmt</span></td>
+      <td>✓</td><td>✓</td><td>–</td><td>–</td><td>–</td>
+    </tr>
+    <tr>
+      <td><span class="lang-vi">Performance Review</span><span class="lang-en">Performance Review</span></td>
+      <td>✓</td><td>✓</td><td>✓ (team)</td><td>Own only</td><td>–</td>
+    </tr>
+    <tr>
+      <td><span class="lang-vi">Training Enrollment</span><span class="lang-en">Training Enrollment</span></td>
+      <td>✓</td><td>✓</td><td>Assign (team)</td><td>Self enroll</td><td>–</td>
+    </tr>
+    <tr>
+      <td><span class="lang-vi">Org Chart View</span><span class="lang-en">Org Chart View</span></td>
+      <td>✓</td><td>✓</td><td>✓ (team)</td><td>✓ (company)</td><td>–</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- SUCCESS METRICS -->
+<h2 id="success-metrics">
+  <span class="lang-vi">Success Metrics</span>
+  <span class="lang-en">Success Metrics</span>
+</h2>
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-value"><span class="lang-vi">100%</span><span class="lang-en">100%</span></div>
+    <div class="kpi-label"><span class="lang-vi">Quy trình số hóa (không Excel)</span><span class="lang-en">Process digitization (zero Excel)</span></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value"><span class="lang-vi">60%</span><span class="lang-en">60%</span></div>
+    <div class="kpi-label"><span class="lang-vi">Giảm thao tác thủ công</span><span class="lang-en">Manual work reduction</span></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value"><span class="lang-vi">100%</span><span class="lang-en">100%</span></div>
+    <div class="kpi-label"><span class="lang-vi">Phê duyệt online</span><span class="lang-en">Online approvals</span></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value"><span class="lang-vi">30%</span><span class="lang-en">30%</span></div>
+    <div class="kpi-label"><span class="lang-vi">Giảm lỗi tính lương</span><span class="lang-en">Payroll error reduction</span></div>
+  </div>
+</div>
+
+<!-- CLOSING -->
+<div class="callout callout-tip">
+  <div class="callout-icon">💡</div>
+  <div class="callout-body">
+    <strong><span class="lang-vi">Cập nhật thường xuyên:</span><span class="lang-en">Regular Updates:</span></strong>
+    <p><span class="lang-vi">Hệ thống HRM được cập nhật liên tục với các policy mới, quy luật lương thưởng, leave policy theo luật. Đặc biệt khi có thay đổi luật lao động VN.</span><span class="lang-en">HRM system is regularly updated with new policies, compensation rules, leave policies per regulations. Especially for VN labor law changes.</span></p>
+  </div>
+</div>
+
+</div>
+</main>
+
+<button class="back-to-top" id="backToTop">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<script>
+document.getElementById('darkToggle').addEventListener('click', function() {
+  const html = document.documentElement;
+  const isDark = html.dataset.theme === 'dark';
+  html.dataset.theme = isDark ? 'light' : 'dark';
+  const label = document.getElementById('darkToggleLabel');
+  const sunIcon = document.getElementById('sunIcon');
+  const moonIcon = document.getElementById('moonIcon');
+  if (isDark) {
+    label.textContent = 'Dark';
+    sunIcon.style.display = 'block';
+    moonIcon.style.display = 'none';
+  } else {
+    label.textContent = 'Light';
+    sunIcon.style.display = 'none';
+    moonIcon.style.display = 'block';
+  }
+});
+document.getElementById('langVi').addEventListener('click', function() {
+  document.documentElement.lang = 'vi';
+  document.documentElement.dataset.lang = 'vi';
+  this.classList.add('active');
+  document.getElementById('langEn').classList.remove('active');
+});
+document.getElementById('langEn').addEventListener('click', function() {
+  document.documentElement.lang = 'en';
+  document.documentElement.dataset.lang = 'en';
+  this.classList.add('active');
+  document.getElementById('langVi').classList.remove('active');
+});
+function toggleSection(id) {
+  const section = document.getElementById(id);
+  section.classList.toggle('collapsed');
+}
+function closeSidebarMobile() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  sidebar.classList.remove('open');
+  overlay.classList.remove('open');
+}
+document.getElementById('hamburgerBtn').addEventListener('click', function() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('open');
+});
+document.getElementById('sidebarOverlay').addEventListener('click', closeSidebarMobile);
+const backToTopBtn = document.getElementById('backToTop');
+window.addEventListener('scroll', function() {
+  backToTopBtn.classList.toggle('visible', window.scrollY > 500);
+});
+backToTopBtn.addEventListener('click', function() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+const sidebarLinks = document.querySelectorAll('.sidebar-link');
+window.addEventListener('scroll', function() {
+  let current = '';
+  document.querySelectorAll('h2').forEach(section => {
+    const sectionTop = section.offsetTop;
+    const sectionHeight = section.clientHeight;
+    if (window.pageYOffset >= sectionTop - 200) {
+      current = section.getAttribute('id');
+    }
+  });
+  sidebarLinks.forEach(link => {
+    link.classList.remove('spy-active');
+    if (link.getAttribute('href').substring(1) === current) {
+      link.classList.add('spy-active');
+    }
+  });
+});
+</script>
+</body>
+</html>
