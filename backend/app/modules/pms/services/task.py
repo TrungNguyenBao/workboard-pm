@@ -2,12 +2,12 @@ import uuid
 from datetime import datetime, timezone
 
 from fastapi import HTTPException, status
-from sqlalchemy import func, select
+from sqlalchemy import asc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.models.user import User
-from app.modules.pms.models.project import Project
+from app.modules.pms.models.project import Project, ProjectMembership
 from app.modules.pms.models.task import Task, TaskFollower, TaskTag
 from app.modules.pms.schemas.task import TaskCreate, TaskUpdate
 from app.modules.pms.services.activity_log import create_activity
@@ -87,6 +87,8 @@ async def list_tasks(
         .options(
             selectinload(Task.assignee),
             selectinload(Task.subtasks),
+            selectinload(Task.blocks),
+            selectinload(Task.tags).selectinload(TaskTag.tag),
         )
     )
     if section_id is not None:
@@ -96,6 +98,54 @@ async def list_tasks(
     q = q.order_by(Task.position)
     result = await db.scalars(q)
     return list(result.all())
+
+
+_SORT_COLUMNS = {
+    "due_date": Task.due_date,
+    "priority": Task.priority,
+    "created_at": Task.created_at,
+}
+
+_PRIORITY_ORDER = {"high": 0, "medium": 1, "low": 2, "none": 3}
+
+
+async def list_my_tasks(
+    db: AsyncSession,
+    workspace_id: uuid.UUID,
+    user_id: uuid.UUID,
+    priority: str | None = None,
+    status: str | None = None,
+    sort_by: str = "due_date",
+) -> list[Task]:
+    q = (
+        select(Task)
+        .join(Project, Task.project_id == Project.id)
+        .join(ProjectMembership, ProjectMembership.project_id == Project.id)
+        .where(
+            Task.assignee_id == user_id,
+            Task.deleted_at.is_(None),
+            Task.parent_id.is_(None),
+            Project.workspace_id == workspace_id,
+            Project.deleted_at.is_(None),
+            ProjectMembership.user_id == user_id,
+        )
+        .options(
+            selectinload(Task.assignee),
+            selectinload(Task.subtasks),
+        )
+    )
+    if priority is not None:
+        q = q.where(Task.priority == priority)
+    if status is not None:
+        q = q.where(Task.status == status)
+
+    sort_col = _SORT_COLUMNS.get(sort_by, Task.due_date)
+    q = q.order_by(asc(sort_col))
+    result = await db.scalars(q)
+    tasks = list(result.unique().all())
+    if sort_by == "priority":
+        tasks.sort(key=lambda t: _PRIORITY_ORDER.get(t.priority, 99))
+    return tasks
 
 
 async def get_task(db: AsyncSession, task_id: uuid.UUID) -> Task:

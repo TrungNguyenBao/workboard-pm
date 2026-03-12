@@ -7,6 +7,7 @@ import { cn } from '@/shared/lib/utils'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/components/ui/dropdown-menu'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/components/ui/tooltip'
 import { ProjectSettingsDialog } from '@/modules/pms/features/projects/components/project-settings-dialog'
+import { useProjectPermissions } from '@/modules/pms/features/projects/hooks/use-project-permissions'
 import api from '@/shared/lib/api'
 
 interface Project { id: string; name: string; color: string; description: string | null; is_archived: boolean }
@@ -25,6 +26,7 @@ export function SidebarProjectNavItem({ project, active, workspaceId, collapsed 
   const [renaming, setRenaming] = useState(false)
   const [nameInput, setNameInput] = useState(project.name)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const { canManage } = useProjectPermissions(project.id)
 
   const rename = useMutation({
     mutationFn: (name: string) => api.patch(`/pms/projects/${project.id}`, { name }).then((r) => r.data),
@@ -106,18 +108,24 @@ export function SidebarProjectNavItem({ project, active, workspaceId, collapsed 
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => { setNameInput(project.name); setRenaming(true) }}>
-              <Pencil className="h-3.5 w-3.5 mr-2" />{t('common.rename')}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
-              <Settings className="h-3.5 w-3.5 mr-2" />{t('common.settings')}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="text-red-600 focus:text-red-600"
-              onClick={() => { if (window.confirm(t('common.deleteConfirmFull', { name: project.name }))) remove.mutate() }}
-            >
-              <Trash2 className="h-3.5 w-3.5 mr-2" />{t('common.delete')}
-            </DropdownMenuItem>
+            {canManage && (
+              <DropdownMenuItem onClick={() => { setNameInput(project.name); setRenaming(true) }}>
+                <Pencil className="h-3.5 w-3.5 mr-2" />{t('common.rename')}
+              </DropdownMenuItem>
+            )}
+            {canManage && (
+              <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
+                <Settings className="h-3.5 w-3.5 mr-2" />{t('common.settings')}
+              </DropdownMenuItem>
+            )}
+            {canManage && (
+              <DropdownMenuItem
+                className="text-red-600 focus:text-red-600"
+                onClick={() => { if (window.confirm(t('common.deleteConfirmFull', { name: project.name }))) remove.mutate() }}
+              >
+                <Trash2 className="h-3.5 w-3.5 mr-2" />{t('common.delete')}
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

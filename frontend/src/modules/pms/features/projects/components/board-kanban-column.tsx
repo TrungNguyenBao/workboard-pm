@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { cn } from '@/shared/lib/utils'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/components/ui/dropdown-menu'
 import { Button } from '@/shared/components/ui/button'
+import { PermissionGate } from '@/shared/components/permission-gate'
 import { BoardTaskCard } from './board-task-card'
 import { InlineTaskInput } from '../components/inline-task-input'
 import { useUpdateSection, useDeleteSection, type Task, type Section } from '../hooks/use-project-tasks'
@@ -37,14 +38,15 @@ export function BoardKanbanColumn({ section, tasks, projectId, onOpenTask }: Boa
     setRenaming(false)
   }
 
+  const wipAtLimit = !!section.wip_limit && tasks.length >= section.wip_limit
   const wipExceeded = !!section.wip_limit && tasks.length > section.wip_limit
 
   return (
-    <div className={cn(
-      'flex w-64 flex-shrink-0 flex-col gap-2',
-      wipExceeded && 'ring-1 ring-red-300 rounded-lg p-1',
-    )}>
-      <div className="flex items-center justify-between px-1">
+    <div className="flex w-64 flex-shrink-0 flex-col gap-2">
+      <div className={cn(
+        'flex items-center justify-between px-1 py-1 rounded-md transition-colors',
+        wipExceeded && 'bg-red-50 dark:bg-red-950/20',
+      )}>
         <div className="flex items-center gap-2 flex-1 min-w-0">
           {section.color && (
             <span className="h-2 w-2 rounded-full flex-shrink-0" style={{ backgroundColor: section.color }} />
@@ -64,39 +66,40 @@ export function BoardKanbanColumn({ section, tasks, projectId, onOpenTask }: Boa
           ) : (
             <span className="text-sm font-medium text-foreground truncate">{section.name}</span>
           )}
-          <span className="text-xs text-muted-foreground flex-shrink-0">
+          <span className={cn(
+            'text-xs flex-shrink-0',
+            wipExceeded ? 'text-red-500 font-medium' : wipAtLimit ? 'text-amber-500 font-medium' : 'text-muted-foreground',
+          )}>
             {tasks.length}
-            {section.wip_limit && (
-              <span className={wipExceeded ? 'text-red-500 font-medium' : ''}>
-                /{section.wip_limit}
-              </span>
-            )}
+            {section.wip_limit && `/${section.wip_limit}`}
           </span>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon-sm">
-              <MoreHorizontal className="h-3.5 w-3.5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => { setNameInput(section.name); setRenaming(true) }}>
-              <Pencil className="h-3.5 w-3.5 mr-2" />
-              {t('common:common.rename')}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="text-red-600 focus:text-red-600"
-              onClick={() => {
-                if (window.confirm(t('project.deleteConfirm', { name: section.name }))) {
-                  deleteSection.mutate(section.id)
-                }
-              }}
-            >
-              <Trash2 className="h-3.5 w-3.5 mr-2" />
-              {t('common:common.delete')}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <PermissionGate permission="edit" projectId={projectId}>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon-sm">
+                <MoreHorizontal className="h-3.5 w-3.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => { setNameInput(section.name); setRenaming(true) }}>
+                <Pencil className="h-3.5 w-3.5 mr-2" />
+                {t('common:common.rename')}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="text-red-600 focus:text-red-600"
+                onClick={() => {
+                  if (window.confirm(t('project.deleteConfirm', { name: section.name }))) {
+                    deleteSection.mutate(section.id)
+                  }
+                }}
+              >
+                <Trash2 className="h-3.5 w-3.5 mr-2" />
+                {t('common:common.delete')}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </PermissionGate>
       </div>
       <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
         <div ref={setDroppableRef} className="min-h-[60px] space-y-2 rounded-md bg-muted/30 p-2">
@@ -108,7 +111,9 @@ export function BoardKanbanColumn({ section, tasks, projectId, onOpenTask }: Boa
           ))}
         </div>
       </SortableContext>
-      <InlineTaskInput projectId={projectId} sectionId={section.id} variant="card" />
+      <PermissionGate permission="edit" projectId={projectId}>
+        <InlineTaskInput projectId={projectId} sectionId={section.id} variant="card" />
+      </PermissionGate>
     </div>
   )
 }

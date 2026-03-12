@@ -10,6 +10,7 @@ interface SectionStat { section_name: string; total: number; completed: number }
 interface AssigneeStat { assignee_name: string; total: number; completed: number }
 interface Stats {
   total_tasks: number; completed: number; incomplete: number; overdue: number
+  completion_rate: number
   by_section: SectionStat[]; by_assignee: AssigneeStat[]; by_priority: Record<string, number>
 }
 
@@ -20,11 +21,11 @@ const PRIORITY_COLORS: Record<string, string> = {
   none: 'bg-muted text-muted-foreground',
 }
 
-function StatCard({ label, value, sub }: { label: string; value: number; sub?: string }) {
+function StatCard({ label, value, sub, valueClassName }: { label: string; value: number | string; sub?: string; valueClassName?: string }) {
   return (
     <div className="rounded-lg border border-border bg-background p-4">
       <p className="text-xs text-muted-foreground mb-1">{label}</p>
-      <p className="text-2xl font-semibold text-foreground">{value}</p>
+      <p className={`text-2xl font-semibold ${valueClassName ?? 'text-foreground'}`}>{value}</p>
       {sub && <p className="text-xs text-muted-foreground mt-0.5">{sub}</p>}
     </div>
   )
@@ -70,8 +71,7 @@ export default function OverviewPage() {
     enabled: !!projectId,
   })
 
-  const completionPct = stats && stats.total_tasks > 0
-    ? Math.round((stats.completed / stats.total_tasks) * 100) : 0
+  const completionPct = stats?.completion_rate ?? 0
 
   return (
     <div className="flex flex-col h-full">
@@ -90,7 +90,11 @@ export default function OverviewPage() {
                 <StatCard label={t('task.title')} value={stats.total_tasks} />
                 <StatCard label={t('task.status.completed')} value={stats.completed} sub={`${completionPct}%`} />
                 <StatCard label={t('task.status.inProgress')} value={stats.incomplete} />
-                <StatCard label={t('myTasks.overdue')} value={stats.overdue} />
+                <StatCard
+                  label={t('myTasks.overdue')}
+                  value={stats.overdue}
+                  valueClassName={stats.overdue > 0 ? 'text-red-500 dark:text-red-400' : 'text-foreground'}
+                />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -102,7 +106,7 @@ export default function OverviewPage() {
                       style={{ background: `conic-gradient(hsl(var(--primary)) ${completionPct}%, hsl(var(--muted)) 0)` }}
                     />
                     <div className="absolute inset-3 rounded-full bg-background flex items-center justify-center">
-                      <span className="text-lg font-semibold text-foreground">{completionPct}%</span>
+                      <span className="text-lg font-semibold text-foreground">{Math.round(completionPct)}%</span>
                     </div>
                   </div>
                   <p className="text-xs text-muted-foreground">

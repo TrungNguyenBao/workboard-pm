@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Plus, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/components/ui/button'
+import { useCanPerform } from '@/shared/components/permission-gate'
 import { useCreateTask } from '../hooks/use-project-tasks'
 
 interface Props {
@@ -17,6 +18,9 @@ export function InlineTaskInput({ projectId, sectionId, variant = 'card' }: Prop
   const [title, setTitle] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
   const createTask = useCreateTask(projectId)
+  const canEdit = useCanPerform('edit', projectId)
+
+  if (!canEdit) return null
 
   useEffect(() => {
     if (open) inputRef.current?.focus()

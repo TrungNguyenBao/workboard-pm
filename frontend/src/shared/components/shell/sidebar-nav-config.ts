@@ -15,6 +15,7 @@ export const PMS_NAV: NavGroupDef[] = [
       { to: '/pms/dashboard', icon: 'Home', labelKey: 'nav.dashboard' },
       { to: '/pms/my-tasks', icon: 'CheckSquare', labelKey: 'nav.myTasks' },
       { to: '/pms/goals', icon: 'Target', labelKey: 'nav.goals' },
+      { to: '/pms/tags', icon: 'Tag', labelKey: 'nav.tags' },
     ],
   },
 ]

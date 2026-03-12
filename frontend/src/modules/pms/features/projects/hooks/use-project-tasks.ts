@@ -37,6 +37,8 @@ export interface Task {
   assignee_avatar_url: string | null
   subtask_count: number
   completed_subtask_count: number
+  // Tags
+  tags: { id: string; name: string; color: string }[]
   // Custom fields
   custom_fields: Record<string, unknown> | null
   // Agile fields
@@ -44,6 +46,9 @@ export interface Task {
   task_type: string
   sprint_id: string | null
   epic_id: string | null
+  // Dependencies
+  blocked_by_count: number
+  blocking_task_ids: string[]
 }
 
 export function useSections(projectId: string) {

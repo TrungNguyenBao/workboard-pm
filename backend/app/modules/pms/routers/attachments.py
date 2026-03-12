@@ -6,7 +6,6 @@ from fastapi.responses import FileResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.dependencies.auth import get_current_user
 from app.models.user import User
 from app.modules.pms.dependencies.rbac import require_project_role
 from app.modules.pms.schemas.attachment import AttachmentResponse
@@ -67,7 +66,7 @@ async def delete(
     project_id: uuid.UUID,
     task_id: uuid.UUID,
     attachment_id: uuid.UUID,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_project_role("editor")),
     db: AsyncSession = Depends(get_db),
 ):
     await delete_attachment(db, attachment_id, current_user)

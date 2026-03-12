@@ -1,4 +1,4 @@
-import { CheckCircle2, Circle, Repeat } from 'lucide-react'
+import { CheckCircle2, Circle, Link2, Repeat } from 'lucide-react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -119,6 +119,12 @@ export function BoardTaskCard({ task, onOpen, projectId }: BoardTaskCardProps) {
       </div>
       <div className="flex items-center justify-between mt-2 ml-6">
         <div className="flex items-center gap-2">
+          {task.blocked_by_count > 0 && (
+            <Badge variant="warning" className="text-[10px] px-1.5 py-0 h-4 flex items-center gap-0.5">
+              <Link2 className="h-2.5 w-2.5" />
+              Blocked
+            </Badge>
+          )}
           {task.priority !== 'none' && (
             <Badge variant={PRIORITY_COLORS[task.priority]} className="text-xs">
               {task.priority}
@@ -155,6 +161,20 @@ export function BoardTaskCard({ task, onOpen, projectId }: BoardTaskCardProps) {
           </Avatar>
         )}
       </div>
+      {task.tags && task.tags.length > 0 && (
+        <div className="flex flex-wrap gap-1 mt-1.5 ml-6">
+          {task.tags.map((tag) => (
+            <span
+              key={tag.id}
+              className="inline-flex items-center gap-1 rounded-full px-1.5 text-[10px] font-medium"
+              style={{ backgroundColor: `${tag.color}22`, color: tag.color }}
+            >
+              <span className="h-1.5 w-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: tag.color }} />
+              {tag.name}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

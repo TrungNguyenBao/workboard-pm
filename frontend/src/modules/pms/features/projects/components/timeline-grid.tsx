@@ -4,8 +4,10 @@ import { ChevronDown, ChevronRight } from 'lucide-react'
 import { cn } from '@/shared/lib/utils'
 import type { Task, Section } from '../hooks/use-project-tasks'
 import { TimelineTaskBar } from './timeline-task-bar'
+import { TimelineDependencyArrows } from './timeline-dependency-arrows'
 
 const ROW_HEIGHT = 36 // px
+const NAME_COL_WIDTH = 192 // px (w-48)
 
 interface Props {
   tasks: Task[]
@@ -26,6 +28,23 @@ export function TimelineGrid({ tasks, sections, dayWidth, timelineStart, timelin
   )
   const totalWidth = days.length * dayWidth
   const todayOffset = differenceInDays(new Date(), timelineStart)
+
+  // Build ordered list of visible task rows for dependency arrow positioning
+  const visibleRows = useMemo(() => {
+    const rows: Task[] = []
+    const rootTasks = tasks.filter((t) => !t.parent_id)
+    function addSection(sectionId: string | null) {
+      if (collapsed.has(sectionId ?? '__null')) return
+      const sectionTasks = rootTasks.filter((t) => t.section_id === sectionId)
+      rows.push(...sectionTasks)
+    }
+    sections.forEach((s) => addSection(s.id))
+    // no-section tasks
+    const hasSection = new Set(sections.map((s) => s.id))
+    const unsectioned = rootTasks.filter((t) => !t.section_id || !hasSection.has(t.section_id))
+    if (unsectioned.length > 0 && !collapsed.has('__null')) rows.push(...unsectioned)
+    return rows
+  }, [tasks, sections, collapsed])
 
   // Group root tasks by section_id (null = no section)
   const tasksBySection = useMemo(() => {
@@ -95,7 +114,7 @@ export function TimelineGrid({ tasks, sections, dayWidth, timelineStart, timelin
 
   return (
     <div className="flex-1 overflow-auto">
-      <div style={{ minWidth: 192 + totalWidth }}>
+      <div className="relative" style={{ minWidth: NAME_COL_WIDTH + totalWidth }}>
         {/* Header — sticky on vertical scroll */}
         <div className="flex sticky top-0 z-20 bg-background border-b border-border">
           <div className="w-48 flex-shrink-0 sticky left-0 z-30 bg-background border-r border-border px-3 py-2">
@@ -145,6 +164,15 @@ export function TimelineGrid({ tasks, sections, dayWidth, timelineStart, timelin
             {unscheduled.length} unscheduled task{unscheduled.length !== 1 ? 's' : ''} — set dates to show on timeline
           </div>
         )}
+
+        {/* Dependency arrows SVG overlay — rendered on top of task bars */}
+        <TimelineDependencyArrows
+          tasks={tasks}
+          visibleRows={visibleRows}
+          timelineStart={timelineStart}
+          dayWidth={dayWidth}
+          nameColWidth={NAME_COL_WIDTH}
+        />
       </div>
     </div>
   )

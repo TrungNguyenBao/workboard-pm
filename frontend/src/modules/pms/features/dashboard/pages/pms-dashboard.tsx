@@ -1,9 +1,9 @@
-import { AlertCircle, CheckSquare, FolderKanban, TrendingUp } from 'lucide-react'
+import { AlertCircle, CheckSquare, FolderKanban, TrendingUp, Zap } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid, Cell } from 'recharts'
 import { KpiCard } from '@/shared/components/ui/kpi-card'
 import { CHART_COLORS, CHART_AXIS_STYLE, CHART_GRID_STYLE } from '@/shared/lib/chart-colors'
 import { usePmsStats } from '../hooks/use-pms-stats'
-import type { Task } from '@/modules/pms/features/projects/hooks/use-project-tasks'
+import type { DashboardByProject } from '../hooks/use-pms-stats'
 
 const PRIORITY_COLORS: Record<string, string> = {
   high: CHART_COLORS.priorityHigh,
@@ -12,24 +12,44 @@ const PRIORITY_COLORS: Record<string, string> = {
   none: CHART_COLORS.priorityNone,
 }
 
-function buildPriorityData(tasks: Task[]) {
-  const counts: Record<string, number> = { high: 0, medium: 0, low: 0, none: 0 }
-  for (const t of tasks) {
-    const p = (t.priority ?? 'none').toLowerCase()
-    if (p in counts) counts[p]++
-    else counts.none++
-  }
+function buildPriorityData(by_priority: { high: number; medium: number; low: number; none: number }) {
   return [
-    { name: 'High', count: counts.high, fill: PRIORITY_COLORS.high },
-    { name: 'Medium', count: counts.medium, fill: PRIORITY_COLORS.medium },
-    { name: 'Low', count: counts.low, fill: PRIORITY_COLORS.low },
-    { name: 'None', count: counts.none, fill: PRIORITY_COLORS.none },
+    { name: 'High', count: by_priority.high, fill: PRIORITY_COLORS.high },
+    { name: 'Medium', count: by_priority.medium, fill: PRIORITY_COLORS.medium },
+    { name: 'Low', count: by_priority.low, fill: PRIORITY_COLORS.low },
+    { name: 'None', count: by_priority.none, fill: PRIORITY_COLORS.none },
   ]
 }
 
+function ProjectDistributionRow({ project }: { project: DashboardByProject }) {
+  const pct = project.total > 0 ? Math.round((project.completed / project.total) * 100) : 0
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center justify-between text-sm">
+        <div className="flex items-center gap-2 min-w-0">
+          <span
+            className="h-2.5 w-2.5 rounded-full shrink-0"
+            style={{ backgroundColor: project.project_color }}
+          />
+          <span className="truncate text-foreground">{project.project_name}</span>
+        </div>
+        <span className="text-muted-foreground shrink-0 ml-2">
+          {project.completed}/{project.total}
+        </span>
+      </div>
+      <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+        <div
+          className="h-full rounded-full transition-all"
+          style={{ width: `${pct}%`, backgroundColor: project.project_color }}
+        />
+      </div>
+    </div>
+  )
+}
+
 export default function PmsDashboardPage() {
-  const { stats, tasks, isLoading } = usePmsStats()
-  const priorityData = buildPriorityData(tasks)
+  const { stats, isLoading } = usePmsStats()
+  const priorityData = buildPriorityData(stats.by_priority)
 
   if (isLoading) {
     return (
@@ -41,6 +61,7 @@ export default function PmsDashboardPage() {
           ))}
         </div>
         <div className="h-52 bg-muted animate-pulse rounded-lg" />
+        <div className="h-52 bg-muted animate-pulse rounded-lg" />
       </div>
     )
   }
@@ -50,15 +71,23 @@ export default function PmsDashboardPage() {
       <h2 className="text-xl font-semibold text-foreground">Dashboard</h2>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard label="Total Tasks" value={stats.totalTasks} icon={<CheckSquare className="h-5 w-5" />} />
+        <KpiCard label="Total Tasks" value={stats.total_tasks} icon={<CheckSquare className="h-5 w-5" />} />
         <KpiCard
           label="Overdue"
-          value={stats.overdueTasks}
+          value={stats.overdue_tasks}
           icon={<AlertCircle className="h-5 w-5" />}
-          valueClassName={stats.overdueTasks > 0 ? 'text-red-500' : undefined}
+          valueClassName={stats.overdue_tasks > 0 ? 'text-red-500' : undefined}
         />
-        <KpiCard label="Completed This Week" value={stats.completedThisWeek} icon={<TrendingUp className="h-5 w-5" />} />
-        <KpiCard label="Projects" value={stats.totalProjects} icon={<FolderKanban className="h-5 w-5" />} />
+        <KpiCard
+          label="Completed This Week"
+          value={stats.tasks_completed_this_week}
+          icon={<TrendingUp className="h-5 w-5" />}
+        />
+        <KpiCard
+          label="Active Sprints"
+          value={stats.active_sprints}
+          icon={<Zap className="h-5 w-5" />}
+        />
       </div>
 
       <div className="border border-border rounded-lg p-4 bg-card">
@@ -77,6 +106,20 @@ export default function PmsDashboardPage() {
           </BarChart>
         </ResponsiveContainer>
       </div>
+
+      {stats.by_project.length > 0 && (
+        <div className="border border-border rounded-lg p-4 bg-card">
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-sm font-medium text-foreground">Tasks by Project</p>
+            <span className="text-xs text-muted-foreground">{stats.by_project.length} projects</span>
+          </div>
+          <div className="space-y-3">
+            {stats.by_project.map((project) => (
+              <ProjectDistributionRow key={project.project_name} project={project} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

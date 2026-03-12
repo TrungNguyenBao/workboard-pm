@@ -35,6 +35,7 @@ class ProjectResponse(BaseModel):
     visibility: str
     is_archived: bool
     project_type: str
+    current_user_role: str | None = None
 
     model_config = {"from_attributes": True}
 
@@ -81,6 +82,7 @@ class ProjectStatsResponse(BaseModel):
     completed: int
     incomplete: int
     overdue: int
+    completion_rate: float = 0.0
     by_section: list[SectionStat]
     by_assignee: list[AssigneeStat]
     by_priority: dict[str, int]

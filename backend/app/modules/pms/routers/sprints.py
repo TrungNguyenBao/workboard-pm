@@ -40,7 +40,7 @@ router = APIRouter(prefix="/projects/{project_id}", tags=["sprints"])
 async def create(
     project_id: uuid.UUID,
     data: SprintCreate,
-    current_user: User = Depends(require_project_role("editor")),
+    current_user: User = Depends(require_project_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
     return await create_sprint(db, project_id, data, current_user)
@@ -71,7 +71,7 @@ async def update(
     project_id: uuid.UUID,
     sprint_id: uuid.UUID,
     data: SprintUpdate,
-    current_user: User = Depends(require_project_role("editor")),
+    current_user: User = Depends(require_project_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
     return await update_sprint(db, sprint_id, data, project_id=project_id)
@@ -81,7 +81,7 @@ async def update(
 async def delete(
     project_id: uuid.UUID,
     sprint_id: uuid.UUID,
-    current_user: User = Depends(require_project_role("editor")),
+    current_user: User = Depends(require_project_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
     await delete_sprint(db, sprint_id, project_id=project_id)
@@ -91,7 +91,7 @@ async def delete(
 async def start(
     project_id: uuid.UUID,
     sprint_id: uuid.UUID,
-    current_user: User = Depends(require_project_role("editor")),
+    current_user: User = Depends(require_project_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
     return await start_sprint(db, project_id, sprint_id)
@@ -102,7 +102,7 @@ async def complete(
     project_id: uuid.UUID,
     sprint_id: uuid.UUID,
     data: SprintCompleteRequest | None = None,
-    current_user: User = Depends(require_project_role("editor")),
+    current_user: User = Depends(require_project_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
     move_to = data.move_to_sprint_id if data else None

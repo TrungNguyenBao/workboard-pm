@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { Dialog, DialogContent } from '@/shared/components/ui/dialog'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import api from '@/shared/lib/api'
+import { TextHighlight } from '@/shared/components/text-highlight'
 
 interface Props {
   open: boolean
@@ -101,7 +102,7 @@ export function CommandPalette({ open, onOpenChange }: Props) {
                     className="flex items-center gap-2 px-2 py-1.5 rounded-xs text-sm text-foreground cursor-pointer aria-selected:bg-muted"
                   >
                     <CheckSquare className={`h-3.5 w-3.5 flex-shrink-0 ${task.status === 'completed' ? 'text-primary' : 'text-neutral-300'}`} />
-                    <span className="flex-1 truncate">{task.title}</span>
+                    <TextHighlight text={task.title} query={query} className="flex-1 truncate" />
                     <span className="text-xs text-neutral-400 flex-shrink-0">{task.projectName}</span>
                   </Command.Item>
                 ))}
@@ -120,7 +121,7 @@ export function CommandPalette({ open, onOpenChange }: Props) {
                       className="flex items-center gap-2 px-2 py-1.5 rounded-xs text-sm text-foreground cursor-pointer aria-selected:bg-muted"
                     >
                       <span className="h-2 w-2 rounded-full flex-shrink-0" style={{ backgroundColor: p.color }} />
-                      {p.name}
+                      <TextHighlight text={p.name} query={query} />
                     </Command.Item>
                   ))}
               </Command.Group>

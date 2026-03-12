@@ -52,9 +52,13 @@ async def create_project(
 
 
 async def list_projects(
-    db: AsyncSession, workspace_id: uuid.UUID, user_id: uuid.UUID
+    db: AsyncSession,
+    workspace_id: uuid.UUID,
+    user_id: uuid.UUID,
+    is_archived: bool | None = False,
+    visibility: str | None = None,
 ) -> list[Project]:
-    result = await db.scalars(
+    query = (
         select(Project)
         .join(ProjectMembership, ProjectMembership.project_id == Project.id)
         .where(
@@ -63,6 +67,11 @@ async def list_projects(
             Project.deleted_at.is_(None),
         )
     )
+    if is_archived is not None:
+        query = query.where(Project.is_archived == is_archived)
+    if visibility:
+        query = query.where(Project.visibility == visibility)
+    result = await db.scalars(query)
     return list(result.all())
 
 
@@ -74,13 +83,28 @@ async def get_project(db: AsyncSession, project_id: uuid.UUID) -> Project:
 
 
 async def update_project(
-    db: AsyncSession, project_id: uuid.UUID, data: ProjectUpdate
+    db: AsyncSession, project_id: uuid.UUID, data: ProjectUpdate, actor: User | None = None
 ) -> Project:
     project = await get_project(db, project_id)
-    for field, value in data.model_dump(exclude_none=True).items():
+    changes = data.model_dump(exclude_none=True)
+    old_values = {k: getattr(project, k) for k in changes}
+    for field, value in changes.items():
         setattr(project, field, value)
     await db.commit()
     await db.refresh(project)
+
+    if actor and changes:
+        await create_activity(
+            db,
+            workspace_id=project.workspace_id,
+            project_id=project.id,
+            entity_type="project",
+            entity_id=project.id,
+            actor_id=actor.id,
+            action="updated",
+            changes={"old": old_values, "new": changes},
+        )
+
     return project
 
 
@@ -225,11 +249,13 @@ async def get_project_stats(db: AsyncSession, project_id: uuid.UUID) -> dict:
 
     total = t.total or 0
     completed = int(t.completed or 0)
+    completion_rate = round((completed / total) * 100, 1) if total > 0 else 0.0
     return {
         "total_tasks": total,
         "completed": completed,
         "incomplete": total - completed,
         "overdue": int(t.overdue or 0),
+        "completion_rate": completion_rate,
         "by_section": by_section,
         "by_assignee": by_assignee,
         "by_priority": by_priority,

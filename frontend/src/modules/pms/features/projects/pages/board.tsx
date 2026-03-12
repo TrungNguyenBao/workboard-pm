@@ -23,6 +23,8 @@ import { SprintSelector } from '../components/sprint-selector'
 import { TaskDetailDrawer } from '@/modules/pms/features/tasks/components/task-detail-drawer'
 import { ProjectHeader } from '../components/project-header'
 import { FilterBar, type PriorityFilter, type StatusFilter } from '../components/filter-bar'
+import { useTags } from '@/modules/pms/features/tags/hooks/use-tags'
+import { useWorkspaceStore } from '@/stores/workspace.store'
 import api from '@/shared/lib/api'
 
 /** Calculate fractional position for inserting a task at a given index within a sorted task list */
@@ -58,10 +60,14 @@ export default function BoardPage() {
     enabled: !!projectId,
   })
 
+  const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId)
+  const { data: tags = [] } = useTags(workspaceId)
+
   const [activeTask, setActiveTask] = useState<Task | null>(null)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [filterPriority, setFilterPriority] = useState<PriorityFilter>('all')
   const [filterStatus, setFilterStatus] = useState<StatusFilter>('all')
+  const [filterTagId, setFilterTagId] = useState<string | null>(null)
   const [selectedSprintId, setSelectedSprintId] = useState<string | null>(null)
 
   const isAgile = project?.project_type === 'agile'
@@ -97,7 +103,8 @@ export default function BoardPage() {
       .sort((a, b) => a.position - b.position)
       .filter((t) => filterPriority === 'all' || t.priority === filterPriority)
       .filter((t) => filterStatus === 'all' || t.status === filterStatus)
-  }, [tasks, filterPriority, filterStatus])
+      .filter((t) => !filterTagId || t.tags?.some((tag) => tag.id === filterTagId))
+  }, [tasks, filterPriority, filterStatus, filterTagId])
 
   function handleDragStart(e: DragStartEvent) {
     const task = tasks.find((t) => t.id === e.active.id)
@@ -148,6 +155,9 @@ export default function BoardPage() {
           status={filterStatus}
           onPriority={setFilterPriority}
           onStatus={setFilterStatus}
+          tags={tags}
+          selectedTagId={filterTagId}
+          onTag={setFilterTagId}
         />
         {isAgile && (
           <SprintSelector

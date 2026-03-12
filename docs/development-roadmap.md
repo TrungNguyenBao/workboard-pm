@@ -348,3 +348,61 @@ Comprehensive Product Requirements Document (PRD) and Standard Operating Procedu
 | Documentation: Vietnamese-language SOP aligned with HRM and WSM documentation | Done |
 | Documentation: Verify all product features match implementation status | Done |
 | Documentation: Update project changelog and roadmap | Done |
+
+---
+
+## Phase 16 — PMS Improvement Implementation (Complete)
+
+Comprehensive implementation of 38 user stories across 4 priority tiers addressing audit-identified gaps.
+
+| Item | Status |
+|---|---|
+| **Phase 1: P0 Critical Gaps** — Fix RBAC, member management, project list, rich-text comments (30 SP) | Done |
+| Backend: Fix project edit RBAC (owner requirement) | Done |
+| Backend: Add activity logging on project updates | Done |
+| Backend: Add `is_archived` + `visibility` filters to GET /projects | Done |
+| Frontend: Add subtask progress counter to board cards | Done |
+| Backend: Create member CRUD service with min-owner constraint | Done |
+| Backend: Create members router (invite, update role, remove member) | Done |
+| Frontend: Create member management panel in project settings | Done |
+| Backend: Verify RBAC on all PMS routers + workspace admin override | Done |
+| Frontend: Create PermissionGate component for conditional rendering | Done |
+| Frontend: Create projects list page with search, filters | Done |
+| Frontend: Add description textarea + task type selector to task creation | Done |
+| Frontend: Replace comment textarea with Tiptap editor + edit/delete | Done |
+| **Phase 2: P0 Dashboard APIs** — Cross-project aggregation endpoints (16 SP) | Done |
+| Backend: Create dashboard service with KPI aggregation (total, completed, overdue, active sprints) | Done |
+| Backend: Create dashboard router endpoint GET /pms/dashboard | Done |
+| Frontend: Connect pms-dashboard.tsx to real API + add task distribution chart | Done |
+| Frontend: Add burndown mini-chart to dashboard | Done |
+| Backend: Create my-tasks endpoint GET /pms/my-tasks with filters | Done |
+| Frontend: Refactor my-tasks.tsx to group by project + add filters/sorts | Done |
+| Frontend: Create search highlight component for keyword matches | Done |
+| **Phase 3: P1 Feature Gaps** — Dependencies, tags CRUD, archive, upload (23 SP) | Done |
+| Backend: Create dependency service with circular detection (DFS) | Done |
+| Backend: Create dependencies router with CRUD endpoints | Done |
+| Frontend: Add dependency selector in task detail drawer | Done |
+| Frontend: Add "Blocked by X" badge on task cards | Done |
+| Frontend: Add dependency arrows in timeline view | Done |
+| Backend: Add PATCH/DELETE endpoints for tag management | Done |
+| Frontend: Create tag management page with full CRUD | Done |
+| Frontend: Display tag chips on board task cards + add tag filter | Done |
+| Frontend: Add restore button for archived projects + archived filter | Done |
+| Backend: Add overdue count + completion rate to project stats | Done |
+| Frontend: Display stats KPI cards | Done |
+| Frontend: Add drag-drop upload zone to task attachments | Done |
+| **Phase 4: P2 Enhancements** — WIP limits, follow, calendar/timeline (12 SP) | Done |
+| Backend: Add WIP limit soft warning on task move | Done |
+| Frontend: Display WIP counter on section headers + red highlight | Done |
+| Backend: Create follow/unfollow endpoints | Done |
+| Frontend: Follow/Unfollow toggle + follower count in task detail | Done |
+| Backend: Add date range filter params to tasks endpoint | Done |
+| Frontend: Add week/day toggle to calendar + drag-to-reschedule | Done |
+| Frontend: Add dependency arrows between task bars in timeline | Done |
+| Frontend: Add zoom controls (day/week/month) to timeline | Done |
+| **Overall Results** | |
+| All 38 user stories mapped to implementation status | Done |
+| 36/38 stories fully done (US-001, US-009 partially - icon selector, dialog richness) | Done |
+| 4 phases delivered: P0 Critical → P0 APIs → P1 Features → P2 Enhancements | Done |
+| User stories status table updated in docs/userstories/user-storie-pms.md | Done |
+| Project changelog updated with complete feature list | Done |

@@ -5,6 +5,42 @@ Format: `## [version] — YYYY-MM-DD` with grouped entries.
 
 ---
 
+## [Unreleased] — 2026-03-12
+
+### Added
+
+- Project member management (US-005): Full CRUD API + UI panel in project settings
+- RBAC permission-based UI (US-034): PermissionGate component, role-based button visibility
+- Projects list page (US-002): Dedicated page with search, visibility/archived filters
+- Dashboard API (US-035): Cross-project KPI aggregation endpoint
+- My Tasks API (US-036): Cross-project assignee query with filters/sort
+- Task dependencies (US-013): CRUD with BFS circular detection, "Blocked" badge
+- Tag management page (US-033): Full CRUD at /pms/tags
+- Follow task (US-015): Follow/unfollow toggle with follower count
+- Rich-text comments (US-028): Tiptap editor with edit/delete actions
+- Drag-drop file upload (US-029): AttachmentDropZone component
+- Search keyword highlight (US-017): TextHighlight component
+- Calendar week/day views (US-037): View toggle + drag-to-reschedule
+- Timeline dependency arrows (US-038): SVG overlay with zoom controls
+- Subtask progress bar (US-012): Visual counter + indent hierarchy
+
+### Fixed
+
+- Project edit RBAC: Changed from editor to owner requirement
+- Activity logging on project updates
+- Default is_archived=false filter on project list
+- Overdue count + completion rate in project stats
+- Comment XSS prevention via DOMPurify sanitization
+- Last owner demotion prevention in member management
+
+### Changed
+
+- Sprint/custom field management restricted to owner role
+- Tags now display as chips on board task cards
+- My Tasks groups by project instead of time buckets
+
+---
+
 ## [2.6.0] — 2026-03-11
 
 ### Added — PMS Product Documentation & Guide Content

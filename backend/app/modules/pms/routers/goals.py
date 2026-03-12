@@ -43,7 +43,7 @@ async def create(
 @router.get("", response_model=list[GoalResponse])
 async def list_(
     workspace_id: uuid.UUID,
-    current_user: User = Depends(require_workspace_role("member")),
+    current_user: User = Depends(require_workspace_role("guest")),
     db: AsyncSession = Depends(get_db),
 ):
     goals = await list_goals(db, workspace_id)
@@ -54,7 +54,7 @@ async def list_(
 async def get(
     workspace_id: uuid.UUID,
     goal_id: uuid.UUID,
-    current_user: User = Depends(require_workspace_role("member")),
+    current_user: User = Depends(require_workspace_role("guest")),
     db: AsyncSession = Depends(get_db),
 ):
     goal = await get_goal(db, goal_id)
@@ -139,7 +139,7 @@ async def remove_task(
 async def list_linked_projects(
     workspace_id: uuid.UUID,
     goal_id: uuid.UUID,
-    current_user: User = Depends(require_workspace_role("member")),
+    current_user: User = Depends(require_workspace_role("guest")),
     db: AsyncSession = Depends(get_db),
 ):
     from sqlalchemy import select as sa_select
@@ -162,7 +162,7 @@ async def list_linked_projects(
 async def list_linked_tasks(
     workspace_id: uuid.UUID,
     goal_id: uuid.UUID,
-    current_user: User = Depends(require_workspace_role("member")),
+    current_user: User = Depends(require_workspace_role("guest")),
     db: AsyncSession = Depends(get_db),
 ):
     from sqlalchemy import select as sa_select

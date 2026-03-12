@@ -1,76 +1,32 @@
 import { useParams } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { addMonths, eachDayOfInterval, endOfMonth, format, isSameDay, isSameMonth, startOfMonth, startOfWeek, endOfWeek } from 'date-fns'
+import {
+  addDays, addMonths, addWeeks,
+  eachDayOfInterval, endOfMonth, endOfWeek,
+  format, isSameDay, startOfMonth, startOfWeek,
+} from 'date-fns'
 import { Button } from '@/shared/components/ui/button'
 import { useQuery } from '@tanstack/react-query'
 import { cn } from '@/shared/lib/utils'
-import { useTasks, type Task } from '../hooks/use-project-tasks'
+import { useTasks, useUpdateTask, type Task } from '../hooks/use-project-tasks'
 import { ProjectHeader } from '../components/project-header'
 import { TaskDetailDrawer } from '@/modules/pms/features/tasks/components/task-detail-drawer'
+import { CalendarMonthView } from '../components/calendar-month-view'
+import { CalendarWeekView } from '../components/calendar-week-view'
+import { CalendarDayView } from '../components/calendar-day-view'
 import api from '@/shared/lib/api'
 
-const PRIORITY_CHIP: Record<string, string> = {
-  high: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400',
-  medium: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400',
-  low: 'bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-400',
-  none: 'bg-primary/10 text-primary',
-}
-
-function CalendarDay({
-  date,
-  tasks,
-  currentMonth,
-  onOpen,
-}: {
-  date: Date
-  tasks: Task[]
-  currentMonth: Date
-  onOpen: (t: Task) => void
-}) {
-  const isToday = isSameDay(date, new Date())
-  const isCurrentMonth = isSameMonth(date, currentMonth)
-
-  return (
-    <div className={cn('min-h-[100px] p-1.5 border-b border-r border-border', !isCurrentMonth && 'bg-muted/30')}>
-      <span
-        className={cn(
-          'inline-flex h-6 w-6 items-center justify-center rounded-full text-xs',
-          isToday ? 'bg-primary text-white font-semibold' : isCurrentMonth ? 'text-foreground' : 'text-muted-foreground/40',
-        )}
-      >
-        {format(date, 'd')}
-      </span>
-      <div className="mt-1 space-y-0.5">
-        {tasks.slice(0, 3).map((task) => (
-          <div
-            key={task.id}
-            onClick={() => onOpen(task)}
-            className={cn(
-              'truncate rounded px-1 py-0.5 text-xs cursor-pointer hover:opacity-80 transition-opacity',
-              task.status === 'completed'
-                ? 'bg-muted text-muted-foreground line-through'
-                : PRIORITY_CHIP[task.priority] ?? PRIORITY_CHIP.none,
-            )}
-          >
-            {task.title}
-          </div>
-        ))}
-        {tasks.length > 3 && (
-          <span className="text-xs text-muted-foreground">+{tasks.length - 3} more</span>
-        )}
-      </div>
-    </div>
-  )
-}
-
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+type CalendarView = 'month' | 'week' | 'day'
 
 export default function CalendarPage() {
   const { projectId } = useParams<{ projectId: string }>()
   const { data: tasks = [] } = useTasks(projectId!)
-  const [month, setMonth] = useState(new Date())
+  const updateTask = useUpdateTask(projectId!)
+  const [view, setView] = useState<CalendarView>('month')
+  const [current, setCurrent] = useState(new Date())
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+  const draggedTask = useRef<Task | null>(null)
 
   const { data: project } = useQuery<{ workspace_id: string }>({
     queryKey: ['project', projectId],
@@ -78,13 +34,44 @@ export default function CalendarPage() {
     enabled: !!projectId,
   })
 
-  const start = startOfWeek(startOfMonth(month))
-  const end = endOfWeek(endOfMonth(month))
-  const days = eachDayOfInterval({ start, end })
-
   function tasksOnDay(date: Date) {
     return tasks.filter((t) => t.due_date && isSameDay(new Date(t.due_date), date))
   }
+
+  function handleDrop(targetDate: Date) {
+    const task = draggedTask.current
+    if (!task) return
+    const newDueDate = targetDate.toISOString()
+    if (!isSameDay(new Date(task.due_date ?? ''), targetDate)) {
+      updateTask.mutate({ taskId: task.id, due_date: newDueDate })
+    }
+    draggedTask.current = null
+  }
+
+  // Navigation helpers per view
+  function navigatePrev() {
+    if (view === 'month') setCurrent((d) => addMonths(d, -1))
+    else if (view === 'week') setCurrent((d) => addWeeks(d, -1))
+    else setCurrent((d) => addDays(d, -1))
+  }
+  function navigateNext() {
+    if (view === 'month') setCurrent((d) => addMonths(d, 1))
+    else if (view === 'week') setCurrent((d) => addWeeks(d, 1))
+    else setCurrent((d) => addDays(d, 1))
+  }
+
+  // Date ranges per view
+  const monthStart = startOfMonth(current)
+  const monthDays = eachDayOfInterval({ start: startOfWeek(monthStart), end: endOfWeek(endOfMonth(current)) })
+  const weekDays = eachDayOfInterval({ start: startOfWeek(current), end: endOfWeek(current) })
+
+  function headerLabel() {
+    if (view === 'month') return format(current, 'MMMM yyyy')
+    if (view === 'week') return `${format(weekDays[0], 'MMM d')} – ${format(weekDays[6], 'MMM d, yyyy')}`
+    return format(current, 'EEEE, MMM d, yyyy')
+  }
+
+  const views: CalendarView[] = ['month', 'week', 'day']
 
   return (
     <>
@@ -93,36 +80,62 @@ export default function CalendarPage() {
           activeView="calendar"
           actions={
             <div className="flex items-center gap-1">
-              <span className="text-xs font-medium text-muted-foreground mr-1">{format(month, 'MMMM yyyy')}</span>
-              <Button variant="ghost" size="icon-sm" onClick={() => setMonth(addMonths(month, -1))}>
+              {/* View toggle */}
+              <div className="flex rounded border border-border overflow-hidden mr-2">
+                {views.map((v) => (
+                  <button
+                    key={v}
+                    onClick={() => setView(v)}
+                    className={cn(
+                      'px-2.5 py-1 text-xs font-medium capitalize transition-colors',
+                      view === v ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground',
+                    )}
+                  >
+                    {v}
+                  </button>
+                ))}
+              </div>
+              {/* Navigation */}
+              <span className="text-xs font-medium text-muted-foreground mr-1">{headerLabel()}</span>
+              <Button variant="ghost" size="icon-sm" onClick={navigatePrev}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="sm" onClick={() => setMonth(new Date())}>Today</Button>
-              <Button variant="ghost" size="icon-sm" onClick={() => setMonth(addMonths(month, 1))}>
+              <Button variant="ghost" size="sm" onClick={() => setCurrent(new Date())}>Today</Button>
+              <Button variant="ghost" size="icon-sm" onClick={navigateNext}>
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
           }
         />
         <div className="flex-1 overflow-auto p-4">
-          <div className="rounded-lg border border-border overflow-hidden">
-            <div className="grid grid-cols-7 border-b border-border bg-muted/30">
-              {WEEKDAYS.map((d) => (
-                <div key={d} className="py-2 text-center text-xs font-medium text-muted-foreground">{d}</div>
-              ))}
-            </div>
-            <div className="grid grid-cols-7">
-              {days.map((day) => (
-                <CalendarDay
-                  key={day.toISOString()}
-                  date={day}
-                  tasks={tasksOnDay(day)}
-                  currentMonth={month}
-                  onOpen={setSelectedTask}
-                />
-              ))}
-            </div>
-          </div>
+          {view === 'month' && (
+            <CalendarMonthView
+              days={monthDays}
+              currentMonth={current}
+              tasksOnDay={tasksOnDay}
+              onOpen={setSelectedTask}
+              onDragStart={(t) => { draggedTask.current = t }}
+              onDrop={handleDrop}
+            />
+          )}
+          {view === 'week' && (
+            <CalendarWeekView
+              weekDays={weekDays}
+              tasksOnDay={tasksOnDay}
+              onOpen={setSelectedTask}
+              onDragStart={(t) => { draggedTask.current = t }}
+              onDrop={handleDrop}
+            />
+          )}
+          {view === 'day' && (
+            <CalendarDayView
+              day={current}
+              tasks={tasksOnDay(current)}
+              onOpen={setSelectedTask}
+              onDragStart={(t) => { draggedTask.current = t }}
+              onDrop={handleDrop}
+            />
+          )}
         </div>
       </div>
       <TaskDetailDrawer

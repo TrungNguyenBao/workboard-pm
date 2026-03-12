@@ -25,7 +25,7 @@ router = APIRouter(prefix="/projects/{project_id}/custom-fields", tags=["custom-
 async def create(
     project_id: uuid.UUID,
     data: CustomFieldCreate,
-    current_user: User = Depends(require_project_role("editor")),
+    current_user: User = Depends(require_project_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
     return await create_field(db, project_id, data, current_user)
@@ -45,7 +45,7 @@ async def update(
     project_id: uuid.UUID,
     field_id: uuid.UUID,
     data: CustomFieldUpdate,
-    current_user: User = Depends(require_project_role("editor")),
+    current_user: User = Depends(require_project_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
     return await update_field(db, field_id, data, project_id)
@@ -55,7 +55,7 @@ async def update(
 async def delete(
     project_id: uuid.UUID,
     field_id: uuid.UUID,
-    current_user: User = Depends(require_project_role("editor")),
+    current_user: User = Depends(require_project_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
     await delete_field(db, field_id, project_id)

@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
+import { ArchiveRestore, Archive } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog'
 import { Button } from '@/shared/components/ui/button'
 import { Label } from '@/shared/components/ui/label'
 import { toast } from '@/shared/components/ui/toast'
 import { FieldConfigPanel } from '@/modules/pms/features/custom-fields/components/field-config-panel'
+import { MemberManagementPanel } from './member-management-panel'
 import api from '@/shared/lib/api'
 
 const COLORS = [
@@ -36,6 +38,7 @@ export function ProjectSettingsDialog({ project, workspaceId, open, onOpenChange
   const [description, setDescription] = useState(project?.description ?? '')
   const [isArchived, setIsArchived] = useState(project?.is_archived ?? false)
   const [loading, setLoading] = useState(false)
+  const [archiveLoading, setArchiveLoading] = useState(false)
 
   useEffect(() => {
     if (project) {
@@ -62,6 +65,30 @@ export function ProjectSettingsDialog({ project, workspaceId, open, onOpenChange
       toast({ title: t('common:settings.saveFailed'), description: detail ?? 'Please try again', variant: 'error' })
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function handleArchiveToggle(archive: boolean) {
+    if (!project) return
+    const msg = archive
+      ? `Archive "${project.name}"? It will be hidden from the sidebar.`
+      : `Restore "${project.name}"? It will become active again.`
+    if (!window.confirm(msg)) return
+    setArchiveLoading(true)
+    try {
+      await api.patch(`/pms/projects/${project.id}`, { is_archived: archive })
+      setIsArchived(archive)
+      qc.invalidateQueries({ queryKey: ['projects', workspaceId] })
+      toast({
+        title: archive ? 'Project archived' : 'Project restored',
+        variant: 'success',
+      })
+      onOpenChange(false)
+    } catch (err) {
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      toast({ title: 'Action failed', description: detail ?? 'Please try again', variant: 'error' })
+    } finally {
+      setArchiveLoading(false)
     }
   }
 
@@ -113,23 +140,45 @@ export function ProjectSettingsDialog({ project, workspaceId, open, onOpenChange
             {project && <FieldConfigPanel projectId={project.id} />}
           </div>
 
-          <div className="flex items-center gap-2 py-1 border-t border-border">
-            <input
-              type="checkbox"
-              id="proj-archived"
-              checked={isArchived}
-              onChange={(e) => setIsArchived(e.target.checked)}
-              className="h-4 w-4 rounded border-border accent-primary cursor-pointer"
-            />
-            <Label htmlFor="proj-archived" className="cursor-pointer">
-              Archive this project
-            </Label>
+          <div className="border-t border-border pt-4">
+            <p className="text-xs font-semibold text-neutral-400 uppercase mb-2">Members</p>
+            {project && <MemberManagementPanel projectId={project.id} />}
           </div>
-          {isArchived && (
-            <p className="text-xs text-neutral-400 -mt-2">
-              Archived projects are hidden from the sidebar. You can unarchive from project settings.
-            </p>
-          )}
+
+          <div className="border-t border-border pt-4">
+            <p className="text-xs font-semibold text-neutral-400 uppercase mb-2">Danger zone</p>
+            {isArchived ? (
+              <div className="flex items-center justify-between gap-3 rounded-md bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 px-3 py-2">
+                <p className="text-xs text-amber-700 dark:text-amber-400">This project is archived.</p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={archiveLoading}
+                  onClick={() => handleArchiveToggle(false)}
+                  className="flex items-center gap-1.5 text-xs border-amber-300 text-amber-700 hover:bg-amber-100 dark:border-amber-700 dark:text-amber-400 dark:hover:bg-amber-900/40"
+                >
+                  <ArchiveRestore className="h-3.5 w-3.5" />
+                  Restore
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between gap-3 rounded-md border border-border px-3 py-2">
+                <p className="text-xs text-muted-foreground">Archive this project to hide it from the sidebar.</p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={archiveLoading}
+                  onClick={() => handleArchiveToggle(true)}
+                  className="flex items-center gap-1.5 text-xs text-neutral-600 hover:text-red-600 hover:border-red-300 dark:text-neutral-400"
+                >
+                  <Archive className="h-3.5 w-3.5" />
+                  Archive
+                </Button>
+              </div>
+            )}
+          </div>
 
           <div className="flex justify-end gap-2 pt-1">
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>

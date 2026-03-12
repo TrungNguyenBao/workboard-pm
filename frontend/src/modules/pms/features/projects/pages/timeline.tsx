@@ -10,12 +10,12 @@ import { TimelineGrid } from '../components/timeline-grid'
 import { TaskDetailDrawer } from '@/modules/pms/features/tasks/components/task-detail-drawer'
 import api from '@/shared/lib/api'
 
-type Zoom = 'week' | 'month'
+type Zoom = 'day' | 'week' | 'month'
 
 /** Day width in pixels for each zoom level */
-const DAY_WIDTH: Record<Zoom, number> = { week: 40, month: 12 }
-/** How many weeks/months to show per zoom */
-const RANGE_WEEKS: Record<Zoom, number> = { week: 8, month: 24 }
+const DAY_WIDTH: Record<Zoom, number> = { day: 80, week: 40, month: 12 }
+/** How many weeks to show per zoom level */
+const RANGE_WEEKS: Record<Zoom, number> = { day: 2, week: 8, month: 24 }
 
 export default function TimelinePage() {
   const { projectId } = useParams<{ projectId: string }>()
@@ -36,12 +36,12 @@ export default function TimelinePage() {
   const [rangeStart, setRangeStart] = useState(() => addWeeks(new Date(), -2))
 
   const dayWidth = DAY_WIDTH[zoom]
-  const rangeEnd = zoom === 'week'
-    ? addWeeks(rangeStart, RANGE_WEEKS.week)
-    : addMonths(rangeStart, RANGE_WEEKS.month / 4)
+  const rangeEnd = zoom === 'month'
+    ? addMonths(rangeStart, RANGE_WEEKS.month / 4)
+    : addWeeks(rangeStart, RANGE_WEEKS[zoom])
 
   function shiftRange(direction: 1 | -1) {
-    const shift = zoom === 'week' ? 2 : 4 // weeks to shift
+    const shift = zoom === 'day' ? 1 : zoom === 'week' ? 2 : 4
     setRangeStart((prev) => addWeeks(prev, direction * shift))
   }
 
@@ -70,15 +70,15 @@ export default function TimelinePage() {
               </Button>
               {/* Zoom toggle */}
               <div className="ml-2 flex rounded border border-border overflow-hidden">
-                {(['week', 'month'] as Zoom[]).map((z) => (
+                {(['day', 'week', 'month'] as Zoom[]).map((z) => (
                   <button
                     key={z}
                     onClick={() => setZoom(z)}
-                    className={`px-2.5 py-1 text-xs font-medium transition-colors ${
+                    className={`px-2.5 py-1 text-xs font-medium capitalize transition-colors ${
                       zoom === z ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground'
                     }`}
                   >
-                    {z === 'week' ? 'Weeks' : 'Months'}
+                    {z === 'day' ? 'Days' : z === 'week' ? 'Weeks' : 'Months'}
                   </button>
                 ))}
               </div>

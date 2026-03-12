@@ -19,7 +19,9 @@ const ListPage = lazy(() => import('@/modules/pms/features/projects/pages/list')
 const CalendarPage = lazy(() => import('@/modules/pms/features/projects/pages/calendar'))
 const OverviewPage = lazy(() => import('@/modules/pms/features/projects/pages/overview'))
 const TimelinePage = lazy(() => import('@/modules/pms/features/projects/pages/timeline'))
+const ProjectsListPage = lazy(() => import('@/modules/pms/features/projects/pages/projects-list'))
 const GoalsPage = lazy(() => import('@/modules/pms/features/goals/pages/goals-list'))
+const TagManagementPage = lazy(() => import('@/modules/pms/features/tags/pages/tag-management'))
 const BacklogPage = lazy(() => import('@/modules/pms/features/projects/pages/backlog'))
 const SprintsPage = lazy(() => import('@/modules/pms/features/projects/pages/sprints'))
 
@@ -105,7 +107,9 @@ export function AppRouter() {
             {/* PMS module */}
             <Route path="/pms/dashboard" element={<PmsDashboardPage />} />
             <Route path="/pms/my-tasks" element={<MyTasksPage />} />
+            <Route path="/pms/projects" element={<ProjectsListPage />} />
             <Route path="/pms/goals" element={<GoalsPage />} />
+            <Route path="/pms/tags" element={<TagManagementPage />} />
             <Route path="/pms/projects/:projectId/board" element={<BoardPage />} />
             <Route path="/pms/projects/:projectId/list" element={<ListPage />} />
             <Route path="/pms/projects/:projectId/calendar" element={<CalendarPage />} />

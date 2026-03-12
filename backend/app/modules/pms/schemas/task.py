@@ -100,6 +100,9 @@ class TaskResponse(BaseModel):
     assignee_avatar_url: str | None = None
     subtask_count: int = 0
     completed_subtask_count: int = 0
+    blocked_by_count: int = 0
+    blocking_task_ids: list[str] = []
+    tags: list[TagResponse] = []
 
     model_config = {"from_attributes": True}
 
@@ -112,6 +115,9 @@ class TaskResponse(BaseModel):
         d = data.__dict__
         assignee = d.get("assignee")
         subtasks = d.get("subtasks") or []
+        task_tags = d.get("tags") or []
+        # blocks = list of TaskDependency where this task is the blocking one
+        blocks_deps = d.get("blocks") or []
         return {
             "id": data.id,
             "project_id": data.project_id,
@@ -144,11 +150,17 @@ class TaskResponse(BaseModel):
             "completed_subtask_count": sum(
                 1 for s in subtasks if s.status == "completed"
             ),
+            "blocked_by_count": len(d.get("blocked_by") or []),
+            "blocking_task_ids": [str(dep.blocked_task_id) for dep in blocks_deps],
+            "tags": [
+                {"id": tt.tag.id, "name": tt.tag.name, "color": tt.tag.color}
+                for tt in task_tags
+                if tt.tag is not None
+            ],
         }
 
 
 class TaskDetailResponse(TaskResponse):
-    tags: list[TagResponse] = []
     subtask_count: int = 0
 
 
