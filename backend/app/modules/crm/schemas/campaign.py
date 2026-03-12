@@ -1,31 +1,34 @@
 import uuid
 from datetime import date, datetime
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
 
+CampaignType = Literal["email", "ads", "event", "social"]
+CampaignStatus = Literal["draft", "active", "completed", "cancelled"]
 CAMPAIGN_TYPES = ["email", "ads", "event", "social"]
 CAMPAIGN_STATUSES = ["draft", "active", "completed", "cancelled"]
 
 
 class CampaignCreate(BaseModel):
     name: str = Field(min_length=1, max_length=255)
-    type: str = Field(max_length=50)
+    type: CampaignType
     budget: float = 0.0
     actual_cost: float = 0.0
     start_date: date | None = None
     end_date: date | None = None
-    status: str = Field(default="draft", max_length=50)
+    status: CampaignStatus = "draft"
 
 
 class CampaignUpdate(BaseModel):
     name: str | None = Field(default=None, max_length=255)
-    type: str | None = Field(default=None, max_length=50)
+    type: CampaignType | None = None
     budget: float | None = None
     actual_cost: float | None = None
     start_date: date | None = None
     end_date: date | None = None
-    status: str | None = Field(default=None, max_length=50)
+    status: CampaignStatus | None = None
 
 
 class CampaignResponse(BaseModel):

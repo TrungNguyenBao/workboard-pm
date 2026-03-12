@@ -8,6 +8,8 @@ export interface GovernanceAlerts {
   stale_leads_count: number
   unassigned_leads: number
   overdue_tickets: number
+  missing_deal_values: number
+  high_value_no_activity: number
 }
 
 export function useGovernanceAlerts() {

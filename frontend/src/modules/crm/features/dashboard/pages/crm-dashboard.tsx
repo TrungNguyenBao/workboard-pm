@@ -5,7 +5,10 @@ import { CHART_COLORS, CHART_AXIS_STYLE, CHART_GRID_STYLE } from '@/shared/lib/c
 import { useCrmStats } from '../hooks/use-crm-stats'
 import { useGovernanceAlerts } from '../hooks/use-governance-alerts'
 import { StaleDealsAlert } from '../components/stale-deals-alert'
+import { StaleLeadsAlert } from '../components/stale-leads-alert'
+import { FollowUpsDueWidget } from '../components/follow-ups-due-widget'
 import { SalesFunnelChart } from '../components/sales-funnel-chart'
+import { DealVelocityChart } from '../components/deal-velocity-chart'
 
 const STAGE_COLORS: Record<string, string> = {
   Lead: CHART_COLORS.muted,
@@ -24,7 +27,7 @@ function formatCurrency(value: number) {
 }
 
 export default function CrmDashboardPage() {
-  const { stats, stageBars, leadSourceBars, funnel, dealVelocityDays, isLoading } = useCrmStats()
+  const { stats, stageBars, leadSourceBars, funnel, isLoading } = useCrmStats()
   const { data: govAlerts } = useGovernanceAlerts()
   // govAlerts may be undefined for non-admin users (403) — handled gracefully
 
@@ -60,6 +63,12 @@ export default function CrmDashboardPage() {
 
       {/* Governance Alerts */}
       {govAlerts && <StaleDealsAlert alerts={govAlerts} />}
+
+      {/* Stale Leads */}
+      <StaleLeadsAlert />
+
+      {/* Follow-ups Due */}
+      <FollowUpsDueWidget />
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -112,11 +121,7 @@ export default function CrmDashboardPage() {
       {/* Funnel + Velocity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <SalesFunnelChart funnel={funnel} />
-        <div className="border border-border rounded-lg p-4 bg-card flex flex-col items-center justify-center">
-          <p className="text-sm font-medium text-foreground mb-2">Deal Velocity</p>
-          <p className="text-4xl font-bold text-foreground">{dealVelocityDays}</p>
-          <p className="text-xs text-muted-foreground mt-1">avg days to close</p>
-        </div>
+        <DealVelocityChart />
       </div>
 
       {/* Campaign Summary */}

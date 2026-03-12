@@ -1,5 +1,5 @@
 import uuid
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
@@ -32,7 +32,9 @@ async def list_accounts(
         q = q.where(Account.status == status_filter)
         count_q = count_q.where(Account.status == status_filter)
     if search:
-        pattern = f"%{search}%"
+        from app.modules.crm.services.status_flows import escape_like
+
+        pattern = f"%{escape_like(search)}%"
         search_filter = Account.name.ilike(pattern) | Account.industry.ilike(pattern)
         q = q.where(search_filter)
         count_q = count_q.where(search_filter)
@@ -124,7 +126,7 @@ async def calculate_health_score(
     ) or 0
     score -= min(open_tickets * 10, 30)
 
-    cutoff = datetime.utcnow() - timedelta(days=90)
+    cutoff = datetime.now(timezone.utc) - timedelta(days=90)
     recent_activities = await db.scalar(
         select(func.count(Activity.id)).where(
             Activity.workspace_id == workspace_id,

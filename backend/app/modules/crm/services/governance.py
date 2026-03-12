@@ -1,12 +1,16 @@
 """Governance alerts aggregation for CRM SOP 15."""
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import func, select
+from sqlalchemy import and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.modules.crm.models.activity import Activity
+from app.modules.crm.models.deal import Deal
 from app.modules.crm.models.lead import Lead
 from app.modules.crm.models.ticket import Ticket
+
+HIGH_VALUE_THRESHOLD = 10_000.0  # deals above this value are considered high-value
 
 
 async def get_governance_alerts(db: AsyncSession, workspace_id: uuid.UUID) -> dict:
@@ -15,7 +19,7 @@ async def get_governance_alerts(db: AsyncSession, workspace_id: uuid.UUID) -> di
     from app.modules.crm.services.lead_workflows import get_stale_leads
 
     stale_deals = await get_stale_deals(db, workspace_id, days=30)
-    stale_leads = await get_stale_leads(db, workspace_id, hours=48)
+    stale_leads = await get_stale_leads(db, workspace_id, days=30)
 
     # Unassigned leads
     unassigned_leads = await db.scalar(
@@ -31,7 +35,36 @@ async def get_governance_alerts(db: AsyncSession, workspace_id: uuid.UUID) -> di
         select(func.count(Ticket.id)).where(
             Ticket.workspace_id == workspace_id,
             Ticket.status.in_(["open", "in_progress"]),
-            Ticket.created_at < (datetime.utcnow() - timedelta(days=7)),
+            Ticket.created_at < (datetime.now(timezone.utc) - timedelta(days=7)),
+        )
+    ) or 0
+
+    # Deals with missing/zero value (data quality risk)
+    missing_deal_values = await db.scalar(
+        select(func.count(Deal.id)).where(
+            Deal.workspace_id == workspace_id,
+            Deal.stage.notin_(["closed_won", "closed_lost"]),
+            or_(Deal.value.is_(None), Deal.value == 0),
+        )
+    ) or 0
+
+    # High-value deals with no activity in 30 days
+    cutoff_30 = datetime.now(timezone.utc) - timedelta(days=30)
+    active_deal_ids_q = (
+        select(Activity.deal_id)
+        .where(
+            Activity.workspace_id == workspace_id,
+            Activity.date > cutoff_30,
+            Activity.deal_id.isnot(None),
+        )
+        .distinct()
+    )
+    high_value_no_activity = await db.scalar(
+        select(func.count(Deal.id)).where(
+            Deal.workspace_id == workspace_id,
+            Deal.value > HIGH_VALUE_THRESHOLD,
+            Deal.stage.notin_(["closed_won", "closed_lost"]),
+            Deal.id.notin_(active_deal_ids_q),
         )
     ) or 0
 
@@ -44,4 +77,6 @@ async def get_governance_alerts(db: AsyncSession, workspace_id: uuid.UUID) -> di
         "stale_leads_count": len(stale_leads),
         "unassigned_leads": unassigned_leads,
         "overdue_tickets": overdue_tickets,
+        "missing_deal_values": missing_deal_values,
+        "high_value_no_activity": high_value_no_activity,
     }

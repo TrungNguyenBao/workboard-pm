@@ -29,7 +29,9 @@ async def list_contacts(
     count_q = select(func.count(Contact.id)).where(Contact.workspace_id == workspace_id)
 
     if search:
-        pattern = f"%{search}%"
+        from app.modules.crm.services.status_flows import escape_like
+
+        pattern = f"%{escape_like(search)}%"
         search_filter = (
             Contact.name.ilike(pattern)
             | Contact.email.ilike(pattern)

@@ -5,20 +5,16 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.crm.models.lead import Lead
-from app.modules.crm.schemas.lead import LeadCreate, LeadUpdate
+from app.modules.crm.schemas.lead import LeadConvertRequest, LeadCreate, LeadUpdate
 
 
 async def create_lead(
     db: AsyncSession, workspace_id: uuid.UUID, data: LeadCreate
-) -> tuple[Lead, str | None]:
-    """Create lead with duplicate check and auto-scoring. Returns (lead, warning)."""
+) -> tuple[Lead, list[Lead]]:
+    """Create lead with duplicate check and auto-scoring. Returns (lead, duplicates)."""
     from app.modules.crm.services.lead_workflows import calculate_lead_score, check_lead_duplicates
 
     duplicates = await check_lead_duplicates(db, workspace_id, data.email, data.phone)
-    warning = None
-    if duplicates:
-        names = ", ".join(d.name for d in duplicates[:3])
-        warning = f"Potential duplicates found: {names}"
 
     lead = Lead(workspace_id=workspace_id, **data.model_dump())
     if lead.score == 0:
@@ -26,7 +22,7 @@ async def create_lead(
     db.add(lead)
     await db.commit()
     await db.refresh(lead)
-    return lead, warning
+    return lead, duplicates
 
 
 async def list_leads(
@@ -52,7 +48,9 @@ async def list_leads(
         q = q.where(Lead.owner_id == owner_id)
         count_q = count_q.where(Lead.owner_id == owner_id)
     if search:
-        pattern = f"%{search}%"
+        from app.modules.crm.services.status_flows import escape_like
+
+        pattern = f"%{escape_like(search)}%"
         search_filter = Lead.name.ilike(pattern) | Lead.email.ilike(pattern)
         q = q.where(search_filter)
         count_q = count_q.where(search_filter)
@@ -104,24 +102,54 @@ async def delete_lead(db: AsyncSession, lead_id: uuid.UUID, workspace_id: uuid.U
 
 
 async def convert_lead_to_opportunity(
-    db: AsyncSession, lead_id: uuid.UUID, workspace_id: uuid.UUID
+    db: AsyncSession,
+    lead_id: uuid.UUID,
+    workspace_id: uuid.UUID,
+    params: LeadConvertRequest | None = None,
 ) -> "Deal":  # noqa: F821
+    from app.modules.crm.models.contact import Contact
     from app.modules.crm.models.deal import Deal
     from app.modules.crm.services.lead_workflows import calculate_lead_score
+
+    if params is None:
+        params = LeadConvertRequest()
 
     lead = await get_lead(db, lead_id, workspace_id)
     if lead.status != "qualified":
         raise HTTPException(status_code=400, detail="Only qualified leads can be converted")
 
+    contact_id: uuid.UUID | None = None
+    if params.create_contact:
+        existing = await db.scalar(
+            select(Contact).where(
+                Contact.workspace_id == workspace_id,
+                Contact.email == lead.email,
+            )
+        ) if lead.email else None
+
+        if existing:
+            contact_id = existing.id
+        else:
+            contact = Contact(
+                name=lead.name,
+                email=lead.email,
+                phone=lead.phone,
+                workspace_id=workspace_id,
+            )
+            db.add(contact)
+            await db.flush()
+            contact_id = contact.id
+
     score = lead.score or calculate_lead_score(lead)
     prob_map = {"website": 0.3, "ads": 0.2, "form": 0.35, "referral": 0.4, "manual": 0.15}
     deal = Deal(
-        title=f"Opportunity: {lead.name}",
-        value=float(score * 100),
+        title=params.deal_title or f"{lead.name} - Deal",
+        value=float(params.value) if params.value is not None else float(score * 100),
         stage="qualified",
         probability=prob_map.get(lead.source, 0.2),
+        expected_close_date=params.expected_close_date,
         lead_id=lead.id,
-        contact_id=None,
+        contact_id=contact_id,
         workspace_id=workspace_id,
     )
     db.add(deal)

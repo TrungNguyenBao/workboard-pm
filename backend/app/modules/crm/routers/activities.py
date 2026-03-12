@@ -43,6 +43,7 @@ async def list_(
     contact_id: uuid.UUID | None = Query(default=None),
     deal_id: uuid.UUID | None = Query(default=None),
     lead_id: uuid.UUID | None = Query(default=None),
+    assigned_to: uuid.UUID | None = Query(default=None),
     search: str | None = Query(default=None),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, ge=1, le=100),
@@ -50,7 +51,7 @@ async def list_(
     db: AsyncSession = Depends(get_db),
 ):
     items, total = await list_activities(
-        db, workspace_id, type_filter, contact_id, deal_id, lead_id, search, page, page_size
+        db, workspace_id, type_filter, contact_id, deal_id, lead_id, assigned_to, search, page, page_size
     )
     return PaginatedResponse(items=items, total=total, page=page, page_size=page_size)
 

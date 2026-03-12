@@ -7,7 +7,14 @@ from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
 from app.modules.crm.schemas.deal import DealResponse
-from app.modules.crm.schemas.lead import LeadCreate, LeadResponse, LeadUpdate
+from app.modules.crm.schemas.lead import (
+    LeadConvertRequest,
+    LeadCreate,
+    LeadCreateResponse,
+    LeadMergeRequest,
+    LeadResponse,
+    LeadUpdate,
+)
 from app.modules.crm.schemas.pagination import PaginatedResponse
 from app.modules.crm.services.lead import (
     convert_lead_to_opportunity,
@@ -17,13 +24,20 @@ from app.modules.crm.services.lead import (
     list_leads,
     update_lead,
 )
+from app.modules.crm.services.lead_workflows import merge_leads
+from pydantic import BaseModel
+
+
+class DisqualifyRequest(BaseModel):
+    reason: str
+
 
 router = APIRouter(tags=["crm"])
 
 
 @router.post(
     "/workspaces/{workspace_id}/leads",
-    response_model=LeadResponse,
+    response_model=LeadCreateResponse,
     status_code=status.HTTP_201_CREATED,
 )
 async def create(
@@ -32,16 +46,25 @@ async def create(
     current_user: User = Depends(require_workspace_role("member")),
     db: AsyncSession = Depends(get_db),
 ):
-    from fastapi.responses import JSONResponse
-
-    lead, warning = await create_lead(db, workspace_id, data)
-    response = JSONResponse(
-        content=LeadResponse.model_validate(lead).model_dump(mode="json"),
-        status_code=status.HTTP_201_CREATED,
+    lead, duplicates = await create_lead(db, workspace_id, data)
+    return LeadCreateResponse(
+        lead=LeadResponse.model_validate(lead),
+        duplicates=[LeadResponse.model_validate(d) for d in duplicates] if duplicates else None,
     )
-    if warning:
-        response.headers["X-Duplicate-Warning"] = warning
-    return response
+
+
+@router.post(
+    "/workspaces/{workspace_id}/leads/merge",
+    response_model=LeadResponse,
+    status_code=status.HTTP_200_OK,
+)
+async def merge(
+    workspace_id: uuid.UUID,
+    data: LeadMergeRequest,
+    current_user: User = Depends(require_workspace_role("member")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await merge_leads(db, workspace_id, data.keep_id, data.merge_id)
 
 
 @router.get(
@@ -111,7 +134,34 @@ async def delete(
 async def convert(
     workspace_id: uuid.UUID,
     lead_id: uuid.UUID,
+    data: LeadConvertRequest = LeadConvertRequest(),
     current_user: User = Depends(require_workspace_role("member")),
     db: AsyncSession = Depends(get_db),
 ):
-    return await convert_lead_to_opportunity(db, lead_id, workspace_id)
+    return await convert_lead_to_opportunity(db, lead_id, workspace_id, data)
+
+
+@router.post(
+    "/workspaces/{workspace_id}/leads/{lead_id}/disqualify",
+    response_model=LeadResponse,
+)
+async def disqualify(
+    workspace_id: uuid.UUID,
+    lead_id: uuid.UUID,
+    data: DisqualifyRequest,
+    current_user: User = Depends(require_workspace_role("member")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Set lead status to disqualified and store the reason."""
+    from fastapi import HTTPException
+    from app.modules.crm.services.status_flows import LEAD_STATUS_TRANSITIONS, validate_transition
+
+    lead = await get_lead(db, lead_id, workspace_id)
+    if not validate_transition(LEAD_STATUS_TRANSITIONS, lead.status, "disqualified"):
+        allowed = LEAD_STATUS_TRANSITIONS.get(lead.status, [])
+        raise HTTPException(400, f"Cannot disqualify from '{lead.status}'. Allowed: {allowed}")
+    lead.status = "disqualified"
+    lead.disqualify_reason = data.reason
+    await db.commit()
+    await db.refresh(lead)
+    return lead

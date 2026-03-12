@@ -6,7 +6,7 @@ import { Input } from '@/shared/components/ui/input'
 import { Label } from '@/shared/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { toast } from '@/shared/components/ui/toast'
-import { type Deal, DEAL_STAGES, useCreateDeal, useUpdateDeal } from '../hooks/use-deals'
+import { type Deal, DEAL_STAGES, STAGE_PROBABILITY, useCreateDeal, useUpdateDeal } from '../hooks/use-deals'
 import { useContacts } from '../../contacts/hooks/use-contacts'
 import { useAccounts } from '../../accounts/hooks/use-accounts'
 
@@ -38,10 +38,20 @@ function DealFormContent({ workspaceId, deal, onOpenChange }: Omit<Props, 'open'
   const [value, setValue] = useState(deal?.value?.toString() ?? '0')
   const [stage, setStage] = useState(deal?.stage ?? 'lead')
   const [probability, setProbability] = useState(deal?.probability?.toString() ?? '0')
+  const [probSuggested, setProbSuggested] = useState(false)
   const [expectedCloseDate, setExpectedCloseDate] = useState(deal?.expected_close_date ?? '')
   const [lossReason, setLossReason] = useState(deal?.loss_reason ?? '')
   const [contactId, setContactId] = useState(deal?.contact_id ?? 'none')
   const [accountId, setAccountId] = useState(deal?.account_id ?? 'none')
+
+  function handleStageChange(newStage: string) {
+    setStage(newStage)
+    const suggested = STAGE_PROBABILITY[newStage]
+    if (suggested !== undefined) {
+      setProbability(suggested.toString())
+      setProbSuggested(true)
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -89,7 +99,7 @@ function DealFormContent({ workspaceId, deal, onOpenChange }: Omit<Props, 'open'
           </div>
           <div className="space-y-1.5">
             <Label>{t('deals.stage')}</Label>
-            <Select value={stage} onValueChange={setStage}>
+            <Select value={stage} onValueChange={handleStageChange}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 {DEAL_STAGES.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
@@ -99,8 +109,18 @@ function DealFormContent({ workspaceId, deal, onOpenChange }: Omit<Props, 'open'
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <Label htmlFor="deal-prob">Probability (%)</Label>
-            <Input id="deal-prob" type="number" min="0" max="100" value={probability} onChange={(e) => setProbability(e.target.value)} />
+            <div className="flex items-center gap-1.5">
+              <Label htmlFor="deal-prob">Probability (%)</Label>
+              {probSuggested && <span className="text-xs text-muted-foreground">(suggested)</span>}
+            </div>
+            <Input
+              id="deal-prob"
+              type="number"
+              min="0"
+              max="100"
+              value={probability}
+              onChange={(e) => { setProbability(e.target.value); setProbSuggested(false) }}
+            />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="deal-close">Expected Close</Label>

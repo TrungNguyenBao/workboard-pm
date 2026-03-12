@@ -37,7 +37,9 @@ async def list_deals(
         q = q.where(Deal.stage == stage)
         count_q = count_q.where(Deal.stage == stage)
     if search:
-        pattern = f"%{search}%"
+        from app.modules.crm.services.status_flows import escape_like
+
+        pattern = f"%{escape_like(search)}%"
         q = q.where(Deal.title.ilike(pattern))
         count_q = count_q.where(Deal.title.ilike(pattern))
 

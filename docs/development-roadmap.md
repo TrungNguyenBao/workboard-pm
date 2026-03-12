@@ -355,6 +355,12 @@ Comprehensive Product Requirements Document (PRD) and Standard Operating Procedu
 
 Comprehensive implementation of 38 user stories across 4 priority tiers addressing audit-identified gaps.
 
+---
+
+## Phase 17 — CRM Improvement Implementation (Complete)
+
+Comprehensive implementation of 30 user stories across 4 priority tiers (17 gaps total) addressing audit-identified issues in lead management, deal pipeline, data quality and governance.
+
 | Item | Status |
 |---|---|
 | **Phase 1: P0 Critical Gaps** — Fix RBAC, member management, project list, rich-text comments (30 SP) | Done |
@@ -406,3 +412,48 @@ Comprehensive implementation of 38 user stories across 4 priority tiers addressi
 | 4 phases delivered: P0 Critical → P0 APIs → P1 Features → P2 Enhancements | Done |
 | User stories status table updated in docs/userstories/user-storie-pms.md | Done |
 | Project changelog updated with complete feature list | Done |
+
+---
+
+## Phase 17 — CRM Improvement Implementation (Complete)
+
+Comprehensive CRM module implementation of 30 user stories across 4 priority tiers (17 gaps total) addressing audit-identified issues.
+
+| Item | Status |
+|---|---|
+| **Phase 1: P0 Critical Gaps** — Fix lead scoring, duplicates, conversion, pipeline DnD, RBAC (31 SP) | Done |
+| Backend: Activity-based lead scoring (activity creation trigger, auto-cap 100) | Done |
+| Backend: Lead duplicate detection + merge endpoint (case-insensitive email check) | Done |
+| Backend: Lead-to-deal conversion form (auto-create contact, deal params from request) | Done |
+| Frontend: Pipeline kanban with @dnd-kit (5+ columns, weighted values, owner filter) | Done |
+| Backend: RBAC audit + workspace admin override, My Leads filter toggle | Done |
+| **Phase 2: P0/P1 High** — Auto probability, stale leads, campaigns, follow-ups (15 SP) | Done |
+| Frontend: Auto probability suggestion on stage change (Qualified 10%-75% mapping) | Done |
+| Backend: Stale lead detection fix (30-day activity-based, not contacted_at) | Done |
+| Frontend: Campaign detail page with KPI cards (leads, cost per lead, conversion, ROI) | Done |
+| Frontend: Follow-ups due widget on CRM dashboard (overdue red indicators) | Done |
+| Frontend: Stale deals alerts clickable to filtered deals list | Done |
+| **Phase 3: P1 Feature Gaps** — Data quality, velocity, ticket KPIs, governance (16 SP) | Done |
+| Frontend: Data quality report page (score gauge, duplicates, missing fields, stale records) | Done |
+| Backend: Deal velocity analytics (avg days per stage from timestamps) | Done |
+| Frontend: Deal velocity bar chart with bottleneck highlight | Done |
+| Backend: Ticket stats endpoint (avg resolution time, rate, by priority) | Done |
+| Frontend: Ticket KPI cards component with priority distribution | Done |
+| Backend: Governance alerts response with missing values + high-value no-activity | Done |
+| Frontend: Governance alerts drill-down (clickable categories to filtered lists) | Done |
+| **Phase 4: P2 Enhancements** — Pipeline config, scoring config, code quality (11 SP) | Done |
+| Backend: PipelineStage model + CRUD + reorder endpoints (admin-only) | Done |
+| Frontend: Pipeline settings page with drag-to-reorder (@dnd-kit/sortable) | Done |
+| Backend: ScoringConfig model (workspace JSONB) + get/update endpoints | Done |
+| Frontend: Scoring settings page with editable rules + thresholds | Done |
+| Backend: Replace datetime.utcnow() → datetime.now(timezone.utc) in 6 files | Done |
+| Backend: Escape ILIKE wildcards via escape_like() helper in 7 files | Done |
+| Backend: Fix close deal endpoint to use request body (DealCloseRequest) | Done |
+| Backend: Enforce campaign status flow (draft → active → completed/cancelled) | Done |
+| Backend: Add Literal type validation on all schemas (stage, status, priority, source, type) | Done |
+| Backend: Fix governance stale leads call (hours=48 → days=30) | Done |
+| **Overall Results** | |
+| All 30 user stories fully implemented (17 gaps resolved) | Done |
+| 4 phases delivered: P0 Critical → P0/P1 High → P1 Features → P2 Enhancements | Done |
+| User stories status updated in docs/userstories/user-storie-crm.md | Done |
+| Project changelog updated with CRM improvement entry | Done |

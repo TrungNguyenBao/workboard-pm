@@ -35,7 +35,9 @@ async def list_campaigns(
         q = q.where(Campaign.type == type_filter)
         count_q = count_q.where(Campaign.type == type_filter)
     if search:
-        pattern = f"%{search}%"
+        from app.modules.crm.services.status_flows import escape_like
+
+        pattern = f"%{escape_like(search)}%"
         q = q.where(Campaign.name.ilike(pattern))
         count_q = count_q.where(Campaign.name.ilike(pattern))
 
@@ -94,8 +96,20 @@ async def get_campaign_stats(db: AsyncSession, campaign_id: uuid.UUID, workspace
 async def update_campaign(
     db: AsyncSession, campaign_id: uuid.UUID, workspace_id: uuid.UUID, data: CampaignUpdate
 ) -> Campaign:
+    from app.modules.crm.services.status_flows import CAMPAIGN_STATUS_TRANSITIONS, validate_transition
+
     campaign = await get_campaign(db, campaign_id, workspace_id)
-    for field, value in data.model_dump(exclude_none=True).items():
+    updates = data.model_dump(exclude_none=True)
+
+    if "status" in updates and updates["status"] != campaign.status:
+        if not validate_transition(CAMPAIGN_STATUS_TRANSITIONS, campaign.status, updates["status"]):
+            allowed = CAMPAIGN_STATUS_TRANSITIONS.get(campaign.status, [])
+            raise HTTPException(
+                status_code=400,
+                detail=f"Cannot transition from '{campaign.status}' to '{updates['status']}'. Allowed: {allowed}",
+            )
+
+    for field, value in updates.items():
         setattr(campaign, field, value)
     await db.commit()
     await db.refresh(campaign)

@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
@@ -7,6 +7,37 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.crm.models.ticket import Ticket
 from app.modules.crm.schemas.ticket import TicketCreate, TicketUpdate
+
+
+async def get_ticket_stats(db: AsyncSession, workspace_id: uuid.UUID) -> dict:
+    """Compute ticket KPIs: avg resolution time, resolution rate, counts by priority."""
+    all_tickets = list((await db.scalars(
+        select(Ticket).where(Ticket.workspace_id == workspace_id)
+    )).all())
+
+    total = len(all_tickets)
+    resolved = [t for t in all_tickets if t.resolved_at and t.created_at]
+    open_count = sum(1 for t in all_tickets if t.status in ("open", "in_progress"))
+
+    avg_resolution_hours: float = 0.0
+    if resolved:
+        total_seconds = sum((t.resolved_at - t.created_at).total_seconds() for t in resolved)
+        avg_resolution_hours = round(total_seconds / len(resolved) / 3600, 1)
+
+    resolution_rate = round(len(resolved) / total * 100, 1) if total > 0 else 0.0
+
+    by_priority: dict[str, int] = {}
+    for t in all_tickets:
+        by_priority[t.priority] = by_priority.get(t.priority, 0) + 1
+
+    return {
+        "total": total,
+        "open_count": open_count,
+        "resolved_count": len(resolved),
+        "avg_resolution_hours": avg_resolution_hours,
+        "resolution_rate": resolution_rate,
+        "by_priority": by_priority,
+    }
 
 
 async def create_ticket(db: AsyncSession, workspace_id: uuid.UUID, data: TicketCreate) -> Ticket:
@@ -44,7 +75,9 @@ async def list_tickets(
         q = q.where(Ticket.account_id == account_id)
         count_q = count_q.where(Ticket.account_id == account_id)
     if search:
-        pattern = f"%{search}%"
+        from app.modules.crm.services.status_flows import escape_like
+
+        pattern = f"%{escape_like(search)}%"
         q = q.where(Ticket.subject.ilike(pattern))
         count_q = count_q.where(Ticket.subject.ilike(pattern))
 
@@ -80,7 +113,7 @@ async def update_ticket(
                 status_code=400,
                 detail=f"Cannot transition from '{ticket.status}' to '{updates['status']}'. Allowed: {allowed}",
             )
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         if updates["status"] == "resolved":
             ticket.resolved_at = now
         elif updates["status"] == "closed":

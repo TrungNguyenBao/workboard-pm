@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Pencil, Trash2, ArrowRightCircle } from 'lucide-react'
 import { useWorkspaceStore } from '@/stores/workspace.store'
+import { useAuthStore } from '@/stores/auth.store'
 import { Badge } from '@/shared/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { toast } from '@/shared/components/ui/toast'
@@ -19,9 +20,11 @@ const PAGE_SIZE = 20
 export default function LeadsListPage() {
   const { t } = useTranslation('crm')
   const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId) ?? ''
+  const currentUser = useAuthStore((s) => s.user)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [sourceFilter, setSourceFilter] = useState('all')
+  const [myLeads, setMyLeads] = useState(false)
   const [page, setPage] = useState(1)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editLead, setEditLead] = useState<Lead | null>(null)
@@ -32,6 +35,7 @@ export default function LeadsListPage() {
     search: search || undefined,
     status: statusFilter === 'all' ? undefined : statusFilter,
     source: sourceFilter === 'all' ? undefined : sourceFilter,
+    owner_id: myLeads && currentUser ? currentUser.id : undefined,
     page,
     page_size: PAGE_SIZE,
   })
@@ -48,7 +52,23 @@ export default function LeadsListPage() {
         return <Badge variant={variant as any}>{LEAD_STATUSES.find((s) => s.value === l.status)?.label ?? l.status}</Badge>;
       },
     },
-    { key: 'score', label: 'Score', render: (l) => l.score },
+    {
+      key: 'score', label: 'Score', render: (l) => {
+        const score = l.score ?? 0
+        const level = score <= 30 ? 'cold' : score <= 60 ? 'warm' : 'hot'
+        const levelVariant = level === 'cold' ? 'info' : level === 'warm' ? 'warning' : 'danger'
+        const levelLabel = level === 'cold' ? 'Cold' : level === 'warm' ? 'Warm' : 'Hot'
+        return (
+          <div className="flex items-center gap-2 min-w-[100px]">
+            <span className="text-sm font-medium w-6 text-right">{score}</span>
+            <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
+              <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${score}%` }} />
+            </div>
+            <Badge variant={levelVariant as any} className="text-xs px-1.5 py-0">{levelLabel}</Badge>
+          </div>
+        )
+      },
+    },
     {
       key: 'actions', label: '', className: 'w-24', render: (l) => (
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
@@ -81,6 +101,12 @@ export default function LeadsListPage() {
         onCreateClick={() => { setEditLead(null); setDialogOpen(true) }}
         createLabel="New Lead"
       >
+        <button
+          className={`inline-flex items-center h-8 px-3 text-xs font-medium rounded-md border transition-colors ${myLeads ? 'bg-primary text-primary-foreground border-primary' : 'border-border bg-card hover:bg-muted'}`}
+          onClick={() => { setMyLeads((v) => !v); setPage(1) }}
+        >
+          {myLeads ? 'My Leads' : 'All Leads'}
+        </button>
         <button
           className="inline-flex items-center h-8 px-3 text-xs font-medium rounded-md border border-border bg-card hover:bg-muted"
           onClick={() => setDistributeOpen(true)}

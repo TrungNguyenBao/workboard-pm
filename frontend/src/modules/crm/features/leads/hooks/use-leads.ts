@@ -25,6 +25,11 @@ export interface PaginatedLeads {
   page_size: number
 }
 
+export interface LeadCreateResponse {
+  lead: Lead
+  duplicates: Lead[] | null
+}
+
 interface LeadFilters {
   status?: string
   source?: string
@@ -65,8 +70,8 @@ export function useLeads(workspaceId: string, filters: LeadFilters = {}) {
 
 export function useCreateLead(workspaceId: string) {
   const qc = useQueryClient()
-  return useMutation({
-    mutationFn: (data: Record<string, unknown>) =>
+  return useMutation<LeadCreateResponse, Error, Record<string, unknown>>({
+    mutationFn: (data) =>
       api.post(base(workspaceId), data).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['crm-leads', workspaceId] }),
   })
@@ -89,11 +94,28 @@ export function useDeleteLead(workspaceId: string) {
   })
 }
 
+export function useMergeLeads(workspaceId: string) {
+  const qc = useQueryClient()
+  return useMutation<Lead, Error, { keep_id: string; merge_id: string }>({
+    mutationFn: (data) =>
+      api.post(`${base(workspaceId)}/merge`, data).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['crm-leads', workspaceId] }),
+  })
+}
+
+export interface LeadConvertPayload {
+  leadId: string
+  deal_title?: string
+  value?: number
+  expected_close_date?: string
+  create_contact?: boolean
+}
+
 export function useConvertLead(workspaceId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (leadId: string) =>
-      api.post(`${base(workspaceId)}/${leadId}/convert`).then((r) => r.data),
+    mutationFn: ({ leadId, ...body }: LeadConvertPayload) =>
+      api.post(`${base(workspaceId)}/${leadId}/convert`, body).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['crm-leads', workspaceId] })
       qc.invalidateQueries({ queryKey: ['crm-deals', workspaceId] })
@@ -110,11 +132,11 @@ export function useDistributeLeads(workspaceId: string) {
   })
 }
 
-export function useStaleLeads(workspaceId: string, hours = 48) {
+export function useStaleLeads(workspaceId: string, days = 30) {
   return useQuery({
-    queryKey: ['crm-leads-stale', workspaceId, hours],
+    queryKey: ['crm-leads-stale', workspaceId, days],
     queryFn: () =>
-      api.get(`${base(workspaceId)}/stale`, { params: { hours } }).then((r) => r.data),
+      api.get(`${base(workspaceId)}/stale`, { params: { days } }).then((r) => r.data),
     enabled: !!workspaceId,
   })
 }

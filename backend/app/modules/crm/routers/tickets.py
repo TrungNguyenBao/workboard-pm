@@ -12,11 +12,22 @@ from app.modules.crm.services.ticket import (
     create_ticket,
     delete_ticket,
     get_ticket,
+    get_ticket_stats,
     list_tickets,
     update_ticket,
 )
 
 router = APIRouter(tags=["crm"])
+
+
+@router.get("/workspaces/{workspace_id}/tickets/stats")
+async def get_stats(
+    workspace_id: uuid.UUID,
+    current_user: User = Depends(require_workspace_role("guest")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Ticket KPIs: avg resolution time, resolution rate, counts by priority."""
+    return await get_ticket_stats(db, workspace_id)
 
 
 @router.post(

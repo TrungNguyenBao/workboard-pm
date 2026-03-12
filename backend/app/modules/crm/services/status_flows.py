@@ -1,4 +1,10 @@
-"""Valid status transitions for CRM entities."""
+"""Valid status transitions and shared utilities for CRM entities."""
+
+
+def escape_like(term: str) -> str:
+    """Escape special ILIKE characters (%, _, \\) in user search input."""
+    return term.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
 
 LEAD_STATUS_TRANSITIONS: dict[str, list[str]] = {
     "new": ["contacted", "disqualified"],
@@ -23,7 +29,14 @@ TICKET_STATUS_TRANSITIONS: dict[str, list[str]] = {
     "open": ["in_progress"],
     "in_progress": ["resolved", "open"],
     "resolved": ["closed", "open"],
-    "closed": [],
+    "closed": ["open"],  # allow reopen
+}
+
+CAMPAIGN_STATUS_TRANSITIONS: dict[str, list[str]] = {
+    "draft": ["active"],
+    "active": ["completed", "cancelled"],
+    "completed": [],
+    "cancelled": [],
 }
 
 ACTIVITY_OUTCOMES = ["completed", "pending", "cancelled"]

@@ -9,6 +9,7 @@ import { toColumnDefs, type SimpleColumn } from '@/shared/components/ui/data-tab
 import { PageHeader } from '@/shared/components/ui/page-header'
 import { PaginationControls } from '@/shared/components/ui/pagination-controls'
 import { TicketFormDialog } from '../components/ticket-form-dialog'
+import { TicketKpiCards } from '../components/ticket-kpi-cards'
 import { type Ticket, TICKET_PRIORITIES, TICKET_STATUSES, useTickets, useDeleteTicket } from '../hooks/use-tickets'
 
 const PAGE_SIZE = 20
@@ -74,6 +75,7 @@ export default function TicketsListPage() {
 
   return (
     <div className="flex flex-col h-full">
+      <TicketKpiCards workspaceId={workspaceId} />
       <PageHeader
         title="Tickets"
         description="Customer support tickets"

@@ -19,36 +19,36 @@ Personas
 •	Admin — Cấu hình hệ thống, RBAC, pipeline stages, scoring rules
 
 ID	User Story	Epic	Priority	Status	Sprint
-US-001	Tạo Lead mới	Lead Management	P0	⬜ Todo	Sprint 1
-US-002	Phát hiện Lead trùng lặp	Lead Management	P0	⬜ Todo	Sprint 1
-US-003	Auto Scoring Lead	Lead Management	P0	⬜ Todo	Sprint 2
-US-004	Phân bổ Lead (Distribution)	Lead Management	P0	⬜ Todo	Sprint 2
-US-005	Qualify và Chuyển đổi Lead thành Deal	Lead Management	P0	⬜ Todo	Sprint 2
-US-006	Phát hiện Lead stale	Lead Management	P1	⬜ Todo	Sprint 3
-US-007	Xem danh sách và chi tiết Lead	Lead Management	P0	⬜ Todo	Sprint 1
-US-008	Tạo Deal mới	Deal Management	P0	⬜ Todo	Sprint 2
-US-009	Pipeline Kanban View	Deal Management	P0	⬜ Todo	Sprint 2
-US-010	Cập nhật Stage và Probability	Deal Management	P0	⬜ Todo	Sprint 3
-US-011	Close Deal (Won / Lost)	Deal Management	P0	⬜ Todo	Sprint 3
-US-012	Phát hiện Deal stale	Deal Management	P1	⬜ Todo	Sprint 4
-US-013	Tạo và quản lý Contact	Contact Management	P0	⬜ Todo	Sprint 1
-US-014	Tạo và quản lý Account	Account Management	P0	⬜ Todo	Sprint 3
-US-015	Account 360 View	Account Management	P0	⬜ Todo	Sprint 4
-US-016	Follow-up Scheduling và Tracking	Account Management	P1	⬜ Todo	Sprint 4
-US-017	Tạo Activity (Log hoạt động sales)	Activity Tracking	P0	⬜ Todo	Sprint 2
-US-018	Xem Activities List và Timeline	Activity Tracking	P0	⬜ Todo	Sprint 3
-US-019	Tạo và quản lý Campaign	Campaign Management	P1	⬜ Todo	Sprint 3
-US-020	Campaign Performance & Lead Source Attribution	Campaign Management	P1	⬜ Todo	Sprint 5
-US-021	Tạo Support Ticket	Ticket Management (Customer Support)	P0	⬜ Todo	Sprint 4
-US-022	Xử lý và đóng Ticket	Ticket Management (Customer Support)	P0	⬜ Todo	Sprint 4
-US-023	Xem danh sách Tickets và Dashboard	Ticket Management (Customer Support)	P1	⬜ Todo	Sprint 5
-US-024	CRM Dashboard - Sales KPIs	CRM Analytics & Reporting	P0	⬜ Todo	Sprint 4
-US-025	Deal Velocity Analytics	CRM Analytics & Reporting	P1	⬜ Todo	Sprint 5
-US-026	Data Quality Report	Data Quality & Governance	P1	⬜ Todo	Sprint 5
-US-027	Governance Alerts	Data Quality & Governance	P1	⬜ Todo	Sprint 5
-US-028	Phân quyền CRM theo Role	RBAC & System Configuration	P0	⬜ Todo	Sprint 1
-US-029	Cấu hình Pipeline Stages	RBAC & System Configuration	P2	⬜ Todo	Sprint 6
-US-030	Cấu hình Lead Scoring Rules	RBAC & System Configuration	P2	⬜ Todo	Sprint 6
+US-001	Tạo Lead mới	Lead Management	P0	✅ Done	Sprint 1
+US-002	Phát hiện Lead trùng lặp	Lead Management	P0	✅ Done	Sprint 1
+US-003	Auto Scoring Lead	Lead Management	P0	✅ Done	Sprint 2
+US-004	Phân bổ Lead (Distribution)	Lead Management	P0	✅ Done	Sprint 2
+US-005	Qualify và Chuyển đổi Lead thành Deal	Lead Management	P0	✅ Done	Sprint 2
+US-006	Phát hiện Lead stale	Lead Management	P1	✅ Done	Sprint 3
+US-007	Xem danh sách và chi tiết Lead	Lead Management	P0	✅ Done	Sprint 1
+US-008	Tạo Deal mới	Deal Management	P0	✅ Done	Sprint 2
+US-009	Pipeline Kanban View	Deal Management	P0	✅ Done	Sprint 2
+US-010	Cập nhật Stage và Probability	Deal Management	P0	✅ Done	Sprint 3
+US-011	Close Deal (Won / Lost)	Deal Management	P0	✅ Done	Sprint 3
+US-012	Phát hiện Deal stale	Deal Management	P1	✅ Done	Sprint 4
+US-013	Tạo và quản lý Contact	Contact Management	P0	✅ Done	Sprint 1
+US-014	Tạo và quản lý Account	Account Management	P0	✅ Done	Sprint 3
+US-015	Account 360 View	Account Management	P0	✅ Done	Sprint 4
+US-016	Follow-up Scheduling và Tracking	Account Management	P1	✅ Done	Sprint 4
+US-017	Tạo Activity (Log hoạt động sales)	Activity Tracking	P0	✅ Done	Sprint 2
+US-018	Xem Activities List và Timeline	Activity Tracking	P0	✅ Done	Sprint 3
+US-019	Tạo và quản lý Campaign	Campaign Management	P1	✅ Done	Sprint 3
+US-020	Campaign Performance & Lead Source Attribution	Campaign Management	P1	✅ Done	Sprint 5
+US-021	Tạo Support Ticket	Ticket Management (Customer Support)	P0	✅ Done	Sprint 4
+US-022	Xử lý và đóng Ticket	Ticket Management (Customer Support)	P0	✅ Done	Sprint 4
+US-023	Xem danh sách Tickets và Dashboard	Ticket Management (Customer Support)	P1	✅ Done	Sprint 5
+US-024	CRM Dashboard - Sales KPIs	CRM Analytics & Reporting	P0	✅ Done	Sprint 4
+US-025	Deal Velocity Analytics	CRM Analytics & Reporting	P1	✅ Done	Sprint 5
+US-026	Data Quality Report	Data Quality & Governance	P1	✅ Done	Sprint 5
+US-027	Governance Alerts	Data Quality & Governance	P1	✅ Done	Sprint 5
+US-028	Phân quyền CRM theo Role	RBAC & System Configuration	P0	✅ Done	Sprint 1
+US-029	Cấu hình Pipeline Stages	RBAC & System Configuration	P2	✅ Done	Sprint 6
+US-030	Cấu hình Lead Scoring Rules	RBAC & System Configuration	P2	✅ Done	Sprint 6
  
 Epic 1: Lead Management
 Quản lý toàn bộ vòng đời lead: tạo, phát hiện trùng lặp, tự động chấm điểm, phân bổ cho sales, theo dõi và chuyển đổi thành deal.
@@ -67,11 +67,11 @@ So that every prospective customer is captured in the CRM for follow-up
 
 Acceptance Criteria:
 #	Scenario	Given	When	Then	Status
-AC1	Tạo lead đầy đủ	Sales đang ở Leads List	Nhập name, email, phone, source = 'Website', campaign, nhấn Create	Lead tạo với status = New, score = 0, assigned_at = null, hiển thị trong danh sách	⬜
-AC2	Thiếu trường bắt buộc	Đang tạo lead	Để trống Name và Email	Lỗi validation: 'Name và Email là bắt buộc'	⬜
-AC3	Auto-detect duplicate	Lead email 'abc@company.com' đã tồn tại	Tạo lead mới với cùng email	Cảnh báo: 'Lead trùng lặp phát hiện (email). Bạn muốn tiếp tục hay merge?'	⬜
-AC4	Lead từ nhiều nguồn	Lead đến từ Facebook Ads	Tạo lead với source = 'ads', campaign = 'FB Q1 2026'	Lead tạo thành công với source và campaign liên kết	⬜
-AC5	Lead không tạo deal	Lead mới tạo	Kiểm tra deals	Không có deal nào được tạo tự động - lead phải qua qualify trước	⬜
+AC1	Tạo lead đầy đủ	Sales đang ở Leads List	Nhập name, email, phone, source = 'Website', campaign, nhấn Create	Lead tạo với status = New, score = 0, assigned_at = null, hiển thị trong danh sách	✅
+AC2	Thiếu trường bắt buộc	Đang tạo lead	Để trống Name và Email	Lỗi validation: 'Name và Email là bắt buộc'	✅
+AC3	Auto-detect duplicate	Lead email 'abc@company.com' đã tồn tại	Tạo lead mới với cùng email	Cảnh báo: 'Lead trùng lặp phát hiện (email). Bạn muốn tiếp tục hay merge?'	✅
+AC4	Lead từ nhiều nguồn	Lead đến từ Facebook Ads	Tạo lead với source = 'ads', campaign = 'FB Q1 2026'	Lead tạo thành công với source và campaign liên kết	✅
+AC5	Lead không tạo deal	Lead mới tạo	Kiểm tra deals	Không có deal nào được tạo tự động - lead phải qua qualify trước	✅
 
 UI Requirements:
 •	Form: Name (required), Email (required), Phone, Company, Source (select: website/ads/referral/event), Campaign (select)

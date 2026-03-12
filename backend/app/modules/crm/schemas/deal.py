@@ -1,13 +1,17 @@
 import uuid
 from datetime import date, datetime
+from typing import Literal
 
 from pydantic import BaseModel, Field
+
+DEAL_STAGES = ["lead", "qualified", "needs_analysis", "proposal", "negotiation", "closed_won", "closed_lost"]
+DealStage = Literal["lead", "qualified", "needs_analysis", "proposal", "negotiation", "closed_won", "closed_lost"]
 
 
 class DealCreate(BaseModel):
     title: str = Field(min_length=1, max_length=255)
     value: float = 0.0
-    stage: str = Field(default="lead", max_length=50)
+    stage: DealStage = "lead"
     probability: float = 0.0
     expected_close_date: date | None = None
     contact_id: uuid.UUID | None = None
@@ -19,7 +23,7 @@ class DealCreate(BaseModel):
 class DealUpdate(BaseModel):
     title: str | None = Field(default=None, max_length=255)
     value: float | None = None
-    stage: str | None = Field(default=None, max_length=50)
+    stage: DealStage | None = None
     probability: float | None = None
     expected_close_date: date | None = None
     contact_id: uuid.UUID | None = None
@@ -49,3 +53,8 @@ class DealResponse(BaseModel):
     updated_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class DealCloseRequest(BaseModel):
+    action: Literal["won", "lost"]
+    loss_reason: str | None = None

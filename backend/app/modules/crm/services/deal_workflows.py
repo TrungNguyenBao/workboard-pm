@@ -1,6 +1,6 @@
 """Deal workflow operations: stage validation, close workflow, stale detection."""
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from fastapi import HTTPException
 from sqlalchemy import and_, or_, select
@@ -26,7 +26,7 @@ async def get_stale_deals(
     db: AsyncSession, workspace_id: uuid.UUID, days: int = 30
 ) -> list[Deal]:
     """Deals with no activity for more than `days` days (excluding closed)."""
-    cutoff = datetime.utcnow() - timedelta(days=days)
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
     closed = ["closed_won", "closed_lost"]
     q = select(Deal).where(
         Deal.workspace_id == workspace_id,
@@ -52,7 +52,7 @@ async def close_deal(
     from app.modules.crm.services.deal import get_deal
 
     deal = await get_deal(db, deal_id, workspace_id)
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
 
     if deal.stage in ("closed_won", "closed_lost"):
         raise HTTPException(400, "Deal is already closed")

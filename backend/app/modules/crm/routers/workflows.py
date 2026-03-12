@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
+from app.modules.crm.schemas.deal import DealCloseRequest
 
 router = APIRouter(tags=["crm"])
 
@@ -29,13 +30,13 @@ async def distribute_leads_endpoint(
 @router.get("/workspaces/{workspace_id}/leads/stale")
 async def get_stale_leads_endpoint(
     workspace_id: uuid.UUID,
-    hours: int = Query(default=48, ge=1),
+    days: int = Query(default=30, ge=1),
     current_user: User = Depends(require_workspace_role("member")),
     db: AsyncSession = Depends(get_db),
 ):
     from app.modules.crm.services.lead_workflows import get_stale_leads
 
-    leads = await get_stale_leads(db, workspace_id, hours)
+    leads = await get_stale_leads(db, workspace_id, days)
     return {"count": len(leads), "leads": leads}
 
 
@@ -46,14 +47,13 @@ async def get_stale_leads_endpoint(
 async def close_deal_endpoint(
     workspace_id: uuid.UUID,
     deal_id: uuid.UUID,
-    action: str = Query(..., description="won or lost"),
-    loss_reason: str | None = Query(default=None),
+    body: DealCloseRequest,
     current_user: User = Depends(require_workspace_role("member")),
     db: AsyncSession = Depends(get_db),
 ):
     from app.modules.crm.services.deal_workflows import close_deal
 
-    deal = await close_deal(db, deal_id, workspace_id, action, loss_reason, current_user.id)
+    deal = await close_deal(db, deal_id, workspace_id, body.action, body.loss_reason, current_user.id)
     return deal
 
 

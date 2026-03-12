@@ -75,7 +75,11 @@ const CrmAccountsListPage = lazy(() => import('@/modules/crm/features/accounts/p
 const CrmAccountDetailPage = lazy(() => import('@/modules/crm/features/accounts/pages/account-detail'))
 const CrmActivitiesPage = lazy(() => import('@/modules/crm/features/activities/pages/activities-list'))
 const CrmCampaignsPage = lazy(() => import('@/modules/crm/features/campaigns/pages/campaigns-list'))
+const CrmCampaignDetailPage = lazy(() => import('@/modules/crm/features/campaigns/pages/campaign-detail'))
 const CrmTicketsPage = lazy(() => import('@/modules/crm/features/tickets/pages/tickets-list'))
+const CrmDataQualityPage = lazy(() => import('@/modules/crm/features/data-quality/pages/data-quality-report'))
+const CrmPipelineSettingsPage = lazy(() => import('@/modules/crm/features/settings/pages/pipeline-settings'))
+const CrmScoringSettingsPage = lazy(() => import('@/modules/crm/features/settings/pages/scoring-settings'))
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const user = useAuthStore((s) => s.user)
@@ -160,7 +164,11 @@ export function AppRouter() {
             <Route path="/crm/pipeline" element={<CrmPipelinePage />} />
             <Route path="/crm/activities" element={<CrmActivitiesPage />} />
             <Route path="/crm/campaigns" element={<CrmCampaignsPage />} />
+            <Route path="/crm/campaigns/:campaignId" element={<CrmCampaignDetailPage />} />
             <Route path="/crm/tickets" element={<CrmTicketsPage />} />
+            <Route path="/crm/data-quality" element={<CrmDataQualityPage />} />
+            <Route path="/crm/settings/pipeline" element={<CrmPipelineSettingsPage />} />
+            <Route path="/crm/settings/scoring" element={<CrmScoringSettingsPage />} />
 
             {/* Guides */}
             <Route path="/guides" element={<Navigate to="/guides/user-guide" replace />} />

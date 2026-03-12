@@ -1,8 +1,20 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  closestCorners,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragStartEvent,
+} from '@dnd-kit/core'
 import { useWorkspaceStore } from '@/stores/workspace.store'
-import { DEAL_STAGES, useDeals, type Deal } from '../hooks/use-deals'
+import { useAuthStore } from '@/stores/auth.store'
+import { DEAL_STAGES, STAGE_PROBABILITY, useDeals, useUpdateDealStage, type Deal } from '../hooks/use-deals'
 import { useContacts } from '../../contacts/hooks/use-contacts'
-import { DealCard } from '../components/deal-card'
+import { PipelineDealCard } from '../components/pipeline-deal-card'
+import { PipelineStageColumn } from '../components/pipeline-stage-column'
 
 const STAGE_COLORS: Record<string, string> = {
   lead: '#94A3B8',
@@ -14,16 +26,18 @@ const STAGE_COLORS: Record<string, string> = {
   closed_lost: '#EF4444',
 }
 
-function formatCurrency(value: number): string {
-  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`
-  if (value >= 1_000) return `$${(value / 1_000).toFixed(1)}K`
-  return `$${value}`
-}
-
 export default function DealsPipelinePage() {
   const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId) ?? ''
+  const currentUser = useAuthStore((s) => s.user)
+
+  const [ownerFilter, setOwnerFilter] = useState<'all' | 'me'>('all')
+  const [activeDeal, setActiveDeal] = useState<Deal | null>(null)
+
   const { data: dealsData, isLoading } = useDeals(workspaceId, { page_size: 200 })
   const { data: contactsData } = useContacts(workspaceId, { page_size: 200 })
+  const updateStage = useUpdateDealStage(workspaceId)
+
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
 
   const contactMap = useMemo(() => {
     const map = new Map<string, string>()
@@ -31,15 +45,52 @@ export default function DealsPipelinePage() {
     return map
   }, [contactsData])
 
+  const filteredDeals = useMemo(() => {
+    const all = dealsData?.items ?? []
+    if (ownerFilter === 'me' && currentUser) {
+      return all.filter((d) => d.owner_id === currentUser.id)
+    }
+    return all
+  }, [dealsData, ownerFilter, currentUser])
+
   const dealsByStage = useMemo(() => {
     const grouped: Record<string, Deal[]> = {}
     for (const stage of DEAL_STAGES) grouped[stage.value] = []
-    for (const deal of dealsData?.items ?? []) {
+    for (const deal of filteredDeals) {
       if (grouped[deal.stage]) grouped[deal.stage].push(deal)
       else if (grouped['lead']) grouped['lead'].push(deal)
     }
     return grouped
-  }, [dealsData])
+  }, [filteredDeals])
+
+  function handleDragStart(e: DragStartEvent) {
+    const deal = filteredDeals.find((d) => d.id === e.active.id)
+    if (deal) setActiveDeal(deal)
+  }
+
+  function handleDragEnd(e: DragEndEvent) {
+    setActiveDeal(null)
+    const { active, over } = e
+    if (!over) return
+
+    const draggedDeal = filteredDeals.find((d) => d.id === active.id)
+    if (!draggedDeal) return
+
+    const overId = String(over.id)
+    let targetStage: string
+
+    if (overId.startsWith('column-')) {
+      targetStage = overId.replace('column-', '')
+    } else {
+      const overDeal = filteredDeals.find((d) => d.id === overId)
+      targetStage = overDeal?.stage ?? draggedDeal.stage
+    }
+
+    if (targetStage === draggedDeal.stage) return
+
+    const probability = STAGE_PROBABILITY[targetStage] ?? draggedDeal.probability
+    updateStage.mutate({ dealId: draggedDeal.id, stage: targetStage, probability })
+  }
 
   if (isLoading) {
     return (
@@ -56,34 +107,49 @@ export default function DealsPipelinePage() {
 
   return (
     <div className="p-6 h-full flex flex-col">
-      <h2 className="text-xl font-semibold text-foreground mb-4">Pipeline</h2>
-      <div className="flex gap-3 overflow-x-auto flex-1 pb-4">
-        {DEAL_STAGES.map((stage) => {
-          const deals = dealsByStage[stage.value] ?? []
-          const stageTotal = deals.reduce((sum, d) => sum + d.value, 0)
-          return (
-            <div key={stage.value} className="flex-shrink-0 w-64 flex flex-col">
-              <div className="flex items-center justify-between mb-2 px-1">
-                <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: STAGE_COLORS[stage.value] }} />
-                  <span className="text-sm font-medium">{stage.label}</span>
-                  <span className="text-xs text-muted-foreground">({deals.length})</span>
-                </div>
-                <span className="text-xs text-muted-foreground">{formatCurrency(stageTotal)}</span>
-              </div>
-              <div className="flex-1 space-y-2 overflow-y-auto rounded-lg bg-muted/30 p-2 min-h-[200px]">
-                {deals.length === 0 ? (
-                  <p className="text-xs text-muted-foreground text-center py-8">No deals</p>
-                ) : (
-                  deals.map((deal) => (
-                    <DealCard key={deal.id} deal={deal} contactName={deal.contact_id ? contactMap.get(deal.contact_id) : undefined} />
-                  ))
-                )}
-              </div>
-            </div>
-          )
-        })}
+      {/* Toolbar */}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-semibold text-foreground">Pipeline</h2>
+        <select
+          value={ownerFilter}
+          onChange={(e) => setOwnerFilter(e.target.value as 'all' | 'me')}
+          className="text-sm border border-border rounded-md px-2 py-1 bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+        >
+          <option value="all">All Deals</option>
+          <option value="me">My Deals</option>
+        </select>
       </div>
+
+      {/* Board */}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCorners}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="flex gap-3 overflow-x-auto flex-1 pb-4">
+          {DEAL_STAGES.map((stage) => (
+            <PipelineStageColumn
+              key={stage.value}
+              stageValue={stage.value}
+              stageLabel={stage.label}
+              color={STAGE_COLORS[stage.value] ?? '#94A3B8'}
+              deals={dealsByStage[stage.value] ?? []}
+              contactMap={contactMap}
+            />
+          ))}
+        </div>
+
+        <DragOverlay>
+          {activeDeal && (
+            <PipelineDealCard
+              deal={activeDeal}
+              contactName={activeDeal.contact_id ? contactMap.get(activeDeal.contact_id) : undefined}
+              overlay
+            />
+          )}
+        </DragOverlay>
+      </DndContext>
     </div>
   )
 }

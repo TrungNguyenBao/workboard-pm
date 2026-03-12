@@ -1,9 +1,12 @@
 import uuid
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
 
+TicketPriority = Literal["low", "medium", "high", "critical"]
+TicketStatus = Literal["open", "in_progress", "resolved", "closed"]
 TICKET_PRIORITIES = ["low", "medium", "high", "critical"]
 TICKET_STATUSES = ["open", "in_progress", "resolved", "closed"]
 
@@ -11,8 +14,8 @@ TICKET_STATUSES = ["open", "in_progress", "resolved", "closed"]
 class TicketCreate(BaseModel):
     subject: str = Field(min_length=1, max_length=255)
     description: str | None = None
-    priority: str = Field(default="medium", max_length=50)
-    status: str = Field(default="open", max_length=50)
+    priority: TicketPriority = "medium"
+    status: TicketStatus = "open"
     contact_id: uuid.UUID | None = None
     account_id: uuid.UUID | None = None
     assigned_to: uuid.UUID | None = None
@@ -21,8 +24,8 @@ class TicketCreate(BaseModel):
 class TicketUpdate(BaseModel):
     subject: str | None = Field(default=None, max_length=255)
     description: str | None = None
-    priority: str | None = Field(default=None, max_length=50)
-    status: str | None = Field(default=None, max_length=50)
+    priority: TicketPriority | None = None
+    status: TicketStatus | None = None
     contact_id: uuid.UUID | None = None
     account_id: uuid.UUID | None = None
     assigned_to: uuid.UUID | None = None

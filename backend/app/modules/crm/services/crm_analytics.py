@@ -1,5 +1,5 @@
 import uuid
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,9 +16,9 @@ def _date_filter(col, start: date | None, end: date | None):
     """Build date range filter conditions."""
     conditions = []
     if start:
-        conditions.append(col >= datetime(start.year, start.month, start.day))
+        conditions.append(col >= datetime(start.year, start.month, start.day, tzinfo=timezone.utc))
     if end:
-        next_day = datetime(end.year, end.month, end.day) + timedelta(days=1)
+        next_day = datetime(end.year, end.month, end.day, tzinfo=timezone.utc) + timedelta(days=1)
         conditions.append(col < next_day)
     return conditions
 
@@ -109,6 +109,17 @@ async def get_crm_analytics(
     else:
         deal_velocity_days = 0
 
+    # Deal velocity by stage: compute avg days per stage using closed deals
+    stage_velocity: list[dict] = []
+    stage_days: dict[str, list[float]] = {}
+    for d in closed_deals:
+        stage_days.setdefault(d.stage, []).append((d.closed_at - d.created_at).days)
+    for stage_name, days_list in stage_days.items():
+        stage_velocity.append({
+            "stage": stage_name,
+            "avg_days": round(sum(days_list) / len(days_list), 1),
+        })
+
     return {
         "total_contacts": total_contacts,
         "total_deals": total_deals,
@@ -128,4 +139,5 @@ async def get_crm_analytics(
         "open_tickets": open_tickets,
         "sales_funnel": sales_funnel,
         "deal_velocity_days": deal_velocity_days,
+        "deal_velocity_by_stage": stage_velocity,
     }

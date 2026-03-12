@@ -46,6 +46,17 @@ export const DEAL_STAGES = [
   { value: 'closed_lost', label: 'Closed Lost' },
 ] as const
 
+/** Default probability per stage */
+export const STAGE_PROBABILITY: Record<string, number> = {
+  lead: 5,
+  qualified: 10,
+  needs_analysis: 20,
+  proposal: 50,
+  negotiation: 75,
+  closed_won: 100,
+  closed_lost: 0,
+}
+
 const base = (wsId: string) => `/crm/workspaces/${wsId}/deals`
 
 export function useDeals(workspaceId: string, filters: DealFilters = {}) {
@@ -76,6 +87,33 @@ export function useUpdateDeal(workspaceId: string) {
   })
 }
 
+export function useUpdateDealStage(workspaceId: string) {
+  const qc = useQueryClient()
+  const queryKey = ['crm-deals', workspaceId]
+  return useMutation({
+    mutationFn: ({ dealId, stage, probability }: { dealId: string; stage: string; probability: number }) =>
+      api.patch(`${base(workspaceId)}/${dealId}`, { stage, probability }).then((r) => r.data),
+    onMutate: async ({ dealId, stage, probability }) => {
+      await qc.cancelQueries({ queryKey })
+      const previous = qc.getQueriesData<PaginatedDeals>({ queryKey })
+      qc.setQueriesData<PaginatedDeals>({ queryKey }, (old) => {
+        if (!old) return old
+        return {
+          ...old,
+          items: old.items.map((d) => d.id === dealId ? { ...d, stage, probability } : d),
+        }
+      })
+      return { previous }
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) {
+        for (const [key, data] of ctx.previous) qc.setQueryData(key, data)
+      }
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey }),
+  })
+}
+
 export function useDeleteDeal(workspaceId: string) {
   const qc = useQueryClient()
   return useMutation({
@@ -90,9 +128,7 @@ export function useCloseDeal(workspaceId: string) {
     mutationFn: ({ dealId, action, loss_reason }: {
       dealId: string; action: 'won' | 'lost'; loss_reason?: string
     }) =>
-      api.post(`${base(workspaceId)}/${dealId}/close`, null, {
-        params: { action, loss_reason },
-      }).then((r) => r.data),
+      api.post(`${base(workspaceId)}/${dealId}/close`, { action, loss_reason }).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['crm-deals', workspaceId] })
       qc.invalidateQueries({ queryKey: ['crm-analytics', workspaceId] })

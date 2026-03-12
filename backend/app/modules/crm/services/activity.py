@@ -19,12 +19,20 @@ async def create_activity(db: AsyncSession, workspace_id: uuid.UUID, data: Activ
         if deal and deal.workspace_id == workspace_id:
             deal.last_activity_date = activity.date
 
-    # Auto-update lead.contacted_at on first activity (SOP 02)
+    # Auto-update lead.contacted_at on first activity (SOP 02) + activity-based scoring (US-003)
     if activity.lead_id:
         from app.modules.crm.models.lead import Lead
         lead = await db.get(Lead, activity.lead_id)
-        if lead and lead.workspace_id == workspace_id and not lead.contacted_at:
-            lead.contacted_at = activity.date
+        if lead and lead.workspace_id == workspace_id:
+            if not lead.contacted_at:
+                lead.contacted_at = activity.date
+            activity_score_map = {
+                "email_open": 5, "click": 10, "form_submit": 15, "call": 15,
+                "demo": 20, "follow_up": 5, "meeting": 20, "note": 2,
+            }
+            points = activity_score_map.get(activity.type, 0)
+            if points:
+                lead.score = min((lead.score or 0) + points, 100)
 
     await db.commit()
     await db.refresh(activity)
@@ -38,6 +46,7 @@ async def list_activities(
     contact_id: uuid.UUID | None = None,
     deal_id: uuid.UUID | None = None,
     lead_id: uuid.UUID | None = None,
+    assigned_to: uuid.UUID | None = None,
     search: str | None = None,
     page: int = 1,
     page_size: int = 20,
@@ -57,8 +66,13 @@ async def list_activities(
     if lead_id:
         q = q.where(Activity.lead_id == lead_id)
         count_q = count_q.where(Activity.lead_id == lead_id)
+    if assigned_to:
+        q = q.where(Activity.owner_id == assigned_to)
+        count_q = count_q.where(Activity.owner_id == assigned_to)
     if search:
-        pattern = f"%{search}%"
+        from app.modules.crm.services.status_flows import escape_like
+
+        pattern = f"%{escape_like(search)}%"
         q = q.where(Activity.subject.ilike(pattern))
         count_q = count_q.where(Activity.subject.ilike(pattern))
 

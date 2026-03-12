@@ -1,6 +1,6 @@
 """Data quality checks for CRM entities."""
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -43,7 +43,7 @@ async def get_data_quality_report(db: AsyncSession, workspace_id: uuid.UUID) -> 
     ) or 0
 
     # 4. Stale contacts (no activity in 90 days)
-    cutoff_90 = datetime.utcnow() - timedelta(days=90)
+    cutoff_90 = datetime.now(timezone.utc) - timedelta(days=90)
     active_contact_ids = (
         select(Activity.contact_id)
         .where(

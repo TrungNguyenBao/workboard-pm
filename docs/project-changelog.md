@@ -7,6 +7,43 @@ Format: `## [version] — YYYY-MM-DD` with grouped entries.
 
 ## [Unreleased] — 2026-03-12
 
+### Added — CRM Improvement Implementation (Phases 1-4, 30 User Stories)
+
+**Phase 1: P0 Critical Gaps (Lead Scoring, Duplicates, Conversion, Pipeline DnD, RBAC)**
+- Activity-based lead scoring: Automatically calculate score on activity creation (email_open +5, click +10, form +15, call +15, demo +20, meeting +20, note +2). Auto-cap at 100. Add score level badges (Cold 0-30, Warm 30-60, Hot 60+).
+- Lead duplicate detection & merge: Case-insensitive email matching with merge endpoint. Return duplicates in creation response. UI modal for side-by-side comparison with merge/create/cancel actions.
+- Lead-to-deal conversion form: Auto-create contact from lead data if not exists. Accept deal title, value, expected_close_date from request body. Support lead status transition to Opportunity.
+- Pipeline kanban drag-drop: Full @dnd-kit integration with 5+ columns, deal count + total value + weighted value per column. Owner filter dropdown for pipeline view.
+- RBAC audit + My Leads toggle: Workspace admin override, My Leads filter to show only assigned leads.
+
+**Phase 2: P0/P1 High (Auto Probability, Stale Leads, Campaigns, Follow-ups)**
+- Auto probability on stage change: Suggest probability based on deal stage (Qualified 10%, Needs Analysis 25%, Proposal 50%, Negotiation 75%). Allow manual override.
+- Stale lead detection fix: Use 30-day activity-based criteria (check Activity.lead_id for most recent date, fallback to contacted_at then created_at). Add disqualify endpoint with reason.
+- Campaign detail page: KPI cards (total leads, cost per lead, conversion rate, ROI). useCampaignStats hook for performance tracking.
+- Follow-ups due widget: Dashboard widget showing overdue accounts with red indicator. Alert system for expired next_follow_up_date.
+- Stale deals navigation: Make stale alerts clickable to navigate to filtered deals list. Add new alert categories: missing_deal_values, high_value_no_activity.
+
+**Phase 3: P1 Feature Gaps (Data Quality, Velocity, Ticket KPIs, Governance)**
+- Data quality report page: Quality score gauge (0-100). Sections for duplicates, missing fields, stale records, ownerless deals. Action buttons per section.
+- Deal velocity analytics: Calculate avg days per stage from deal stage timestamps. Bar chart with bottleneck highlight (longest stage). Group by owner for comparison.
+- Ticket KPIs: Endpoint returns avg resolution time, resolution rate, breakdown by priority. Dashboard cards for ticket metrics.
+- Governance alerts drill-down: Each alert category clickable to navigate to affected records list. Add missing_deal_values, high_value_no_activity alert categories.
+
+**Phase 4: P2 Enhancements (Pipeline Config, Scoring Config, Code Quality)**
+- Pipeline stage configuration: PipelineStage model (name, position, default_probability, workspace_id). Full CRUD + reorder endpoints. Admin-only mutations. Settings page with drag-to-reorder and inline editing.
+- Lead scoring rules configuration: ScoringConfig model (workspace-level JSONB). Get/update endpoints with defaults fallback. Settings page with editable rules table (activity_type → points). Threshold config (Cold max, Warm max).
+- Code quality improvements: Replace datetime.utcnow() with datetime.now(timezone.utc) across 6 files. Escape ILIKE wildcards via escape_like() helper in 7 files. Fix close deal endpoint to use DealCloseRequest body. Enforce campaign status flow (draft → active → completed/cancelled). Add Literal type validation on all schemas. Fix governance stale leads call (hours=48 → days=30).
+
+### Details
+- Total 30 CRM user stories fully implemented (17 gaps resolved from audit)
+- 4 phases: P0 Critical (31 SP) → P0/P1 High (15 SP) → P1 Features (16 SP) → P2 Enhancements (11 SP)
+- All acceptance criteria passed; user stories marked complete in docs/userstories/user-storie-crm.md
+- Development roadmap Phase 17 added with comprehensive status tracking
+- Backend: 8 new endpoints, 2 new models, 4 enhanced services, 12+ code quality fixes
+- Frontend: 7 new components, 5 enhanced hooks, 3 new settings pages, full kanban + drag-drop support
+
+---
+
 ### Added
 
 - Project member management (US-005): Full CRUD API + UI panel in project settings
