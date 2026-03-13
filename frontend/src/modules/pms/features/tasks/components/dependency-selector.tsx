@@ -46,7 +46,6 @@ export function DependencySelector({ projectId, taskId }: Props) {
         <DepList
           label="Blocked by"
           deps={blocking}
-          taskId={taskId}
           onRemove={(id) => removeDep.mutate(id)}
           showBlocking
         />
@@ -55,7 +54,6 @@ export function DependencySelector({ projectId, taskId }: Props) {
         <DepList
           label="Blocking"
           deps={blockedBy}
-          taskId={taskId}
           onRemove={(id) => removeDep.mutate(id)}
           showBlocking={false}
         />
@@ -85,13 +83,11 @@ export function DependencySelector({ projectId, taskId }: Props) {
 function DepList({
   label,
   deps,
-  taskId: _taskId,
   onRemove,
   showBlocking,
 }: {
   label: string
   deps: DependencyResponse[]
-  taskId: string
   onRemove: (depId: string) => void
   showBlocking: boolean
 }) {
