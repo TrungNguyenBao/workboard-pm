@@ -79,14 +79,14 @@ async def test_project_default_sections(client: AsyncClient, auth_headers: dict)
     ws_id = ws_resp.json()["id"]
 
     proj_resp = await client.post(
-        f"/api/v1/workspaces/{ws_id}/projects",
+        f"/api/v1/pms/workspaces/{ws_id}/projects",
         json={"name": "New Project"},
         headers=auth_headers,
     )
     proj_id = proj_resp.json()["id"]
 
     sections_resp = await client.get(
-        f"/api/v1/projects/{proj_id}/sections",
+        f"/api/v1/pms/projects/{proj_id}/sections",
         headers=auth_headers,
     )
     assert sections_resp.status_code == 200

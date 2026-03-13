@@ -17,7 +17,7 @@ async def _setup_workspace_and_project(client: AsyncClient, headers: dict) -> tu
     ws_id = ws.json()["id"]
 
     proj = await client.post(
-        f"/api/v1/workspaces/{ws_id}/projects",
+        f"/api/v1/pms/workspaces/{ws_id}/projects",
         json={"name": "Test Project", "project_type": "agile"},
         headers=headers,
     )
