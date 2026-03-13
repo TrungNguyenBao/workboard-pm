@@ -8,7 +8,7 @@ set -euo pipefail
 DEPLOY_DIR="${DEPLOY_DIR:?DEPLOY_DIR env var is required}"
 ENV_FILE_PATH="${ENV_FILE_PATH:?ENV_FILE_PATH env var is required}"
 COMPOSE_FILE="$DEPLOY_DIR/docker-compose.prod.yml"
-HEALTH_URL="http://localhost:8000/api/v1/health"
+HEALTH_URL="http://localhost:8001/api/v1/health"
 BACKUP_DIR="$DEPLOY_DIR/.backups"
 MAX_RETRIES=15
 RETRY_INTERVAL=4
