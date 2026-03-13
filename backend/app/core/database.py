@@ -20,7 +20,7 @@ class Base(DeclarativeBase):
     pass
 
 
-class PORTABLE_JSONB(TypeDecorator):
+class PORTABLE_JSONB(TypeDecorator):  # noqa: N801
     """PostgreSQL JSONB that degrades to JSON on other dialects (for tests)."""
 
     impl = JSON

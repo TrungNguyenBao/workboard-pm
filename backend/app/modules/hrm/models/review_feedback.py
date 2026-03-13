@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy import DateTime, ForeignKey, String, Text
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import PORTABLE_JSONB, Base
 from app.models.base import TimestampMixin
