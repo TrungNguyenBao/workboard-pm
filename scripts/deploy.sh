@@ -29,7 +29,7 @@ check_prerequisites() {
 
 # ── Step 1b: Ensure SSL cert exists (auto-generate self-signed if missing) ──
 ensure_ssl_cert() {
-  local ssl_dir="/etc/nginx/ssl/a-erp"
+  local ssl_dir="$DEPLOY_DIR/ssl"
   if [ ! -f "$ssl_dir/server.crt" ] || [ ! -f "$ssl_dir/server.key" ]; then
     log "SSL cert not found — generating self-signed cert..."
     mkdir -p "$ssl_dir"
