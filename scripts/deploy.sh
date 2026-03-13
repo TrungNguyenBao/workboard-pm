@@ -27,6 +27,23 @@ check_prerequisites() {
   [ -f "$COMPOSE_FILE" ] || fail "compose file not found: $COMPOSE_FILE (sync must run first)"
 }
 
+# ── Step 1b: Ensure SSL cert exists (auto-generate self-signed if missing) ──
+ensure_ssl_cert() {
+  local ssl_dir="/etc/nginx/ssl/a-erp"
+  if [ ! -f "$ssl_dir/server.crt" ] || [ ! -f "$ssl_dir/server.key" ]; then
+    log "SSL cert not found — generating self-signed cert..."
+    mkdir -p "$ssl_dir"
+    openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+      -keyout "$ssl_dir/server.key" \
+      -out "$ssl_dir/server.crt" \
+      -subj "/CN=localhost" \
+      2>/dev/null
+    log "Self-signed SSL cert generated at $ssl_dir"
+  else
+    log "SSL cert already exists — skipping generation."
+  fi
+}
+
 # ── Step 2: Sync code from runner workspace to deploy dir ───────────────────
 sync_code() {
   log "Syncing code to $DEPLOY_DIR..."
@@ -185,6 +202,7 @@ main() {
 
   sync_code
   check_prerequisites
+  ensure_ssl_cert
   backup_database
   backup_images
   build_images
