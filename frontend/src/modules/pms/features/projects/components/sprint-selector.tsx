@@ -153,6 +153,7 @@ export function SprintSelector({ projectId, selectedSprintId, onSelect }: Props)
 
 function DaysRemainingBadge({ endDate }: { endDate: string | null }) {
   if (!endDate) return null
+  // eslint-disable-next-line react-hooks/react-compiler -- Date.now() impure call acceptable in render for date diff
   const diff = Math.ceil((new Date(endDate).getTime() - Date.now()) / 86_400_000)
   let text: string
   const variant: 'default' | 'outline' = 'outline'

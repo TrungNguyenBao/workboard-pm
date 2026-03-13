@@ -75,6 +75,7 @@ export default function BoardPage() {
 
   // Auto-select active sprint on mount for agile projects
   const activeSprint = sprints.find((s) => s.status === 'active')
+  // eslint-disable-next-line react-hooks/react-compiler -- sync setState on mount is intentional
   useEffect(() => {
     if (isAgile && selectedSprintId === null && activeSprint) {
       setSelectedSprintId(activeSprint.id)

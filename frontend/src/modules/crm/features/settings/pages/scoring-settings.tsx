@@ -28,6 +28,7 @@ export default function ScoringSettingsPage() {
   const [warmMax, setWarmMax] = useState(60)
   const [dirty, setDirty] = useState(false)
 
+  // eslint-disable-next-line react-hooks/react-compiler -- sync setState on data load is intentional
   useEffect(() => {
     if (!config) return
     const loaded = toRules(config.rules.activity_scores ?? {})
