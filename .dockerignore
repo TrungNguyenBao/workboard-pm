@@ -16,7 +16,6 @@ backend/.ruff_cache
 .opencode
 
 # Docs & plans
-docs
 plans
 *.md
 *.txt
