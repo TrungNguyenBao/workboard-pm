@@ -37,7 +37,6 @@ export function DataTable<T>({
 }: DataTableProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([])
 
-  // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table API cannot be memoized
   const table = useReactTable({
     data,
     columns,

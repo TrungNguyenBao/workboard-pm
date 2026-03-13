@@ -22,6 +22,10 @@ export default defineConfig([
     rules: {
       // Downgrade to warn — explicit any is sometimes necessary for dynamic API responses
       '@typescript-eslint/no-explicit-any': 'warn',
+      // Downgrade to warn — sync setState in effects is acceptable for form init on data load
+      'react-hooks/set-state-in-effect': 'warn',
+      // Downgrade to warn — TanStack Table and similar libraries have unavoidable incompatibilities
+      'react-hooks/incompatible-library': 'warn',
     },
   },
 ])
