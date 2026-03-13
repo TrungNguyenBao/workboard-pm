@@ -19,5 +19,9 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      // Downgrade to warn — explicit any is sometimes necessary for dynamic API responses
+      '@typescript-eslint/no-explicit-any': 'warn',
+    },
   },
 ])
