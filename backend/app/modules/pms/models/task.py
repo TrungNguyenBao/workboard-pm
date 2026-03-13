@@ -9,12 +9,11 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
 )
-from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.dialects.postgresql import TSVECTOR as PG_TSVECTOR
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import TypeDecorator
 
-from app.core.database import Base
+from app.core.database import PORTABLE_JSONB, Base
 from app.models.base import SoftDeleteMixin, TimestampMixin
 
 
@@ -73,7 +72,7 @@ class Task(Base, TimestampMixin, SoftDeleteMixin):
     search_vector: Mapped[str | None] = mapped_column(TSVECTOR, nullable=True)
 
     # Custom fields (JSONB map of field_definition_id -> value)
-    custom_fields: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    custom_fields: Mapped[dict | None] = mapped_column(PORTABLE_JSONB, nullable=True)
 
     # Agile fields
     sprint_id: Mapped[uuid.UUID | None] = mapped_column(

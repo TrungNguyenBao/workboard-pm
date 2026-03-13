@@ -1,10 +1,9 @@
 import uuid
 
 from sqlalchemy import ForeignKey, Index, String
-from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.core.database import Base
+from app.core.database import PORTABLE_JSONB, Base
 from app.models.base import TimestampMixin
 
 
@@ -20,7 +19,7 @@ class ActivityLog(Base, TimestampMixin):
     entity_id: Mapped[uuid.UUID] = mapped_column(index=True)
     actor_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"))
     action: Mapped[str] = mapped_column(String(50))
-    changes: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    data: Mapped[dict | None] = mapped_column(PORTABLE_JSONB, nullable=True)
 
     actor: Mapped["User"] = relationship(foreign_keys=[actor_id])  # noqa: F821
 

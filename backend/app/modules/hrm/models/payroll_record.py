@@ -2,10 +2,9 @@ import uuid
 from decimal import Decimal
 
 from sqlalchemy import ForeignKey, Integer, Numeric, String
-from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.core.database import Base
+from app.core.database import PORTABLE_JSONB, Base
 from app.models.base import TimestampMixin
 
 
@@ -17,13 +16,13 @@ class PayrollRecord(Base, TimestampMixin):
     period: Mapped[str] = mapped_column(String(7))  # YYYY-MM
     gross: Mapped[float] = mapped_column(Numeric(12, 2), default=0)
     net: Mapped[float] = mapped_column(Numeric(12, 2), default=0)
-    deductions: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    deductions: Mapped[dict | None] = mapped_column(PORTABLE_JSONB, nullable=True)
     status: Mapped[str] = mapped_column(String(20), default="draft")  # draft, approved, paid
     workspace_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("workspaces.id"), index=True)
 
     # Enhanced C&B fields
     base_salary: Mapped[Decimal | None] = mapped_column(Numeric(12, 2), nullable=True)
-    allowances: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    allowances: Mapped[dict | None] = mapped_column(PORTABLE_JSONB, nullable=True)
     bhxh_employee: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=0)
     bhxh_employer: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=0)
     bhyt_employee: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=0)

@@ -1,0 +1,80 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.13, pytest-9.0.2, pluggy-1.6.0 -- /home/runner/work/workboard-pm/workboard-pm/backend/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/runner/work/workboard-pm/workboard-pm/backend
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.12.1, asyncio-1.3.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 31 items
+
+tests/test_auth.py::test_register_success ERROR                          [  3%]
+tests/test_auth.py::test_register_duplicate_email ERROR                  [  6%]
+tests/test_auth.py::test_login_success ERROR                             [  9%]
+tests/test_auth.py::test_login_wrong_password ERROR                      [ 12%]
+tests/test_auth.py::test_me_authenticated ERROR                          [ 16%]
+tests/test_auth.py::test_me_unauthenticated ERROR                        [ 19%]
+tests/test_auth.py::test_logout ERROR                                    [ 22%]
+tests/test_rbac.py::test_workspace_create_and_get ERROR                  [ 25%]
+tests/test_rbac.py::test_non_member_cannot_access_workspace ERROR        [ 29%]
+tests/test_rbac.py::test_duplicate_slug_rejected ERROR                   [ 32%]
+tests/test_rbac.py::test_project_default_sections ERROR                  [ 35%]
+tests/test_sprint_crud.py::test_create_sprint ERROR                      [ 38%]
+tests/test_sprint_crud.py::test_list_sprints ERROR                       [ 41%]
+tests/test_sprint_crud.py::test_list_sprints_status_filter ERROR         [ 45%]
+tests/test_sprint_crud.py::test_get_sprint ERROR                         [ 48%]
+tests/test_sprint_crud.py::test_update_sprint ERROR                      [ 51%]
+tests/test_sprint_crud.py::test_delete_sprint ERROR                      [ 54%]
+tests/test_sprint_crud.py::test_get_nonexistent_sprint ERROR             [ 58%]
+tests/test_sprint_lifecycle.py::test_start_sprint ERROR                  [ 61%]
+tests/test_sprint_lifecycle.py::test_start_sprint_already_active_returns_400 ERROR [ 64%]
+tests/test_sprint_lifecycle.py::test_only_one_active_sprint ERROR        [ 67%]
+tests/test_sprint_lifecycle.py::test_complete_sprint ERROR               [ 70%]
+tests/test_sprint_lifecycle.py::test_complete_planning_sprint_returns_400 ERROR [ 74%]
+tests/test_sprint_lifecycle.py::test_backlog_returns_unsprinted_tasks ERROR [ 77%]
+tests/test_sprint_lifecycle.py::test_backlog_excludes_sprinted_tasks ERROR [ 80%]
+tests/test_sprint_lifecycle.py::test_task_agile_fields_round_trip ERROR  [ 83%]
+tests/test_tasks.py::test_create_task ERROR                              [ 87%]
+                if column.primary_key:
+                    first_pk = True
+            except exc.CompileError as ce:
+>               raise exc.CompileError(
+                    "(in table '%s', column '%s'): %s"
+                    % (table.description, column.name, ce.args[0])
+                ) from ce
+E               sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+
+.venv/lib/python3.12/site-packages/sqlalchemy/sql/compiler.py:6848: CompileError
+=========================== short test summary info ============================
+ERROR tests/test_auth.py::test_register_success - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_auth.py::test_register_duplicate_email - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_auth.py::test_login_success - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_auth.py::test_login_wrong_password - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_auth.py::test_me_authenticated - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_auth.py::test_me_unauthenticated - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_auth.py::test_logout - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_rbac.py::test_workspace_create_and_get - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_rbac.py::test_non_member_cannot_access_workspace - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_rbac.py::test_duplicate_slug_rejected - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_rbac.py::test_project_default_sections - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_sprint_crud.py::test_create_sprint - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_sprint_crud.py::test_list_sprints - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_sprint_crud.py::test_list_sprints_status_filter - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_sprint_crud.py::test_get_sprint - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_sprint_crud.py::test_update_sprint - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_sprint_crud.py::test_delete_sprint - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_sprint_crud.py::test_get_nonexistent_sprint - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_sprint_lifecycle.py::test_start_sprint - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_sprint_lifecycle.py::test_start_sprint_already_active_returns_400 - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_sprint_lifecycle.py::test_only_one_active_sprint - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_sprint_lifecycle.py::test_complete_sprint - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_sprint_lifecycle.py::test_complete_planning_sprint_returns_400 - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_sprint_lifecycle.py::test_backlog_returns_unsprinted_tasks - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_sprint_lifecycle.py::test_backlog_excludes_sprinted_tasks - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_sprint_lifecycle.py::test_task_agile_fields_round_trip - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_tasks.py::test_create_task - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_tasks.py::test_list_tasks - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_tasks.py::test_update_task_status - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_tasks.py::test_delete_task - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+ERROR tests/test_tasks.py::test_move_task - sqlalchemy.exc.CompileError: (in table 'scoring_configs', column 'rules'): Compiler <sqlalchemy.dialects.sqlite.base.SQLiteTypeCompiler object at 0x7fa70a24c8c0> can't render element of type JSONB
+============================= 31 errors in 19.41s =
