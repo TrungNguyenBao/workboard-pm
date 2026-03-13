@@ -26,7 +26,7 @@ async def create_activity(
         entity_id=entity_id,
         actor_id=actor_id,
         action=action,
-        changes=changes,
+        data=changes,  # model field is 'data', service param is 'changes'
     )
     db.add(entry)
     await db.commit()
