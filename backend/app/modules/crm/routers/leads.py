@@ -1,6 +1,7 @@
 import uuid
 
 from fastapi import APIRouter, Depends, Query, status
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -25,7 +26,6 @@ from app.modules.crm.services.lead import (
     update_lead,
 )
 from app.modules.crm.services.lead_workflows import merge_leads
-from pydantic import BaseModel
 
 
 class DisqualifyRequest(BaseModel):
@@ -154,6 +154,7 @@ async def disqualify(
 ):
     """Set lead status to disqualified and store the reason."""
     from fastapi import HTTPException
+
     from app.modules.crm.services.status_flows import LEAD_STATUS_TRANSITIONS, validate_transition
 
     lead = await get_lead(db, lead_id, workspace_id)

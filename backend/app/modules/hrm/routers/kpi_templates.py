@@ -6,8 +6,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
-from app.schemas.pagination import PaginatedResponse
-from app.modules.hrm.schemas.kpi_template import KpiTemplateCreate, KpiTemplateResponse, KpiTemplateUpdate
+from app.modules.hrm.schemas.kpi_template import (
+    KpiTemplateCreate,
+    KpiTemplateResponse,
+    KpiTemplateUpdate,
+)
 from app.modules.hrm.services.kpi_template import (
     create_kpi_template,
     delete_kpi_template,
@@ -15,6 +18,7 @@ from app.modules.hrm.services.kpi_template import (
     list_kpi_templates,
     update_kpi_template,
 )
+from app.schemas.pagination import PaginatedResponse
 
 router = APIRouter(tags=["hrm"])
 

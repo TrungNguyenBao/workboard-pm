@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
-from app.schemas.pagination import PaginatedResponse
 from app.modules.hrm.schemas.purchase_item import (
     PurchaseItemCreate,
     PurchaseItemResponse,
@@ -19,6 +18,7 @@ from app.modules.hrm.services.purchase_item import (
     list_purchase_items,
     update_purchase_item,
 )
+from app.schemas.pagination import PaginatedResponse
 
 router = APIRouter(tags=["hrm"])
 

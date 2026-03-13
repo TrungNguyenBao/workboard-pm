@@ -4,7 +4,6 @@ from decimal import Decimal
 
 from pydantic import BaseModel, Field, field_validator
 
-
 PERIOD_RE = re.compile(r"^\d{4}(-\d{2}|-Q[1-4]|-HY[12])?$")
 
 

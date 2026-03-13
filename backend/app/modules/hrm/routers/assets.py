@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
-from app.schemas.pagination import PaginatedResponse
 from app.modules.hrm.schemas.asset import AssetCreate, AssetResponse, AssetUpdate
 from app.modules.hrm.services.asset import (
     create_asset,
@@ -15,6 +14,7 @@ from app.modules.hrm.services.asset import (
     list_assets,
     update_asset,
 )
+from app.schemas.pagination import PaginatedResponse
 
 router = APIRouter(tags=["hrm"])
 

@@ -143,7 +143,6 @@ async def seed_hrm(
     await session.execute(text("UPDATE departments SET manager_id=:mgr WHERE id=:dept"), {"mgr": emp_ids[4], "dept": dept_ids[3]})
 
     # Contracts (8) — one per employee
-    from datetime import date
     contract_data = [
         # emp_idx, contract_type, start_days_ago, end_days, base_salary, allowances, status
         (0, "indefinite", 730, None,  45_000_000, {"transport": 1_000_000, "meal": 730_000}, "active"),

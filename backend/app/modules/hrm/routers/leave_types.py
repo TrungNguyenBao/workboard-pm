@@ -6,15 +6,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
-from app.schemas.pagination import PaginatedResponse
 from app.modules.hrm.schemas.leave_type import LeaveTypeCreate, LeaveTypeResponse, LeaveTypeUpdate
 from app.modules.hrm.services.leave_type import (
     create_leave_type,
     delete_leave_type,
-    get_leave_type,
     list_leave_types,
     update_leave_type,
 )
+from app.schemas.pagination import PaginatedResponse
 
 router = APIRouter(tags=["hrm"])
 

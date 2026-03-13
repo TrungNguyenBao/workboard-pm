@@ -4,7 +4,6 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-
 CampaignType = Literal["email", "ads", "event", "social"]
 CampaignStatus = Literal["draft", "active", "completed", "cancelled"]
 CAMPAIGN_TYPES = ["email", "ads", "event", "social"]

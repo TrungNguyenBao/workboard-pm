@@ -8,14 +8,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
-from app.schemas.pagination import PaginatedResponse
+from app.modules.hrm.dependencies.rbac import require_hrm_role
 from app.modules.hrm.models.candidate import Candidate
 from app.modules.hrm.schemas.offer import (
     OfferCreate,
     OfferResponse,
     OfferUpdate,
 )
-from app.modules.hrm.dependencies.rbac import require_hrm_role
 from app.modules.hrm.services.email_notifications import offer_sent_email
 from app.modules.hrm.services.offer import (
     accept_offer,
@@ -28,6 +27,7 @@ from app.modules.hrm.services.offer import (
     send_offer,
     update_offer,
 )
+from app.schemas.pagination import PaginatedResponse
 
 log = logging.getLogger(__name__)
 

@@ -1,8 +1,17 @@
 from fastapi import APIRouter
 
 from app.modules.crm.routers import (
-    accounts, activities, analytics, campaigns, contacts, deals, leads,
-    pipeline_stages, scoring_config, tickets, workflows,
+    accounts,
+    activities,
+    analytics,
+    campaigns,
+    contacts,
+    deals,
+    leads,
+    pipeline_stages,
+    scoring_config,
+    tickets,
+    workflows,
 )
 
 crm_router = APIRouter(prefix="/crm", tags=["crm"])

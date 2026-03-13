@@ -6,7 +6,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
-from app.modules.hrm.schemas.exit_interview import ExitInterviewCreate, ExitInterviewResponse, ExitInterviewUpdate
+from app.modules.hrm.schemas.exit_interview import (
+    ExitInterviewCreate,
+    ExitInterviewResponse,
+    ExitInterviewUpdate,
+)
 from app.modules.hrm.services.exit_interview import (
     create_exit_interview,
     get_exit_interview,

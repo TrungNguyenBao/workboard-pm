@@ -10,9 +10,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.modules.hrm.models.attendance_record import AttendanceRecord
 from app.modules.hrm.models.employee import Employee
 from app.modules.hrm.schemas.attendance_record import (
+    AttendanceMonthlySummary,
     AttendanceRecordCreate,
     AttendanceRecordUpdate,
-    AttendanceMonthlySummary,
 )
 
 

@@ -6,7 +6,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.hrm.models.overtime_request import OvertimeRequest
-from app.modules.hrm.schemas.overtime_request import OvertimeRequestCreate, OvertimeRequestUpdate
+from app.modules.hrm.schemas.overtime_request import OvertimeRequestCreate
 from app.modules.hrm.services.status_transitions import validate_transition
 
 OT_TRANSITIONS: dict[str, list[str]] = {

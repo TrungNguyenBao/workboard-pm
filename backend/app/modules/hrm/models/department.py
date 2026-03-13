@@ -1,10 +1,19 @@
+from __future__ import annotations
+
 import uuid
+from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
 from app.models.base import TimestampMixin
+
+if TYPE_CHECKING:
+    from app.models.workspace import Workspace
+
+    from .employee import Employee
+    from .position import Position
 
 
 class Department(Base, TimestampMixin):

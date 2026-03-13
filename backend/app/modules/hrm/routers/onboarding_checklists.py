@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
-from app.schemas.pagination import PaginatedResponse
 from app.modules.hrm.schemas.onboarding_checklist import (
     OnboardingChecklistCreate,
     OnboardingChecklistResponse,
@@ -21,6 +20,7 @@ from app.modules.hrm.services.onboarding_checklist import (
     toggle_completion,
     update_onboarding_checklist,
 )
+from app.schemas.pagination import PaginatedResponse
 
 router = APIRouter(tags=["hrm"])
 

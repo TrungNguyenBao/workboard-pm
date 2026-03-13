@@ -6,7 +6,10 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.hrm.models.onboarding_checklist import OnboardingChecklist
-from app.modules.hrm.schemas.onboarding_checklist import OnboardingChecklistCreate, OnboardingChecklistUpdate
+from app.modules.hrm.schemas.onboarding_checklist import (
+    OnboardingChecklistCreate,
+    OnboardingChecklistUpdate,
+)
 
 DEFAULT_TASKS = [
     ("IT setup", "Email account setup"),

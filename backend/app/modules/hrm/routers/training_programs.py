@@ -6,13 +6,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
-from app.schemas.pagination import PaginatedResponse
+from app.modules.hrm.dependencies.rbac import require_hrm_role
 from app.modules.hrm.schemas.training_program import (
     TrainingProgramCreate,
     TrainingProgramResponse,
     TrainingProgramUpdate,
 )
-from app.modules.hrm.dependencies.rbac import require_hrm_role
 from app.modules.hrm.services.training_program import (
     approve_training,
     complete_training,
@@ -23,6 +22,7 @@ from app.modules.hrm.services.training_program import (
     start_training,
     update_training_program,
 )
+from app.schemas.pagination import PaginatedResponse
 
 router = APIRouter(tags=["hrm"])
 

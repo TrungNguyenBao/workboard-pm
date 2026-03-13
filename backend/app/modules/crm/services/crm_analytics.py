@@ -30,7 +30,6 @@ async def get_crm_analytics(
     end_date: date | None = None,
 ) -> dict:
     """Aggregate CRM analytics for the workspace dashboard."""
-    ws = [Contact.workspace_id == workspace_id]
     date_conds = _date_filter(Deal.created_at, start_date, end_date)
 
     total_contacts = await db.scalar(
@@ -38,12 +37,6 @@ async def get_crm_analytics(
     ) or 0
     total_deals = await db.scalar(
         select(func.count(Deal.id)).where(Deal.workspace_id == workspace_id, *date_conds)
-    ) or 0
-    total_leads = await db.scalar(
-        select(func.count(Lead.id)).where(
-            Lead.workspace_id == workspace_id,
-            *_date_filter(Lead.created_at, start_date, end_date),
-        )
     ) or 0
     total_activities = await db.scalar(
         select(func.count(Activity.id)).where(Activity.workspace_id == workspace_id)

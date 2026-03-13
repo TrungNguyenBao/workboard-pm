@@ -8,7 +8,6 @@ from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
 from app.models.workspace import WorkspaceMembership
-from app.schemas.pagination import PaginatedResponse
 from app.modules.hrm.dependencies.rbac import require_hrm_role
 from app.modules.hrm.schemas.purchase_request import (
     PurchaseRequestCreate,
@@ -25,6 +24,7 @@ from app.modules.hrm.services.purchase_request import (
     submit_request,
     update_purchase_request,
 )
+from app.schemas.pagination import PaginatedResponse
 
 router = APIRouter(tags=["hrm"])
 

@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
-from app.schemas.pagination import PaginatedResponse
 from app.modules.hrm.schemas.department import (
     DepartmentCreate,
     DepartmentResponse,
@@ -21,6 +20,7 @@ from app.modules.hrm.services.department import (
     update_department,
 )
 from app.modules.hrm.services.org_tree import get_headcount_summary, get_org_tree
+from app.schemas.pagination import PaginatedResponse
 
 router = APIRouter(tags=["hrm"])
 

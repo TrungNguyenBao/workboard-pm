@@ -8,7 +8,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
-from app.schemas.pagination import PaginatedResponse
 from app.modules.hrm.dependencies.rbac import require_hrm_role
 from app.modules.hrm.models.employee import Employee
 from app.modules.hrm.models.leave_type import LeaveType
@@ -26,6 +25,7 @@ from app.modules.hrm.services.leave_request import (
     reject_leave_request,
     update_leave_request,
 )
+from app.schemas.pagination import PaginatedResponse
 
 log = logging.getLogger(__name__)
 

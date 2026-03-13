@@ -5,7 +5,10 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.hrm.models.recruitment_request import RecruitmentRequest
-from app.modules.hrm.schemas.recruitment_request import RecruitmentRequestCreate, RecruitmentRequestUpdate
+from app.modules.hrm.schemas.recruitment_request import (
+    RecruitmentRequestCreate,
+    RecruitmentRequestUpdate,
+)
 from app.modules.hrm.services.org_tree import get_headcount_summary
 from app.modules.hrm.services.status_transitions import validate_transition
 

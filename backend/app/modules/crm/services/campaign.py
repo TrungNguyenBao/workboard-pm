@@ -96,7 +96,10 @@ async def get_campaign_stats(db: AsyncSession, campaign_id: uuid.UUID, workspace
 async def update_campaign(
     db: AsyncSession, campaign_id: uuid.UUID, workspace_id: uuid.UUID, data: CampaignUpdate
 ) -> Campaign:
-    from app.modules.crm.services.status_flows import CAMPAIGN_STATUS_TRANSITIONS, validate_transition
+    from app.modules.crm.services.status_flows import (
+        CAMPAIGN_STATUS_TRANSITIONS,
+        validate_transition,
+    )
 
     campaign = await get_campaign(db, campaign_id, workspace_id)
     updates = data.model_dump(exclude_none=True)

@@ -19,6 +19,6 @@ async def seed_pms(
     task_ids = await seed_pms_tasks(session, ctx)
     await seed_pms_extras(session, ws_id, ctx, task_ids, demo_id, alice_id, bob_id)
     print(
-        f"  PMS: 3 projects, 9 sections, 3 custom fields, "
-        f"18 tasks (3 subtasks), 5 comments, 2 goals, 5 tags"
+        "  PMS: 3 projects, 9 sections, 3 custom fields, "
+        "18 tasks (3 subtasks), 5 comments, 2 goals, 5 tags"
     )

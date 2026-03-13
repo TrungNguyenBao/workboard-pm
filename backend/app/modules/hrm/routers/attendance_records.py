@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
-from app.schemas.pagination import PaginatedResponse
 from app.modules.hrm.schemas.attendance_record import (
     AttendanceMonthlySummary,
     AttendanceRecordCreate,
@@ -21,6 +20,7 @@ from app.modules.hrm.services.attendance_record import (
     list_attendance,
     update_attendance,
 )
+from app.schemas.pagination import PaginatedResponse
 
 router = APIRouter(tags=["hrm"])
 

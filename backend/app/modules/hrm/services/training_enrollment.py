@@ -7,7 +7,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.hrm.models.training_enrollment import TrainingEnrollment
-from app.modules.hrm.schemas.training_enrollment import TrainingEnrollmentCreate, TrainingEnrollmentUpdate
+from app.modules.hrm.schemas.training_enrollment import (
+    TrainingEnrollmentCreate,
+    TrainingEnrollmentUpdate,
+)
 
 
 async def create_training_enrollment(

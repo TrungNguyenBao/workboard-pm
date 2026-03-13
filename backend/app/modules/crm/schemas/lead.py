@@ -4,7 +4,6 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-
 LeadSource = Literal["website", "ads", "form", "referral", "manual"]
 LeadStatus = Literal["new", "contacted", "qualified", "opportunity", "lost", "disqualified"]
 LEAD_SOURCES = ["website", "ads", "form", "referral", "manual"]

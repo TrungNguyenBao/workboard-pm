@@ -30,8 +30,8 @@ from app.modules.hrm.routers import (
     resignations,
     review_feedback,
     salary_history,
-    training_programs,
     training_enrollments,
+    training_programs,
 )
 
 hrm_router = APIRouter(prefix="/hrm", tags=["hrm"])

@@ -3,7 +3,6 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field
 
-
 ACTIVITY_TYPES = ["call", "email", "meeting", "demo", "follow_up"]
 
 

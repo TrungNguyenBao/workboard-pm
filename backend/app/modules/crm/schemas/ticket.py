@@ -4,7 +4,6 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-
 TicketPriority = Literal["low", "medium", "high", "critical"]
 TicketStatus = Literal["open", "in_progress", "resolved", "closed"]
 TICKET_PRIORITIES = ["low", "medium", "high", "critical"]

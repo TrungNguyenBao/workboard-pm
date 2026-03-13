@@ -1,7 +1,9 @@
 import os
 import time
 from contextlib import asynccontextmanager
+from pathlib import Path
 
+import arq
 import structlog
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,6 +15,7 @@ from app.api.v1.router import api_router
 from app.core.config import settings
 from app.core.logging_config import setup_logging
 from app.dependencies.rate_limit import limiter
+from app.worker.tasks import WorkerSettings
 
 logger = structlog.get_logger()
 
@@ -31,8 +34,6 @@ async def lifespan(app: FastAPI):
         rate_limiting=settings.RATE_LIMIT_ENABLED,
     )
     # Create ARQ pool for background job enqueueing from API handlers
-    import arq
-    from app.worker.tasks import WorkerSettings
     arq_pool = await arq.create_pool(WorkerSettings.from_config().redis_settings)
     app.state.arq_pool = arq_pool
     yield
@@ -83,7 +84,7 @@ if os.path.exists(settings.UPLOAD_DIR):
     app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
 
 # Serve user guide HTML files
-from pathlib import Path
+
 _docs_dir = Path(__file__).resolve().parents[2] / "docs"
 if _docs_dir.exists():
     app.mount("/guides-static", StaticFiles(directory=str(_docs_dir), html=True), name="guides")

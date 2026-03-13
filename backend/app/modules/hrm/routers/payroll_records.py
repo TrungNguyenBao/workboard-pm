@@ -8,14 +8,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
-from app.schemas.pagination import PaginatedResponse
+from app.modules.hrm.dependencies.rbac import require_hrm_role
 from app.modules.hrm.models.employee import Employee
 from app.modules.hrm.schemas.payroll_record import (
     PayrollRecordCreate,
     PayrollRecordResponse,
     PayrollRecordUpdate,
 )
-from app.modules.hrm.dependencies.rbac import require_hrm_role
 from app.modules.hrm.services.email_notifications import payroll_published_email
 from app.modules.hrm.services.payroll_record import (
     approve_payroll,
@@ -26,6 +25,7 @@ from app.modules.hrm.services.payroll_record import (
     review_payroll,
     update_payroll_record,
 )
+from app.schemas.pagination import PaginatedResponse
 
 log = logging.getLogger(__name__)
 

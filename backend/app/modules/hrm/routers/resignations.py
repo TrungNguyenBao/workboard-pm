@@ -6,9 +6,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
-from app.schemas.pagination import PaginatedResponse
-from app.modules.hrm.schemas.resignation import ResignationCreate, ResignationResponse, ResignationUpdate
 from app.modules.hrm.dependencies.rbac import require_hrm_role
+from app.modules.hrm.schemas.resignation import (
+    ResignationCreate,
+    ResignationResponse,
+    ResignationUpdate,
+)
 from app.modules.hrm.services.resignation import (
     advance_resignation,
     approve_resignation,
@@ -19,6 +22,7 @@ from app.modules.hrm.services.resignation import (
     reject_resignation,
     update_resignation,
 )
+from app.schemas.pagination import PaginatedResponse
 
 router = APIRouter(tags=["hrm"])
 

@@ -9,7 +9,7 @@ from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
 from app.models.workspace import WorkspaceMembership
 from app.modules.pms.dependencies.rbac import require_project_role
-from app.modules.pms.models.project import Project, ProjectMembership
+from app.modules.pms.models.project import ProjectMembership
 from app.modules.pms.schemas.project import (
     ProjectCreate,
     ProjectResponse,

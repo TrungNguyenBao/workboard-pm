@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
-from app.schemas.pagination import PaginatedResponse
 from app.modules.hrm.schemas.performance_review import (
     PerformanceReviewCreate,
     PerformanceReviewResponse,
@@ -21,6 +20,7 @@ from app.modules.hrm.services.performance_review import (
     submit_review,
     update_performance_review,
 )
+from app.schemas.pagination import PaginatedResponse
 
 router = APIRouter(tags=["hrm"])
 

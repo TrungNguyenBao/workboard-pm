@@ -24,7 +24,7 @@ async def distribute_leads_endpoint(
     from app.modules.crm.services.lead_workflows import distribute_leads
 
     leads = await distribute_leads(db, workspace_id)
-    return {"distributed_count": len(leads), "lead_ids": [str(l.id) for l in leads]}
+    return {"distributed_count": len(leads), "lead_ids": [str(lead.id) for lead in leads]}
 
 
 @router.get("/workspaces/{workspace_id}/leads/stale")
