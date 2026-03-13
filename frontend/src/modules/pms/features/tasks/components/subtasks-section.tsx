@@ -9,7 +9,7 @@ interface Props {
   projectId: string
   parentTaskId: string
   newSubtask: string
-  subtaskRef: React.RefObject<HTMLInputElement>
+  subtaskRef: React.RefObject<HTMLInputElement | null>
   isPending: boolean
   onNewSubtaskChange: (val: string) => void
   onCreateSubtask: () => void
