@@ -52,6 +52,8 @@ jobs:
           uv run ruff check app/
           
       - name: Backend Tests
+        env:
+          RATE_LIMIT_ENABLED: "false"
         run: |
           cd backend
           uv run pytest -v
