@@ -5,6 +5,8 @@ COPY frontend/package.json ./
 COPY frontend/package-lock.json ./
 RUN npm ci
 COPY frontend/ .
+# sync-guides.js looks for /docs at build time
+COPY docs/ /docs/
 RUN npm run build
 
 # Stage 2: nginx serves static files + proxies /api to backend
