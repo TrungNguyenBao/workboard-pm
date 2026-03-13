@@ -1,4 +1,4 @@
-import { AlertCircle, CheckSquare, FolderKanban, TrendingUp, Zap } from 'lucide-react'
+import { AlertCircle, CheckSquare, TrendingUp, Zap } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid, Cell } from 'recharts'
 import { KpiCard } from '@/shared/components/ui/kpi-card'
 import { CHART_COLORS, CHART_AXIS_STYLE, CHART_GRID_STYLE } from '@/shared/lib/chart-colors'

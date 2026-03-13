@@ -20,11 +20,12 @@ export function InlineTaskInput({ projectId, sectionId, variant = 'card' }: Prop
   const createTask = useCreateTask(projectId)
   const canEdit = useCanPerform('edit', projectId)
 
-  if (!canEdit) return null
-
+  // Must be before early return — React Hooks must be called unconditionally
   useEffect(() => {
     if (open) inputRef.current?.focus()
   }, [open])
+
+  if (!canEdit) return null
 
   function handleSubmit() {
     const trimmed = title.trim()

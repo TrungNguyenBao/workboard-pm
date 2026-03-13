@@ -1,3 +1,4 @@
+// eslint-disable-next-line react-refresh/only-export-components -- intentionally exports hook alongside component
 import { useParams } from 'react-router-dom'
 import { useProjectPermissions } from '@/modules/pms/features/projects/hooks/use-project-permissions'
 

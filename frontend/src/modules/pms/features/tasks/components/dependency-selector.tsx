@@ -85,7 +85,7 @@ export function DependencySelector({ projectId, taskId }: Props) {
 function DepList({
   label,
   deps,
-  taskId,
+  taskId: _taskId,
   onRemove,
   showBlocking,
 }: {

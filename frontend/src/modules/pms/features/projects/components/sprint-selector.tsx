@@ -155,7 +155,7 @@ function DaysRemainingBadge({ endDate }: { endDate: string | null }) {
   if (!endDate) return null
   const diff = Math.ceil((new Date(endDate).getTime() - Date.now()) / 86_400_000)
   let text: string
-  let variant: 'default' | 'outline' = 'outline'
+  const variant: 'default' | 'outline' = 'outline'
   let className = 'text-[10px]'
 
   if (diff > 0) {
