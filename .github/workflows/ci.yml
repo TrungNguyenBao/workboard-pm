@@ -1,10 +1,15 @@
-name: CI Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+
+# Prevent concurrent deploys — queue instead of cancel
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
 
 jobs:
   lint-and-test:
@@ -64,3 +69,20 @@ jobs:
       #   run: |
       #     cd frontend
       #     npm run test:run
+
+  # ── CD: Deploy to self-hosted VPS (push to main only) ──────────────────────
+  deploy:
+    needs: lint-and-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, linux, production]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to production
+        env:
+          DEPLOY_DIR: ${{ secrets.DEPLOY_DIR }}
+          ENV_FILE_PATH: ${{ secrets.ENV_FILE_PATH }}
+        run: |
+          chmod +x scripts/deploy.sh
+          bash scripts/deploy.sh
