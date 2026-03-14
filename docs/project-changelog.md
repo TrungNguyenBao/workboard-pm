@@ -5,6 +5,67 @@ Format: `## [version] — YYYY-MM-DD` with grouped entries.
 
 ---
 
+## [Unreleased] — 2026-03-14
+
+### Added — CRM Major Module Expansion (Phases 1-7, 13 New Models, 14 Logic Fixes)
+
+**Phase 1: 5 Core Models**
+- ProductService (catalog: product/service/bundle with pricing)
+- Contract (lifecycle: draft→active→expired/terminated; auto-created on Close Won)
+- CrmNotification (in-app notifications triggered on lead assign + deal stage change)
+- CrmAttachment (file uploads per entity: deal/account/contact/lead/ticket/contract)
+- DealContactRole (multi-contact per deal with roles: decision_maker/influencer/champion/user/evaluator)
+
+**Phase 2: P0 Logic Fixes (Dual-Mode Lead Scoring + RBAC + Health Score)**
+- Lead scoring refactored: static → dual-mode (initial on creation + interaction-based increments)
+- Score thresholds fixed: cold ≤25, warm 26-60, hot >60 (auto-cap 100)
+- RBAC dependency created: 5 CRM roles (admin/sales_manager/sales/marketing/support) with entity-level permission matrix
+- Health score rewritten: weighted formula (revenue 30% + recency 30% + ticket 20% + pipeline 20%)
+- Deal reopen endpoint: convert closed deals back to negotiation
+- Stale deals: dual threshold 60d general + 30d for high-value (>500M VND)
+- Revenue auto-aggregate: account.total_revenue = SUM(won deals)
+- Ticket tracking: reopen_count + resolved_at timestamp
+
+**Phase 3: Quotation System**
+- Quotation + QuotationLine models with auto-calculated totals
+- Quote lifecycle: draft → sent → accepted/rejected/expired
+- Accept syncs deal.value; discount >20% triggers advisory warning
+- Close Won auto-creates Contract (draft)
+- Close Lost accepts competitor_id
+
+**Phase 4: Custom Fields, Email, Competitor**
+- CrmCustomField model with JSONB value storage on Lead/Deal/Account/Contact
+- EmailTemplate with merge tags + EmailLog with tracking (open/click)
+- Competitor tracking per deal (strengths/weaknesses/price comparison)
+- Dynamic custom field renderer component on frontend
+
+**Phase 5: Forecast, Import, Analytics**
+- SalesForecast model (period-based target vs actual with attainment %)
+- ImportJob model (CSV import with duplicate detection + error logging)
+- Export endpoints: leads/contacts/pipeline CSV
+- Enhanced analytics: monthly revenue trend, funnel conversion, top deals, deal velocity
+
+**Phase 6: Integration & Polish**
+- Cross-module: Deal → PMS project creation
+- Campaign ROI metrics (revenue, ROI%, CPL)
+- Contract renewal endpoint
+- Data quality overall score (0-100, 4 dimensions)
+- Scoring settings threshold display
+
+**Phase 7: Frontend Polish**
+- BANT checklist on lead detail
+- My Leads toggle filter
+- Contact 360 detail page (deals/activities/emails/tickets tabs)
+- Bulk lead disqualify
+- Deal detail page with consolidated tabs
+- Pipeline filters (owner/value range/close date)
+- Activity governance warning on stage change
+- Account revenue chart (monthly)
+
+**Totals:** 21 CRM models (8 existing + 13 new), 30+ new endpoints, RBAC dependency layer, notification event system
+
+---
+
 ## [Unreleased] — 2026-03-12
 
 ### Added — CRM Improvement Implementation (Phases 1-4, 30 User Stories)

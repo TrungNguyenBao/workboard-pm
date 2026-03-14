@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime, timezone
 
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
@@ -69,11 +70,13 @@ async def update_deal(
     workspace_id: uuid.UUID,
     data: DealUpdate,
     user_id: uuid.UUID | None = None,
-) -> Deal:
+) -> tuple[Deal, str | None]:
     from app.modules.crm.services.deal_workflows import validate_stage_change
 
     deal = await get_deal(db, deal_id, workspace_id)
     updates = data.model_dump(exclude_none=True)
+
+    warning: str | None = None
 
     if "stage" in updates and updates["stage"] != deal.stage:
         validate_stage_change(deal.stage, updates["stage"])
@@ -83,13 +86,45 @@ async def update_deal(
             from fastapi import HTTPException
             raise HTTPException(400, "expected_close_date required for this stage")
 
+        # Activity governance warning
+        now = datetime.now(timezone.utc)
+        if deal.last_activity_date:
+            days_since = (now - deal.last_activity_date).days
+            if days_since > 7:
+                warning = f"No activity in {days_since} days"
+        elif deal.created_at:
+            ref = deal.created_at if deal.created_at.tzinfo else deal.created_at.replace(tzinfo=timezone.utc)
+            days_since = (now - ref).days
+            if days_since > 7:
+                warning = f"No activity since deal creation ({days_since} days ago)"
+
+        # Fire notification before applying updates (compare old vs new stage)
+        if deal.owner_id:
+            from app.modules.crm.services.crm_notification import create_notification
+            await create_notification(
+                db,
+                workspace_id=deal.workspace_id,
+                recipient_id=deal.owner_id,
+                type="deal_stage",
+                title=f"Deal '{deal.title}' moved to {updates['stage']}",
+                entity_type="deal",
+                entity_id=deal.id,
+            )
+
+    # Track manual probability override
+    if "probability" in updates:
+        from app.modules.crm.schemas.deal import STAGE_DEFAULT_PROBABILITY
+        default_prob = STAGE_DEFAULT_PROBABILITY.get(deal.stage, 0)
+        if updates["probability"] != default_prob:
+            deal.probability_manual = True
+
     for field, value in updates.items():
         setattr(deal, field, value)
     if user_id:
         deal.last_updated_by = user_id
     await db.commit()
     await db.refresh(deal)
-    return deal
+    return deal, warning
 
 
 async def delete_deal(

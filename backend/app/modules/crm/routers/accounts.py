@@ -13,6 +13,7 @@ from app.modules.crm.services.account import (
     delete_account,
     get_account,
     get_account_360,
+    get_account_revenue_by_month,
     list_accounts,
     update_account,
 )
@@ -72,6 +73,17 @@ async def get_360(
     db: AsyncSession = Depends(get_db),
 ):
     return await get_account_360(db, account_id, workspace_id)
+
+
+@router.get("/workspaces/{workspace_id}/accounts/{account_id}/revenue-by-month")
+async def revenue_by_month(
+    workspace_id: uuid.UUID,
+    account_id: uuid.UUID,
+    months: int = Query(default=12, ge=1, le=60),
+    current_user: User = Depends(require_workspace_role("guest")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await get_account_revenue_by_month(db, account_id, workspace_id, months)
 
 
 @router.patch(

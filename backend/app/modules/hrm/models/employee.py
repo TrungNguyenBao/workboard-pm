@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from app.models.user import User
     from app.models.workspace import Workspace
 
-    from .contract import Contract
+    from .contract import EmployeeContract
     from .department import Department
 
 
@@ -46,4 +46,4 @@ class Employee(Base, TimestampMixin):
         foreign_keys="[Employee.department_id]",
     )  # noqa: F821
     workspace: Mapped["Workspace"] = relationship()  # noqa: F821
-    contracts: Mapped[list["Contract"]] = relationship(back_populates="employee", cascade="all, delete-orphan")  # noqa: F821
+    employee_contracts: Mapped[list["EmployeeContract"]] = relationship(back_populates="employee", cascade="all, delete-orphan")  # noqa: F821

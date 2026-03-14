@@ -140,3 +140,28 @@ export function useStaleLeads(workspaceId: string, days = 30) {
     enabled: !!workspaceId,
   })
 }
+
+export interface BantValues {
+  _bant_budget?: string
+  _bant_authority?: string
+  _bant_need?: string
+  _bant_timeline?: string
+}
+
+export function useUpdateLeadBant(workspaceId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ leadId, ...bant }: { leadId: string } & BantValues) =>
+      api.patch(`${base(workspaceId)}/${leadId}/bant`, bant).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['crm-leads', workspaceId] }),
+  })
+}
+
+export function useBulkDisqualify(workspaceId: string) {
+  const qc = useQueryClient()
+  return useMutation<{ disqualified: number }, Error, { lead_ids: string[]; reason: string }>({
+    mutationFn: (data) =>
+      api.post(`${base(workspaceId)}/bulk-disqualify`, data).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['crm-leads', workspaceId] }),
+  })
+}

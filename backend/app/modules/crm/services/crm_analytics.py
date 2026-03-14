@@ -12,6 +12,93 @@ from app.modules.crm.models.lead import Lead
 from app.modules.crm.models.ticket import Ticket
 
 
+async def monthly_revenue_trend(
+    db: AsyncSession, workspace_id: uuid.UUID, months: int = 6
+) -> list[dict]:
+    """Monthly closed_won revenue for the last N months."""
+    now = datetime.now(timezone.utc)
+    results = []
+    for i in range(months - 1, -1, -1):
+        # Calculate month boundaries
+        month_offset = now.month - i - 1
+        year = now.year + month_offset // 12
+        month = month_offset % 12 + 1
+        start = datetime(year, month, 1, tzinfo=timezone.utc)
+        if month == 12:
+            end = datetime(year + 1, 1, 1, tzinfo=timezone.utc)
+        else:
+            end = datetime(year, month + 1, 1, tzinfo=timezone.utc)
+
+        revenue = await db.scalar(
+            select(func.coalesce(func.sum(Deal.value), 0.0)).where(
+                Deal.workspace_id == workspace_id,
+                Deal.stage == "closed_won",
+                Deal.closed_at >= start,
+                Deal.closed_at < end,
+            )
+        ) or 0.0
+        results.append({"month": f"{year}-{month:02d}", "revenue": round(revenue, 2)})
+    return results
+
+
+async def funnel_conversion(db: AsyncSession, workspace_id: uuid.UUID) -> dict:
+    """Lead-to-close funnel with conversion percentages."""
+    leads = list((await db.scalars(
+        select(Lead).where(Lead.workspace_id == workspace_id)
+    )).all())
+
+    total_leads = len(leads)
+    qualified = sum(1 for l in leads if l.status in ("qualified", "opportunity", "converted"))
+    opportunity = sum(1 for l in leads if l.status in ("opportunity", "converted"))
+
+    closed_won = await db.scalar(
+        select(func.count(Deal.id)).where(
+            Deal.workspace_id == workspace_id, Deal.stage == "closed_won"
+        )
+    ) or 0
+
+    def pct(num: int, denom: int) -> float:
+        return round(num / denom * 100, 1) if denom > 0 else 0.0
+
+    return {
+        "total_leads": total_leads,
+        "qualified": qualified,
+        "opportunity": opportunity,
+        "closed_won": closed_won,
+        "lead_to_qualified_pct": pct(qualified, total_leads),
+        "qualified_to_opportunity_pct": pct(opportunity, qualified),
+        "opportunity_to_closed_pct": pct(closed_won, opportunity),
+        "overall_conversion_pct": pct(closed_won, total_leads),
+    }
+
+
+async def top_deals(
+    db: AsyncSession, workspace_id: uuid.UUID, limit: int = 5
+) -> list[dict]:
+    """Top open deals by value."""
+    deals = list((await db.scalars(
+        select(Deal)
+        .where(
+            Deal.workspace_id == workspace_id,
+            Deal.stage.not_in(["closed_won", "closed_lost"]),
+        )
+        .order_by(Deal.value.desc())
+        .limit(limit)
+    )).all())
+
+    return [
+        {
+            "id": str(d.id),
+            "title": d.title,
+            "value": d.value,
+            "stage": d.stage,
+            "owner_id": str(d.owner_id) if d.owner_id else None,
+            "expected_close_date": d.expected_close_date.isoformat() if d.expected_close_date else None,
+        }
+        for d in deals
+    ]
+
+
 def _date_filter(col, start: date | None, end: date | None):
     """Build date range filter conditions."""
     conditions = []

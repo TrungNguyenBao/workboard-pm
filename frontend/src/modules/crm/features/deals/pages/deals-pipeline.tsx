@@ -26,11 +26,25 @@ const STAGE_COLORS: Record<string, string> = {
   closed_lost: '#EF4444',
 }
 
+interface PipelineFilters {
+  ownerFilter: 'all' | 'me'
+  valueMin: string
+  valueMax: string
+  closeDateFrom: string
+  closeDateTo: string
+}
+
 export default function DealsPipelinePage() {
   const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId) ?? ''
   const currentUser = useAuthStore((s) => s.user)
 
-  const [ownerFilter, setOwnerFilter] = useState<'all' | 'me'>('all')
+  const [filters, setFilters] = useState<PipelineFilters>({
+    ownerFilter: 'all',
+    valueMin: '',
+    valueMax: '',
+    closeDateFrom: '',
+    closeDateTo: '',
+  })
   const [activeDeal, setActiveDeal] = useState<Deal | null>(null)
 
   const { data: dealsData, isLoading } = useDeals(workspaceId, { page_size: 200 })
@@ -46,12 +60,32 @@ export default function DealsPipelinePage() {
   }, [contactsData])
 
   const filteredDeals = useMemo(() => {
-    const all = dealsData?.items ?? []
-    if (ownerFilter === 'me' && currentUser) {
-      return all.filter((d) => d.owner_id === currentUser.id)
+    let all = dealsData?.items ?? []
+
+    if (filters.ownerFilter === 'me' && currentUser) {
+      all = all.filter((d) => d.owner_id === currentUser.id)
     }
+    if (filters.valueMin !== '') {
+      const min = parseFloat(filters.valueMin)
+      if (!isNaN(min)) all = all.filter((d) => d.value >= min)
+    }
+    if (filters.valueMax !== '') {
+      const max = parseFloat(filters.valueMax)
+      if (!isNaN(max)) all = all.filter((d) => d.value <= max)
+    }
+    if (filters.closeDateFrom) {
+      all = all.filter(
+        (d) => d.expected_close_date && d.expected_close_date >= filters.closeDateFrom
+      )
+    }
+    if (filters.closeDateTo) {
+      all = all.filter(
+        (d) => d.expected_close_date && d.expected_close_date <= filters.closeDateTo
+      )
+    }
+
     return all
-  }, [dealsData, ownerFilter, currentUser])
+  }, [dealsData, filters, currentUser])
 
   const dealsByStage = useMemo(() => {
     const grouped: Record<string, Deal[]> = {}
@@ -108,16 +142,78 @@ export default function DealsPipelinePage() {
   return (
     <div className="p-6 h-full flex flex-col">
       {/* Toolbar */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold text-foreground">Pipeline</h2>
+      <div className="flex flex-wrap items-center gap-2 mb-4">
+        <h2 className="text-xl font-semibold text-foreground mr-2">Pipeline</h2>
+
+        {/* Owner filter */}
         <select
-          value={ownerFilter}
-          onChange={(e) => setOwnerFilter(e.target.value as 'all' | 'me')}
+          value={filters.ownerFilter}
+          onChange={(e) =>
+            setFilters((f) => ({ ...f, ownerFilter: e.target.value as 'all' | 'me' }))
+          }
           className="text-sm border border-border rounded-md px-2 py-1 bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
         >
           <option value="all">All Deals</option>
           <option value="me">My Deals</option>
         </select>
+
+        {/* Value min/max */}
+        <input
+          type="number"
+          placeholder="Min value"
+          value={filters.valueMin}
+          onChange={(e) => setFilters((f) => ({ ...f, valueMin: e.target.value }))}
+          className="w-28 text-sm border border-border rounded-md px-2 py-1 bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+        />
+        <input
+          type="number"
+          placeholder="Max value"
+          value={filters.valueMax}
+          onChange={(e) => setFilters((f) => ({ ...f, valueMax: e.target.value }))}
+          className="w-28 text-sm border border-border rounded-md px-2 py-1 bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+        />
+
+        {/* Close date range */}
+        <input
+          type="date"
+          value={filters.closeDateFrom}
+          onChange={(e) => setFilters((f) => ({ ...f, closeDateFrom: e.target.value }))}
+          className="text-sm border border-border rounded-md px-2 py-1 bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+          title="Close date from"
+        />
+        <input
+          type="date"
+          value={filters.closeDateTo}
+          onChange={(e) => setFilters((f) => ({ ...f, closeDateTo: e.target.value }))}
+          className="text-sm border border-border rounded-md px-2 py-1 bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+          title="Close date to"
+        />
+
+        {/* Reset */}
+        {(filters.ownerFilter !== 'all' ||
+          filters.valueMin ||
+          filters.valueMax ||
+          filters.closeDateFrom ||
+          filters.closeDateTo) && (
+          <button
+            onClick={() =>
+              setFilters({
+                ownerFilter: 'all',
+                valueMin: '',
+                valueMax: '',
+                closeDateFrom: '',
+                closeDateTo: '',
+              })
+            }
+            className="text-xs text-muted-foreground hover:text-foreground underline"
+          >
+            Clear filters
+          </button>
+        )}
+
+        <span className="ml-auto text-xs text-muted-foreground">
+          {filteredDeals.length} deal{filteredDeals.length !== 1 ? 's' : ''}
+        </span>
       </div>
 
       {/* Board */}
@@ -144,7 +240,9 @@ export default function DealsPipelinePage() {
           {activeDeal && (
             <PipelineDealCard
               deal={activeDeal}
-              contactName={activeDeal.contact_id ? contactMap.get(activeDeal.contact_id) : undefined}
+              contactName={
+                activeDeal.contact_id ? contactMap.get(activeDeal.contact_id) : undefined
+              }
               overlay
             />
           )}

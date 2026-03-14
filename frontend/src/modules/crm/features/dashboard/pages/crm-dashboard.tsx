@@ -7,8 +7,9 @@ import { useGovernanceAlerts } from '../hooks/use-governance-alerts'
 import { StaleDealsAlert } from '../components/stale-deals-alert'
 import { StaleLeadsAlert } from '../components/stale-leads-alert'
 import { FollowUpsDueWidget } from '../components/follow-ups-due-widget'
-import { SalesFunnelChart } from '../components/sales-funnel-chart'
-import { DealVelocityChart } from '../components/deal-velocity-chart'
+import { RevenueTrendChart } from '../components/revenue-trend-chart'
+import { SalesFunnelEnhanced } from '../components/sales-funnel-enhanced'
+import { DealVelocityEnhanced } from '../components/deal-velocity-enhanced'
 
 const STAGE_COLORS: Record<string, string> = {
   Lead: CHART_COLORS.muted,
@@ -27,7 +28,7 @@ function formatCurrency(value: number) {
 }
 
 export default function CrmDashboardPage() {
-  const { stats, stageBars, leadSourceBars, funnel, isLoading } = useCrmStats()
+  const { stats, stageBars, leadSourceBars, isLoading } = useCrmStats()
   const { data: govAlerts } = useGovernanceAlerts()
   // govAlerts may be undefined for non-admin users (403) — handled gracefully
 
@@ -118,10 +119,13 @@ export default function CrmDashboardPage() {
         </div>
       </div>
 
+      {/* Revenue Trend */}
+      <RevenueTrendChart />
+
       {/* Funnel + Velocity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <SalesFunnelChart funnel={funnel} />
-        <DealVelocityChart />
+        <SalesFunnelEnhanced />
+        <DealVelocityEnhanced />
       </div>
 
       {/* Campaign Summary */}

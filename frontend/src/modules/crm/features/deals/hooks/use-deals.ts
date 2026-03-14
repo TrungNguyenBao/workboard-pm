@@ -19,6 +19,8 @@ export interface Deal {
   workspace_id: string
   created_at: string
   updated_at: string
+  /** Activity governance warning returned by backend when deal is stale or needs attention */
+  warning?: string
 }
 
 export interface PaginatedDeals {

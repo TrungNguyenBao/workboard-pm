@@ -114,9 +114,12 @@ async def update_ticket(
                 detail=f"Cannot transition from '{ticket.status}' to '{updates['status']}'. Allowed: {allowed}",
             )
         now = datetime.now(timezone.utc)
-        if updates["status"] == "resolved":
+        new_status = updates["status"]
+        if new_status == "open" and ticket.status in ("resolved", "closed"):
+            ticket.reopen_count += 1
+        elif new_status == "resolved":
             ticket.resolved_at = now
-        elif updates["status"] == "closed":
+        elif new_status == "closed":
             ticket.closed_at = now
 
     for field, value in updates.items():

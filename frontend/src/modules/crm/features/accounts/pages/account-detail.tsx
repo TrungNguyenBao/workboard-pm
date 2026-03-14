@@ -4,6 +4,9 @@ import { useWorkspaceStore } from '@/stores/workspace.store'
 import { Badge } from '@/shared/components/ui/badge'
 import { Button } from '@/shared/components/ui/button'
 import { useAccount360 } from '../hooks/use-accounts'
+import { AccountRevenueChart } from '../components/account-revenue-chart'
+import { AccountContractsTab } from '../components/account-contracts-tab'
+import { AccountDevicesTab } from '../components/account-devices-tab'
 
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value)
@@ -56,6 +59,10 @@ export default function AccountDetailPage() {
         <StatCard icon={<ActivityIcon className="h-4 w-4" />} label="Activities" value={activities.length} />
         <StatCard icon={<Ticket className="h-4 w-4" />} label="Tickets" value={tickets.length} />
       </div>
+
+      <Section title="Revenue">
+        <AccountRevenueChart workspaceId={workspaceId} accountId={accountId ?? ''} />
+      </Section>
 
       {/* Contacts */}
       <Section title="Contacts">
@@ -120,6 +127,16 @@ export default function AccountDetailPage() {
             ))}
           </div>
         )}
+      </Section>
+
+      {/* Contracts */}
+      <Section title="Contracts">
+        <AccountContractsTab workspaceId={workspaceId} accountId={accountId ?? ''} />
+      </Section>
+
+      {/* Devices */}
+      <Section title="Devices">
+        <AccountDevicesTab workspaceId={workspaceId} accountId={accountId ?? ''} />
       </Section>
     </div>
   )

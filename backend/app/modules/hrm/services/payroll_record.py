@@ -6,7 +6,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.modules.hrm.models.contract import Contract
+from app.modules.hrm.models.contract import EmployeeContract
 from app.modules.hrm.models.payroll_record import PayrollRecord
 from app.modules.hrm.schemas.payroll_record import PayrollRecordCreate, PayrollRecordUpdate
 from app.modules.hrm.services.attendance_record import get_monthly_summary
@@ -25,12 +25,12 @@ PAYROLL_TRANSITIONS: dict[str, list[str]] = {
 
 async def _get_active_contract(
     db: AsyncSession, employee_id: uuid.UUID, workspace_id: uuid.UUID
-) -> Contract | None:
+) -> EmployeeContract | None:
     result = await db.scalars(
-        select(Contract).where(
-            Contract.employee_id == employee_id,
-            Contract.workspace_id == workspace_id,
-            Contract.status == "active",
+        select(EmployeeContract).where(
+            EmployeeContract.employee_id == employee_id,
+            EmployeeContract.workspace_id == workspace_id,
+            EmployeeContract.status == "active",
         )
     )
     return result.first()

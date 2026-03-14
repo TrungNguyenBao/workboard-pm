@@ -12,6 +12,7 @@ from app.modules.crm.services.campaign import (
     create_campaign,
     delete_campaign,
     get_campaign,
+    get_campaign_metrics,
     get_campaign_stats,
     list_campaigns,
     update_campaign,
@@ -89,6 +90,18 @@ async def stats(
     db: AsyncSession = Depends(get_db),
 ):
     return await get_campaign_stats(db, campaign_id, workspace_id)
+
+
+@router.get(
+    "/workspaces/{workspace_id}/campaigns/{campaign_id}/metrics",
+)
+async def metrics(
+    workspace_id: uuid.UUID,
+    campaign_id: uuid.UUID,
+    current_user: User = Depends(require_workspace_role("guest")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await get_campaign_metrics(db, campaign_id, workspace_id)
 
 
 @router.delete(

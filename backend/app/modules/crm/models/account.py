@@ -1,7 +1,7 @@
 import uuid
 from datetime import date
 
-from sqlalchemy import Date, Float, ForeignKey, Integer, String
+from sqlalchemy import JSON, Date, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -22,6 +22,7 @@ class Account(Base, TimestampMixin):
     next_follow_up_date: Mapped[date | None] = mapped_column(Date, nullable=True)
     health_score: Mapped[int] = mapped_column(Integer, default=100)
     workspace_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("workspaces.id"), index=True)
+    custom_field_values: Mapped[dict | None] = mapped_column(JSON, nullable=True)
 
     workspace: Mapped["Workspace"] = relationship()  # noqa: F821
     contacts: Mapped[list["Contact"]] = relationship(back_populates="account")  # noqa: F821

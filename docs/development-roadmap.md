@@ -1,6 +1,6 @@
 # A-ERP — Development Roadmap
 
-**Last updated:** 2026-03-11
+**Last updated:** 2026-03-14
 
 ---
 
@@ -417,43 +417,69 @@ Comprehensive implementation of 30 user stories across 4 priority tiers (17 gaps
 
 ## Phase 17 — CRM Improvement Implementation (Complete)
 
-Comprehensive CRM module implementation of 30 user stories across 4 priority tiers (17 gaps total) addressing audit-identified issues.
+Comprehensive implementation of 30 user stories across 4 priority tiers (17 gaps total) addressing audit-identified issues. See Phase 18 for major module expansion.
 
 | Item | Status |
 |---|---|
-| **Phase 1: P0 Critical Gaps** — Fix lead scoring, duplicates, conversion, pipeline DnD, RBAC (31 SP) | Done |
-| Backend: Activity-based lead scoring (activity creation trigger, auto-cap 100) | Done |
-| Backend: Lead duplicate detection + merge endpoint (case-insensitive email check) | Done |
-| Backend: Lead-to-deal conversion form (auto-create contact, deal params from request) | Done |
-| Frontend: Pipeline kanban with @dnd-kit (5+ columns, weighted values, owner filter) | Done |
-| Backend: RBAC audit + workspace admin override, My Leads filter toggle | Done |
-| **Phase 2: P0/P1 High** — Auto probability, stale leads, campaigns, follow-ups (15 SP) | Done |
-| Frontend: Auto probability suggestion on stage change (Qualified 10%-75% mapping) | Done |
-| Backend: Stale lead detection fix (30-day activity-based, not contacted_at) | Done |
-| Frontend: Campaign detail page with KPI cards (leads, cost per lead, conversion, ROI) | Done |
-| Frontend: Follow-ups due widget on CRM dashboard (overdue red indicators) | Done |
-| Frontend: Stale deals alerts clickable to filtered deals list | Done |
-| **Phase 3: P1 Feature Gaps** — Data quality, velocity, ticket KPIs, governance (16 SP) | Done |
-| Frontend: Data quality report page (score gauge, duplicates, missing fields, stale records) | Done |
-| Backend: Deal velocity analytics (avg days per stage from timestamps) | Done |
-| Frontend: Deal velocity bar chart with bottleneck highlight | Done |
-| Backend: Ticket stats endpoint (avg resolution time, rate, by priority) | Done |
-| Frontend: Ticket KPI cards component with priority distribution | Done |
-| Backend: Governance alerts response with missing values + high-value no-activity | Done |
-| Frontend: Governance alerts drill-down (clickable categories to filtered lists) | Done |
-| **Phase 4: P2 Enhancements** — Pipeline config, scoring config, code quality (11 SP) | Done |
-| Backend: PipelineStage model + CRUD + reorder endpoints (admin-only) | Done |
-| Frontend: Pipeline settings page with drag-to-reorder (@dnd-kit/sortable) | Done |
-| Backend: ScoringConfig model (workspace JSONB) + get/update endpoints | Done |
-| Frontend: Scoring settings page with editable rules + thresholds | Done |
-| Backend: Replace datetime.utcnow() → datetime.now(timezone.utc) in 6 files | Done |
-| Backend: Escape ILIKE wildcards via escape_like() helper in 7 files | Done |
-| Backend: Fix close deal endpoint to use request body (DealCloseRequest) | Done |
-| Backend: Enforce campaign status flow (draft → active → completed/cancelled) | Done |
-| Backend: Add Literal type validation on all schemas (stage, status, priority, source, type) | Done |
-| Backend: Fix governance stale leads call (hours=48 → days=30) | Done |
-| **Overall Results** | |
 | All 30 user stories fully implemented (17 gaps resolved) | Done |
-| 4 phases delivered: P0 Critical → P0/P1 High → P1 Features → P2 Enhancements | Done |
-| User stories status updated in docs/userstories/user-storie-crm.md | Done |
-| Project changelog updated with CRM improvement entry | Done |
+| 4 phases: P0 Critical (31 SP) → P0/P1 High (15 SP) → P1 Features (16 SP) → P2 Enhancements (11 SP) | Done |
+
+---
+
+## Phase 18 — CRM Major Module Expansion (Complete)
+
+Comprehensive CRM module expansion with 13 new models, 14 logic fixes, dual-mode scoring, RBAC, and 7 advanced features.
+
+| Item | Status |
+|---|---|
+| **Phase 1: Core Models (5)** | |
+| Backend: ProductService model (catalog: product/service/bundle with pricing) | Done |
+| Backend: Contract model (lifecycle: draft→active→expired/terminated) | Done |
+| Backend: CrmNotification model (in-app, triggered on lead assign + deal stage change) | Done |
+| Backend: CrmAttachment model (file uploads per entity) | Done |
+| Backend: DealContactRole model (multi-contact with roles: decision_maker/influencer/champion/user/evaluator) | Done |
+| **Phase 2: P0 Logic Fixes & Scoring** | |
+| Backend: Lead scoring refactored to dual-mode (initial + interaction-based) | Done |
+| Backend: Score thresholds fixed (cold ≤25, warm 26-60, hot >60) | Done |
+| Backend: CRM RBAC dependency (5 roles: admin/sales_manager/sales/marketing/support) | Done |
+| Backend: Health score rewritten (weighted: revenue 30% + recency 30% + ticket 20% + pipeline 20%) | Done |
+| Backend: Deal reopen endpoint | Done |
+| Backend: Stale deals dual threshold (60d general + 30d high-value >500M VND) | Done |
+| Backend: Account revenue auto-aggregation from won deals | Done |
+| Backend: Ticket reopen_count + resolved_at tracking | Done |
+| **Phase 3: Quotation System** | |
+| Backend: Quotation + QuotationLine models with auto-calculated totals | Done |
+| Backend: Quote lifecycle (draft→sent→accepted/rejected/expired) | Done |
+| Backend: Accept syncs deal.value; >20% discount warning | Done |
+| Backend: Close Won auto-creates Contract (draft) | Done |
+| **Phase 4: Custom Fields, Email, Competitor** | |
+| Backend: CrmCustomField model with JSONB storage | Done |
+| Backend: EmailTemplate + EmailLog models with merge tags + tracking | Done |
+| Backend: Competitor tracking per deal | Done |
+| Frontend: Dynamic custom field renderer component | Done |
+| **Phase 5: Forecast, Import, Analytics** | |
+| Backend: SalesForecast model (period-based target vs actual) | Done |
+| Backend: ImportJob model (CSV import with duplicate detection) | Done |
+| Backend: Export endpoints (leads/contacts/pipeline CSV) | Done |
+| Backend: Enhanced analytics (monthly trend, funnel, velocity, top deals) | Done |
+| **Phase 6: Integration & Polish** | |
+| Backend: Cross-module integration (Deal → PMS project creation) | Done |
+| Backend: Campaign ROI metrics (revenue, ROI%, CPL) | Done |
+| Backend: Contract renewal endpoint | Done |
+| Backend: Data quality overall score (0-100) | Done |
+| **Phase 7: Frontend Polish** | |
+| Frontend: BANT checklist on lead detail | Done |
+| Frontend: My Leads toggle filter | Done |
+| Frontend: Contact 360 view (deals/activities/emails/tickets tabs) | Done |
+| Frontend: Bulk lead disqualify | Done |
+| Frontend: Deal detail page with consolidated tabs | Done |
+| Frontend: Pipeline filters (owner/value range/close date) | Done |
+| Frontend: Activity governance warning on stage change | Done |
+| Frontend: Account revenue chart (monthly breakdown) | Done |
+| **Totals** | |
+| 13 new models added (21 total CRM models) | Done |
+| 30+ new endpoints + routers | Done |
+| RBAC dependency layer created | Done |
+| Notification event system implemented | Done |
+| System architecture updated | Done |
+| Project changelog updated | Done |

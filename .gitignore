@@ -51,3 +51,6 @@ release-manifest.json
 plans/reports/
 plans/templates/
 .vercel
+repomix-output.xml
+backend/full_test_results.txt
+backend/pytest_output.txt

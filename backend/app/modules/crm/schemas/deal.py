@@ -7,6 +7,16 @@ from pydantic import BaseModel, Field
 DEAL_STAGES = ["lead", "qualified", "needs_analysis", "proposal", "negotiation", "closed_won", "closed_lost"]
 DealStage = Literal["lead", "qualified", "needs_analysis", "proposal", "negotiation", "closed_won", "closed_lost"]
 
+STAGE_DEFAULT_PROBABILITY: dict[str, float] = {
+    "lead": 5.0,
+    "qualified": 10.0,
+    "needs_analysis": 20.0,
+    "proposal": 50.0,
+    "negotiation": 75.0,
+    "closed_won": 100.0,
+    "closed_lost": 0.0,
+}
+
 
 class DealCreate(BaseModel):
     title: str = Field(min_length=1, max_length=255)
@@ -39,6 +49,7 @@ class DealResponse(BaseModel):
     value: float
     stage: str
     probability: float
+    probability_manual: bool = False
     expected_close_date: date | None
     last_activity_date: datetime | None
     loss_reason: str | None
@@ -51,6 +62,7 @@ class DealResponse(BaseModel):
     workspace_id: uuid.UUID
     created_at: datetime
     updated_at: datetime
+    warning: str | None = None
 
     model_config = {"from_attributes": True}
 
@@ -58,3 +70,4 @@ class DealResponse(BaseModel):
 class DealCloseRequest(BaseModel):
     action: Literal["won", "lost"]
     loss_reason: str | None = None
+    competitor_id: uuid.UUID | None = None

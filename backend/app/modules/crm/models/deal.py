@@ -1,7 +1,7 @@
 import uuid
 from datetime import date, datetime
 
-from sqlalchemy import Date, DateTime, Float, ForeignKey, String
+from sqlalchemy import JSON, Date, DateTime, Float, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -26,6 +26,9 @@ class Deal(Base, TimestampMixin):
     account_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("accounts.id"), nullable=True, index=True)
     lead_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("leads.id"), nullable=True, index=True)
     workspace_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("workspaces.id"), index=True)
+    competitor_id: Mapped[uuid.UUID | None] = mapped_column(nullable=True)
+    custom_field_values: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    probability_manual: Mapped[bool] = mapped_column(default=False)
 
     contact: Mapped["Contact | None"] = relationship(back_populates="deals")  # noqa: F821
     workspace: Mapped["Workspace"] = relationship()  # noqa: F821

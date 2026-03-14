@@ -5,7 +5,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.modules.hrm.models.contract import Contract
+from app.modules.hrm.models.contract import EmployeeContract
 from app.modules.hrm.models.employee import Employee
 from app.modules.hrm.models.leave_request import LeaveRequest
 from app.modules.hrm.models.leave_type import LeaveType
@@ -89,13 +89,13 @@ async def get_employee_detail(
 
     # Active contract — most recent by start_date
     contract_result = await db.scalars(
-        select(Contract)
+        select(EmployeeContract)
         .where(
-            Contract.employee_id == employee_id,
-            Contract.workspace_id == workspace_id,
-            Contract.status == "active",
+            EmployeeContract.employee_id == employee_id,
+            EmployeeContract.workspace_id == workspace_id,
+            EmployeeContract.status == "active",
         )
-        .order_by(Contract.start_date.desc())
+        .order_by(EmployeeContract.start_date.desc())
         .limit(1)
     )
     active_contract = contract_result.first()

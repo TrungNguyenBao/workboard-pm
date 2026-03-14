@@ -1,6 +1,6 @@
 # A-ERP — System Architecture
 
-**Last updated:** 2026-03-07
+**Last updated:** 2026-03-14
 
 ---
 
@@ -59,10 +59,11 @@ backend/
         schemas/         # department, employee, leave_request, payroll_record
         router.py        # aggregates HRM routers under /hrm prefix
       crm/               # Customer Relationship Management
-        routers/         # contacts, deals
-        services/        # contact, deal
-        models/          # contact, deal
-        schemas/         # contact, deal
+        routers/         # contacts, deals, products, contracts, quotations, custom_fields, email_templates, attachments, forecasts, import_export, deal_contacts, deal_competitors, workflows
+        services/        # contact, deal, account, lead, product, contract, quotation, notification, attachment, custom_field, email, competitor, forecast, import_job, workflows, data_quality, governance
+        models/          # 21 total: contact, deal, account, lead, activity, ticket, campaign, activity_note, product_service, contract, quotation, quotation_line, crm_notification, crm_attachment, deal_contact_role, crm_custom_field, email_template, email_log, competitor, sales_forecast, import_job
+        schemas/         # contact, deal, account, lead, custom_field, email_template, quotation, notification, etc.
+        dependencies/    # CRM RBAC (admin/sales_manager/sales/marketing/support with entity-level permissions)
         router.py        # aggregates CRM routers under /crm prefix
     agents/              # Agent orchestration layer
       base.py            # abstract BaseAgent ABC
@@ -174,12 +175,31 @@ Located in `app/schemas/pagination.py` for reuse across WMS, HRM, CRM modules.
 | `leave_requests` | `id`, `employee_id`, `leave_type_id`, `start_date`, `end_date`, `status` ('pending'/'approved'/'rejected'), `workspace_id`, `created_at`, `updated_at` | Admin approval workflow; cascade delete with employee |
 | `payroll_records` | `id`, `employee_id`, `month`, `salary`, `deductions`, `bonus`, `workspace_id`, `created_at`, `updated_at` | Store-only; no auto-calc; cascade delete with employee |
 
-### CRM Tables
+### CRM Tables (21 Models Total)
 
 | Table | Key Columns | Notes |
 |---|---|---|
 | `contacts` | `id`, `name`, `email`, `phone`, `company`, `workspace_id`, `created_at`, `updated_at` | Workspace-scoped; EmailStr validation; ILIKE search on name/email/company |
-| `deals` | `id`, `title`, `value`, `stage`, `contact_id`, `workspace_id`, `created_at`, `updated_at` | FK to contact (nullable); stage default='lead'; workspace-scoped filtering |
+| `deals` | `id`, `title`, `value`, `stage`, `contact_id`, `owner_id`, `last_activity_date`, `created_at`, `updated_at` | FK to contact (nullable); stage default='lead'; workspace-scoped filtering |
+| `accounts` | `id`, `name`, `industry`, `total_revenue`, `health_score`, `workspace_id`, `created_at`, `updated_at` | Portfolio of contacts; auto-aggregated revenue from won deals |
+| `leads` | `id`, `name`, `email`, `phone`, `score`, `status`, `owner_id`, `last_activity_date`, `workspace_id` | Lead scoring (0-100); dual-mode (initial + interaction-based); status flow: prospect→qualified→contacted→proposal→negotiation→won/lost |
+| `contacts_contact_roles` | `deal_id`, `contact_id`, `role`, `created_at` | Junction: multi-contact per deal with roles (decision_maker/influencer/champion/user/evaluator) |
+| `products_services` | `id`, `name`, `type`, `price`, `workspace_id`, `created_at`, `updated_at` | Catalog: product/service/bundle with pricing |
+| `contracts` | `id`, `deal_id`, `start_date`, `end_date`, `value`, `status`, `workspace_id`, `created_at`, `updated_at` | Lifecycle: draft→active→expired/terminated; auto-created on Close Won |
+| `quotations` | `id`, `deal_id`, `total_amount`, `discount`, `status`, `workspace_id`, `created_at`, `updated_at` | Draft→sent→accepted/rejected/expired; accept syncs deal.value; >20% discount triggers advisory |
+| `quotation_lines` | `id`, `quotation_id`, `product_service_id`, `quantity`, `unit_price`, `subtotal` | Child lines with auto-calculated totals |
+| `crm_notifications` | `id`, `entity_type`, `entity_id`, `user_id`, `type`, `is_read`, `workspace_id`, `created_at` | In-app notifications: triggered on lead assign + deal stage change |
+| `crm_attachments` | `id`, `entity_type`, `entity_id`, `filename`, `url`, `size`, `uploaded_by`, `workspace_id`, `created_at` | File uploads per entity (deal/account/contact/lead/ticket/contract) |
+| `crm_custom_fields` | `id`, `entity_type`, `field_name`, `field_type`, `metadata`, `workspace_id`, `created_at` | JSONB storage; types: text/number/date/select/multi_select |
+| `email_templates` | `id`, `name`, `subject`, `body`, `merge_tags`, `workspace_id`, `created_at`, `updated_at` | Templates with merge tags (e.g., {{contact.name}}) |
+| `email_logs` | `id`, `template_id`, `recipient`, `sent_at`, `opened_at`, `clicked_at`, `workspace_id` | Tracking: open/click metrics |
+| `competitors` | `id`, `deal_id`, `name`, `strengths`, `weaknesses`, `price_comparison`, `workspace_id`, `created_at` | Per-deal competitor tracking with metadata |
+| `sales_forecasts` | `id`, `period_start`, `period_end`, `target`, `actual`, `attainment_pct`, `workspace_id`, `created_at` | Period-based targets vs actual with attainment % |
+| `import_jobs` | `id`, `entity_type`, `filename`, `status`, `total_rows`, `error_rows`, `workspace_id`, `created_at` | CSV import with duplicate detection + error logging |
+| `activities` | `id`, `entity_id`, `entity_type`, `type`, `notes`, `created_at` | Track interactions (email/call/demo/meeting/note) |
+| `activity_notes` | `id`, `activity_id`, `text`, `created_by`, `created_at` | Structured notes per activity |
+| `tickets` | `id`, `contact_id`, `subject`, `status`, `priority`, `reopen_count`, `resolved_at`, `workspace_id`, `created_at` | Support tickets with reopen tracking |
+| `campaigns` | `id`, `name`, `status`, `budget`, `cost_per_lead`, `roi_pct`, `workspace_id`, `created_at`, `updated_at` | Marketing campaigns with ROI metrics |
 
 ### PMS Agile/Kanban Extensions
 
@@ -429,126 +449,149 @@ A module switcher component in the shell allows navigation between modules.
 
 ---
 
-## CRM Module Workflow Operations (SOP)
+## CRM Module — Advanced Workflows & Scoring (Phase 1-7 Implementation)
 
-### Status Flow Management
+### Lead Scoring — Dual-Mode System
 
-The CRM module implements state machines for managing entity statuses:
+- **Initial Score:** Set on creation (cold=0, warm=30, hot=60)
+- **Interaction-Based:** Auto-incremented on activities (email_open +5, click +10, form +15, call +15, demo +20, meeting +20, note +2)
+- **Score Levels:** Cold ≤25, Warm 26-60, Hot >60; auto-capped at 100
 
-**Lead Status Flow:**
-```
-prospect → qualified → contacted → proposal → negotiation → won | lost
-```
+### Health Score — Weighted Formula
 
-**Deal Status Flow:**
-```
-lead → qualified → proposal → negotiation → closed_won | closed_lost
-```
+Account health = Revenue (30%) + Recency (30%) + Ticket resolution (20%) + Pipeline (20%)
 
-**Ticket Status Flow:**
-```
-open → in_progress → resolved | closed
-```
+### Deal Operations
 
-Status transitions are validated via `status_flows.py` service to prevent invalid state changes.
+- **Auto-probability on stage:** Qualified 10%, Needs Analysis 25%, Proposal 50%, Negotiation 75%
+- **Close Won:** Auto-creates Contract (draft); syncs deal.value to quotation
+- **Close Lost:** Accepts competitor_id and loss_reason; tracked in activity
+- **Reopen:** Converts closed deals to negotiation; supports tracking
 
-### Lead Workflows Service
+### Stale Detection
 
-Lead management with duplicate detection, scoring, and distribution:
+- **Leads:** 30+ days without activity (Activity.lead_id most recent)
+- **Deals:** 60d general | 30d high-value (>500M VND)
 
-| Function | Purpose |
+### CRM RBAC Model
+
+| Role | Permissions |
 |---|---|
-| `detect_duplicate_leads()` | Find prospects with same email/company combo |
-| `calculate_lead_score()` | Auto-score based on activity, source, engagement |
-| `identify_stale_leads()` | Find leads untouched for 30+ days |
-| `distribute_round_robin()` | Assign leads fairly across team members |
+| `admin` | All CRUD, settings, forecasts, import/export, governance alerts |
+| `sales_manager` | Own team deals/leads, forecasts, pipeline config, analytics |
+| `sales` | Own deals/leads, activities, quotes, contracts (assigned only) |
+| `marketing` | Campaigns, leads (assigned), templates, analytics (read-only deals) |
+| `support` | Tickets, contacts, account notes, ticket analytics |
 
-### Deal Workflows Service
+### Core Workflows
 
-Deal pipeline management and close operations:
+| Workflow | Service | Key Operations |
+|---|---|---|
+| **Lead Management** | `lead_workflows.py` | Duplicate detection, auto-scoring, stale identification, round-robin distribution |
+| **Deal Pipeline** | `deal_workflows.py` | Stage validation, stale alerts, close operations, reopen support |
+| **Data Quality** | `data_quality.py` | Health assessment, missing fields, duplicates, stale records (0-100 score) |
+| **Governance** | `governance.py` | Policy alerts, compliance audit, audit trail tracking |
 
-| Function | Purpose |
+### CRM New Features (Phases 1-7)
+
+| Feature | Details |
 |---|---|
-| `validate_deal_stage()` | Enforce valid stage transitions |
-| `identify_stale_deals()` | Find deals stuck in negotiation for 60+ days |
-| `close_deal_won()` | Record successful close with amount + date |
-| `close_deal_lost()` | Record loss with reason + post-mortem |
-
-### Data Quality & Governance
-
-**Data Quality Service** — CRM health assessment:
-- Missing required fields (email, phone, company)
-- Orphaned deals (contact deleted)
-- Duplicate contact detection
-- Stale contact warnings (no activity for 90+ days)
-
-**Governance Service** — Policy compliance:
-- Alert on deals closed without approval
-- Flag contacts missing email
-- Warn on discrepancies (deal amount vs deal value)
-- Audit trail on sensitive field updates
-
-### CRM Analytics Enhancements
-
-**Date-Range Filtering:** Query deals, activities by date range (`date_from` / `date_to`).
-
-**Sales Funnel:** Deal count and value by stage (lead → qualified → proposal → negotiation → closed_won/lost).
-
-**Deal Velocity:** Days from creation to close by stage + average time in stage.
+| **Quotation System** | Draft→sent→accepted/rejected/expired; auto-calculated line items; accept syncs deal.value |
+| **Custom Fields** | Text/number/date/select/multi_select; JSONB storage per entity type |
+| **Email System** | Templates with merge tags; tracking (open/click metrics) |
+| **Competitor Tracking** | Per-deal strengths/weaknesses/price comparison |
+| **File Attachments** | Per entity (deal/account/contact/lead/ticket/contract); file upload storage |
+| **Sales Forecast** | Period-based targets vs actual with attainment % |
+| **CSV Import/Export** | Duplicate detection, error logging, bulk operations |
+| **Cross-Module** | Deal → PMS project creation integration |
+| **Campaign ROI** | Revenue, ROI%, cost per lead metrics |
+| **Contact 360** | Consolidated view (deals/activities/emails/tickets tabs) |
+| **Deal Details** | Consolidated tabs with all related data |
+| **Pipeline Filters** | Owner, value range, close date filtering |
+| **BANT Checklist** | Lead qualification checklist on detail view |
+| **Account Revenue** | Monthly breakdown chart from won deals |
+| **Bulk Operations** | Lead disqualify, deal reopen, etc. |
 
 ---
 
-## CRM Module API
+## CRM Module API (Phase 1-7 Expanded)
 
-### Contacts Endpoints
+### Core Entity Endpoints (Contacts, Deals, Accounts, Leads)
 
-| Method | Endpoint | RBAC | Description |
-|---|---|---|---|
-| `POST` | `/crm/workspaces/{workspace_id}/contacts` | member+ | Create contact |
-| `GET` | `/crm/workspaces/{workspace_id}/contacts` | guest+ | List contacts with pagination & ILIKE search (name/email/company) |
-| `GET` | `/crm/workspaces/{workspace_id}/contacts/{contact_id}` | guest+ | Get contact by id (404 if workspace mismatch) |
-| `PATCH` | `/crm/workspaces/{workspace_id}/contacts/{contact_id}` | member+ | Update contact fields |
-| `DELETE` | `/crm/workspaces/{workspace_id}/contacts/{contact_id}` | admin+ | Delete contact |
+**Contacts:**
+- `POST /crm/workspaces/{workspace_id}/contacts` — Create
+- `GET /crm/workspaces/{workspace_id}/contacts` — List with search/pagination
+- `GET /crm/workspaces/{workspace_id}/contacts/{contact_id}` — Detail
+- `PATCH /crm/workspaces/{workspace_id}/contacts/{contact_id}` — Update
+- `DELETE /crm/workspaces/{workspace_id}/contacts/{contact_id}` — Delete
 
-**Request/Response:**
-- `ContactCreate`: `name` (required, 1-255 chars), `email` (optional, EmailStr), `phone` (optional, ≤50 chars), `company` (optional, ≤255 chars)
-- `ContactResponse`: includes `id`, `workspace_id`, `created_at`, `updated_at`
-- List response: `PaginatedResponse[ContactResponse]` with `items`, `total`, `page`, `page_size`
+**Deals:**
+- `POST /crm/workspaces/{workspace_id}/deals` — Create
+- `GET /crm/workspaces/{workspace_id}/deals` — List with stage/owner/value filters
+- `GET /crm/workspaces/{workspace_id}/deals/{deal_id}` — Detail (includes contact roles, attachments, quotes)
+- `PATCH /crm/workspaces/{workspace_id}/deals/{deal_id}` — Update
+- `DELETE /crm/workspaces/{workspace_id}/deals/{deal_id}` — Delete
+- `POST /crm/workspaces/{workspace_id}/deals/{deal_id}/reopen` — Reopen closed deal
 
-### Deals Endpoints
+**Accounts:**
+- `CRUD` for account portfolio management; total_revenue auto-aggregated
 
-| Method | Endpoint | RBAC | Description |
-|---|---|---|---|
-| `POST` | `/crm/workspaces/{workspace_id}/deals` | member+ | Create deal |
-| `GET` | `/crm/workspaces/{workspace_id}/deals` | guest+ | List deals with pagination, stage/contact_id/title filters |
-| `GET` | `/crm/workspaces/{workspace_id}/deals/{deal_id}` | guest+ | Get deal by id (404 if workspace mismatch) |
-| `PATCH` | `/crm/workspaces/{workspace_id}/deals/{deal_id}` | member+ | Update deal fields |
-| `DELETE` | `/crm/workspaces/{workspace_id}/deals/{deal_id}` | admin+ | Delete deal |
+**Leads:**
+- `CRUD` with scoring, duplicate detection; status flow validation
 
-**Request/Response:**
-- `DealCreate`: `title` (required, 1-255 chars), `value` (float, default=0.0), `stage` (default='lead', ≤50 chars), `contact_id` (optional, UUID)
-- `DealResponse`: includes `id`, `workspace_id`, `created_at`, `updated_at`
-- List response: `PaginatedResponse[DealResponse]` with `items`, `total`, `page`, `page_size`
-- **Deal stages** (frontend constant `DEAL_STAGES`): lead, qualified, proposal, negotiation, closed_won, closed_lost
+### Quotation System
 
-### Workflow Endpoints
+- `POST /crm/workspaces/{workspace_id}/quotations` — Create with line items
+- `GET /crm/workspaces/{workspace_id}/quotations` — List by deal
+- `PATCH /crm/workspaces/{workspace_id}/quotations/{quotation_id}` — Update
+- `POST /crm/workspaces/{workspace_id}/quotations/{quotation_id}/accept` — Accept (syncs deal.value; >20% discount warning)
 
-| Method | Endpoint | RBAC | Description |
-|---|---|---|---|
-| `POST` | `/crm/workflows/leads/distribute` | member+ | Round-robin distribute unassigned leads |
-| `GET` | `/crm/workflows/leads/stale` | guest+ | List leads untouched for 30+ days |
-| `POST` | `/crm/workflows/deals/{deal_id}/close` | member+ | Mark deal as won or lost with reason |
-| `GET` | `/crm/workflows/deals/stale` | guest+ | List deals stuck in negotiation for 60+ days |
-| `GET` | `/crm/workflows/accounts/follow-ups` | guest+ | List accounts due for contact |
-| `GET` | `/crm/workflows/data-quality/report` | member+ | CRM data health assessment |
-| `GET` | `/crm/workflows/governance/alerts` | member+ | Policy violations and compliance alerts |
+### Custom Fields & Email
 
-**Request/Response:**
-- `DistributeLeadsRequest`: `owner_ids` (list of user UUIDs to round-robin among)
-- `CloseDealRequest`: `outcome` ('won'/'lost'), `loss_reason` (optional, required if lost), `amount` (final deal amount)
-- `StaleDealResponse`: includes deal_id, title, stage, days_in_stage, velocity_warning (bool)
-- `DataQualityReport`: `total_contacts`, `missing_email_count`, `missing_phone_count`, `duplicate_warnings`, `stale_contacts_count`, `health_score` (0-100)
-- `GovernanceAlert`: `type` (e.g., 'unsigned_close', 'orphaned_deal', 'missing_required_field'), `entity_id`, `severity` ('warning'/'critical'), `message`
+- `CRUD /crm/workspaces/{workspace_id}/custom-fields` — Define fields per entity type
+- `GET /crm/workspaces/{workspace_id}/custom-fields` — List by entity_type
+- `POST /crm/workspaces/{workspace_id}/email-templates` — Create/send templates
+- `GET /crm/workspaces/{workspace_id}/email-logs` — Track opens/clicks
+
+### File Attachments & Notifications
+
+- `POST /crm/workspaces/{workspace_id}/attachments` — Upload (multipart/form-data)
+- `GET /crm/workspaces/{workspace_id}/attachments` — List by entity
+- `GET /crm/workspaces/{workspace_id}/notifications` — List in-app notifications
+
+### Competitor & Contract Management
+
+- `CRUD /crm/workspaces/{workspace_id}/deal-competitors` — Track competitors per deal
+- `CRUD /crm/workspaces/{workspace_id}/contracts` — Manage contracts (draft→active→expired)
+- `POST /crm/workspaces/{workspace_id}/contracts/{contract_id}/renew` — Create renewal
+
+### Multi-Contact & Deal Contact Roles
+
+- `POST /crm/workspaces/{workspace_id}/deal-contacts` — Assign contact with role
+- `GET /crm/workspaces/{workspace_id}/deals/{deal_id}/contacts` — List roles per deal
+- Roles: decision_maker, influencer, champion, user, evaluator
+
+### Forecasting & Import/Export
+
+- `GET /crm/workspaces/{workspace_id}/forecasts` — Period-based targets vs actual
+- `POST /crm/workspaces/{workspace_id}/import` — CSV import with duplicate detection
+- `GET /crm/workspaces/{workspace_id}/export` — CSV export (leads/contacts/pipeline)
+
+### Analytics & Workflows
+
+**Workflows:**
+- `POST /crm/workflows/leads/distribute` — Round-robin distribution
+- `GET /crm/workflows/leads/stale` — Stale lead list
+- `POST /crm/workflows/deals/{deal_id}/close` — Close with outcome/reason
+- `GET /crm/workflows/deals/stale` — Stale deal list
+- `GET /crm/workflows/data-quality/report` — Health score (0-100)
+- `GET /crm/workflows/governance/alerts` — Compliance alerts
+
+**Analytics:**
+- `GET /crm/analytics/funnel` — Sales funnel by stage
+- `GET /crm/analytics/velocity` — Deal velocity (days per stage)
+- `GET /crm/analytics/revenue-trend` — Monthly revenue trend
+- `GET /crm/analytics/campaign-roi` — Campaign metrics (revenue, ROI%, CPL)
 
 ### Frontend Integration
 

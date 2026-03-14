@@ -71,6 +71,7 @@ const CrmContactsPage = lazy(() => import('@/modules/crm/features/contacts/pages
 const CrmDealsPage = lazy(() => import('@/modules/crm/features/deals/pages/deals-list'))
 const CrmPipelinePage = lazy(() => import('@/modules/crm/features/deals/pages/deals-pipeline'))
 const CrmLeadsPage = lazy(() => import('@/modules/crm/features/leads/pages/leads-list'))
+const CrmLeadDetailPage = lazy(() => import('@/modules/crm/features/leads/pages/lead-detail'))
 const CrmAccountsListPage = lazy(() => import('@/modules/crm/features/accounts/pages/accounts-list'))
 const CrmAccountDetailPage = lazy(() => import('@/modules/crm/features/accounts/pages/account-detail'))
 const CrmActivitiesPage = lazy(() => import('@/modules/crm/features/activities/pages/activities-list'))
@@ -80,6 +81,14 @@ const CrmTicketsPage = lazy(() => import('@/modules/crm/features/tickets/pages/t
 const CrmDataQualityPage = lazy(() => import('@/modules/crm/features/data-quality/pages/data-quality-report'))
 const CrmPipelineSettingsPage = lazy(() => import('@/modules/crm/features/settings/pages/pipeline-settings'))
 const CrmScoringSettingsPage = lazy(() => import('@/modules/crm/features/settings/pages/scoring-settings'))
+const CrmProductsPage = lazy(() => import('@/modules/crm/features/products/pages/products-list'))
+const CrmContractsPage = lazy(() => import('@/modules/crm/features/contracts/pages/contracts-list'))
+const CrmCustomFieldsPage = lazy(() => import('@/modules/crm/features/settings/pages/custom-fields-settings'))
+const CrmEmailTemplatesPage = lazy(() => import('@/modules/crm/features/email/pages/email-templates-list'))
+const CrmForecastListPage = lazy(() => import('@/modules/crm/features/forecast/pages/forecast-list'))
+const CrmImportWizardPage = lazy(() => import('@/modules/crm/features/import/pages/import-wizard'))
+const CrmContactDetailPage = lazy(() => import('@/modules/crm/features/contacts/pages/contact-detail'))
+const CrmDealDetailPage = lazy(() => import('@/modules/crm/features/deals/pages/deal-detail'))
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const user = useAuthStore((s) => s.user)
@@ -157,10 +166,13 @@ export function AppRouter() {
             <Route path="/crm" element={<Navigate to="/crm/dashboard" replace />} />
             <Route path="/crm/dashboard" element={<CrmDashboardPage />} />
             <Route path="/crm/leads" element={<CrmLeadsPage />} />
+            <Route path="/crm/leads/:leadId" element={<CrmLeadDetailPage />} />
             <Route path="/crm/contacts" element={<CrmContactsPage />} />
+            <Route path="/crm/contacts/:contactId" element={<CrmContactDetailPage />} />
             <Route path="/crm/accounts" element={<CrmAccountsListPage />} />
             <Route path="/crm/accounts/:accountId" element={<CrmAccountDetailPage />} />
             <Route path="/crm/deals" element={<CrmDealsPage />} />
+            <Route path="/crm/deals/:dealId" element={<CrmDealDetailPage />} />
             <Route path="/crm/pipeline" element={<CrmPipelinePage />} />
             <Route path="/crm/activities" element={<CrmActivitiesPage />} />
             <Route path="/crm/campaigns" element={<CrmCampaignsPage />} />
@@ -169,6 +181,12 @@ export function AppRouter() {
             <Route path="/crm/data-quality" element={<CrmDataQualityPage />} />
             <Route path="/crm/settings/pipeline" element={<CrmPipelineSettingsPage />} />
             <Route path="/crm/settings/scoring" element={<CrmScoringSettingsPage />} />
+            <Route path="/crm/products" element={<CrmProductsPage />} />
+            <Route path="/crm/contracts" element={<CrmContractsPage />} />
+            <Route path="/crm/custom-fields" element={<CrmCustomFieldsPage />} />
+            <Route path="/crm/email-templates" element={<CrmEmailTemplatesPage />} />
+            <Route path="/crm/forecasts" element={<CrmForecastListPage />} />
+            <Route path="/crm/import" element={<CrmImportWizardPage />} />
 
             {/* Guides */}
             <Route path="/guides" element={<Navigate to="/guides/user-guide" replace />} />

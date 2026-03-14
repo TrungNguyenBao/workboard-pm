@@ -5,6 +5,7 @@ import { Badge } from '@/shared/components/ui/badge'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import { useCampaignStats } from '../hooks/use-campaign-stats'
 import { CAMPAIGN_STATUSES, CAMPAIGN_TYPES } from '../hooks/use-campaigns'
+import { CampaignMetrics } from '../components/campaign-metrics'
 
 function formatCurrency(v: number) {
   if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(1)}M`
@@ -80,6 +81,9 @@ export default function CampaignDetailPage() {
           valueClassName={roi_percent >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}
         />
       </div>
+
+      {/* Campaign Metrics */}
+      <CampaignMetrics workspaceId={wsId} campaignId={campaignId} />
 
       {/* Budget & Revenue breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

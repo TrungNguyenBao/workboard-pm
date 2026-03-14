@@ -1,7 +1,62 @@
 import { useNavigate } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import { ShieldCheck, Copy, AlertCircle, Clock, ArrowRight } from 'lucide-react'
 import { useDataQuality } from '../hooks/use-data-quality'
+import api from '@/shared/lib/api'
+
+interface OverallQualityScore {
+  score: number
+  breakdown: {
+    contact_completeness: number
+    lead_freshness: number
+    deal_hygiene: number
+    account_coverage: number
+  }
+}
+
+function useOverallQualityScore(workspaceId: string) {
+  return useQuery<OverallQualityScore>({
+    queryKey: ['crm-quality-score', workspaceId],
+    queryFn: () =>
+      api.get(`/crm/workspaces/${workspaceId}/analytics/quality-score`).then((r) => r.data),
+    enabled: !!workspaceId,
+    retry: false,
+  })
+}
+
+function OverallScoreBanner({ score, breakdown }: OverallQualityScore) {
+  const color =
+    score > 70 ? 'text-emerald-600 dark:text-emerald-400'
+    : score >= 40 ? 'text-amber-500'
+    : 'text-red-500'
+  const bgColor =
+    score > 70 ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800'
+    : score >= 40 ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800'
+    : 'bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-800'
+
+  return (
+    <div className={`border rounded-lg p-4 ${bgColor}`}>
+      <div className="flex items-center gap-4">
+        <div className="text-center shrink-0">
+          <p className={`text-5xl font-bold ${color}`}>{score}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">/ 100</p>
+        </div>
+        <div className="flex-1">
+          <p className="text-sm font-semibold text-foreground mb-2">CRM Data Quality Score</p>
+          <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-xs">
+            {Object.entries(breakdown).map(([key, val]) => (
+              <div key={key} className="flex justify-between gap-2">
+                <span className="text-muted-foreground capitalize">{key.replace(/_/g, ' ')}</span>
+                <span className="font-medium text-foreground">{val} / 25</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 function QualityGauge({ score }: { score: number }) {
   const color = score >= 80 ? 'text-emerald-500' : score >= 50 ? 'text-amber-500' : 'text-red-500'
@@ -64,6 +119,7 @@ function SectionCard({ icon, title, count, description, actionLabel, onAction, d
 export default function DataQualityReportPage() {
   const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId) ?? ''
   const { data, isLoading, isError } = useDataQuality(workspaceId)
+  const { data: overallScore } = useOverallQualityScore(workspaceId)
   const navigate = useNavigate()
 
   if (isLoading) {
@@ -96,6 +152,9 @@ export default function DataQualityReportPage() {
           <p className="text-sm text-muted-foreground">Review and fix CRM data issues</p>
         </div>
       </div>
+
+      {/* Overall quality score from backend */}
+      {overallScore && <OverallScoreBanner {...overallScore} />}
 
       {/* Score card */}
       <div className="border border-border rounded-lg p-6 bg-card flex items-center gap-8">

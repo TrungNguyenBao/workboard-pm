@@ -93,6 +93,50 @@ async def get_campaign_stats(db: AsyncSession, campaign_id: uuid.UUID, workspace
     }
 
 
+async def get_campaign_metrics(
+    db: AsyncSession, campaign_id: uuid.UUID, workspace_id: uuid.UUID
+) -> dict:
+    """ROI metrics: revenue, roi_pct, cost_per_lead, lead_count, won_count."""
+    from app.modules.crm.models.deal import Deal
+    from app.modules.crm.models.lead import Lead
+
+    campaign = await get_campaign(db, campaign_id, workspace_id)
+
+    lead_count = await db.scalar(
+        select(func.count(Lead.id)).where(Lead.campaign_id == campaign_id)
+    ) or 0
+
+    won_count = await db.scalar(
+        select(func.count(Deal.id)).where(
+            Deal.lead_id.in_(select(Lead.id).where(Lead.campaign_id == campaign_id)),
+            Deal.stage == "closed_won",
+        )
+    ) or 0
+
+    revenue = await db.scalar(
+        select(func.coalesce(func.sum(Deal.value), 0.0)).where(
+            Deal.lead_id.in_(select(Lead.id).where(Lead.campaign_id == campaign_id)),
+            Deal.stage == "closed_won",
+        )
+    ) or 0.0
+
+    roi_pct = (
+        (revenue - campaign.actual_cost) / campaign.actual_cost * 100
+        if campaign.actual_cost > 0
+        else 0.0
+    )
+    cpl = campaign.actual_cost / lead_count if lead_count > 0 else 0.0
+
+    return {
+        "revenue": round(revenue, 2),
+        "roi_pct": round(roi_pct, 1),
+        "cost_per_lead": round(cpl, 2),
+        "lead_count": lead_count,
+        "won_count": won_count,
+        "actual_cost": campaign.actual_cost,
+    }
+
+
 async def update_campaign(
     db: AsyncSession, campaign_id: uuid.UUID, workspace_id: uuid.UUID, data: CampaignUpdate
 ) -> Campaign:

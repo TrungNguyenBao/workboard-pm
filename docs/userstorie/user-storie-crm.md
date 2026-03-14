@@ -1,1029 +1,1186 @@
-USER STORIES & ACCEPTANCE CRITERIA
+**ĐÁNH GIÁ PRD & USER STORIES HOÀN CHỈNH**
 CRM System (Customer Relationship Management)
-Enterprise Resource Platform — CRM Module
+*Enterprise Resource Platform — CRM Module*
 
-Version: 1.0  |  Ngày tạo: 2026-03-12
-Dựa trên PRD & SOP CRM System v1.0
- 
-Tổng quan User Stories
-Tài liệu này chứa 30 user stories được tổ chức thành 10 epics, bao phủ toàn bộ chức năng của hệ thống CRM theo PRD. Mỗi story bao gồm Acceptance Criteria (Given-When-Then), UI Requirements và Technical Notes.
+**Assessment Score: 7.0 / 10 → Khá, cần bổ sung đáng kể**
+**Phiên bản hoàn chỉnh: 20 Data Models | 12 Epics | 35 User Stories**
+Version 2.0  |  Ngày: 2026-03-12
 
-Chú giải Priority
-P0 - Must Have (MVP blocker)  |  P1 - Should Have (Important)  |  P2 - Nice to Have (Enhancement)
+# PHẦN A: ĐÁNH GIÁ PRD
 
-Personas
-•	Sales — Quản lý leads, deals, log activities, chốt deal
-•	Marketing — Tạo campaigns, theo dõi lead source, đo ROI
-•	Sales Manager — Quản lý pipeline, KPIs, team performance, governance
-•	Support — Tạo và xử lý tickets, chăm sóc khách hàng
-•	Admin — Cấu hình hệ thống, RBAC, pipeline stages, scoring rules
+## 1. Bảng điểm chi tiết
 
-ID	User Story	Epic	Priority	Status	Sprint
-US-001	Tạo Lead mới	Lead Management	P0	✅ Done	Sprint 1
-US-002	Phát hiện Lead trùng lặp	Lead Management	P0	✅ Done	Sprint 1
-US-003	Auto Scoring Lead	Lead Management	P0	✅ Done	Sprint 2
-US-004	Phân bổ Lead (Distribution)	Lead Management	P0	✅ Done	Sprint 2
-US-005	Qualify và Chuyển đổi Lead thành Deal	Lead Management	P0	✅ Done	Sprint 2
-US-006	Phát hiện Lead stale	Lead Management	P1	✅ Done	Sprint 3
-US-007	Xem danh sách và chi tiết Lead	Lead Management	P0	✅ Done	Sprint 1
-US-008	Tạo Deal mới	Deal Management	P0	✅ Done	Sprint 2
-US-009	Pipeline Kanban View	Deal Management	P0	✅ Done	Sprint 2
-US-010	Cập nhật Stage và Probability	Deal Management	P0	✅ Done	Sprint 3
-US-011	Close Deal (Won / Lost)	Deal Management	P0	✅ Done	Sprint 3
-US-012	Phát hiện Deal stale	Deal Management	P1	✅ Done	Sprint 4
-US-013	Tạo và quản lý Contact	Contact Management	P0	✅ Done	Sprint 1
-US-014	Tạo và quản lý Account	Account Management	P0	✅ Done	Sprint 3
-US-015	Account 360 View	Account Management	P0	✅ Done	Sprint 4
-US-016	Follow-up Scheduling và Tracking	Account Management	P1	✅ Done	Sprint 4
-US-017	Tạo Activity (Log hoạt động sales)	Activity Tracking	P0	✅ Done	Sprint 2
-US-018	Xem Activities List và Timeline	Activity Tracking	P0	✅ Done	Sprint 3
-US-019	Tạo và quản lý Campaign	Campaign Management	P1	✅ Done	Sprint 3
-US-020	Campaign Performance & Lead Source Attribution	Campaign Management	P1	✅ Done	Sprint 5
-US-021	Tạo Support Ticket	Ticket Management (Customer Support)	P0	✅ Done	Sprint 4
-US-022	Xử lý và đóng Ticket	Ticket Management (Customer Support)	P0	✅ Done	Sprint 4
-US-023	Xem danh sách Tickets và Dashboard	Ticket Management (Customer Support)	P1	✅ Done	Sprint 5
-US-024	CRM Dashboard - Sales KPIs	CRM Analytics & Reporting	P0	✅ Done	Sprint 4
-US-025	Deal Velocity Analytics	CRM Analytics & Reporting	P1	✅ Done	Sprint 5
-US-026	Data Quality Report	Data Quality & Governance	P1	✅ Done	Sprint 5
-US-027	Governance Alerts	Data Quality & Governance	P1	✅ Done	Sprint 5
-US-028	Phân quyền CRM theo Role	RBAC & System Configuration	P0	✅ Done	Sprint 1
-US-029	Cấu hình Pipeline Stages	RBAC & System Configuration	P2	✅ Done	Sprint 6
-US-030	Cấu hình Lead Scoring Rules	RBAC & System Configuration	P2	✅ Done	Sprint 6
- 
-Epic 1: Lead Management
-Quản lý toàn bộ vòng đời lead: tạo, phát hiện trùng lặp, tự động chấm điểm, phân bổ cho sales, theo dõi và chuyển đổi thành deal.
+| Hạng mục                  | Điểm | Tỷ lệ | Nhận xét                                                                  |
+| ------------------------- | ---- | ----- | ------------------------------------------------------------------------- |
+| Lead Management           | 9/10 | 90%   | Rất tốt: duplicate detection, auto-scoring, distribution, stale detection |
+| Deal Pipeline             | 9/10 | 90%   | Pipeline stages, probability, closing workflow, stale — xuất sắc          |
+| Contact & Account         | 8/10 | 80%   | Account 360 tốt, health score. Thiếu account segmentation                 |
+| Activity Tracking         | 8/10 | 80%   | 5 activity types, outcome, next_action — good                             |
+| API Endpoints             | 9/10 | 90%   | RESTful chuẩn, cover toàn bộ CRUD + business operations                   |
+| Data Quality & Governance | 8/10 | 80%   | Quality report, governance alerts — hiếm có ở PRD level                   |
+| Quotation/Proposal        | 2/10 | 20%   | THIẾU: Deal stage 'Proposal' nhưng không có Quote model                   |
+| Product/Service Catalog   | 2/10 | 20%   | THIẾU: Bán gì? Không có Product/Service list, pricing                     |
+| Contract Management       | 2/10 | 20%   | THIẾU: Close Won nhưng không có Contract/Agreement model                  |
+| Notification System       | 3/10 | 30%   | Chỉ mention 'thông báo' chung, không có Notification model                |
+| Email Integration         | 3/10 | 30%   | Activity log email nhưng không có email template, tracking, auto-log      |
+| Attachments/Documents     | 2/10 | 20%   | Không có model đính kèm tài liệu cho deal, account                        |
+| Sales Forecast            | 3/10 | 30%   | Có weighted pipeline nhưng không có Forecast model period-based           |
+| Territory/Assignment      | 4/10 | 40%   | Lead distribution round-robin nhưng không có Territory model              |
+| Custom Fields             | 2/10 | 20%   | THIẾU: Không có custom fields cho Lead/Deal/Account                       |
+| Import/Export             | 2/10 | 20%   | THIẾU: Không có import CSV/Excel leads, export reports                    |
 
-US-001: Tạo Lead mới
-Priority	P0 - Must Have
-Persona	Sales / Marketing
-Epic	Epic 1: Lead Management
-Sprint	Sprint 1
-Estimate	5 SP
+| Tổng điểm: 7.0 / 10 \| Xếp loại: KHÁ — Sales pipeline tốt, thiếu Quote/Contract/Product | Điểm mạnh: \| • Lead management xuất sắc (scoring, duplicate, distribution) \| • Data quality & governance hiếm thấy ở PRD level \| Cần bổ sung: \| • +13 models: Product, Quote, Contract, EmailTemplate, Notification... \| • Sales cycle thiếu: Bán gì? Báo giá? Hợp đồng? Doanh thu recurring? |
+| --------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 
-User Story:
-As a Sales Rep
-I want to create a new lead with name, email, phone, source and campaign
-So that every prospective customer is captured in the CRM for follow-up
+## 2. Thiếu sót chi tiết
 
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Tạo lead đầy đủ	Sales đang ở Leads List	Nhập name, email, phone, source = 'Website', campaign, nhấn Create	Lead tạo với status = New, score = 0, assigned_at = null, hiển thị trong danh sách	✅
-AC2	Thiếu trường bắt buộc	Đang tạo lead	Để trống Name và Email	Lỗi validation: 'Name và Email là bắt buộc'	✅
-AC3	Auto-detect duplicate	Lead email 'abc@company.com' đã tồn tại	Tạo lead mới với cùng email	Cảnh báo: 'Lead trùng lặp phát hiện (email). Bạn muốn tiếp tục hay merge?'	✅
-AC4	Lead từ nhiều nguồn	Lead đến từ Facebook Ads	Tạo lead với source = 'ads', campaign = 'FB Q1 2026'	Lead tạo thành công với source và campaign liên kết	✅
-AC5	Lead không tạo deal	Lead mới tạo	Kiểm tra deals	Không có deal nào được tạo tự động - lead phải qua qualify trước	✅
+### 2.1 Sales Cycle không hoàn chỉnh [NGHIÊM TRỌNG]
 
-UI Requirements:
-•	Form: Name (required), Email (required), Phone, Company, Source (select: website/ads/referral/event), Campaign (select)
-•	Button: Create Lead, Cancel
-•	Duplicate warning modal
+PRD có pipeline: Qualified → Needs Analysis → Proposal → Negotiation → Won/Lost. Nhưng:
+- KHÔNG CÓ PRODUCT/SERVICE: Bán gì cho khách? Không có catalog sản phẩm/dịch vụ, pricing tiers, bundles. Deal có 'value' nhưng không detail gồm những items gì.
+- KHÔNG CÓ QUOTATION: Stage 'Proposal' nhưng không generate báo giá. Cần: QuoteLine items, pricing, discount, tax, validity period, PDF export.
+- KHÔNG CÓ CONTRACT: Close Won nhưng deal biến đi đâu? Cần: Agreement/Contract model (terms, auto-renewal, billing period, SLA).
+- KHÔNG CÓ REVENUE TRACKING: Account.total_revenue tĩnh. Cần: recurring revenue (MRR/ARR), revenue per product, churn tracking.
+- THIẾU DISCOUNT APPROVAL: Khi sales giảm giá > 20%, ai duyệt? Không có approval workflow cho deal pricing.
 
-Technical Notes:
-• POST /api/v1/crm/leads
-• Duplicate detection: check email + phone trước khi insert
-• Status default: New, score default: 0
-• Link: campaign_id (optional)
+### 2.2 Thiếu Communication & Automation [3/10]
 
+- Email Template: Không gửi email chuẩn từ CRM (welcome, follow-up, proposal). Thiếu merge tags.
+- Email Tracking: Không biết khách đã mở email chưa, click link chưa (cần cho lead scoring).
+- Notification model: Mention 'thông báo' nhưng không có structure — khi nào, cho ai, qua kênh nào.
+- Automation: Không auto-send email khi lead mới, không auto-task khi deal stage change.
+- Meeting/Calendar: Activity type 'meeting' nhưng không integrate calendar, không có meeting link.
 
-US-002: Phát hiện Lead trùng lặp
-Priority	P0 - Must Have
-Persona	System
-Epic	Epic 1: Lead Management
-Sprint	Sprint 1
-Estimate	5 SP
+### 2.3 Thiếu khác
 
-User Story:
-As the System
-I want to automatically detect duplicate leads by email and phone
-So that the CRM database stays clean and sales reps don't waste time on duplicates
+- Custom Fields: Lead/Deal/Account không có custom fields. Mỗi industry cần fields riêng (VD: camera AI cần: số camera dự kiến, loại deployment, budget phê duyệt).
+- Attachments/Documents: Deal không có nơi attach proposal PDF, contract scan, NDA. Account thiếu document repository.
+- Import/Export: Không import lead CSV/Excel từ event, không export pipeline report.
+- Territory: Lead distribution chỉ round-robin. Cần territory (theo khu vực/sản phẩm/size) cho doanh nghiệp lớn.
+- Competitor: Track đối thủ nào compete trên deal (phân tích win/loss reason chi tiết hơn).
+- Sales Forecast: Weighted pipeline không đủ. Cần forecast period-based: target vs actual per rep per month.
+- Commission: Sales motivation — không track hoa hồng theo deal/target.
+- Web-to-Lead: Form capture từ website → auto-create lead. PRD mention 'website form' nhưng không có integration.
+- Account Segmentation: Không phân loại Enterprise/SMB/Startup. Cần cho targeting strategy.
+- Contact Roles: Một deal có nhiều contacts (Decision Maker, Influencer, Champion). PRD chỉ link 1 contact.
 
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Trùng email	Lead 'abc@corp.com' đã tồn tại	Tạo lead mới với email 'abc@corp.com'	Hiển thị cảnh báo trùng với link đến lead hiện có	⬜
-AC2	Trùng phone	Lead phone '0901234567' đã tồn tại	Tạo lead với cùng phone	Cảnh báo trùng lặp hiển thị	⬜
-AC3	Merge duplicates	2 leads trùng email phát hiện	Nhấn Merge	Hệ thống merge: giữ lead cũ, gộp data mới, lead trùng đánh dấu merged	⬜
-AC4	Cho phép tạo nếu confirm	Duplicate cảnh báo hiển thị	Nhấn 'Tạo mới' (không merge)	Lead mới tạo thành công dù trùng (user quyết định)	⬜
+## 3. Data Models bổ sung (13 models mới → tổng 20)
 
-UI Requirements:
-•	Duplicate warning modal: hiển thị lead hiện có so sánh
-•	Actions: Merge, Create Anyway, Cancel
-•	Data Quality Report: duplicate count
+| Model           | Mục đích                             | Key Fields                                                                                                                                                                               |
+| --------------- | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ProductService  | Catalog sản phẩm/dịch vụ             | name, code, type (product/service/bundle), category, unit_price, currency, description, is_active                                                                                        |
+| Quotation       | Báo giá cho deal                     | deal_id, quote_number, contact_id, valid_until, subtotal, discount_pct, discount_amount, tax_amount, total, status (draft/sent/accepted/rejected/expired), notes, created_by             |
+| QuotationLine   | Chi tiết dòng báo giá                | quotation_id, product_service_id, description, quantity, unit_price, discount_pct, line_total                                                                                            |
+| Contract        | Hợp đồng sau Close Won               | deal_id, account_id, contract_number, title, start_date, end_date, value, billing_period (monthly/quarterly/annual), auto_renewal, status (draft/active/expired/terminated), signed_date |
+| DealContactRole | Nhiều contacts trên 1 deal với roles | deal_id, contact_id, role (decision_maker/influencer/champion/user/evaluator), is_primary                                                                                                |
+| EmailTemplate   | Mẫu email chuẩn                      | name, subject, body_html, category (welcome/follow_up/proposal/meeting), merge_tags (JSONB), is_active, created_by                                                                       |
+| EmailLog        | Lịch sử email gửi/nhận               | contact_id, deal_id, lead_id, template_id, subject, body, direction (sent/received), status (sent/opened/clicked/bounced), sent_at, opened_at                                            |
+| CrmNotification | Thông báo CRM                        | recipient_id, type (lead_assigned/deal_stage/mention/follow_up_due/stale_alert), title, body, entity_type, entity_id, is_read, channel (in_app/email)                                    |
+| SalesForecast   | Dự báo doanh thu theo kỳ             | owner_id, period (YYYY-MM), target_amount, committed_amount, best_case_amount, closed_amount, status (open/closed)                                                                       |
+| CrmAttachment   | Tệp đính kèm cho deal/account        | entity_type (deal/account/contact/lead/ticket), entity_id, file_name, file_url, file_type, category (proposal/contract/nda/presentation/other), uploaded_by                              |
+| CrmCustomField  | Custom fields cho Lead/Deal/Account  | entity_type (lead/deal/account/contact), field_name, field_type (text/number/date/select/multi_select), options (JSONB), is_required, position                                           |
+| Competitor      | Đối thủ cạnh tranh trên deal         | deal_id, name, strengths, weaknesses, price_comparison, status (active/won/lost)                                                                                                         |
+| ImportJob       | Import CSV/Excel leads, contacts     | type (lead/contact/account), file_url, status (pending/processing/completed/failed), total_rows, imported_rows, failed_rows, error_log (JSONB), created_by                               |
 
-Technical Notes:
-• Duplicate check: LOWER(email) OR phone exact match
-• Merge logic: preserve older lead, merge fields from newer
-• Data quality scoring: deduct points for duplicates
+# PHẦN B: USER STORIES HOÀN CHỈNH
 
+Tổng hợp PRD gốc (7 models) + bổ sung (13 models) = 20 data models | 12 Epics | 35 User Stories.
+P0 - Must Have (MVP)  |  P1 - Should Have  |  P2 - Nice to Have
 
-US-003: Auto Scoring Lead
-Priority	P0 - Must Have
-Persona	System
-Epic	Epic 1: Lead Management
-Sprint	Sprint 2
-Estimate	8 SP
+| ID     | User Story                           | Epic                                   | Priority | Status | Sprint   |
+| ------ | ------------------------------------ | -------------------------------------- | -------- | ------ | -------- |
+| US-001 | Tạo Lead & Duplicate Detection       | Lead Management                        | P0       | ⬜ Todo | Sprint 1 |
+| US-002 | Lead Scoring & Distribution          | Lead Management                        | P0       | ⬜ Todo | Sprint 2 |
+| US-003 | Qualify, Convert & Stale Detection   | Lead Management                        | P0       | ⬜ Todo | Sprint 2 |
+| US-004 | Xem danh sách & Chi tiết Lead        | Lead Management                        | P0       | ⬜ Todo | Sprint 1 |
+| US-005 | Product/Service Catalog              | Deal Pipeline & Quotation              | P0       | ⬜ Todo | Sprint 1 |
+| US-006 | Tạo Deal & Pipeline Kanban           | Deal Pipeline & Quotation              | P0       | ⬜ Todo | Sprint 2 |
+| US-007 | Quotation (Báo giá)                  | Deal Pipeline & Quotation              | P0       | ⬜ Todo | Sprint 3 |
+| US-008 | Close Deal (Won/Lost) & Contract     | Deal Pipeline & Quotation              | P0       | ⬜ Todo | Sprint 3 |
+| US-009 | Stale Deals & Probability Management | Deal Pipeline & Quotation              | P1       | ⬜ Todo | Sprint 4 |
+| US-010 | Tạo và Quản lý Contacts              | Contact Management                     | P0       | ⬜ Todo | Sprint 1 |
+| US-011 | Account CRUD & Auto-creation         | Account Management & 360 View          | P0       | ⬜ Todo | Sprint 3 |
+| US-012 | Account 360 View & Health Score      | Account Management & 360 View          | P0       | ⬜ Todo | Sprint 4 |
+| US-013 | Follow-up & Contract Management      | Account Management & 360 View          | P1       | ⬜ Todo | Sprint 4 |
+| US-014 | Log Activities & Next Actions        | Activity Tracking & Email              | P0       | ⬜ Todo | Sprint 2 |
+| US-015 | Email Templates & Tracking           | Activity Tracking & Email              | P1       | ⬜ Todo | Sprint 4 |
+| US-016 | Campaign Management & ROI            | Campaign Management                    | P1       | ⬜ Todo | Sprint 3 |
+| US-017 | Ticket Management & SLA              | Customer Support (Tickets)             | P0       | ⬜ Todo | Sprint 4 |
+| US-018 | CRM Dashboard & Sales KPIs           | CRM Analytics & Forecasting            | P0       | ⬜ Todo | Sprint 4 |
+| US-019 | Deal Velocity & Sales Forecast       | CRM Analytics & Forecasting            | P1       | ⬜ Todo | Sprint 5 |
+| US-020 | Data Quality Report                  | Data Quality & Governance              | P1       | ⬜ Todo | Sprint 5 |
+| US-021 | Governance Alerts                    | Data Quality & Governance              | P1       | ⬜ Todo | Sprint 5 |
+| US-022 | CRM Notification System              | Notifications, Attachments & Documents | P0       | ⬜ Todo | Sprint 3 |
+| US-023 | Attachments & Documents per Entity   | Notifications, Attachments & Documents | P0       | ⬜ Todo | Sprint 3 |
+| US-024 | RBAC & Role-based Access             | RBAC, Pipeline Config & Custom Fields  | P0       | ⬜ Todo | Sprint 1 |
+| US-025 | Pipeline & Scoring Config            | RBAC, Pipeline Config & Custom Fields  | P2       | ⬜ Todo | Sprint 6 |
+| US-026 | Custom Fields per Entity             | RBAC, Pipeline Config & Custom Fields  | P1       | ⬜ Todo | Sprint 4 |
+| US-027 | Cross-module Integration             | Cross-module Integration & Export      | P1       | ⬜ Todo | Sprint 6 |
+| US-028 | Import/Export & Reports              | Cross-module Integration & Export      | P1       | ⬜ Todo | Sprint 5 |
 
-User Story:
-As the System
-I want to automatically calculate lead scores based on interactions
-So that sales reps can prioritize hot leads and focus on high-potential prospects
+# Epic 1: Lead Management
 
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Score từ activity	Lead mới, score = 0	Log activity: call (engaged) → +15 points	Lead score = 15, level = Cold	⬜
-AC2	Score tích lũy	Lead score = 45	Lead request demo → +20 points	Score = 65, level tự động chuyển Cold → Hot	⬜
-AC3	Score levels	Nhiều leads với scores khác nhau	Xem Lead List	Hiển thị badge: Cold (0-30), Warm (30-60), Hot (60+)	⬜
-AC4	Score hiển thị trên detail	Lead với score = 72	Mở Lead Detail	Score bar hiển thị 72/100 với badge 'Hot'	⬜
+*Tạo lead, duplicate detection (email+phone), auto-scoring (interaction-based), round-robin distribution, qualify → convert to deal, stale detection 30 ngày.*
+**Data Models: Lead, CrmCustomField, ImportJob**
 
-UI Requirements:
-•	Score bar trên Lead Detail (0-100)
-•	Score level badges: Cold (blue), Warm (orange), Hot (red)
-•	Score breakdown: hiển thị từng interaction đóng góp bao nhiêu points
+## US-001: Tạo Lead & Duplicate Detection
 
-Technical Notes:
-• Auto-calculate: trigger khi activity tạo cho lead
+| Priority | P0 - Must Have          |
+| -------- | ----------------------- |
+| Persona  | Sales / Marketing       |
+| Epic     | Epic 1: Lead Management |
+| Sprint   | Sprint 1                |
+| Estimate | 8 SP                    |
+
+**User Story:**
+*As a Sales Rep*
+*I want to create leads with auto-duplicate detection and custom fields*
+*So that every prospect is captured without creating duplicates in the database*
+
+**Acceptance Criteria:**
+
+| #   | Scenario         | Given                                    | When                                              | Then                                                                   | Status |
+| --- | ---------------- | ---------------------------------------- | ------------------------------------------------- | ---------------------------------------------------------------------- | ------ |
+| AC1 | Tạo lead đầy đủ  | Sales ở Leads List                       | Nhập name, email, phone, source=website, campaign | Lead tạo, status=New, score=0                                          | ⬜      |
+| AC2 | Duplicate email  | Lead 'abc@corp.com' đã tồn tại           | Tạo lead cùng email                               | Cảnh báo: 'Lead trùng lặp. Merge hoặc tạo mới?'                        | ⬜      |
+| AC3 | Duplicate phone  | Phone '0901234567' đã tồn tại            | Tạo lead cùng phone                               | Cảnh báo tương tự                                                      | ⬜      |
+| AC4 | Merge duplicates | 2 leads trùng                            | Nhấn Merge                                        | Giữ lead cũ, gộp data mới, lead trùng→merged                           | ⬜      |
+| AC5 | Custom fields    | Project cần 'Số camera dự kiến' (number) | Tạo CrmCustomField → điền giá trị trên lead       | Giá trị lưu, filter/sort theo custom field                             | ⬜      |
+| AC6 | Import leads CSV | File 500 leads từ event                  | Upload CSV, map columns                           | ImportJob: processing → completed. 480 imported, 20 duplicates skipped | ⬜      |
+
+**UI Requirements:**
+- Lead form: Name, Email, Phone, Company, Source (select), Campaign, Custom Fields
+- Duplicate warning modal: Merge / Create Anyway / Cancel
+- Import wizard: upload → column mapping → preview → import
+- Lead list: search, filter status/source/score/owner/custom fields
+
+**Technical Notes:**
+• CRUD /api/v1/crm/leads
+• Duplicate: LOWER(email) OR phone exact match
+• CrmCustomField: entity_type='lead', dynamic form rendering
+• POST /api/v1/crm/leads/import (multipart CSV/Excel)
+
+## US-002: Lead Scoring & Distribution
+
+| Priority | P0 - Must Have          |
+| -------- | ----------------------- |
+| Persona  | System / Sales Manager  |
+| Epic     | Epic 1: Lead Management |
+| Sprint   | Sprint 2                |
+| Estimate | 8 SP                    |
+
+**User Story:**
+*As the System*
+*I want to auto-calculate lead scores from interactions and distribute leads via round-robin*
+*So that sales reps prioritize hot leads and workload is balanced*
+
+**Acceptance Criteria:**
+
+| #   | Scenario            | Given                                | When                        | Then                                         | Status |
+| --- | ------------------- | ------------------------------------ | --------------------------- | -------------------------------------------- | ------ |
+| AC1 | Score from activity | Lead score=0, log call (engaged)     | Auto-calculate              | +15 points → score=15, level=Cold            | ⬜      |
+| AC2 | Score accumulate    | Lead score=45, request demo          | Auto                        | +20 → score=65, level→Hot                    | ⬜      |
+| AC3 | Score from email    | Email opened +5, link clicked +10    | Track                       | Score increases automatically                | ⬜      |
+| AC4 | Score levels        | Nhiều leads                          | Xem Lead List               | Badges: Cold (0-30), Warm (30-60), Hot (60+) | ⬜      |
+| AC5 | Round-robin         | 3 sales reps A, B, C. New lead       | Auto-distribute             | Lead 1→A, 2→B, 3→C, 4→A (round-robin)        | ⬜      |
+| AC6 | Response time alert | Lead assigned 25h ago, not contacted | Daily check                 | Alert: 'Lead [name] chưa liên hệ sau 24h'    | ⬜      |
+| AC7 | Manual assign       | Manager muốn gán cụ thể              | Select lead → Assign to rep | owner_id + assigned_at updated               | ⬜      |
+
+**UI Requirements:**
+- Score bar (0-100) + level badge on Lead Detail
+- Score breakdown: each interaction's contribution
+- Distribution settings: round-robin toggle
+- Unassigned leads widget on Dashboard
+
+**Technical Notes:**
+• Auto-score trigger on Activity/EmailLog create for lead
 • Scoring rules: email_open +5, click +10, form +15, call +15, demo +20
-• Level thresholds: Cold 0-30, Warm 30-60, Hot 60+
-
-
-US-004: Phân bổ Lead (Distribution)
-Priority	P0 - Must Have
-Persona	Sales Manager
-Epic	Epic 1: Lead Management
-Sprint	Sprint 2
-Estimate	5 SP
-
-User Story:
-As a Sales Manager
-I want leads to be automatically distributed to sales reps via round-robin
-So that workload is balanced and every lead gets timely attention
-
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Round-robin tự động	3 sales reps: A, B, C. Lead mới đến	Hệ thống auto-distribute	Lead 1 → A, Lead 2 → B, Lead 3 → C, Lead 4 → A (round-robin)	⬜
-AC2	Notification khi nhận lead	Lead được assign cho Sales A	Auto-distribute hoàn tất	Sales A nhận notification: 'Bạn có lead mới: [name]'	⬜
-AC3	Manual distribute	Manager muốn gán lead cụ thể	Chọn lead → Assign to Sales B	Lead.owner_id = Sales B, assigned_at = now()	⬜
-AC4	Response time tracking	Lead assigned 25 giờ trước, chưa contacted	Hệ thống check	Cảnh báo: 'Lead [name] chưa được liên hệ sau 24h'	⬜
-
-UI Requirements:
-•	Auto-distribute toggle trong Settings
-•	Manual assign: user picker trên Lead Detail
-•	Unassigned leads badge trên Dashboard
-
-Technical Notes:
 • POST /api/v1/crm/leads/distribute
-• Round-robin: track last_assigned_index per workspace
-• assigned_at timestamp, contacted_at tracking
 • Alert: assigned_at > 24h AND contacted_at IS NULL
 
+## US-003: Qualify, Convert & Stale Detection
 
-US-005: Qualify và Chuyển đổi Lead thành Deal
-Priority	P0 - Must Have
-Persona	Sales
-Epic	Epic 1: Lead Management
-Sprint	Sprint 2
-Estimate	5 SP
+| Priority | P0 - Must Have          |
+| -------- | ----------------------- |
+| Persona  | Sales                   |
+| Epic     | Epic 1: Lead Management |
+| Sprint   | Sprint 2                |
+| Estimate | 5 SP                    |
 
-User Story:
-As a Sales Rep
-I want to qualify a lead and convert it into a deal
-So that promising prospects enter the sales pipeline for active pursuit
+**User Story:**
+*As a Sales Rep*
+*I want to qualify leads (BANT) and convert them to deals with auto-created contacts*
+*So that promising prospects enter the pipeline and stale leads are flagged*
 
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Qualify lead	Lead status = Contacted, đã đánh giá BANT	Nhấn Qualify	Lead status → Qualified	⬜
-AC2	Convert to Deal	Lead status = Qualified	Nhấn Convert to Deal, nhập deal value = 500M VND, stage = Qualified Lead	Deal mới tạo với lead_id link, contact auto-created nếu chưa có, Lead status → Opportunity	⬜
-AC3	Auto-create contact	Lead chưa có contact tương ứng	Convert to Deal	Contact tự động tạo từ lead info (name, email, phone, company)	⬜
-AC4	Không convert lead chưa qualify	Lead status = New	Thử Convert to Deal	Lỗi: 'Chỉ lead Qualified mới có thể convert thành Deal'	⬜
+**Acceptance Criteria:**
 
-UI Requirements:
-•	Qualify button (status = Contacted)
-•	Convert to Deal button (status = Qualified)
-•	Convert dialog: Deal title, Value, Expected close date
-•	Auto-create contact checkbox
+| #   | Scenario                    | Given                        | When                                           | Then                                                      | Status |
+| --- | --------------------------- | ---------------------------- | ---------------------------------------------- | --------------------------------------------------------- | ------ |
+| AC1 | Qualify lead                | Lead status=Contacted        | Nhấn Qualify → đánh giá BANT                   | Status→Qualified                                          | ⬜      |
+| AC2 | Convert to deal             | Lead Qualified               | Convert: deal value=500M, stage=Qualified Lead | Deal tạo + Contact auto-created + Lead status→Opportunity | ⬜      |
+| AC3 | Auto-create contact         | Lead convert, no contact yet | Convert                                        | Contact tạo từ lead info (name, email, phone, company)    | ⬜      |
+| AC4 | Chặn convert chưa qualified | Lead status=New              | Thử Convert                                    | Lỗi: 'Chỉ lead Qualified mới convert'                     | ⬜      |
+| AC5 | Stale 30 days               | Lead no activity 31 ngày     | Daily check                                    | Stale badge + notification cho owner                      | ⬜      |
+| AC6 | Disqualify stale            | Lead stale > 60 ngày         | Manager nhấn Disqualify                        | Status→Disqualified, reason='No response'                 | ⬜      |
 
-Technical Notes:
-• POST /api/v1/crm/leads/{id}/convert
-• Create Deal + Contact (if not exists)
-• Link: deal.lead_id = lead.id, deal.contact_id
-• Status flow: Qualified → Opportunity (after convert)
+**UI Requirements:**
+- Qualify button, BANT checklist
+- Convert dialog: Deal title, Value, Expected close date
+- Stale badge (amber) on lead cards
+- Bulk disqualify action
 
-
-US-006: Phát hiện Lead stale
-Priority	P1 - Should Have
-Persona	Sales Manager
-Epic	Epic 1: Lead Management
-Sprint	Sprint 3
-Estimate	3 SP
-
-User Story:
-As a Sales Manager
-I want to be alerted when leads have no activity for more than 30 days
-So that stale leads are re-engaged or disqualified to keep the pipeline clean
-
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Stale detection	Lead last activity > 30 ngày trước	Hệ thống chạy daily check	Lead xuất hiện trong Stale Leads list, notification gửi đến owner	⬜
-AC2	Stale leads API	Có 15 stale leads	GET /leads/stale	Trả về danh sách 15 leads với last_activity_date > 30 days	⬜
-AC3	Disqualify stale lead	Lead stale > 60 ngày	Manager nhấn Disqualify	Lead status → Lost/Disqualified với lý do 'No response'	⬜
-
-UI Requirements:
-•	Stale Leads widget trên Dashboard
-•	Visual indicator (amber badge) trên stale leads
-•	Bulk disqualify action
-
-Technical Notes:
+**Technical Notes:**
+• POST /leads/{id}/convert — create Deal + Contact
 • GET /api/v1/crm/leads/stale
-• Check: last_activity_date IS NULL OR last_activity_date < NOW() - 30 days
-• Background job: daily stale check + notification
+• Stale: last_activity > 30 days
 
+## US-004: Xem danh sách & Chi tiết Lead
 
-US-007: Xem danh sách và chi tiết Lead
-Priority	P0 - Must Have
-Persona	Sales
-Epic	Epic 1: Lead Management
-Sprint	Sprint 1
-Estimate	5 SP
+| Priority | P0 - Must Have          |
+| -------- | ----------------------- |
+| Persona  | Sales                   |
+| Epic     | Epic 1: Lead Management |
+| Sprint   | Sprint 1                |
+| Estimate | 3 SP                    |
 
-User Story:
-As a Sales Rep
-I want to view, search and filter my leads with full detail view
-So that I can manage my lead pipeline efficiently and prioritize follow-ups
+**User Story:**
+*As a Sales Rep*
+*I want to view, search, filter leads and see full detail with activity history*
+*So that I can manage my lead pipeline efficiently*
 
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Lead list	Sales có 30 leads assigned	Mở Leads List	Hiển thị: name, email, source, status, score, owner, campaign, created date	⬜
-AC2	Filter & search	Lead list hiển thị	Filter status = Qualified, search 'Hotel'	Hiển thị chỉ leads Qualified có keyword 'Hotel'	⬜
-AC3	Lead detail	Click vào lead 'ABC Corp'	Mở Lead Detail	Hiển thị tất cả thông tin + activity history + score breakdown	⬜
-AC4	My Leads filter	Sales đang xem all leads	Toggle 'My Leads'	Chỉ hiển thị leads có owner_id = current user	⬜
+**Acceptance Criteria:**
 
-UI Requirements:
-•	Lead table: sortable columns, filters (status, source, owner, score level, campaign)
-•	Lead Detail: info panel + activity timeline + score bar
-•	Search bar, My Leads toggle
+| #   | Scenario        | Given                 | When                                    | Then                                                              | Status |
+| --- | --------------- | --------------------- | --------------------------------------- | ----------------------------------------------------------------- | ------ |
+| AC1 | Lead list       | Sales có 30 leads     | Mở Leads List                           | Name, email, source, status, score, owner, campaign, created_date | ⬜      |
+| AC2 | Filter & search | List hiển thị         | Filter status=Qualified, search 'Hotel' | Filtered results                                                  | ⬜      |
+| AC3 | Lead detail     | Click lead 'ABC Corp' | Mở Detail                               | Full info + activity timeline + score breakdown + custom fields   | ⬜      |
+| AC4 | My Leads        | Toggle                | My Leads filter                         | Chỉ leads owner_id = current user                                 | ⬜      |
 
-Technical Notes:
+**UI Requirements:**
+- Lead table: sortable, filterable (status, source, owner, score level, campaign, custom fields)
+- Lead Detail: info + activities + score + attachments
+
+**Technical Notes:**
 • GET /api/v1/crm/leads?status=&source=&owner_id=&score_min=&score_max=
-• GET /api/v1/crm/leads/{id}
 • Pagination, sorting
 
+# Epic 2: Deal Pipeline & Quotation
 
- 
-Epic 2: Deal Management
-Quản lý pipeline bán hàng: tạo deal, theo dõi stages, xác suất chốt, closing workflow, phát hiện deal stale.
+*Sales pipeline Kanban, stage/probability tracking, close won/lost, QUOTATION generation (báo giá chi tiết), deal contact roles, stale detection.*
+**Data Models: Deal, Quotation, QuotationLine, DealContactRole, Competitor, ProductService**
 
-US-008: Tạo Deal mới
-Priority	P0 - Must Have
-Persona	Sales
-Epic	Epic 2: Deal Management
-Sprint	Sprint 2
-Estimate	5 SP
+## US-005: Product/Service Catalog
 
-User Story:
-As a Sales Rep
-I want to create a new deal with title, value, stage, probability and expected close date
-So that the opportunity is tracked in the pipeline for management and forecasting
+| Priority | P0 - Must Have                    |
+| -------- | --------------------------------- |
+| Persona  | Admin / Sales Manager             |
+| Epic     | Epic 2: Deal Pipeline & Quotation |
+| Sprint   | Sprint 1                          |
+| Estimate | 5 SP                              |
 
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Tạo deal đầy đủ	Sales ở Deals page	Nhập title, value = 300M VND, stage = Needs Analysis, probability = 0.3, expected_close_date, contact	Deal tạo thành công, hiển thị trên pipeline Kanban	⬜
-AC2	Deal từ lead convert	Lead vừa convert	Deal auto-created	Deal có lead_id link, contact_id auto-filled, source lead hiển thị	⬜
-AC3	Thiếu value	Đang tạo deal	Không nhập value	Cảnh báo governance: 'Deal nên có giá trị để dự báo doanh thu'	⬜
-AC4	Thiếu expected close date	Đang tạo deal	Không nhập expected_close_date	Cảnh báo: 'Mọi deal phải có ngày dự kiến chốt'	⬜
+**User Story:**
+*As an Admin*
+*I want to manage a product/service catalog with pricing*
+*So that quotations reference standard products and pricing is consistent*
 
-UI Requirements:
-•	Form: Title (required), Value (VND), Stage (select pipeline stages), Probability, Expected Close Date, Contact, Account
-•	Pipeline stage selector
-•	Value format: VND currency
+**Acceptance Criteria:**
 
-Technical Notes:
-• POST /api/v1/crm/deals
-• Validation: title required
-• Governance: warn if value = null or expected_close_date = null
-• Link: contact_id, lead_id, account_id
+| #   | Scenario     | Given                     | When                                                                                  | Then                                | Status |
+| --- | ------------ | ------------------------- | ------------------------------------------------------------------------------------- | ----------------------------------- | ------ |
+| AC1 | Tạo product  | Admin ở Products          | Tạo: name='Camera AI Indoor 2MP', code='CAM-AI-2MP', type=product, unit_price=15M VND | Product tạo, is_active=true         | ⬜      |
+| AC2 | Tạo service  | Admin                     | Tạo: name='Triển khai & Cấu hình', type=service, unit_price=5M/site                   | Service tạo                         | ⬜      |
+| AC3 | Bundle       | Gói 'Smart Parking Basic' | Tạo: type=bundle, items link nhiều products                                           | Bundle tạo, tổng giá auto-calculate | ⬜      |
+| AC4 | Product list | 50 items                  | Search + filter by category/type                                                      | Nhanh, accurate                     | ⬜      |
 
+**UI Requirements:**
+- Product form: Name, Code, Type (product/service/bundle), Category, Unit Price, Description
+- Product list: search, filter, active toggle
 
-US-009: Pipeline Kanban View
-Priority	P0 - Must Have
-Persona	Sales / Sales Manager
-Epic	Epic 2: Deal Management
-Sprint	Sprint 2
-Estimate	8 SP
+**Technical Notes:**
+• CRUD /api/v1/crm/products
+• ProductService: type enum (product, service, bundle)
+• Link to QuotationLine
 
-User Story:
-As a Sales Manager
-I want to view all deals on a Kanban board organized by pipeline stages
-So that I can visualize the sales pipeline and identify bottlenecks at each stage
+## US-006: Tạo Deal & Pipeline Kanban
 
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Kanban hiển thị	Có 20 deals ở các stages khác nhau	Mở Deals Pipeline	Kanban board: 5 columns (Qualified Lead → Needs Analysis → Proposal → Negotiation → Closed Won), mỗi column hiển thị deals + tổng value	⬜
-AC2	Drag-drop stages	Deal ở 'Needs Analysis'	Kéo sang 'Proposal'	Deal stage cập nhật, probability auto-adjust, last_activity_date = now	⬜
-AC3	Stage value summary	Column Proposal có 5 deals	Xem column header	Hiển thị: 5 deals | Total: 2.5B VND | Weighted: 750M VND (probability * value)	⬜
-AC4	Filter by owner	Manager xem pipeline	Filter owner = Sales A	Chỉ hiển thị deals của Sales A	⬜
+| Priority | P0 - Must Have                    |
+| -------- | --------------------------------- |
+| Persona  | Sales                             |
+| Epic     | Epic 2: Deal Pipeline & Quotation |
+| Sprint   | Sprint 2                          |
+| Estimate | 8 SP                              |
 
-UI Requirements:
-•	Kanban board: 5+ columns theo pipeline stages
-•	Deal cards: title, value, probability, contact, days in stage
-•	Column headers: deal count + total value + weighted value
-•	Filters: owner, value range, close date range
+**User Story:**
+*As a Sales Rep*
+*I want to create deals on a Kanban pipeline with stage tracking, probability and deal contact roles*
+*So that opportunities are visually managed and key stakeholders are identified*
 
-Technical Notes:
-• GET /api/v1/crm/deals/pipeline
-• Drag-drop: PUT /api/v1/crm/deals/{id} with stage update
-• Weighted value = SUM(value * probability) per stage
-• Auto-update probability khi stage thay đổi
+**Acceptance Criteria:**
 
+| #   | Scenario            | Given                             | When                                                                                    | Then                                                                                                            | Status |
+| --- | ------------------- | --------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ------ |
+| AC1 | Tạo deal            | Sales ở Deals                     | Nhập title, value=300M, stage=Needs Analysis, probability=0.25, contact, expected_close | Deal tạo, hiển thị trên Kanban                                                                                  | ⬜      |
+| AC2 | Pipeline Kanban     | 20 deals ở nhiều stages           | Mở Pipeline                                                                             | 5 columns: Qualified→Needs Analysis→Proposal→Negotiation→Closed Won. Mỗi column: count + total value + weighted | ⬜      |
+| AC3 | Drag-drop stage     | Deal ở Needs Analysis             | Kéo sang Proposal                                                                       | Stage update, probability auto-adjust (0.5), last_activity=now                                                  | ⬜      |
+| AC4 | Contact roles       | Deal có 3 contacts                | Thêm DealContactRole: CEO=decision_maker, CTO=evaluator, PM=champion                    | Roles hiển thị trên Deal Detail, primary contact highlighted                                                    | ⬜      |
+| AC5 | Competitor tracking | Deal có 2 đối thủ cạnh tranh      | Thêm Competitor: name, strengths, weaknesses, price_compare                             | Analysis tab trên Deal Detail                                                                                   | ⬜      |
+| AC6 | Filter pipeline     | Manager xem                       | Filter by owner/value range/expected close                                              | Pipeline filtered                                                                                               | ⬜      |
+| AC7 | Deal custom fields  | Camera AI cần 'Số camera dự kiến' | Tạo CrmCustomField→điền                                                                 | Custom field hiển thị & filterable                                                                              | ⬜      |
 
-US-010: Cập nhật Stage và Probability
-Priority	P0 - Must Have
-Persona	Sales
-Epic	Epic 2: Deal Management
-Sprint	Sprint 3
-Estimate	3 SP
+**UI Requirements:**
+- Kanban: 5+ columns, deal cards (title, value, probability, contact, days in stage)
+- Column headers: count + total + weighted value
+- Deal Detail: tabs (Overview, Contacts/Roles, Activities, Quotes, Competitors, Attachments)
+- Custom fields in Detail form
 
-User Story:
-As a Sales Rep
-I want to update deal stage and win probability as negotiations progress
-So that the pipeline accurately reflects the current state of each opportunity
+**Technical Notes:**
+• CRUD /deals, Pipeline: GET /deals/pipeline
+• Drag: PUT deal with stage update
+• Auto-probability per stage: Qualified=0.1, Analysis=0.25, Proposal=0.5, Negotiation=0.75
+• DealContactRole: many-to-many deal↔contact with role
 
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Update stage	Deal ở Needs Analysis	Chuyển sang Proposal	Stage cập nhật, last_activity_date = now, activity log ghi nhận	⬜
-AC2	Auto probability	Deal chuyển sang Negotiation	Stage update hoàn tất	Probability tự động gợi ý: Qualified=0.1, Needs Analysis=0.25, Proposal=0.5, Negotiation=0.75	⬜
-AC3	Manual probability override	Probability tự động = 0.5	Sales override thành 0.7	Probability = 0.7, ghi nhận 'manual override'	⬜
-AC4	Stage phải đi kèm activity	Deal chuyển stage	Không có activity trong 1 tuần	Governance alert: 'Deal [title] đã chuyển stage nhưng chưa có activity đi kèm'	⬜
+## US-007: Quotation (Báo giá)
 
-UI Requirements:
-•	Stage selector / Kanban drag-drop
-•	Probability slider (0-100%)
-•	Activity prompt khi chuyển stage
+| Priority | P0 - Must Have                    |
+| -------- | --------------------------------- |
+| Persona  | Sales                             |
+| Epic     | Epic 2: Deal Pipeline & Quotation |
+| Sprint   | Sprint 3                          |
+| Estimate | 8 SP                              |
 
-Technical Notes:
-• PUT /api/v1/crm/deals/{id}
+**User Story:**
+*As a Sales Rep*
+*I want to create quotations with product line items, discounts and tax for deals*
+*So that proposals are professional, accurate and trackable*
+
+**Acceptance Criteria:**
+
+| #   | Scenario                 | Given                     | When                                                                     | Then                                                                          | Status |
+| --- | ------------------------ | ------------------------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------- | ------ |
+| AC1 | Tạo báo giá              | Deal ở stage Proposal     | Tạo Quotation: add lines [{Camera AI × 20 × 15M}, {Triển khai × 5 × 5M}] | Quote tạo: subtotal=325M, discount 5%=16.25M, tax 10%=30.875M, total=339.625M | ⬜      |
+| AC2 | Apply discount           | Quote draft               | Discount 10% trên line Camera                                            | Line total recalculate, grand total update                                    | ⬜      |
+| AC3 | Send quote               | Quote draft complete      | Nhấn Send                                                                | Status→sent, auto-email với PDF attachment cho contact                        | ⬜      |
+| AC4 | Quote accepted           | Khách đồng ý              | Mark Accepted                                                            | Status→accepted, deal value sync với quote total                              | ⬜      |
+| AC5 | Quote rejected/expired   | Khách reject hoặc quá hạn | Update status                                                            | rejected/expired, sales tạo revised quote nếu cần                             | ⬜      |
+| AC6 | Multiple quotes per deal | Deal có 3 versions        | Xem Quotes tab                                                           | V1 (rejected) → V2 (expired) → V3 (accepted), version tracking                | ⬜      |
+| AC7 | PDF export               | Quote complete            | Nhấn Export PDF                                                          | Professional PDF: company header, line items, totals, terms, validity         | ⬜      |
+| AC8 | Discount approval        | Discount > 20%            | Sales tạo quote                                                          | Cảnh báo: 'Discount >20% cần Manager approve trước khi gửi'                   | ⬜      |
+
+**UI Requirements:**
+- Quote form: Deal, Contact, Line Items (product, qty, unit price, discount %), Tax rate
+- Totals: subtotal, discount, tax, grand total (auto-calculate)
+- Quote list per deal: version, status, total, sent date
+- PDF preview & export
+
+**Technical Notes:**
+• CRUD /api/v1/crm/deals/{did}/quotations
+• QuotationLine: product_id, qty, unit_price, discount_pct, line_total
+• Auto-calc: subtotal, discount, tax, total
+• Status: draft→sent→accepted/rejected/expired
+• Discount >20% → require manager approval flag
+
+## US-008: Close Deal (Won/Lost) & Contract
+
+| Priority | P0 - Must Have                    |
+| -------- | --------------------------------- |
+| Persona  | Sales                             |
+| Epic     | Epic 2: Deal Pipeline & Quotation |
+| Sprint   | Sprint 3                          |
+| Estimate | 8 SP                              |
+
+**User Story:**
+*As a Sales Rep*
+*I want to close deals as Won (with contract creation) or Lost (with mandatory reason)*
+*So that pipeline is accurate and won deals generate contracts and accounts*
+
+**Acceptance Criteria:**
+
+| #   | Scenario                    | Given                            | When                                      | Then                                                                               | Status |
+| --- | --------------------------- | -------------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------- | ------ |
+| AC1 | Close Won                   | Deal Negotiation, quote accepted | Close Won, confirm value                  | Stage→Closed Won, probability=1.0, Account auto-created, Contract auto-created     | ⬜      |
+| AC2 | Auto-create Account         | Close Won, no Account yet        | Deal closed                               | Account tạo từ contact company, source_deal_id=deal, total_revenue+=value          | ⬜      |
+| AC3 | Auto-create Contract        | Close Won                        | Deal closed                               | Contract tạo: deal_id, account_id, value, start_date, billing_period, status=draft | ⬜      |
+| AC4 | Close Lost mandatory reason | Deal cần đóng                    | Close Lost, không nhập reason             | Lỗi: 'Vui lòng chọn lý do mất deal'                                                | ⬜      |
+| AC5 | Close Lost with reason      | Deal cần đóng                    | Chọn: 'Giá cao' + competitor info + notes | Stage→Closed Lost, loss_reason lưu, competitor analysis data                       | ⬜      |
+| AC6 | Reopen deal                 | Deal Closed Lost, khách quay lại | Manager Reopen                            | Deal về stage trước, closed_at=null                                                | ⬜      |
+| AC7 | Won deal attach contract    | Contract draft tạo               | Upload signed contract PDF                | CrmAttachment: entity_type=contract, category=contract                             | ⬜      |
+
+**UI Requirements:**
+- Close Won: confirm value, contract preview
+- Close Lost: reason dropdown (Giá/Đối thủ/Không phù hợp/Hoãn mua) + notes
+- Contract form auto-populated from deal
+- Reopen button (Manager only)
+
+**Technical Notes:**
+• POST /deals/{id}/close {result:'won'|'lost', loss_reason, competitor_id}
+• Auto-create Account + Contract on Won
+• Contract: deal_id, account_id, value, billing, auto_renewal
+• Account.total_revenue += deal.value
+
+## US-009: Stale Deals & Probability Management
+
+| Priority | P1 - Should Have                  |
+| -------- | --------------------------------- |
+| Persona  | Sales Manager                     |
+| Epic     | Epic 2: Deal Pipeline & Quotation |
+| Sprint   | Sprint 4                          |
+| Estimate | 3 SP                              |
+
+**User Story:**
+*As a Sales Manager*
+*I want stale deal alerts and probability management with stage-based defaults*
+*So that stuck deals are re-engaged and pipeline values are realistic*
+
+**Acceptance Criteria:**
+
+| #   | Scenario                 | Given                      | When          | Then                                       | Status |
+| --- | ------------------------ | -------------------------- | ------------- | ------------------------------------------ | ------ |
+| AC1 | Stale 60 days            | Deal no activity 61 ngày   | Daily check   | Stale badge + notification owner + manager | ⬜      |
+| AC2 | High-value stale 30 days | Deal 1B VND, stale 31 ngày | Check         | Priority alert: 'High-value deal stale'    | ⬜      |
+| AC3 | Auto probability         | Deal move to Proposal      | Stage update  | Probability auto-suggest: 0.50 (editable)  | ⬜      |
+| AC4 | Manual override          | Auto probability=0.5       | Sales set 0.7 | Override saved, ghi nhận 'manual'          | ⬜      |
+
+**UI Requirements:**
+- Stale badge, Dashboard widget
+- Probability slider, auto-suggest indicator
+
+**Technical Notes:**
+• GET /deals/stale, threshold: 60d general, 30d high-value (>500M)
 • Default probability per stage (configurable)
+
+# Epic 3: Contact Management
+
+*CRUD contacts, link accounts, custom fields, import/export, deduplication.*
+**Data Models: Contact**
+
+## US-010: Tạo và Quản lý Contacts
+
+| Priority | P0 - Must Have             |
+| -------- | -------------------------- |
+| Persona  | Sales                      |
+| Epic     | Epic 3: Contact Management |
+| Sprint   | Sprint 1                   |
+| Estimate | 5 SP                       |
+
+**User Story:**
+*As a Sales Rep*
+*I want to manage contacts with account linking, custom fields and import capability*
+*So that I have a reliable customer database for all interactions*
+
+**Acceptance Criteria:**
+
+| #   | Scenario        | Given                    | When                                                 | Then                                                | Status |
+| --- | --------------- | ------------------------ | ---------------------------------------------------- | --------------------------------------------------- | ------ |
+| AC1 | Tạo contact     | Sales ở Contacts         | Nhập name, email, phone, company, account (optional) | Contact tạo                                         | ⬜      |
+| AC2 | Link account    | Contact chưa gắn account | Chọn account 'ABC Corp'                              | Contact.account_id set, hiển thị trong Account 360  | ⬜      |
+| AC3 | Search contacts | 500 contacts             | Search 'Nguyen'                                      | All matches, fast                                   | ⬜      |
+| AC4 | Import contacts | CSV 200 contacts         | Upload, map columns                                  | ImportJob: 190 imported, 10 duplicate skipped       | ⬜      |
+| AC5 | Contact detail  | Click contact            | Mở Detail                                            | Info + linked deals + activities + emails + tickets | ⬜      |
+
+**UI Requirements:**
+- Contact form: Name, Email, Phone, Company, Account, Custom Fields
+- Contact list: search, filter by account
+- Contact Detail: info, deals, activities, emails
+
+**Technical Notes:**
+• CRUD /contacts
+• Import: POST /contacts/import
+• Link: account_id, shown in Account 360
+
+# Epic 4: Account Management & 360 View
+
+*Customer accounts, 360 view (contacts, deals, activities, tickets, contracts, revenue), health score, follow-up scheduling, segmentation.*
+**Data Models: Account, Contract**
+
+## US-011: Account CRUD & Auto-creation
+
+| Priority | P0 - Must Have                        |
+| -------- | ------------------------------------- |
+| Persona  | Sales                                 |
+| Epic     | Epic 4: Account Management & 360 View |
+| Sprint   | Sprint 3                              |
+| Estimate | 5 SP                                  |
+
+**User Story:**
+*As a Sales Rep*
+*I want to manage customer accounts with auto-creation on deal win*
+*So that organizational relationships are tracked from the moment they become customers*
+
+**Acceptance Criteria:**
+
+| #   | Scenario           | Given                               | When                                                            | Then                                                          | Status |
+| --- | ------------------ | ----------------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------- | ------ |
+| AC1 | Tạo account        | Sales ở Accounts                    | Nhập: name='ABC Corp', industry='Hospitality', website, address | Account tạo, status=Active, health_score=50                   | ⬜      |
+| AC2 | Auto-create on Won | Deal Closed Won, no account         | Close Won                                                       | Account auto-created from contact.company, source_deal_id set | ⬜      |
+| AC3 | Total revenue auto | Account 3 deals Won: 300M+200M+500M | Xem Account                                                     | total_revenue=1B VND (auto-aggregated)                        | ⬜      |
+| AC4 | Account list       | 50 accounts                         | Filter status=Active, sort revenue desc                         | Filtered, sorted                                              | ⬜      |
+
+**UI Requirements:**
+- Account form: Name, Industry, Website, Address, Status
+- Account list: name, industry, revenue, health score, status
+
+**Technical Notes:**
+• CRUD /accounts
+• Auto-create on deal close won
+• total_revenue = SUM(deals.value WHERE won AND account_id)
+
+## US-012: Account 360 View & Health Score
+
+| Priority | P0 - Must Have                        |
+| -------- | ------------------------------------- |
+| Persona  | Sales / Manager                       |
+| Epic     | Epic 4: Account Management & 360 View |
+| Sprint   | Sprint 4                              |
+| Estimate | 8 SP                                  |
+
+**User Story:**
+*As a Sales Rep*
+*I want a 360-degree view of each account showing all relationships and a health score*
+*So that I understand the full customer relationship for retention and upsell*
+
+**Acceptance Criteria:**
+
+| #   | Scenario          | Given                                           | When            | Then                                                                                               | Status |
+| --- | ----------------- | ----------------------------------------------- | --------------- | -------------------------------------------------------------------------------------------------- | ------ |
+| AC1 | 360 view          | Account ABC Corp                                | Mở 360 View     | Tabs: Contacts(3), Deals(5 won/lost/open), Activities(20), Tickets(2), Contracts(1), Revenue chart | ⬜      |
+| AC2 | Health score      | 3 deals won, 1 open ticket, activity 7 ngày ago | Xem score       | Health=80 (High). Formula: revenue 30% + activity recency 30% + ticket health 20% + pipeline 20%   | ⬜      |
+| AC3 | Revenue breakdown | Account nhiều deals                             | Xem Revenue tab | Won Revenue, Pipeline Value, Weighted Pipeline, MRR (from contracts)                               | ⬜      |
+| AC4 | Contracts tab     | Account có 2 contracts                          | Xem Contracts   | Active contracts: value, billing period, renewal date, SLA status                                  | ⬜      |
+
+**UI Requirements:**
+- Account Detail: Tabs (Overview, Contacts, Deals, Activities, Tickets, Contracts, Documents, Revenue)
+- Health score gauge (0-100) + color
+- Revenue KPI cards + chart
+
+**Technical Notes:**
+• GET /accounts/{id}/360
+• Health: weighted(revenue 30%, activity_recency 30%, ticket_health 20%, pipeline 20%)
+• Revenue: aggregate from deals + contracts
+
+## US-013: Follow-up & Contract Management
+
+| Priority | P1 - Should Have                      |
+| -------- | ------------------------------------- |
+| Persona  | Sales                                 |
+| Epic     | Epic 4: Account Management & 360 View |
+| Sprint   | Sprint 4                              |
+| Estimate | 5 SP                                  |
+
+**User Story:**
+*As a Sales Rep*
+*I want to schedule account follow-ups and manage post-sale contracts*
+*So that no customer is neglected and contract renewals are tracked*
+
+**Acceptance Criteria:**
+
+| #   | Scenario               | Given                           | When                                | Then                                                      | Status |
+| --- | ---------------------- | ------------------------------- | ----------------------------------- | --------------------------------------------------------- | ------ |
+| AC1 | Set follow-up          | Account Detail                  | Set next_follow_up_date = next week | Account in upcoming follow-ups list                       | ⬜      |
+| AC2 | Overdue follow-up      | Follow-up date passed 3 ngày    | Dashboard check                     | Red indicator, overdue list                               | ⬜      |
+| AC3 | Contract renewal alert | Contract end_date trong 30 ngày | Daily check                         | Alert: 'Contract ABC Corp hết hạn 30/04. Cần gia hạn.'    | ⬜      |
+| AC4 | Contract lifecycle     | Contract active                 | Renew / Terminate                   | Status updates, revenue tracking adjusted                 | ⬜      |
+| AC5 | Upsell opportunity     | Account healthy, no open deal   | Follow-up visit                     | Sales tạo new deal linked to account = upsell opportunity | ⬜      |
+
+**UI Requirements:**
+- Follow-up date picker, overdue widget
+- Contract list: status, value, renewal date, alert badge
+- Upsell: Create Deal button from Account
+
+**Technical Notes:**
+• GET /accounts/follow-ups?due_before=
+• Contract: status lifecycle draft→active→expired/terminated
+• Renewal alert: end_date < today + 30
+
+# Epic 5: Activity Tracking & Email
+
+*Log activities (call/email/meeting/demo/follow-up), email templates với merge tags, email tracking (open/click), next action reminders.*
+**Data Models: Activity, EmailTemplate, EmailLog**
+
+## US-014: Log Activities & Next Actions
+
+| Priority | P0 - Must Have                    |
+| -------- | --------------------------------- |
+| Persona  | Sales                             |
+| Epic     | Epic 5: Activity Tracking & Email |
+| Sprint   | Sprint 2                          |
+| Estimate | 5 SP                              |
+
+**User Story:**
+*As a Sales Rep*
+*I want to log every interaction and set next actions with reminders*
+*So that all customer engagement is documented and follow-ups happen on time*
+
+**Acceptance Criteria:**
+
+| #   | Scenario                 | Given                                 | When                                                                          | Then                                                         | Status |
+| --- | ------------------------ | ------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------ | ------ |
+| AC1 | Log call                 | Vừa gọi lead ABC                      | Tạo: type=call, subject, notes, outcome='interested', next_action_date=3 ngày | Activity tạo, lead score +15, deal.last_activity=now         | ⬜      |
+| AC2 | Log meeting              | Họp với deal contact                  | Tạo: type=meeting, link deal+contact                                          | Activity ghi nhận, hiển thị trên cả deal và contact timeline | ⬜      |
+| AC3 | Next action reminder     | Activity next_action=tomorrow         | Ngày mai                                                                      | Notification: 'Follow-up action cho [subject]'               | ⬜      |
+| AC4 | Activity linked multiple | Call liên quan deal+contact+lead      | Tạo với deal_id+contact_id+lead_id                                            | Hiển thị trên timeline cả 3 entities                         | ⬜      |
+| AC5 | SOP: phải log activity   | Deal stage change, no activity 7 ngày | Governance check                                                              | Alert: 'Deal [title] thay đổi stage nhưng không có activity' | ⬜      |
+
+**UI Requirements:**
+- Activity form: Type, Subject, Notes, Outcome, Next Action Date, Link (Lead/Deal/Contact)
+- Activity timeline per entity
+- Next action reminder notifications
+
+**Technical Notes:**
+• CRUD /activities
+• Update: lead.score, deal.last_activity_date
+• Reminder: background job check next_action_date
 • Governance: check activity after stage change
 
-
-US-011: Close Deal (Won / Lost)
-Priority	P0 - Must Have
-Persona	Sales
-Epic	Epic 2: Deal Management
-Sprint	Sprint 3
-Estimate	5 SP
-
-User Story:
-As a Sales Rep
-I want to close a deal as Won or Lost with appropriate details
-So that pipeline is accurate and lost deals provide learning data for improvement
-
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Close Won	Deal ở Negotiation, khách đồng ý	Nhấn Close Won, confirm value = 500M VND	Stage → Closed Won, probability = 1.0, closed_at = now, Account auto-created nếu chưa có	⬜
-AC2	Auto-create Account	Close Won, chưa có Account cho contact	Deal closed won	Account tự động tạo từ contact company info, deal linked, total_revenue updated	⬜
-AC3	Close Lost - bắt buộc lý do	Deal cần đóng lost	Nhấn Close Lost, không nhập lý do	Lỗi: 'Vui lòng chọn lý do mất deal'	⬜
-AC4	Close Lost với lý do	Deal cần đóng lost	Chọn loss_reason = 'Giá cao', nhập notes	Stage → Closed Lost, probability = 0, loss_reason lưu, closed_at = now	⬜
-AC5	Reopen deal	Deal đã Closed Lost	Manager nhấn Reopen	Deal status quay lại stage trước đó, closed_at = null	⬜
-
-UI Requirements:
-•	Close Won button: confirm final value
-•	Close Lost dialog: loss_reason (required select: Giá/Đối thủ/Không phù hợp/Hoãn mua), notes
-•	Reopen option cho Manager
-
-Technical Notes:
-• POST /api/v1/crm/deals/{id}/close
-• Body: { result: 'won'|'lost', loss_reason, final_value }
-• Auto-create Account on Won
-• Update account.total_revenue += deal.value
-
-
-US-012: Phát hiện Deal stale
-Priority	P1 - Should Have
-Persona	Sales Manager
-Epic	Epic 2: Deal Management
-Sprint	Sprint 4
-Estimate	3 SP
-
-User Story:
-As a Sales Manager
-I want to be alerted when deals have no activity for more than 60 days
-So that stuck deals are either re-engaged or closed to maintain pipeline accuracy
-
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Stale deal detection	Deal last_activity_date > 60 ngày	Daily check	Deal xuất hiện trong Stale Deals list, notification gửi owner + manager	⬜
-AC2	High-value stale alert	Deal value = 1B VND, stale > 30 ngày	Governance check	Priority alert: 'High-value deal [title] (1B VND) không có activity 30+ ngày'	⬜
-
-UI Requirements:
-•	Stale Deals widget trên Dashboard
-•	Stale badge trên deal cards
-•	Governance alerts panel
-
-Technical Notes:
-• GET /api/v1/crm/deals/stale
-• Threshold: 60 days general, 30 days for high-value (> 500M)
-• Background job: daily check
-
-
- 
-Epic 3: Contact Management
-Quản lý danh bạ khách hàng, liên kết với Accounts, Deals và Activities. Cơ sở dữ liệu khách hàng duy nhất.
-
-US-013: Tạo và quản lý Contact
-Priority	P0 - Must Have
-Persona	Sales
-Epic	Epic 3: Contact Management
-Sprint	Sprint 1
-Estimate	5 SP
-
-User Story:
-As a Sales Rep
-I want to create and manage contacts with their organization and communication details
-So that I have a reliable customer database for all sales and support interactions
-
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Tạo contact	Sales ở Contacts List	Nhập name, email, phone, company, account (optional)	Contact tạo thành công, liên kết account nếu chọn	⬜
-AC2	Edit contact	Contact tồn tại	Sửa phone number	Cập nhật thành công, updated_at = now	⬜
-AC3	Link to account	Contact chưa gắn account	Chọn account 'ABC Corp'	Contact.account_id = ABC Corp ID, hiển thị trong Account 360	⬜
-AC4	Search contacts	Database có 500 contacts	Search 'Nguyen'	Hiển thị tất cả contacts có tên chứa 'Nguyen'	⬜
-AC5	Delete contact	Contact không có deal active	Nhấn Delete, confirm	Contact bị xóa (soft delete nếu có lịch sử)	⬜
-
-UI Requirements:
-•	Contact form: Name (required), Email, Phone, Company, Account (select)
-•	Contacts List: searchable, filterable by account
-•	Contact Detail: info + linked deals + activities
-
-Technical Notes:
-• CRUD: /api/v1/crm/contacts
-• Link: account_id (optional)
-• Search: name, email, phone, company
-
-
- 
-Epic 4: Account Management
-Quản lý khách hàng tổ chức, Account 360 view, health score, follow-up tracking và doanh thu tổng hợp.
-
-US-014: Tạo và quản lý Account
-Priority	P0 - Must Have
-Persona	Sales
-Epic	Epic 4: Account Management
-Sprint	Sprint 3
-Estimate	5 SP
-
-User Story:
-As a Sales Rep
-I want to create and manage customer accounts with industry, revenue and status
-So that organizational relationships are tracked and customer health is monitored
-
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Tạo account	Sales ở Accounts page	Nhập name = 'ABC Corp', industry = 'Hospitality', website, address	Account tạo, status = Active, health_score = 50 (default)	⬜
-AC2	Auto-create khi Close Won	Deal Closed Won, chưa có account	Deal closed	Account auto-created từ contact company info, source_deal_id = deal.id	⬜
-AC3	Total revenue tự động	Account có 3 deals Won: 300M + 200M + 500M	Xem Account Detail	total_revenue = 1B VND (auto-aggregated)	⬜
-AC4	Account list	Có 50 accounts	Mở Accounts List, filter status = Active	Hiển thị active accounts với name, industry, total_revenue, health_score	⬜
-
-UI Requirements:
-•	Account form: Name (required), Industry, Website, Address, Status
-•	Accounts List: filterable by status, industry, revenue range
-•	Total revenue auto-calculated
-
-Technical Notes:
-• CRUD: /api/v1/crm/accounts
-• Auto-create on deal close won
-• total_revenue = SUM(deals.value WHERE stage = 'Closed Won' AND account_id = id)
-
-
-US-015: Account 360 View
-Priority	P0 - Must Have
-Persona	Sales / Sales Manager
-Epic	Epic 4: Account Management
-Sprint	Sprint 4
-Estimate	8 SP
-
-User Story:
-As a Sales Rep
-I want to see a comprehensive 360-degree view of each account
-So that I understand the full customer relationship including contacts, deals, activities and support history
-
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	360 view hiển thị	Account 'ABC Corp' có 3 contacts, 5 deals, 20 activities, 2 tickets	Mở Account Detail → 360 View	Hiển thị tất cả: Contacts tab, Deals tab (won/lost/open), Activity timeline, Tickets tab, Revenue history	⬜
-AC2	Health score	Account có 3 deals won, 1 open ticket, activity trong 7 ngày	Xem health score	Health score = 80 (High), dựa trên: revenue, activity frequency, open tickets	⬜
-AC3	Activity timeline	Account có 20 activities	Mở Activities tab	Timeline chronological: calls, emails, meetings, demos với date, owner, notes	⬜
-AC4	Revenue breakdown	Account có deals ở nhiều stages	Xem Revenue section	Hiển thị: Won Revenue, Pipeline Value, Weighted Pipeline	⬜
-
-UI Requirements:
-•	Account Detail page: Tabs (Overview, Contacts, Deals, Activities, Tickets)
-•	Health score gauge (0-100) với color indicator
-•	Revenue KPI cards
-•	Activity timeline
-
-Technical Notes:
-• GET /api/v1/crm/accounts/{id}/360
-• Aggregate: contacts, deals, activities, tickets
-• Health score calculation: weighted formula (revenue 30%, activity recency 30%, ticket resolution 20%, deal pipeline 20%)
-
-
-US-016: Follow-up Scheduling và Tracking
-Priority	P1 - Should Have
-Persona	Sales
-Epic	Epic 4: Account Management
-Sprint	Sprint 4
-Estimate	3 SP
-
-User Story:
-As a Sales Rep
-I want to schedule and track follow-ups for my accounts
-So that no customer is neglected and retention activities happen on time
-
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Set follow-up date	Account 'ABC Corp' detail	Set next_follow_up_date = next week	Date saved, account hiển thị trong upcoming follow-ups	⬜
-AC2	Overdue follow-ups	Follow-up date đã qua 3 ngày	Mở Dashboard / Follow-ups Due	Account hiển thị trong overdue list với red indicator	⬜
-AC3	Follow-ups due API	Có 10 accounts cần follow-up hôm nay	GET /accounts/follow-ups	Trả về 10 accounts sorted by overdue first	⬜
-
-UI Requirements:
-•	Follow-up date picker trên Account Detail
-•	Follow-ups Due widget trên Dashboard
-•	Overdue indicator (red badge)
-
-Technical Notes:
-• GET /api/v1/crm/accounts/follow-ups?due_before=
-• next_follow_up_date field on Account
-• Governance alert: overdue follow-ups
-
-
- 
-Epic 5: Activity Tracking
-Ghi nhận toàn bộ hoạt động sales: calls, emails, meetings, demos, follow-ups. Liên kết với leads, deals, contacts.
-
-US-017: Tạo Activity (Log hoạt động sales)
-Priority	P0 - Must Have
-Persona	Sales
-Epic	Epic 5: Activity Tracking
-Sprint	Sprint 2
-Estimate	5 SP
-
-User Story:
-As a Sales Rep
-I want to log every sales activity (call, email, meeting, demo, follow-up) linked to a lead/deal/contact
-So that all interactions are recorded and the team has full visibility into customer engagement
-
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Log call activity	Sales vừa gọi cho lead 'ABC'	Tạo activity: type = call, subject, notes, outcome = 'interested', next_action_date	Activity tạo, hiển thị trên lead timeline, lead score tự động cập nhật (+15)	⬜
-AC2	Log meeting	Sales họp với deal contact	Tạo activity: type = meeting, link to deal + contact	Activity ghi nhận, deal.last_activity_date = now	⬜
-AC3	Next action reminder	Activity có next_action_date = ngày mai	Ngày mai đến	Sales nhận reminder: 'Follow-up action cho [subject]'	⬜
-AC4	Activity linked to multiple entities	Call liên quan deal + contact + lead	Tạo activity với deal_id + contact_id + lead_id	Activity hiển thị trên timeline của cả 3 entities	⬜
-AC5	SOP: phải log activity	Sales chuyển deal stage	Không log activity trong 7 ngày	Governance alert: 'Deal [title] stage thay đổi nhưng không có activity log'	⬜
-
-UI Requirements:
-•	Activity form: Type (select: call/email/meeting/demo/follow_up), Subject, Notes, Outcome, Next Action Date
-•	Link: Lead / Deal / Contact (multi-select)
-•	Activity timeline trên entity detail pages
-
-Technical Notes:
-• POST /api/v1/crm/activities
-• Links: lead_id, deal_id, contact_id (all optional, at least 1)
-• Update: lead.score (if lead_id), deal.last_activity_date (if deal_id)
-• Reminder: background job check next_action_date
-
-
-US-018: Xem Activities List và Timeline
-Priority	P0 - Must Have
-Persona	Sales / Sales Manager
-Epic	Epic 5: Activity Tracking
-Sprint	Sprint 3
-Estimate	3 SP
-
-User Story:
-As a Sales Manager
-I want to view all sales activities in a timeline or list with filters
-So that I can monitor team engagement levels and coaching opportunities
-
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Activities list	Có 100 activities	Mở Activities List, filter type = meeting, owner = Sales A	Hiển thị meetings của Sales A, sorted by date desc	⬜
-AC2	Entity timeline	Deal 'ABC Hotel' có 15 activities	Mở Deal Detail → Activity tab	Timeline: 15 activities chronological với type icons, subject, outcome	⬜
-AC3	Activity stats	Sales A có 30 activities tháng này	Xem sales activity report	Breakdown: 15 calls, 8 emails, 5 meetings, 2 demos	⬜
-
-UI Requirements:
-•	Activities List: table view with filters (type, owner, date range, entity)
-•	Entity Activity Tab: timeline view
-•	Activity type icons: phone, email, calendar, screen, follow-up
-
-Technical Notes:
-• GET /api/v1/crm/activities?type=&owner_id=&deal_id=&lead_id=&date_from=&date_to=
-• Pagination, sorting by date
-
-
- 
-Epic 6: Campaign Management
-Quản lý chiến dịch marketing: tạo, theo dõi ngân sách, đo lường hiệu quả lead generation và ROI.
-
-US-019: Tạo và quản lý Campaign
-Priority	P1 - Should Have
-Persona	Marketing
-Epic	Epic 6: Campaign Management
-Sprint	Sprint 3
-Estimate	5 SP
-
-User Story:
-As a Marketing Manager
-I want to create and manage campaigns with budget, type and date range
-So that marketing efforts are tracked and their effectiveness can be measured
-
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Tạo campaign	Marketing ở Campaigns page	Nhập name = 'FB Q1 2026', type = ads, budget = 50M VND, start/end date	Campaign tạo, status = draft	⬜
-AC2	Start campaign	Campaign status = draft	Nhấn Start	Status → running, leads bắt đầu được gắn campaign_id	⬜
-AC3	Close campaign	Campaign đã chạy xong	Nhấn Close, nhập actual_cost = 45M VND	Status → closed, actual_cost ghi nhận	⬜
-AC4	Campaign ROI	Campaign: budget 50M, actual 45M, 20 leads generated, 5 deals won = 500M	Xem Campaign Detail	ROI = (Revenue - Cost) / Cost = (500M - 45M) / 45M = 1011%	⬜
-
-UI Requirements:
-•	Campaign form: Name, Type (email/ads/event), Budget, Start/End Date
-•	Campaign list: status, budget, leads count, deals won
-•	ROI dashboard per campaign
-
-Technical Notes:
-• CRUD: /api/v1/crm/campaigns
-• Status: draft → running → closed
-• Aggregate: leads WHERE campaign_id, deals WHERE lead.campaign_id
-• ROI calculation: revenue from won deals vs actual_cost
-
-
-US-020: Campaign Performance & Lead Source Attribution
-Priority	P1 - Should Have
-Persona	Marketing / Sales Manager
-Epic	Epic 6: Campaign Management
-Sprint	Sprint 5
-Estimate	5 SP
-
-User Story:
-As a Marketing Manager
-I want to see campaign performance metrics including cost per lead, conversion rate and lead source attribution
-So that I can optimize marketing spend and focus on high-performing channels
-
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Cost per Lead	Campaign generated 20 leads, actual_cost = 40M	Xem campaign metrics	Cost per Lead = 40M / 20 = 2M VND	⬜
-AC2	Conversion rate	Campaign: 20 leads, 5 qualified, 3 deals won	Xem funnel	Lead → Qualified: 25%, Qualified → Won: 60%	⬜
-AC3	Lead source report	Leads từ nhiều sources: website 40%, ads 35%, referral 25%	Mở Lead Source Report	Pie chart: lead count và conversion rate by source	⬜
-
-UI Requirements:
-•	Campaign detail: KPI cards (leads, cost per lead, conversion, ROI)
-•	Lead source pie chart
-•	Campaign comparison table
-
-Technical Notes:
-• Aggregate: leads.count, deals.count WHERE campaign_id
-• Group by lead.source for attribution
-• Cost per Lead = campaign.actual_cost / leads.count
-
-
- 
-Epic 7: Ticket Management (Customer Support)
-Quản lý ticket hỗ trợ khách hàng: tạo, phân công, theo dõi trạng thái, giải quyết và đóng ticket.
-
-US-021: Tạo Support Ticket
-Priority	P0 - Must Have
-Persona	Support / Sales
-Epic	Epic 7: Ticket Management (Customer Support)
-Sprint	Sprint 4
-Estimate	5 SP
-
-User Story:
-As a Support Staff
-I want to create a ticket linked to a contact and account when a customer reports an issue
-So that every support request is formally tracked through resolution
-
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Tạo ticket	Customer gọi báo lỗi	Tạo ticket: subject, description, priority = high, contact, account	Ticket tạo, status = open, gán assigned_to	⬜
-AC2	Link contact + account	Ticket cho contact 'Mr. A' tại 'ABC Corp'	Chọn contact và account	Ticket liên kết cả contact_id và account_id, hiển thị trên Account 360	⬜
-AC3	Auto-assign	Ticket tạo, support team có 3 staff	Auto-assign enabled	Ticket gán round-robin cho available support staff	⬜
-
-UI Requirements:
-•	Ticket form: Subject (required), Description, Priority (low/medium/high), Contact (search), Account (auto from contact)
-•	Ticket list: filterable by status, priority, assigned_to
-
-Technical Notes:
-• POST /api/v1/crm/tickets
-• Status: open → in_progress → resolved → closed
-• Link: contact_id, account_id
-• Round-robin assignment for support
-
-
-US-022: Xử lý và đóng Ticket
-Priority	P0 - Must Have
-Persona	Support
-Epic	Epic 7: Ticket Management (Customer Support)
-Sprint	Sprint 4
-Estimate	5 SP
-
-User Story:
-As a Support Staff
-I want to update ticket status, record resolution notes and close the ticket
-So that customers receive timely support and resolution history is documented
-
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Update in_progress	Ticket status = open	Bắt đầu xử lý, nhấn Start	Status → in_progress	⬜
-AC2	Resolve ticket	Ticket đang xử lý	Nhập resolution_notes, nhấn Resolve	Status → resolved, resolved_at = now, ghi chú lưu	⬜
-AC3	Close ticket	Ticket resolved, customer confirm	Nhấn Close	Status → closed, closed_at = now, account health score recalculated	⬜
-AC4	Reopen ticket	Ticket closed nhưng vấn đề tái phát	Nhấn Reopen	Status → open, ghi nhận lần reopen	⬜
-AC5	Impact account health	Account có 3 open tickets	Health score calculation	Health score giảm (open tickets = negative factor)	⬜
-
-UI Requirements:
-•	Status workflow buttons: Start → Resolve → Close
-•	Resolution notes (textarea, required khi Resolve)
-•	Ticket timeline: status changes + notes
-•	Reopen button cho closed tickets
-
-Technical Notes:
-• PUT /api/v1/crm/tickets/{id}
-• Status flow: open → in_progress → resolved → closed
-• resolved_at, closed_at timestamps
-• Recalculate account.health_score on ticket status change
-
-
-US-023: Xem danh sách Tickets và Dashboard
-Priority	P1 - Should Have
-Persona	Support Manager
-Epic	Epic 7: Ticket Management (Customer Support)
-Sprint	Sprint 5
-Estimate	3 SP
-
-User Story:
-As a Support Manager
-I want to view all tickets with filters and support KPIs
-So that I can monitor support workload, response times and customer satisfaction
-
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Tickets list	50 tickets trong hệ thống	Mở Tickets List	Hiển thị: ID, subject, priority, status, contact, account, assigned_to, created_at	⬜
-AC2	Filter	Tickets list	Filter priority = high, status = open	Chỉ hiển thị urgent open tickets	⬜
-AC3	Support KPIs	Tickets data tháng này	Xem Dashboard	KPI: Open tickets, Avg resolution time, Tickets by priority, Resolution rate	⬜
-
-UI Requirements:
-•	Tickets table: sortable, filterable (status, priority, assigned_to, account)
-•	KPI cards: open count, avg resolution time, resolution rate
-•	Priority distribution chart
-
-Technical Notes:
-• GET /api/v1/crm/tickets?status=&priority=&assigned_to=
-• Avg resolution time: AVG(resolved_at - created_at)
-• Resolution rate: resolved / total * 100
-
-
- 
-Epic 8: CRM Analytics & Reporting
-Dashboard phân tích: doanh thu, win rate, pipeline value, sales funnel, lead source attribution, data quality.
-
-US-024: CRM Dashboard - Sales KPIs
-Priority	P0 - Must Have
-Persona	Sales Manager
-Epic	Epic 8: CRM Analytics & Reporting
-Sprint	Sprint 4
-Estimate	8 SP
-
-User Story:
-As a Sales Manager
-I want a CRM dashboard showing key sales KPIs, pipeline summary and sales funnel
-So that I can monitor team performance and make data-driven decisions
-
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	KPI cards	CRM có dữ liệu	Mở CRM Dashboard	KPI cards: Total Pipeline Value, Weighted Pipeline, Revenue This Month, Win Rate, Avg Deal Cycle, Active Deals	⬜
-AC2	Sales funnel	Deals ở nhiều stages	Xem funnel chart	Funnel: Qualified(50) → Needs Analysis(30) → Proposal(15) → Negotiation(8) → Won(5), với conversion rates	⬜
-AC3	Stage breakdown	Pipeline có deals	Xem stage chart	Bar chart: deal count và value by stage	⬜
-AC4	Revenue by period	Deals won trong 6 tháng	Xem Revenue chart	Line/bar chart: monthly won revenue trend	⬜
-
-UI Requirements:
-•	KPI cards row
-•	Sales funnel visualization
-•	Pipeline stage bar chart (count + value)
-•	Revenue trend chart (monthly)
-•	Top deals table
-
-Technical Notes:
+## US-015: Email Templates & Tracking
+
+| Priority | P1 - Should Have                  |
+| -------- | --------------------------------- |
+| Persona  | Sales / Marketing                 |
+| Epic     | Epic 5: Activity Tracking & Email |
+| Sprint   | Sprint 4                          |
+| Estimate | 8 SP                              |
+
+**User Story:**
+*As a Sales Rep*
+*I want to send emails from templates with merge tags and track opens/clicks*
+*So that communication is efficient and engagement metrics feed into lead scoring*
+
+**Acceptance Criteria:**
+
+| #   | Scenario           | Given                                        | When                                                                                 | Then                                                      | Status |
+| --- | ------------------ | -------------------------------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------- | ------ |
+| AC1 | Tạo email template | Marketing ở Templates                        | Tạo: name='Follow-up sau demo', subject, body_html với {{contact_name}}, {{company}} | EmailTemplate tạo, is_active=true                         | ⬜      |
+| AC2 | Send from template | Sales ở Lead Detail                          | Chọn template, auto-fill merge tags, Send                                            | EmailLog tạo: direction=sent, status=sent                 | ⬜      |
+| AC3 | Track open         | Recipient mở email                           | Tracking pixel                                                                       | EmailLog.status→opened, opened_at ghi nhận, lead score +5 | ⬜      |
+| AC4 | Track click        | Recipient click link                         | Tracking redirect                                                                    | EmailLog click tracked, lead score +10                    | ⬜      |
+| AC5 | Email history      | Contact có 10 emails                         | Xem Email tab                                                                        | Timeline: sent/received/opened/clicked với dates          | ⬜      |
+| AC6 | Merge tags         | Template có {{contact_name}}, {{deal_value}} | Send                                                                                 | Auto-fill: 'Anh Nguyễn Văn A', '500,000,000 VND'          | ⬜      |
+
+**UI Requirements:**
+- Template editor: rich-text, merge tag inserter, preview
+- Send email: template selector, auto-fill preview, send button
+- Email history timeline per contact/lead
+- Open/click indicators
+
+**Technical Notes:**
+• CRUD /email-templates
+• POST /emails/send (template_id + entity data → render + send)
+• EmailLog: tracking pixel for open, redirect for click
+• Score integration: open +5, click +10
+
+# Epic 6: Campaign Management
+
+*Marketing campaigns với budget tracking, lead source attribution, ROI calculation, cost per lead, conversion funnel.*
+**Data Models: Campaign**
+
+## US-016: Campaign Management & ROI
+
+| Priority | P1 - Should Have            |
+| -------- | --------------------------- |
+| Persona  | Marketing                   |
+| Epic     | Epic 6: Campaign Management |
+| Sprint   | Sprint 3                    |
+| Estimate | 5 SP                        |
+
+**User Story:**
+*As a Marketing Manager*
+*I want to manage campaigns with budget, lead tracking and ROI metrics*
+*So that marketing effectiveness is measured and spend is optimized*
+
+**Acceptance Criteria:**
+
+| #   | Scenario           | Given                                             | When                                                | Then                                                | Status |
+| --- | ------------------ | ------------------------------------------------- | --------------------------------------------------- | --------------------------------------------------- | ------ |
+| AC1 | Tạo campaign       | Marketing ở Campaigns                             | Tạo: name='FB Q1 2026', type=ads, budget=50M, dates | Campaign tạo, status=draft                          | ⬜      |
+| AC2 | Start → Close      | Campaign lifecycle                                | Start→running, Close→nhập actual_cost=45M           | Status: draft→running→closed                        | ⬜      |
+| AC3 | ROI calc           | Campaign: 45M spent, 20 leads, 5 deals won = 500M | Xem metrics                                         | ROI = (500M-45M)/45M = 1011%, Cost per Lead = 2.25M | ⬜      |
+| AC4 | Conversion funnel  | Campaign 20 leads                                 | Xem funnel                                          | Lead(20)→Qualified(8)→Won(5): conversion 25%→63%    | ⬜      |
+| AC5 | Lead source report | Leads từ nhiều sources                            | Xem report                                          | Pie chart: Website 40%, Ads 35%, Referral 25%       | ⬜      |
+
+**UI Requirements:**
+- Campaign form: Name, Type (email/ads/event), Budget, Dates
+- Campaign detail: KPIs (leads, CPL, conversion, ROI)
+- Lead source attribution chart
+- Campaign comparison table
+
+**Technical Notes:**
+• CRUD /campaigns
+• ROI: (revenue - actual_cost) / actual_cost
+• CPL: actual_cost / lead_count
+• Conversion: leads→qualified→won ratios
+
+# Epic 7: Customer Support (Tickets)
+
+*Ticket lifecycle (open→in_progress→resolved→closed), priority/SLA, impact on account health score, support KPIs.*
+**Data Models: Ticket**
+
+## US-017: Ticket Management & SLA
+
+| Priority | P0 - Must Have                     |
+| -------- | ---------------------------------- |
+| Persona  | Support                            |
+| Epic     | Epic 7: Customer Support (Tickets) |
+| Sprint   | Sprint 4                           |
+| Estimate | 8 SP                               |
+
+**User Story:**
+*As a Support Staff*
+*I want to create and manage tickets linked to contacts/accounts with SLA tracking*
+*So that every support request is resolved within agreed timeframes*
+
+**Acceptance Criteria:**
+
+| #   | Scenario              | Given                       | When                                                       | Then                                                                     | Status |
+| --- | --------------------- | --------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------ | ------ |
+| AC1 | Tạo ticket            | Customer gọi báo lỗi        | Tạo: subject, description, priority=high, contact, account | Ticket tạo, status=open, auto-assign                                     | ⬜      |
+| AC2 | Workflow              | Ticket open                 | Start→in_progress→Resolve (notes)→Close                    | Status flow complete, resolved_at + closed_at tracked                    | ⬜      |
+| AC3 | Reopen                | Ticket closed, issue recurs | Reopen                                                     | Status→open, reopen count tracked                                        | ⬜      |
+| AC4 | Account health impact | Account 3 open tickets      | Health check                                               | Health score giảm (open tickets = negative factor)                       | ⬜      |
+| AC5 | Support KPIs          | 50 tickets tháng này        | Dashboard                                                  | Open count, avg resolution time, SLA compliance %, priority distribution | ⬜      |
+| AC6 | Attach files          | Ticket for device issue     | Upload screenshots, logs                                   | CrmAttachment: entity_type=ticket, files linked                          | ⬜      |
+
+**UI Requirements:**
+- Ticket form: Subject, Description, Priority, Contact, Account
+- Workflow buttons: Start → Resolve → Close
+- Ticket list: filter status/priority/assigned
+- Support KPI dashboard
+
+**Technical Notes:**
+• CRUD /tickets
+• Status: open→in_progress→resolved→closed
+• Avg resolution: AVG(resolved_at - created_at)
+• Account health: penalize for open tickets
+
+# Epic 8: CRM Analytics & Forecasting
+
+*Sales dashboard KPIs, pipeline analytics, deal velocity, sales forecast (target vs actual), data quality report.*
+**Data Models: SalesForecast**
+
+## US-018: CRM Dashboard & Sales KPIs
+
+| Priority | P0 - Must Have                      |
+| -------- | ----------------------------------- |
+| Persona  | Sales Manager                       |
+| Epic     | Epic 8: CRM Analytics & Forecasting |
+| Sprint   | Sprint 4                            |
+| Estimate | 8 SP                                |
+
+**User Story:**
+*As a Sales Manager*
+*I want a CRM dashboard with pipeline KPIs, sales funnel and revenue trends*
+*So that I can monitor team performance and make data-driven decisions*
+
+**Acceptance Criteria:**
+
+| #   | Scenario        | Given              | When         | Then                                                                                     | Status |
+| --- | --------------- | ------------------ | ------------ | ---------------------------------------------------------------------------------------- | ------ |
+| AC1 | KPI cards       | CRM có data        | Mở Dashboard | Total Pipeline, Weighted Pipeline, Revenue This Month, Win Rate, Avg Cycle, Active Deals | ⬜      |
+| AC2 | Sales funnel    | Deals nhiều stages | Xem funnel   | Qualified(50)→Analysis(30)→Proposal(15)→Negotiation(8)→Won(5), conversion rates          | ⬜      |
+| AC3 | Revenue trend   | 6 tháng data       | Xem chart    | Monthly won revenue bar chart, trend line                                                | ⬜      |
+| AC4 | Stage breakdown | Pipeline có deals  | Xem chart    | Per stage: deal count + total value + weighted value                                     | ⬜      |
+
+**UI Requirements:**
+- KPI cards row
+- Sales funnel visualization
+- Pipeline stage bar chart
+- Revenue trend chart
+- Top deals table
+
+**Technical Notes:**
 • GET /api/v1/crm/analytics
-• Aggregations: pipeline value, weighted value, win rate, avg cycle time
-• Win rate = won / (won + lost) * 100
-• Avg cycle = AVG(closed_at - created_at) for won deals
+• Win rate: won/(won+lost)×100
+• Avg cycle: AVG(closed_at-created_at) for won
+• Weighted: SUM(value×probability)
 
+## US-019: Deal Velocity & Sales Forecast
 
-US-025: Deal Velocity Analytics
-Priority	P1 - Should Have
-Persona	Sales Manager
-Epic	Epic 8: CRM Analytics & Reporting
-Sprint	Sprint 5
-Estimate	5 SP
+| Priority | P1 - Should Have                    |
+| -------- | ----------------------------------- |
+| Persona  | Sales Manager                       |
+| Epic     | Epic 8: CRM Analytics & Forecasting |
+| Sprint   | Sprint 5                            |
+| Estimate | 8 SP                                |
 
-User Story:
-As a Sales Manager
-I want to analyze deal velocity (time spent in each stage)
-So that I can identify pipeline bottlenecks and optimize the sales process
+**User Story:**
+*As a Sales Manager*
+*I want deal velocity analysis and period-based sales forecasts*
+*So that I can identify bottlenecks and set realistic targets for the team*
 
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Time in stage	Deals có stage history	Xem velocity report	Hiển thị avg days per stage: Qualified(5d) → Needs Analysis(12d) → Proposal(8d) → Negotiation(15d)	⬜
-AC2	Bottleneck detection	Proposal stage avg 20 days (highest)	Xem report	Proposal highlighted as bottleneck	⬜
-AC3	Velocity by owner	Nhiều sales reps	Filter by owner	So sánh velocity giữa các sales reps	⬜
+**Acceptance Criteria:**
 
-UI Requirements:
-•	Stage velocity bar chart
-•	Bottleneck highlight
-•	Owner comparison table
+| #   | Scenario             | Given                          | When                                     | Then                                                                          | Status |
+| --- | -------------------- | ------------------------------ | ---------------------------------------- | ----------------------------------------------------------------------------- | ------ |
+| AC1 | Velocity per stage   | Deals có stage history         | Xem velocity                             | Avg days per stage: Qualified(5d)→Analysis(12d)→Proposal(8d)→Negotiation(15d) | ⬜      |
+| AC2 | Bottleneck highlight | Proposal avg 20 days (highest) | Xem report                               | Proposal highlighted as bottleneck                                            | ⬜      |
+| AC3 | Create forecast      | Sales Manager ở Forecast       | Tạo: period=2026-03, target=500M per rep | SalesForecast tạo per owner                                                   | ⬜      |
+| AC4 | Forecast tracking    | Tháng 3 đang chạy              | Xem forecast                             | Per rep: target 500M, committed 300M, best_case 450M, closed 200M             | ⬜      |
+| AC5 | Forecast vs actual   | Tháng kết thúc                 | Close forecast                           | Final: target vs actual, attainment %                                         | ⬜      |
+| AC6 | Velocity by owner    | Nhiều reps                     | Filter by owner                          | So sánh velocity giữa reps → coaching opportunity                             | ⬜      |
 
-Technical Notes:
-• Calculate: AVG time per stage from deal history
-• Stage change timestamps tracking
-• Group by owner for comparison
+**UI Requirements:**
+- Velocity bar chart per stage
+- Bottleneck highlight
+- Forecast table: rep × target/committed/best_case/closed
+- Forecast vs actual chart, attainment %
 
+**Technical Notes:**
+• Velocity: AVG(stage_change timestamps)
+• CRUD /api/v1/crm/forecasts
+• SalesForecast: owner_id, period, target, committed, best_case, closed
+• Attainment: closed / target × 100
 
- 
-Epic 9: Data Quality & Governance
-Đảm bảo chất lượng dữ liệu CRM: phát hiện trùng lặp, thiếu thông tin, stale records, governance alerts.
+# Epic 9: Data Quality & Governance
 
-US-026: Data Quality Report
-Priority	P1 - Should Have
-Persona	Admin / Sales Manager
-Epic	Epic 9: Data Quality & Governance
-Sprint	Sprint 5
-Estimate	5 SP
+*Quality score (duplicates, missing fields, stale records), governance alerts (overdue follow-ups, unassigned leads, missing deal values).*
+**Data Models: (aggregation, no new model)**
 
-User Story:
-As an Admin
-I want a data quality report showing duplicates, missing fields and stale records
-So that I can maintain high data integrity and CRM effectiveness
+## US-020: Data Quality Report
 
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Quality score	CRM workspace có 500 leads, 200 deals	Mở Data Quality Report	Overall quality score: 85/100, breakdown per entity type	⬜
-AC2	Duplicate report	15 duplicate leads (same email)	Xem duplicates section	Hiển thị 15 pairs trùng lặp với merge action	⬜
-AC3	Missing fields	30 leads thiếu phone, 10 deals thiếu value	Xem missing data section	List leads/deals thiếu data quan trọng	⬜
-AC4	Stale records	20 leads không activity > 90 ngày	Xem stale section	List 20 stale records với last activity date	⬜
+| Priority | P1 - Should Have                  |
+| -------- | --------------------------------- |
+| Persona  | Admin / Manager                   |
+| Epic     | Epic 9: Data Quality & Governance |
+| Sprint   | Sprint 5                          |
+| Estimate | 5 SP                              |
 
-UI Requirements:
-•	Quality score gauge (0-100)
-•	Sections: Duplicates, Missing Fields, Stale Records
-•	Action buttons: Merge, Bulk Update, Disqualify
+**User Story:**
+*As an Admin*
+*I want a data quality report showing duplicates, missing fields and stale records*
+*So that CRM data stays clean and effective*
 
-Technical Notes:
+**Acceptance Criteria:**
+
+| #   | Scenario       | Given                                | When           | Then                                       | Status |
+| --- | -------------- | ------------------------------------ | -------------- | ------------------------------------------ | ------ |
+| AC1 | Quality score  | 500 leads, 200 deals                 | Mở report      | Overall: 85/100. Breakdown per entity type | ⬜      |
+| AC2 | Duplicates     | 15 duplicate leads                   | Xem duplicates | 15 pairs with merge action                 | ⬜      |
+| AC3 | Missing fields | 30 leads no phone, 10 deals no value | Xem missing    | List items thiếu data quan trọng           | ⬜      |
+| AC4 | Stale records  | 20 leads no activity >90 ngày        | Xem stale      | List 20 stale records                      | ⬜      |
+
+**UI Requirements:**
+- Quality gauge (0-100)
+- Sections: Duplicates, Missing, Stale
+- Action buttons: Merge, Bulk Update, Disqualify
+
+**Technical Notes:**
 • GET /api/v1/crm/data-quality/report
 • Score: 100 - (duplicate_penalty + missing_penalty + stale_penalty)
-• Duplicate: match on LOWER(email) or phone
-• Stale: no update > 90 days
 
+## US-021: Governance Alerts
 
-US-027: Governance Alerts
-Priority	P1 - Should Have
-Persona	Sales Manager
-Epic	Epic 9: Data Quality & Governance
-Sprint	Sprint 5
-Estimate	5 SP
+| Priority | P1 - Should Have                  |
+| -------- | --------------------------------- |
+| Persona  | Sales Manager                     |
+| Epic     | Epic 9: Data Quality & Governance |
+| Sprint   | Sprint 5                          |
+| Estimate | 5 SP                              |
 
-User Story:
-As a Sales Manager
-I want governance alerts for overdue follow-ups, unassigned leads, stale deals and missing deal values
-So that CRM discipline is enforced and no opportunities fall through the cracks
+**User Story:**
+*As a Sales Manager*
+*I want governance alerts for overdue follow-ups, unassigned leads and missing deal data*
+*So that CRM discipline is enforced and no opportunities are missed*
 
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Overdue follow-ups	5 accounts quá hạn follow-up	Mở Governance Alerts	Alert: '5 accounts quá hạn follow-up' với list	⬜
-AC2	Unassigned leads	10 leads chưa có owner	Check governance	Alert: '10 leads chưa được phân bổ'	⬜
-AC3	Stale deals	8 deals > 60 ngày không activity	Check governance	Alert: '8 deals stale, tổng value 2B VND'	⬜
-AC4	Missing deal values	15 deals chưa có value	Check governance	Alert: '15 deals chưa nhập giá trị'	⬜
-AC5	High-value no activity	Deal 1B VND, 15 ngày không activity	Check governance	Priority alert: 'High-value deal cần attention'	⬜
+**Acceptance Criteria:**
 
-UI Requirements:
-•	Governance Alerts panel trên Dashboard
-•	Alert categories với counts
-•	Drill-down: click alert → view affected records
+| #   | Scenario            | Given                        | When         | Then                           | Status |
+| --- | ------------------- | ---------------------------- | ------------ | ------------------------------ | ------ |
+| AC1 | Overdue follow-ups  | 5 accounts overdue           | Alerts panel | '5 accounts quá hạn follow-up' | ⬜      |
+| AC2 | Unassigned leads    | 10 leads no owner            | Check        | '10 leads chưa phân bổ'        | ⬜      |
+| AC3 | Stale deals         | 8 deals >60 ngày no activity | Check        | '8 deals stale, tổng 2B VND'   | ⬜      |
+| AC4 | Missing values      | 15 deals no value            | Check        | '15 deals chưa nhập giá trị'   | ⬜      |
+| AC5 | High-value inactive | Deal 1B, 15 ngày no activity | Check        | Priority alert                 | ⬜      |
 
-Technical Notes:
+**UI Requirements:**
+- Governance panel on Dashboard
+- Alert categories with counts
+- Drill-down to affected records
+
+**Technical Notes:**
 • GET /api/v1/crm/governance/alerts
 • Rules engine: configurable thresholds
-• Categories: overdue_followups, unassigned_leads, stale_deals, missing_values, high_value_inactive
 
+# Epic 10: Notifications, Attachments & Documents
 
- 
-Epic 10: RBAC & System Configuration
-Phân quyền theo role, cấu hình pipeline stages, lead scoring rules, và system settings.
+*CRM notifications (in-app + email), tệp đính kèm cho deal/account/ticket (proposal, contract, NDA), document repository.*
+**Data Models: CrmNotification, CrmAttachment**
 
-US-028: Phân quyền CRM theo Role
-Priority	P0 - Must Have
-Persona	Admin
-Epic	Epic 10: RBAC & System Configuration
-Sprint	Sprint 1
-Estimate	8 SP
+## US-022: CRM Notification System
 
-User Story:
-As an Admin
-I want role-based access control for all CRM functions
-So that each team member can only access and perform actions appropriate to their role
+| Priority | P0 - Must Have                                  |
+| -------- | ----------------------------------------------- |
+| Persona  | All Users                                       |
+| Epic     | Epic 10: Notifications, Attachments & Documents |
+| Sprint   | Sprint 3                                        |
+| Estimate | 8 SP                                            |
 
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Sales CRUD leads + deals	User role = Sales	Tạo lead, tạo deal, log activity	Tất cả thành công	⬜
-AC2	Marketing quản lý campaigns	User role = Marketing	Tạo campaign, xem lead source report	Thành công	⬜
-AC3	Support quản lý tickets	User role = Support	Tạo ticket, resolve ticket	Thành công	⬜
-AC4	Sales Manager xem tất cả	User role = Sales Manager	Xem all deals, all leads, pipeline, analytics	Full view access cho toàn workspace	⬜
-AC5	Marketing không chỉnh deal	User role = Marketing	Thử edit deal stage	403 Forbidden	⬜
+**User Story:**
+*As a CRM User*
+*I want notifications for lead assignments, deal updates, follow-up reminders and stale alerts*
+*So that I stay informed about critical CRM events without constant checking*
 
-UI Requirements:
-•	Permission-based UI: ẩn menu/buttons không có quyền
-•	Role indicator trên profile
+**Acceptance Criteria:**
 
-Technical Notes:
-• RBAC middleware mọi endpoint
-• Roles: Admin, Sales Manager, Sales, Marketing, Support
-• Permission matrix per role per entity per action
+| #   | Scenario                 | Given                     | When                   | Then                                     | Status |
+| --- | ------------------------ | ------------------------- | ---------------------- | ---------------------------------------- | ------ |
+| AC1 | Lead assigned            | Lead assign cho Sales A   | Auto                   | Notification: 'Bạn có lead mới: [name]'  | ⬜      |
+| AC2 | Deal stage change        | Deal move to Proposal     | Auto notify deal owner | 'Deal [title] chuyển sang Proposal'      | ⬜      |
+| AC3 | Follow-up due            | Follow-up date = today    | Morning check          | 'Follow-up hôm nay: ABC Corp'            | ⬜      |
+| AC4 | Stale alert              | Lead stale > 30 ngày      | Daily                  | 'Lead [name] không có activity 30+ ngày' | ⬜      |
+| AC5 | Mention in activity      | Activity notes '@John'    | Post                   | Notification cho John                    | ⬜      |
+| AC6 | Notification preferences | User muốn tắt email stale | Settings               | Tắt email cho stale, giữ in-app          | ⬜      |
+| AC7 | Mark read/all read       | 5 unread                  | Click / Mark All       | is_read updated, badge count giảm        | ⬜      |
 
+**UI Requirements:**
+- Notification bell + badge
+- Dropdown list: mark read, click to navigate
+- Preferences: toggle per event × per channel
 
-US-029: Cấu hình Pipeline Stages
-Priority	P2 - Nice to Have
-Persona	Admin
-Epic	Epic 10: RBAC & System Configuration
-Sprint	Sprint 6
-Estimate	3 SP
+**Technical Notes:**
+• CrmNotification: recipient, type, entity link, is_read, channel
+• Events: lead_assigned, deal_stage, follow_up_due, stale, mention
+• Background jobs for scheduled notifications
 
-User Story:
-As an Admin
-I want to customize pipeline stages and default probabilities
-So that the CRM pipeline matches our specific sales process
+## US-023: Attachments & Documents per Entity
 
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Edit stage names	Default 5 stages	Đổi tên 'Needs Analysis' → 'Discovery'	Stage name cập nhật trên toàn hệ thống	⬜
-AC2	Add stage	5 stages hiện có	Thêm stage 'Technical Review' giữa Proposal và Negotiation	Stage mới xuất hiện trên pipeline Kanban	⬜
-AC3	Default probability	Stage 'Proposal' probability = 0.5	Đổi default = 0.6	Deals mới vào Proposal có probability = 0.6 (existing không thay đổi)	⬜
+| Priority | P0 - Must Have                                  |
+| -------- | ----------------------------------------------- |
+| Persona  | Sales                                           |
+| Epic     | Epic 10: Notifications, Attachments & Documents |
+| Sprint   | Sprint 3                                        |
+| Estimate | 5 SP                                            |
 
-UI Requirements:
-•	Pipeline settings: drag to reorder stages
-•	Stage name edit, probability edit
-•	Add/Remove stage
+**User Story:**
+*As a Sales Rep*
+*I want to upload and manage documents on deals, accounts and contacts*
+*So that proposals, contracts, NDAs and other files are centralized with the right entity*
 
-Technical Notes:
-• Pipeline config stored per workspace
-• Stage: name, position, default_probability
-• Apply to new deals only (not retroactive)
+**Acceptance Criteria:**
 
+| #   | Scenario            | Given                       | When                             | Then                                                            | Status |
+| --- | ------------------- | --------------------------- | -------------------------------- | --------------------------------------------------------------- | ------ |
+| AC1 | Upload proposal PDF | Deal ở Proposal stage       | Upload file, category='proposal' | CrmAttachment: entity_type=deal, category=proposal              | ⬜      |
+| AC2 | Upload contract     | Account has signed contract | Upload, category='contract'      | Attachment linked to account, downloadable                      | ⬜      |
+| AC3 | Multiple categories | Deal has nhiều files        | Xem Attachments tab              | Grouped: Proposals(2), Contracts(1), Presentations(3), Other(1) | ⬜      |
+| AC4 | Inline preview      | PDF uploaded                | Nhấn Preview                     | View inline without download                                    | ⬜      |
+| AC5 | File validation     | Upload .exe                 | Check                            | Lỗi: 'Chỉ chấp nhận PDF, DOCX, XLSX, PPTX, JPG, PNG. Max 10MB'  | ⬜      |
 
-US-030: Cấu hình Lead Scoring Rules
-Priority	P2 - Nice to Have
-Persona	Admin / Marketing
-Epic	Epic 10: RBAC & System Configuration
-Sprint	Sprint 6
-Estimate	3 SP
+**UI Requirements:**
+- Attachments tab on Deal, Account, Contact, Ticket detail
+- Upload: drag-drop, category select
+- File list: name, category, size, date, uploader
+- Preview inline, download, delete
 
-User Story:
-As an Admin
-I want to configure lead scoring rules and thresholds
-So that lead scores reflect our specific qualification criteria
+**Technical Notes:**
+• CRUD /api/v1/crm/attachments (polymorphic)
+• CrmAttachment: entity_type, entity_id, category, file_url
+• Categories: proposal, contract, nda, presentation, meeting_notes, other
+• File validation: types + size limit
 
-Acceptance Criteria:
-#	Scenario	Given	When	Then	Status
-AC1	Edit scoring rules	Default: call = +15	Đổi call = +20	Từ giờ trở đi, mỗi call activity cho lead sẽ cộng 20 points	⬜
-AC2	Edit thresholds	Cold: 0-30, Warm: 30-60, Hot: 60+	Đổi Hot threshold = 70+	Leads score 60-69 giờ là Warm thay vì Hot	⬜
-AC3	Add custom rule	Không có rule cho 'site visit'	Thêm rule: site_visit = +25	Activity type site_visit cộng 25 points khi log	⬜
+# Epic 11: RBAC, Pipeline Config & Custom Fields
 
-UI Requirements:
-•	Scoring rules table: activity type, points
-•	Threshold config: Cold/Warm/Hot ranges
-•	Add custom rule form
+*5 roles (Admin, Sales Manager, Sales, Marketing, Support), configurable pipeline stages & lead scoring, custom fields per entity.*
+**Data Models: CrmCustomField**
 
-Technical Notes:
-• Scoring config stored per workspace
-• Rules: { activity_type: points }
-• Thresholds: { cold_max, warm_max }
-• Re-scoring: apply to future activities only
+## US-024: RBAC & Role-based Access
 
+| Priority | P0 - Must Have                                 |
+| -------- | ---------------------------------------------- |
+| Persona  | Admin                                          |
+| Epic     | Epic 11: RBAC, Pipeline Config & Custom Fields |
+| Sprint   | Sprint 1                                       |
+| Estimate | 8 SP                                           |
 
- 
-Tài liệu liên quan
-•	PRD – CRM System (Customer Relationship Management)
-•	SOP – CRM Standard Operating Procedures (14 SOPs)
-•	Data Model – 7 Core Entities: Contact, Lead, Deal, Account, Activity, Campaign, Ticket
-•	API Specs – RESTful endpoints per entity + analytics
-•	PMS PRD – Hệ thống Quản lý Dự án (tích hợp)
+**User Story:**
+*As an Admin*
+*I want role-based access control for all CRM functions*
+*So that each team member accesses only what their role permits*
 
-Lead Scoring Reference
-Activity Type	Points	Level Thresholds
-Email Open	+5	Cold: 0–30
-Link Click	+10	Warm: 30–60
-Form Submission	+15	Hot: 60+
-Call Engagement	+15	
-Demo Request	+20	
+**Acceptance Criteria:**
 
-Pipeline Stages Reference
-Stage	Default Probability	Description
-Qualified Lead	10%	Lead đã qualify, bắt đầu tìm hiểu
-Needs Analysis	25%	Phân tích nhu cầu khách hàng
-Proposal	50%	Gửi đề xuất / báo giá
-Negotiation	75%	Đàm phán điều khoản
-Closed Won	100%	Chốt deal thành công
-Closed Lost	0%	Mất deal (ghi lý do)
+| #   | Scenario               | Given              | When                                                | Then                        | Status |
+| --- | ---------------------- | ------------------ | --------------------------------------------------- | --------------------------- | ------ |
+| AC1 | Sales: leads + deals   | User=Sales         | CRUD leads, deals, activities, quotes               | Thành công                  | ⬜      |
+| AC2 | Marketing: campaigns   | User=Marketing     | CRUD campaigns, view lead source report             | OK. Không edit deal stages. | ⬜      |
+| AC3 | Support: tickets       | User=Support       | CRUD tickets                                        | OK. Không edit deals.       | ⬜      |
+| AC4 | Manager: all view      | User=Sales Manager | All deals, all leads, pipeline, analytics, forecast | Full view access            | ⬜      |
+| AC5 | Marketing no deal edit | User=Marketing     | Thử edit deal stage                                 | 403 Forbidden               | ⬜      |
 
-Mỗi User Story được hoàn thành phải có tất cả Acceptance Criteria pass.
+**UI Requirements:**
+- Permission-based menu/button rendering
+- Role indicator
+
+**Technical Notes:**
+• RBAC middleware
+• 5 roles: Admin, Sales Manager, Sales, Marketing, Support
+• Permission matrix per role × entity × action
+
+## US-025: Pipeline & Scoring Config
+
+| Priority | P2 - Nice to Have                              |
+| -------- | ---------------------------------------------- |
+| Persona  | Admin                                          |
+| Epic     | Epic 11: RBAC, Pipeline Config & Custom Fields |
+| Sprint   | Sprint 6                                       |
+| Estimate | 5 SP                                           |
+
+**User Story:**
+*As an Admin*
+*I want to customize pipeline stages, default probabilities and lead scoring rules*
+*So that the CRM matches our specific sales process*
+
+**Acceptance Criteria:**
+
+| #   | Scenario           | Given             | When                                                    | Then                              | Status |
+| --- | ------------------ | ----------------- | ------------------------------------------------------- | --------------------------------- | ------ |
+| AC1 | Edit stage names   | 5 stages          | Rename 'Needs Analysis'→'Discovery'                     | Updated system-wide               | ⬜      |
+| AC2 | Add stage          | 5 existing        | Add 'Technical Review' between Proposal and Negotiation | New stage appears on pipeline     | ⬜      |
+| AC3 | Edit scoring rules | Default: call=+15 | Change call=+20                                         | Future activities use new scoring | ⬜      |
+| AC4 | Edit thresholds    | Cold: 0-30        | Change Hot to 70+                                       | Score levels adjusted             | ⬜      |
+
+**UI Requirements:**
+- Pipeline config: drag to reorder, name/probability edit
+- Scoring rules table: activity type × points
+- Threshold config: Cold/Warm/Hot ranges
+
+**Technical Notes:**
+• Pipeline config per workspace
+• Scoring config per workspace
+• Apply to new items only (not retroactive)
+
+## US-026: Custom Fields per Entity
+
+| Priority | P1 - Should Have                               |
+| -------- | ---------------------------------------------- |
+| Persona  | Admin                                          |
+| Epic     | Epic 11: RBAC, Pipeline Config & Custom Fields |
+| Sprint   | Sprint 4                                       |
+| Estimate | 5 SP                                           |
+
+**User Story:**
+*As an Admin*
+*I want to define custom fields for leads, deals, accounts and contacts*
+*So that CRM tracks industry-specific data beyond standard fields*
+
+**Acceptance Criteria:**
+
+| #   | Scenario                  | Given                  | When                                                                        | Then                              | Status |
+| --- | ------------------------- | ---------------------- | --------------------------------------------------------------------------- | --------------------------------- | ------ |
+| AC1 | Tạo custom field cho Deal | Admin ở Settings       | Tạo: entity_type=deal, name='Số camera dự kiến', type=number, required=true | Field hiển thị trên mọi Deal form | ⬜      |
+| AC2 | Select field              | Tạo cho Lead           | type=select, options=['Enterprise','SMB','Startup']                         | Dropdown hiển thị, filterable     | ⬜      |
+| AC3 | Required validation       | Field required=true    | Để trống, save                                                              | Lỗi validation                    | ⬜      |
+| AC4 | Filter by custom field    | Deals có custom fields | Filter 'Số camera > 50'                                                     | Filtered results                  | ⬜      |
+| AC5 | 5 field types             | Tạo các types          | text, number, date, select, multi_select                                    | Tất cả hoạt động                  | ⬜      |
+
+**UI Requirements:**
+- Custom Fields config: entity type, field name, type, options, required, position
+- Dynamic rendering on entity forms
+- Filter/Sort by custom field values
+
+**Technical Notes:**
+• CRUD /api/v1/crm/custom-fields
+• CrmCustomField: entity_type, field_name, field_type, options JSONB, is_required
+• Store values in entity JSONB column
+
+# Epic 12: Cross-module Integration & Export
+
+*Tích hợp PMS (project from deal), WMS (devices for client), HRM (sales team). Import/Export capabilities.*
+**Data Models: ImportJob**
+
+## US-027: Cross-module Integration
+
+| Priority | P1 - Should Have                           |
+| -------- | ------------------------------------------ |
+| Persona  | Sales / PM                                 |
+| Epic     | Epic 12: Cross-module Integration & Export |
+| Sprint   | Sprint 6                                   |
+| Estimate | 5 SP                                       |
+
+**User Story:**
+*As a Sales Rep*
+*I want CRM linked with PMS (projects), WMS (equipment) and HRM (team)*
+*So that the full customer lifecycle from sale to deployment is connected*
+
+**Acceptance Criteria:**
+
+| #   | Scenario                   | Given                               | When                      | Then                                                    | Status |
+| --- | -------------------------- | ----------------------------------- | ------------------------- | ------------------------------------------------------- | ------ |
+| AC1 | Deal → PMS Project         | Deal Closed Won for ABC Hotel       | Nhấn 'Create Project'     | PMS Project tạo linked to deal, account info pre-filled | ⬜      |
+| AC2 | Account → WMS Devices      | Account ABC deployed 20 cameras     | Xem Account 360 > Devices | Hiển thị: 20 devices, serial, model, status từ WMS      | ⬜      |
+| AC3 | Account → Warranty tickets | Account devices có warranty tickets | Xem Warranty tab          | Tickets from WMS warranty module                        | ⬜      |
+| AC4 | Sales team from HRM        | View sales reps                     | Team members              | Name, position, department từ HRM employee data         | ⬜      |
+
+**UI Requirements:**
+- 'Create Project' button on won deals
+- Devices tab on Account 360 (from WMS)
+- Warranty tab on Account (from WMS)
+- Team info from HRM
+
+**Technical Notes:**
+• Cross-module APIs: PMS project_id, WMS project_id, HRM employee_id
+• Deal→Project: create PMS project with deal data
+• Account→WMS: GET /wms/devices?project_id=
+• Account→Warranty: GET /wms/warranty-tickets?account_id=
+
+## US-028: Import/Export & Reports
+
+| Priority | P1 - Should Have                           |
+| -------- | ------------------------------------------ |
+| Persona  | Sales Manager / Admin                      |
+| Epic     | Epic 12: Cross-module Integration & Export |
+| Sprint   | Sprint 5                                   |
+| Estimate | 5 SP                                       |
+
+**User Story:**
+*As a Sales Manager*
+*I want to import leads/contacts from CSV and export all CRM reports*
+*So that data migration is easy and reports can be shared offline*
+
+**Acceptance Criteria:**
+
+| #   | Scenario              | Given               | When                                    | Then                                                             | Status |
+| --- | --------------------- | ------------------- | --------------------------------------- | ---------------------------------------------------------------- | ------ |
+| AC1 | Import leads CSV      | CSV 500 rows        | Upload → map columns → preview → import | ImportJob: 480 imported, 20 duplicates                           | ⬜      |
+| AC2 | Import contacts       | Excel file          | Same wizard                             | Contacts imported with account linking                           | ⬜      |
+| AC3 | Export pipeline       | Pipeline data       | Export Excel                            | Full pipeline: deals, stages, values, owners, expected close     | ⬜      |
+| AC4 | Export report PDF     | Analytics dashboard | Export PDF                              | Summary PDF: KPIs, funnel, revenue chart, top deals              | ⬜      |
+| AC5 | Import error handling | CSV có 20 rows lỗi  | Import                                  | Error log: row number, field, error reason. Download error file. | ⬜      |
+
+**UI Requirements:**
+- Import wizard: upload → column mapping → preview → confirm
+- Export buttons: Excel, PDF on all list/report pages
+- Import history: status, counts, error log download
+
+**Technical Notes:**
+• POST /api/v1/crm/import (multipart)
+• ImportJob: type, file_url, status, total/imported/failed, error_log JSONB
+• Export: server-side Excel (SheetJS) + PDF generation
+
+# Phụ lục: Data Model Coverage (20 Models)
+
+| #   | Model           | Epic    | Mô tả                                                         |
+| --- | --------------- | ------- | ------------------------------------------------------------- |
+| 1   | Lead            | Epic 1  | Prospective customers: source, status, score, owner, campaign |
+| 2   | Contact         | Epic 3  | Individual contacts linked to accounts                        |
+| 3   | Deal            | Epic 2  | Sales opportunities: pipeline stage, probability, value       |
+| 4   | Account         | Epic 4  | Customer organizations: industry, revenue, health_score       |
+| 5   | Activity        | Epic 5  | Sales interactions: call, email, meeting, demo, follow-up     |
+| 6   | Campaign        | Epic 6  | Marketing campaigns: budget, ROI, lead attribution            |
+| 7   | Ticket          | Epic 7  | Customer support tickets: priority, SLA, resolution           |
+| 8   | ProductService  | Epic 2  | Sản phẩm/dịch vụ catalog: pricing, categories, bundles        |
+| 9   | Quotation       | Epic 2  | Báo giá: line items, discount, tax, validity, PDF export      |
+| 10  | QuotationLine   | Epic 2  | Chi tiết dòng báo giá: product, qty, price, discount          |
+| 11  | Contract        | Epic 4  | Hợp đồng sau Close Won: billing, renewal, SLA                 |
+| 12  | DealContactRole | Epic 2  | Multi-contact per deal: decision_maker, champion, evaluator   |
+| 13  | EmailTemplate   | Epic 5  | Mẫu email: merge tags, categories                             |
+| 14  | EmailLog        | Epic 5  | Lịch sử email: sent/opened/clicked tracking                   |
+| 15  | CrmNotification | Epic 10 | Thông báo: in-app + email, per event type                     |
+| 16  | SalesForecast   | Epic 8  | Dự báo: target vs committed vs closed per rep per period      |
+| 17  | CrmAttachment   | Epic 10 | Tệp đính kèm: proposal, contract, NDA per entity              |
+| 18  | CrmCustomField  | Epic 11 | Custom fields: per entity type, 5 field types                 |
+| 19  | Competitor      | Epic 2  | Đối thủ per deal: strengths, weaknesses, price comparison     |
+| 20  | ImportJob       | Epic 12 | Import CSV/Excel: status, error log, row counts               |
+
+*Mỗi User Story hoàn thành phải có tất cả Acceptance Criteria pass.*
+
+*— Hết document —*

@@ -12,13 +12,16 @@ async def create_lead(
     db: AsyncSession, workspace_id: uuid.UUID, data: LeadCreate
 ) -> tuple[Lead, list[Lead]]:
     """Create lead with duplicate check and auto-scoring. Returns (lead, duplicates)."""
-    from app.modules.crm.services.lead_workflows import calculate_lead_score, check_lead_duplicates
+    from app.modules.crm.services.lead_workflows import (
+        calculate_initial_lead_score,
+        check_lead_duplicates,
+    )
 
     duplicates = await check_lead_duplicates(db, workspace_id, data.email, data.phone)
 
     lead = Lead(workspace_id=workspace_id, **data.model_dump())
     if lead.score == 0:
-        lead.score = calculate_lead_score(lead)
+        lead.score = calculate_initial_lead_score(lead)
     db.add(lead)
     await db.commit()
     await db.refresh(lead)
@@ -88,6 +91,19 @@ async def update_lead(
                 detail=f"Cannot transition from '{lead.status}' to '{updates['status']}'. Allowed: {allowed}",
             )
 
+    # Fire notification before applying updates so we can detect owner change
+    if "owner_id" in updates and updates["owner_id"] and updates["owner_id"] != lead.owner_id:
+        from app.modules.crm.services.crm_notification import create_notification
+        await create_notification(
+            db,
+            workspace_id=lead.workspace_id,
+            recipient_id=updates["owner_id"],
+            type="lead_assigned",
+            title=f"Lead assigned: {lead.name or lead.email}",
+            entity_type="lead",
+            entity_id=lead.id,
+        )
+
     for field, value in updates.items():
         setattr(lead, field, value)
     await db.commit()
@@ -101,6 +117,35 @@ async def delete_lead(db: AsyncSession, lead_id: uuid.UUID, workspace_id: uuid.U
     await db.commit()
 
 
+async def update_lead_bant(
+    db: AsyncSession, lead_id: uuid.UUID, workspace_id: uuid.UUID, bant_data: dict
+) -> Lead:
+    lead = await get_lead(db, lead_id, workspace_id)
+    cfv = dict(lead.custom_field_values or {})
+    for key in ("_bant_budget", "_bant_authority", "_bant_need", "_bant_timeline"):
+        if key in bant_data:
+            cfv[key] = bant_data[key]
+    lead.custom_field_values = cfv
+    from sqlalchemy.orm.attributes import flag_modified
+    flag_modified(lead, "custom_field_values")
+    await db.commit()
+    await db.refresh(lead)
+    return lead
+
+
+async def bulk_disqualify_leads(
+    db: AsyncSession, workspace_id: uuid.UUID, lead_ids: list[uuid.UUID], reason: str = ""
+) -> int:
+    from sqlalchemy import update
+    result = await db.execute(
+        update(Lead)
+        .where(Lead.id.in_(lead_ids), Lead.workspace_id == workspace_id)
+        .values(status="disqualified", disqualify_reason=reason)
+    )
+    await db.commit()
+    return result.rowcount
+
+
 async def convert_lead_to_opportunity(
     db: AsyncSession,
     lead_id: uuid.UUID,
@@ -109,7 +154,7 @@ async def convert_lead_to_opportunity(
 ) -> "Deal":  # noqa: F821
     from app.modules.crm.models.contact import Contact
     from app.modules.crm.models.deal import Deal
-    from app.modules.crm.services.lead_workflows import calculate_lead_score
+    from app.modules.crm.services.lead_workflows import calculate_initial_lead_score
 
     if params is None:
         params = LeadConvertRequest()
@@ -140,7 +185,7 @@ async def convert_lead_to_opportunity(
             await db.flush()
             contact_id = contact.id
 
-    score = lead.score or calculate_lead_score(lead)
+    score = lead.score or calculate_initial_lead_score(lead)
     prob_map = {"website": 0.3, "ads": 0.2, "form": 0.35, "referral": 0.4, "manual": 0.15}
     deal = Deal(
         title=params.deal_title or f"{lead.name} - Deal",

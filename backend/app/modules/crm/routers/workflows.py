@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.dependencies.rbac import require_workspace_role
 from app.models.user import User
-from app.modules.crm.schemas.deal import DealCloseRequest
+from app.modules.crm.schemas.deal import DealCloseRequest, DealResponse
 
 router = APIRouter(tags=["crm"])
 
@@ -53,8 +53,23 @@ async def close_deal_endpoint(
 ):
     from app.modules.crm.services.deal_workflows import close_deal
 
-    deal = await close_deal(db, deal_id, workspace_id, body.action, body.loss_reason, current_user.id)
+    deal = await close_deal(
+        db, deal_id, workspace_id, body.action, body.loss_reason, current_user.id,
+        competitor_id=body.competitor_id,
+    )
     return deal
+
+
+@router.post("/workspaces/{workspace_id}/deals/{deal_id}/reopen", response_model=DealResponse)
+async def reopen_deal_endpoint(
+    workspace_id: uuid.UUID,
+    deal_id: uuid.UUID,
+    current_user: User = Depends(require_workspace_role("member")),
+    db: AsyncSession = Depends(get_db),
+):
+    from app.modules.crm.services.deal_workflows import reopen_deal
+
+    return await reopen_deal(db, deal_id, workspace_id, user_id=current_user.id)
 
 
 @router.get("/workspaces/{workspace_id}/deals/stale")

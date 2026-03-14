@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import { Pencil, Trash2, ArrowRightCircle } from 'lucide-react'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import { useAuthStore } from '@/stores/auth.store'
@@ -13,7 +14,7 @@ import { PaginationControls } from '@/shared/components/ui/pagination-controls'
 import { LeadFormDialog } from '../components/lead-form-dialog'
 import { LeadConvertDialog } from '../components/lead-convert-dialog'
 import { LeadDistributeDialog } from '../components/lead-distribute-dialog'
-import { type Lead, LEAD_STATUSES, LEAD_SOURCES, useLeads, useDeleteLead } from '../hooks/use-leads'
+import { type Lead, LEAD_STATUSES, LEAD_SOURCES, useLeads, useDeleteLead, useBulkDisqualify } from '../hooks/use-leads'
 
 const PAGE_SIZE = 20
 
@@ -30,6 +31,9 @@ export default function LeadsListPage() {
   const [editLead, setEditLead] = useState<Lead | null>(null)
   const [convertLead, setConvertLead] = useState<Lead | null>(null)
   const [distributeOpen, setDistributeOpen] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [bulkDialogOpen, setBulkDialogOpen] = useState(false)
+  const [bulkReason, setBulkReason] = useState('')
 
   const { data, isLoading } = useLeads(workspaceId, {
     search: search || undefined,
@@ -40,16 +44,54 @@ export default function LeadsListPage() {
     page_size: PAGE_SIZE,
   })
   const deleteLead = useDeleteLead(workspaceId)
+  const bulkDisqualify = useBulkDisqualify(workspaceId)
+
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
+
+  async function handleBulkDisqualify() {
+    try {
+      const result = await bulkDisqualify.mutateAsync({
+        lead_ids: Array.from(selectedIds),
+        reason: bulkReason,
+      })
+      toast({ title: `${result.disqualified} leads disqualified`, variant: 'success' })
+      setSelectedIds(new Set())
+      setBulkDialogOpen(false)
+      setBulkReason('')
+    } catch {
+      toast({ title: 'Bulk disqualify failed', variant: 'error' })
+    }
+  }
 
   const columns: SimpleColumn<Lead>[] = [
-    { key: 'name', label: 'Name', render: (l) => <span className="font-medium">{l.name}</span> },
+    {
+      key: 'select',
+      label: '',
+      className: 'w-8',
+      render: (l) => (
+        <input
+          type="checkbox"
+          checked={selectedIds.has(l.id)}
+          onChange={() => toggleSelect(l.id)}
+          onClick={(e) => e.stopPropagation()}
+          className="h-4 w-4 rounded border-border accent-primary"
+        />
+      ),
+    },
+    { key: 'name', label: 'Name', render: (l) => <Link to={`/crm/leads/${l.id}`} className="font-medium hover:text-primary hover:underline" onClick={(e) => e.stopPropagation()}>{l.name}</Link> },
     { key: 'email', label: 'Email', render: (l) => l.email ?? '-' },
     { key: 'source', label: 'Source', render: (l) => LEAD_SOURCES.find((s) => s.value === l.source)?.label ?? l.source },
     {
       key: 'status', label: 'Status', render: (l) => {
-        const status = l.status;
-        const variant = status === 'new' ? 'info' : status === 'contacted' ? 'secondary' : status === 'qualified' ? 'success' : status === 'lost' ? 'danger' : 'secondary'
-        return <Badge variant={variant as any}>{LEAD_STATUSES.find((s) => s.value === l.status)?.label ?? l.status}</Badge>;
+        const st = l.status
+        const variant = st === 'new' ? 'info' : st === 'contacted' ? 'secondary' : st === 'qualified' ? 'success' : st === 'lost' ? 'danger' : 'secondary'
+        return <Badge variant={variant as any}>{LEAD_STATUSES.find((s) => s.value === l.status)?.label ?? l.status}</Badge>
       },
     },
     {
@@ -101,6 +143,14 @@ export default function LeadsListPage() {
         onCreateClick={() => { setEditLead(null); setDialogOpen(true) }}
         createLabel="New Lead"
       >
+        {selectedIds.size > 0 && (
+          <button
+            className="inline-flex items-center h-8 px-3 text-xs font-medium rounded-md border border-destructive text-destructive bg-card hover:bg-destructive/10"
+            onClick={() => setBulkDialogOpen(true)}
+          >
+            Disqualify ({selectedIds.size})
+          </button>
+        )}
         <button
           className={`inline-flex items-center h-8 px-3 text-xs font-medium rounded-md border transition-colors ${myLeads ? 'bg-primary text-primary-foreground border-primary' : 'border-border bg-card hover:bg-muted'}`}
           onClick={() => { setMyLeads((v) => !v); setPage(1) }}
@@ -128,11 +178,45 @@ export default function LeadsListPage() {
           </SelectContent>
         </Select>
       </PageHeader>
+
       <DataTable columns={toColumnDefs(columns)} data={data?.items ?? []} keyFn={(l) => l.id} isLoading={isLoading} emptyTitle="No leads yet" />
       <PaginationControls page={page} pageSize={PAGE_SIZE} total={data?.total ?? 0} onPageChange={setPage} />
+
       <LeadFormDialog open={dialogOpen} onOpenChange={setDialogOpen} workspaceId={workspaceId} lead={editLead} />
       <LeadConvertDialog lead={convertLead} onClose={() => setConvertLead(null)} workspaceId={workspaceId} />
       <LeadDistributeDialog open={distributeOpen} onOpenChange={setDistributeOpen} workspaceId={workspaceId} />
+
+      {/* Bulk Disqualify Dialog */}
+      {bulkDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-card border border-border rounded-lg p-6 w-full max-w-sm space-y-4 shadow-lg">
+            <p className="text-sm font-semibold">Disqualify {selectedIds.size} lead{selectedIds.size > 1 ? 's' : ''}?</p>
+            <p className="text-xs text-muted-foreground">This will mark all selected leads as disqualified.</p>
+            <input
+              type="text"
+              placeholder="Reason (optional)"
+              value={bulkReason}
+              onChange={(e) => setBulkReason(e.target.value)}
+              className="w-full text-sm border border-border rounded-md px-3 py-1.5 bg-background focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                className="text-xs px-3 py-1.5 rounded-md border border-border bg-card hover:bg-muted"
+                onClick={() => setBulkDialogOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="text-xs px-3 py-1.5 rounded-md bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50"
+                onClick={handleBulkDisqualify}
+                disabled={bulkDisqualify.isPending}
+              >
+                {bulkDisqualify.isPending ? 'Processing…' : 'Confirm'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

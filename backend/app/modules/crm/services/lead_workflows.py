@@ -54,7 +54,7 @@ async def merge_leads(
     return keep
 
 
-def calculate_lead_score(lead: Lead) -> int:
+def calculate_initial_lead_score(lead: Lead) -> int:
     """Score lead based on source quality + data completeness (0-100)."""
     score = 0
     source_scores = {"website": 15, "ads": 10, "form": 20, "referral": 25, "manual": 5}
@@ -72,11 +72,29 @@ def calculate_lead_score(lead: Lead) -> int:
 
 def get_score_level(score: int) -> str:
     """Return score level label based on numeric score."""
-    if score <= 30:
+    if score <= 25:
         return "cold"
     if score <= 60:
         return "warm"
     return "hot"
+
+
+async def recalculate_lead_score(db: AsyncSession, lead: Lead) -> int:
+    """Sum activity scores + initial score, capped at 100."""
+    from app.modules.crm.models.activity import Activity as ActivityModel
+
+    activity_score = await db.scalar(
+        select(func.count(ActivityModel.id)).where(
+            ActivityModel.lead_id == lead.id,
+            ActivityModel.workspace_id == lead.workspace_id,
+        )
+    ) or 0
+    # Each activity adds 5 points; combined with initial score, cap at 100
+    initial = calculate_initial_lead_score(lead)
+    new_score = min(initial + activity_score * 5, 100)
+    lead.score = new_score
+    await db.commit()
+    return new_score
 
 
 async def get_stale_leads(

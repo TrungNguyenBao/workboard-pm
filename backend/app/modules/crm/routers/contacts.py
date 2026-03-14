@@ -15,6 +15,7 @@ from app.modules.crm.services.contact import (
     list_contacts,
     update_contact,
 )
+from app.modules.crm.services.contact_360 import get_contact_360
 
 router = APIRouter(tags=["crm"])
 
@@ -60,6 +61,18 @@ async def get(
     db: AsyncSession = Depends(get_db),
 ):
     return await get_contact(db, contact_id, workspace_id)
+
+
+@router.get(
+    "/workspaces/{workspace_id}/contacts/{contact_id}/360",
+)
+async def get_360(
+    workspace_id: uuid.UUID,
+    contact_id: uuid.UUID,
+    current_user: User = Depends(require_workspace_role("guest")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await get_contact_360(db, contact_id, workspace_id)
 
 
 @router.patch(

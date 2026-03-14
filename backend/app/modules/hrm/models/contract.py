@@ -8,7 +8,7 @@ from app.core.database import PORTABLE_JSONB, Base
 from app.models.base import TimestampMixin
 
 
-class Contract(Base, TimestampMixin):
+class EmployeeContract(Base, TimestampMixin):
     __tablename__ = "contracts"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
@@ -25,5 +25,5 @@ class Contract(Base, TimestampMixin):
     notes: Mapped[str | None] = mapped_column(String(500), nullable=True)
     workspace_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("workspaces.id"), index=True)
 
-    employee: Mapped["Employee"] = relationship(back_populates="contracts")  # noqa: F821
+    employee: Mapped["Employee"] = relationship(back_populates="employee_contracts")  # noqa: F821
     workspace: Mapped["Workspace"] = relationship()  # noqa: F821

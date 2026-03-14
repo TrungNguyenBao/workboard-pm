@@ -5,15 +5,15 @@ from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.modules.hrm.models.contract import Contract
+from app.modules.hrm.models.contract import EmployeeContract
 from app.modules.hrm.models.salary_history import SalaryHistory
 from app.modules.hrm.schemas.contract import ContractCreate, ContractUpdate
 
 
 async def create_contract(
     db: AsyncSession, workspace_id: uuid.UUID, data: ContractCreate
-) -> Contract:
-    contract = Contract(workspace_id=workspace_id, **data.model_dump())
+) -> EmployeeContract:
+    contract = EmployeeContract(workspace_id=workspace_id, **data.model_dump())
     db.add(contract)
     await db.commit()
     await db.refresh(contract)
@@ -27,29 +27,29 @@ async def list_contracts(
     contract_status: str | None = None,
     page: int = 1,
     page_size: int = 20,
-) -> tuple[list[Contract], int]:
-    q = select(Contract).where(Contract.workspace_id == workspace_id)
-    count_q = select(func.count(Contract.id)).where(Contract.workspace_id == workspace_id)
+) -> tuple[list[EmployeeContract], int]:
+    q = select(EmployeeContract).where(EmployeeContract.workspace_id == workspace_id)
+    count_q = select(func.count(EmployeeContract.id)).where(EmployeeContract.workspace_id == workspace_id)
 
     if employee_id:
-        q = q.where(Contract.employee_id == employee_id)
-        count_q = count_q.where(Contract.employee_id == employee_id)
+        q = q.where(EmployeeContract.employee_id == employee_id)
+        count_q = count_q.where(EmployeeContract.employee_id == employee_id)
     if contract_status:
-        q = q.where(Contract.status == contract_status)
-        count_q = count_q.where(Contract.status == contract_status)
+        q = q.where(EmployeeContract.status == contract_status)
+        count_q = count_q.where(EmployeeContract.status == contract_status)
 
     total = await db.scalar(count_q) or 0
     result = await db.scalars(
-        q.order_by(Contract.start_date.desc()).offset((page - 1) * page_size).limit(page_size)
+        q.order_by(EmployeeContract.start_date.desc()).offset((page - 1) * page_size).limit(page_size)
     )
     return list(result.all()), total
 
 
 async def get_contract(
     db: AsyncSession, contract_id: uuid.UUID, workspace_id: uuid.UUID
-) -> Contract:
+) -> EmployeeContract:
     result = await db.scalars(
-        select(Contract).where(Contract.id == contract_id, Contract.workspace_id == workspace_id)
+        select(EmployeeContract).where(EmployeeContract.id == contract_id, EmployeeContract.workspace_id == workspace_id)
     )
     contract = result.first()
     if not contract:
@@ -59,7 +59,7 @@ async def get_contract(
 
 async def update_contract(
     db: AsyncSession, contract_id: uuid.UUID, workspace_id: uuid.UUID, data: ContractUpdate
-) -> Contract:
+) -> EmployeeContract:
     contract = await get_contract(db, contract_id, workspace_id)
     update_data = data.model_dump(exclude_none=True)
 

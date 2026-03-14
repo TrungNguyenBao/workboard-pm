@@ -18,18 +18,25 @@ from app.modules.crm.schemas.lead import (
 )
 from app.modules.crm.schemas.pagination import PaginatedResponse
 from app.modules.crm.services.lead import (
+    bulk_disqualify_leads,
     convert_lead_to_opportunity,
     create_lead,
     delete_lead,
     get_lead,
     list_leads,
     update_lead,
+    update_lead_bant,
 )
 from app.modules.crm.services.lead_workflows import merge_leads
 
 
 class DisqualifyRequest(BaseModel):
     reason: str
+
+
+class BulkDisqualifyRequest(BaseModel):
+    lead_ids: list[uuid.UUID]
+    reason: str = ""
 
 
 router = APIRouter(tags=["crm"])
@@ -65,6 +72,20 @@ async def merge(
     db: AsyncSession = Depends(get_db),
 ):
     return await merge_leads(db, workspace_id, data.keep_id, data.merge_id)
+
+
+@router.post(
+    "/workspaces/{workspace_id}/leads/bulk-disqualify",
+    status_code=status.HTTP_200_OK,
+)
+async def bulk_disqualify(
+    workspace_id: uuid.UUID,
+    data: BulkDisqualifyRequest,
+    current_user: User = Depends(require_workspace_role("member")),
+    db: AsyncSession = Depends(get_db),
+):
+    count = await bulk_disqualify_leads(db, workspace_id, data.lead_ids, data.reason)
+    return {"disqualified": count}
 
 
 @router.get(
@@ -111,6 +132,20 @@ async def update(
     db: AsyncSession = Depends(get_db),
 ):
     return await update_lead(db, lead_id, workspace_id, data)
+
+
+@router.patch(
+    "/workspaces/{workspace_id}/leads/{lead_id}/bant",
+    response_model=LeadResponse,
+)
+async def update_bant(
+    workspace_id: uuid.UUID,
+    lead_id: uuid.UUID,
+    data: dict,
+    current_user: User = Depends(require_workspace_role("member")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await update_lead_bant(db, lead_id, workspace_id, data)
 
 
 @router.delete(

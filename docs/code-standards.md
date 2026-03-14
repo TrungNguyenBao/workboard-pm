@@ -1,6 +1,6 @@
 # WorkBoard — Code Standards
 
-**Last updated:** 2026-03-03
+**Last updated:** 2026-03-14
 
 ---
 
@@ -86,6 +86,8 @@ async def create_activity(
 
 ### RBAC Dependencies
 
+**Shared (Workspace & Project):**
+
 | Dependency | Minimum access required |
 |---|---|
 | `require_workspace_role("guest")` | Any workspace member |
@@ -96,6 +98,18 @@ async def create_activity(
 | `require_project_role("editor")` | Can edit tasks |
 | `require_project_role("owner")` | Project owner only |
 
+**CRM Module (Entity-Level):**
+
+| Role | Scope | Permissions |
+|---|---|---|
+| `admin` | All entities | Full CRUD + settings/forecasts/import/governance |
+| `sales_manager` | Team members' deals | CRUD own team, read all, forecasts, pipeline config |
+| `sales` | Assigned deals/leads | CRUD assigned, read contact/account, activities, quotes |
+| `marketing` | Assigned leads/campaigns | CRUD assigned, read analytics, templates |
+| `support` | Assigned tickets | CRUD assigned tickets, read contact, account notes |
+
+**Pattern:** Use `require_crm_role()` dependency (similar to `require_hrm_role()`) in CRM routers.
+
 ### Pagination
 
 All modules use the shared `PaginatedResponse` schema from `app/schemas/pagination.py`:
@@ -104,13 +118,41 @@ All modules use the shared `PaginatedResponse` schema from `app/schemas/paginati
 class PaginatedResponse(BaseModel, Generic[T]):
     items: list[T]
     total: int
-    page: int
-    page_size: int
+    limit: int
+    offset: int
 ```
 
 - **WMS, HRM, CRM:** Offset-based pagination with `?limit=20&offset=0` query params.
 - **PMS (Activity):** Cursor-based pagination using UUID of last seen record.
 - Import: `from app.schemas.pagination import PaginatedResponse`
+
+### JSONB Custom Fields Pattern
+
+For flexible field storage (CRM custom fields, contract terms, etc.):
+
+```python
+# Model definition
+custom_field_values: Mapped[dict | None] = mapped_column(JSONB, default={})
+
+# Service layer validation
+def validate_custom_fields(entity_type: str, values: dict, definitions: list) -> dict:
+    """Validate field types and required constraints."""
+    valid = {}
+    for definition in definitions:
+        if definition.field_type == "select":
+            if values.get(definition.id) not in definition.metadata.get("options", []):
+                raise ValueError(f"Invalid option for {definition.id}")
+        valid[definition.id] = values.get(definition.id)
+    return valid
+
+# Frontend: Use generic custom field renderer
+<CustomFieldRenderer entity={entity} fields={definitions} onChange={setValues} />
+```
+
+- Store as `JSONB` in database (supports nested structures)
+- Validate types at service layer before persistence
+- Use metadata field on definition for type-specific config (select options, date format, etc.)
+- Frontend renderer is type-aware and dynamic
 
 ### Action Endpoints
 
@@ -126,7 +168,42 @@ async def approve_leave_request(
     return await approve_leave_request_service(db, leave_request_id=id, reviewed_by_id=current_user.id)
 ```
 
-Route: `POST /resource/{id}/{action_name}` (e.g., `/leave-requests/{id}/approve`, `/leave-requests/{id}/reject`).
+Route: `POST /resource/{id}/{action_name}` (e.g., `/leave-requests/{id}/approve`, `/deals/{id}/close`, `/deals/{id}/reopen`).
+
+### Notification Pattern
+
+For entity-triggered notifications (CRM lead assigned, deal stage change, etc.):
+
+```python
+# In service layer after entity change
+async def assign_lead(db, lead_id, owner_id, current_user):
+    lead = await db.get(Lead, lead_id)
+    lead.owner_id = owner_id
+    await db.commit()
+
+    # Publish notification event
+    await notify_service.create_notification(
+        db,
+        user_id=owner_id,
+        entity_type="lead",
+        entity_id=lead_id,
+        type="lead_assigned",
+        title=f"Lead '{lead.name}' assigned to you",
+        workspace_id=lead.workspace_id,
+    )
+
+    # Publish SSE event for real-time delivery
+    await publish(lead.workspace_id, {
+        "type": "notification",
+        "user_id": owner_id,
+        "entity_type": "lead",
+        "title": f"Lead '{lead.name}' assigned"
+    })
+```
+
+- Create notification record in database for history/persistence
+- Publish SSE event for real-time delivery to active users
+- Use descriptive `type` enum (e.g., `lead_assigned`, `deal_closed`, `ticket_created`)
 
 ### Migrations
 

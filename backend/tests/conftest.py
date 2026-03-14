@@ -1,17 +1,27 @@
 """Shared fixtures for all backend tests."""
 import uuid
+from unittest.mock import AsyncMock, MagicMock, patch
 from typing import AsyncGenerator
 
+import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+# Configure test settings BEFORE importing app modules
+import os
+os.environ["RATE_LIMIT_ENABLED"] = "false"
+
+from app.core.config import settings
 from app.core.database import Base, get_db
 from app.main import app
 from app.models import *  # noqa: F401, F403 — ensure all models are registered with Base
 
 # Use an in-memory SQLite database for tests
 TEST_DB_URL = "sqlite+aiosqlite:///:memory:"
+
+# Disable rate limiting for tests
+settings.RATE_LIMIT_ENABLED = False
 
 test_engine = create_async_engine(TEST_DB_URL, connect_args={"check_same_thread": False})
 TestSessionLocal = async_sessionmaker(test_engine, expire_on_commit=False)
@@ -35,8 +45,16 @@ async def db() -> AsyncGenerator[AsyncSession, None]:
 @pytest_asyncio.fixture
 async def client(db: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     app.dependency_overrides[get_db] = lambda: db
+
+    # Mock the limiter to bypass Redis dependency in tests
+    from app.dependencies.rate_limit import limiter
+    original_enabled = limiter.enabled
+    limiter.enabled = False
+
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:
         yield c
+
+    limiter.enabled = original_enabled
     app.dependency_overrides.clear()
 
 

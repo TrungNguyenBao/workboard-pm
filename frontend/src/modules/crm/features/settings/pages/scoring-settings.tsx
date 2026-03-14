@@ -154,6 +154,20 @@ export default function ScoringSettingsPage() {
         <p className="text-xs text-muted-foreground">
           Leads are categorised as: Cold (0–cold_max), Warm (cold_max–warm_max), Hot (above warm_max)
         </p>
+
+        {/* Visual threshold bands */}
+        <div className="flex gap-2 text-xs">
+          <span className="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-medium">
+            Cold: 0–{coldMax}
+          </span>
+          <span className="px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 font-medium">
+            Warm: {coldMax + 1}–{warmMax}
+          </span>
+          <span className="px-2.5 py-1 rounded-full bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300 font-medium">
+            Hot: {warmMax + 1}–100
+          </span>
+        </div>
+
         <div className="grid grid-cols-2 gap-4">
           <label className="space-y-1.5">
             <span className="text-xs font-medium text-muted-foreground">Cold Max</span>

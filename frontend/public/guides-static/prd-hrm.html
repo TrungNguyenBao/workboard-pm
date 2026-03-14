@@ -506,7 +506,7 @@
     </style>
 </head>
 
-<body>
+<body data-theme="light">
 
     <header class="topbar">
         <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
@@ -1638,6 +1638,7 @@ Inactive (Left, Retired, Suspended)</pre>
             var params = new URLSearchParams(window.location.search);
             var theme = params.get('theme');
             if (theme === 'dark' || theme === 'light') {
+                document.documentElement.setAttribute('data-theme', theme);
                 document.body.setAttribute('data-theme', theme);
             }
         })();
@@ -1649,6 +1650,7 @@ Inactive (Left, Retired, Suspended)</pre>
         var label = document.getElementById('darkToggleLabel');
 
         function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
             document.body.setAttribute('data-theme', theme);
             sun.style.display = theme === 'dark' ? 'none' : 'block';
             moon.style.display = theme === 'dark' ? 'block' : 'none';
@@ -1684,7 +1686,7 @@ Inactive (Left, Retired, Suspended)</pre>
         }
 
         // Scroll spy
-        var allAnchors = document.querySelectorAll('[id]');
+        var allAnchors = document.querySelectorAll('.main [id]');
         var allLinks = document.querySelectorAll('.sidebar-link[href^="#"]');
 
         function onScroll() {

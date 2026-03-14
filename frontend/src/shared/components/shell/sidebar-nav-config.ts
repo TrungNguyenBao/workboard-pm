@@ -77,6 +77,9 @@ export const CRM_NAV: NavGroupDef[] = [
       { to: '/crm/accounts', icon: 'Building2', labelKey: 'nav.accounts' },
       { to: '/crm/deals', icon: 'DollarSign', labelKey: 'nav.deals' },
       { to: '/crm/pipeline', icon: 'Kanban', labelKey: 'nav.pipeline' },
+      { to: '/crm/products', icon: 'Package', labelKey: 'nav.products' },
+      { to: '/crm/contracts', icon: 'FileText', labelKey: 'nav.contracts' },
+      { to: '/crm/forecasts', icon: 'TrendingUp', labelKey: 'nav.forecasts' },
     ],
   },
   {
@@ -85,6 +88,22 @@ export const CRM_NAV: NavGroupDef[] = [
       { to: '/crm/activities', icon: 'Activity', labelKey: 'nav.activities' },
       { to: '/crm/campaigns', icon: 'Megaphone', labelKey: 'nav.campaigns' },
       { to: '/crm/tickets', icon: 'Ticket', labelKey: 'nav.tickets' },
+    ],
+  },
+  {
+    label: 'nav.group.tools',
+    items: [
+      { to: '/crm/import', icon: 'Upload', labelKey: 'nav.import' },
+      { to: '/crm/email-templates', icon: 'Mail', labelKey: 'nav.emailTemplates' },
+      { to: '/crm/data-quality', icon: 'ShieldCheck', labelKey: 'nav.dataQuality' },
+    ],
+  },
+  {
+    label: 'nav.group.settings',
+    items: [
+      { to: '/crm/settings/pipeline', icon: 'Settings', labelKey: 'nav.pipelineSettings' },
+      { to: '/crm/settings/scoring', icon: 'SlidersHorizontal', labelKey: 'nav.scoringSettings' },
+      { to: '/crm/custom-fields', icon: 'ListPlus', labelKey: 'nav.customFields' },
     ],
   },
 ]

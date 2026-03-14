@@ -5,7 +5,7 @@ from app.modules.hrm.models.asset_assignment import AssetAssignment  # noqa: F40
 from app.modules.hrm.models.attendance_correction import AttendanceCorrection  # noqa: F401
 from app.modules.hrm.models.attendance_record import AttendanceRecord  # noqa: F401
 from app.modules.hrm.models.candidate import Candidate  # noqa: F401
-from app.modules.hrm.models.contract import Contract  # noqa: F401
+from app.modules.hrm.models.contract import EmployeeContract  # noqa: F401
 from app.modules.hrm.models.department import Department  # noqa: F401
 from app.modules.hrm.models.employee import Employee  # noqa: F401
 from app.modules.hrm.models.exit_interview import ExitInterview  # noqa: F401
