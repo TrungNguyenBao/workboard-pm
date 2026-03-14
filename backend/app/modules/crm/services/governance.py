@@ -18,7 +18,7 @@ async def get_governance_alerts(db: AsyncSession, workspace_id: uuid.UUID) -> di
     from app.modules.crm.services.deal_workflows import get_stale_deals
     from app.modules.crm.services.lead_workflows import get_stale_leads
 
-    stale_deals = await get_stale_deals(db, workspace_id, days=30)
+    stale_deals = await get_stale_deals(db, workspace_id, general_days=30)
     stale_leads = await get_stale_leads(db, workspace_id, days=30)
 
     # Unassigned leads
