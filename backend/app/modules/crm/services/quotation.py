@@ -41,7 +41,7 @@ async def _get_q(db: AsyncSession, quotation_id: uuid.UUID, workspace_id: uuid.U
 
 async def _recalculate(db: AsyncSession, quotation: Quotation) -> None:
     lines = (await db.scalars(select(QuotationLine).where(QuotationLine.quotation_id == quotation.id))).all()
-    subtotal = sum(l.line_total for l in lines)
+    subtotal = sum(line.line_total for line in lines)
     disc_amt = subtotal * quotation.discount_pct / 100
     after_disc = subtotal - disc_amt
     tax_amt = after_disc * quotation.tax_pct / 100

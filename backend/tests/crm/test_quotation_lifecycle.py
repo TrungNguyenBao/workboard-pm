@@ -122,7 +122,7 @@ async def test_delete_line_recalculates(db: AsyncSession, ws, deal):
         lines=[_line("A", qty=1, price=100), _line("B", qty=1, price=200)],
     )
     q = await create_quotation(db, ws.id, data)
-    line_b_id = next(l.id for l in q.lines if l.description == "B")
+    line_b_id = next(line.id for line in q.lines if line.description == "B")
 
     q2 = await delete_quotation_line(db, line_b_id, ws.id)
     assert q2.subtotal == pytest.approx(100.0)

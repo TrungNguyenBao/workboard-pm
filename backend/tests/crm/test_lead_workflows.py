@@ -171,7 +171,7 @@ async def test_distribute_leads_round_robin(db: AsyncSession, ws):
 
     assigned = await distribute_leads(db, ws.id)
     assert len(assigned) == 3
-    owner_ids = [l.owner_id for l in assigned]
+    owner_ids = [lead.owner_id for lead in assigned]
     assert set(owner_ids) == {user1.id, user2.id}
 
 

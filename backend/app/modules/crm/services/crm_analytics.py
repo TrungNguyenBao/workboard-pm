@@ -48,8 +48,8 @@ async def funnel_conversion(db: AsyncSession, workspace_id: uuid.UUID) -> dict:
     )).all())
 
     total_leads = len(leads)
-    qualified = sum(1 for l in leads if l.status in ("qualified", "opportunity", "converted"))
-    opportunity = sum(1 for l in leads if l.status in ("opportunity", "converted"))
+    qualified = sum(1 for lead in leads if lead.status in ("qualified", "opportunity", "converted"))
+    opportunity = sum(1 for lead in leads if lead.status in ("opportunity", "converted"))
 
     closed_won = await db.scalar(
         select(func.count(Deal.id)).where(
