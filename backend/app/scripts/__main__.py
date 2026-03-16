@@ -4,6 +4,7 @@ import asyncio
 from app.scripts.seed_crm import seed_crm
 from app.scripts.seed_hrm import seed_hrm
 from app.scripts.seed_pms import seed_pms
+from app.scripts.seed_erp_agentic import seed_erp_agentic
 from app.scripts.seed_shared import AsyncSessionLocal, clear_data, engine, seed_users_and_workspace
 from app.scripts.seed_wms import seed_wms
 
@@ -21,6 +22,8 @@ async def main() -> None:
         await seed_crm(session, ws)
         await seed_wms(session, ws)
         await seed_hrm(session, ws, demo, alice, bob)
+        # Seed ERP Agentic (CRM + HRM integration)
+        await seed_erp_agentic()
 
         await session.commit()
 
