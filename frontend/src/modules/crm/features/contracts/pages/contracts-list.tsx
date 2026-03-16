@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Pencil, CheckCircle2, XCircle } from 'lucide-react'
 import { useWorkspaceStore } from '@/stores/workspace.store'
-import { Badge } from '@/shared/components/ui/badge'
+import { Badge, type BadgeVariant } from '@/shared/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { toast } from '@/shared/components/ui/toast'
 import { DataTable } from '@/shared/components/ui/data-table'
@@ -66,7 +66,7 @@ export default function ContractsListPage() {
       key: 'status',
       label: 'Status',
       render: (c) => (
-        <Badge variant={(STATUS_VARIANT[c.status] ?? 'secondary') as any}>
+        <Badge variant={(STATUS_VARIANT[c.status] ?? 'secondary') as BadgeVariant}>
           {CONTRACT_STATUSES.find((s) => s.value === c.status)?.label ?? c.status}
         </Badge>
       ),

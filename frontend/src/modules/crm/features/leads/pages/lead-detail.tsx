@@ -31,7 +31,7 @@ export default function CrmLeadDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6 space-y-4">
+      <div className="p-4 sm:p-6 space-y-4">
         <div className="h-7 w-48 bg-muted animate-pulse rounded" />
         <div className="h-40 bg-muted animate-pulse rounded-lg" />
       </div>
@@ -40,7 +40,7 @@ export default function CrmLeadDetailPage() {
 
   if (!lead) {
     return (
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         <Button variant="ghost" size="sm" onClick={() => navigate('/crm/leads')}>
           <ArrowLeft className="h-4 w-4 mr-1" /> Back to Leads
         </Button>
@@ -57,15 +57,16 @@ export default function CrmLeadDetailPage() {
     : lead.status === 'lost' ? 'danger'
     : 'secondary'
 
+  const cfv = lead.custom_field_values ?? {}
   const bantInitial: BantValues = {
-    _bant_budget: (lead as any)._bant_budget ?? '',
-    _bant_authority: (lead as any)._bant_authority ?? '',
-    _bant_need: (lead as any)._bant_need ?? '',
-    _bant_timeline: (lead as any)._bant_timeline ?? '',
+    _bant_budget: cfv._bant_budget ?? '',
+    _bant_authority: cfv._bant_authority ?? '',
+    _bant_need: cfv._bant_need ?? '',
+    _bant_timeline: cfv._bant_timeline ?? '',
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="sm" onClick={() => navigate('/crm/leads')}>

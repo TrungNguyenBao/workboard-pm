@@ -1,7 +1,7 @@
 import { ArrowLeft, DollarSign, Users, TrendingUp, BarChart2 } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { KpiCard } from '@/shared/components/ui/kpi-card'
-import { Badge } from '@/shared/components/ui/badge'
+import { Badge, type BadgeVariant } from '@/shared/components/ui/badge'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import { useCampaignStats } from '../hooks/use-campaign-stats'
 import { CAMPAIGN_STATUSES, CAMPAIGN_TYPES } from '../hooks/use-campaigns'
@@ -57,7 +57,7 @@ export default function CampaignDetailPage() {
           <div className="flex items-center gap-2 flex-wrap">
             <h2 className="text-xl font-semibold text-foreground truncate">{c.name}</h2>
             <Badge variant="secondary">{typeLabel}</Badge>
-            <Badge variant={(c.status === 'active' ? 'success' : c.status === 'draft' ? 'secondary' : 'warning') as any}>
+            <Badge variant={(c.status === 'active' ? 'success' : c.status === 'draft' ? 'secondary' : 'warning') as BadgeVariant}>
               {statusLabel}
             </Badge>
           </div>

@@ -13,6 +13,7 @@ export interface Lead {
   campaign_id: string | null
   contacted_at: string | null
   assigned_at: string | null
+  custom_field_values: Record<string, string> | null
   workspace_id: string
   created_at: string
   updated_at: string

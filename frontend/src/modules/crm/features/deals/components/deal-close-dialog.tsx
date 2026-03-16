@@ -53,7 +53,7 @@ export function DealCloseDialog({ dealId, dealTitle, open, onOpenChange, workspa
             <Button onClick={() => handleClose('won')} disabled={closeDeal.isPending}>
               Mark as Won
             </Button>
-            <Button variant={"danger" as any} onClick={() => handleClose('lost')} disabled={closeDeal.isPending}>
+            <Button variant="danger" onClick={() => handleClose('lost')} disabled={closeDeal.isPending}>
               Mark as Lost
             </Button>
           </div>
@@ -72,7 +72,7 @@ export function DealCloseDialog({ dealId, dealTitle, open, onOpenChange, workspa
             <div className="flex justify-end gap-2">
               <Button variant="ghost" onClick={() => setMode('choose')}>Back</Button>
               <Button
-                variant={"danger" as any}
+                variant="danger"
                 onClick={() => handleClose('lost')}
                 disabled={closeDeal.isPending || !lossReason.trim()}
               >

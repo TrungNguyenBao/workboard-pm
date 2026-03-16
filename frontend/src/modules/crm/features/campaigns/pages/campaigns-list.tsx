@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useWorkspaceStore } from '@/stores/workspace.store'
-import { Badge } from '@/shared/components/ui/badge'
+import { Badge, type BadgeVariant } from '@/shared/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { toast } from '@/shared/components/ui/toast'
 import { DataTable } from '@/shared/components/ui/data-table'
@@ -44,7 +44,7 @@ export default function CampaignsListPage() {
     {
       key: 'status', label: 'Status', render: (c) => {
         const status = c.status;
-        return <Badge variant={(status === 'active' ? 'success' : status === 'draft' ? 'secondary' : status === 'paused' ? 'warning' : 'danger') as any}>
+        return <Badge variant={(status === 'active' ? 'success' : status === 'draft' ? 'secondary' : status === 'paused' ? 'warning' : 'danger') as BadgeVariant}>
           {CAMPAIGN_STATUSES.find((s) => s.value === c.status)?.label ?? c.status}
         </Badge>;
       },

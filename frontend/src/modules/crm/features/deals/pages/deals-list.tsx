@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Pencil, Trash2, CheckCircle2 } from 'lucide-react'
 import { useWorkspaceStore } from '@/stores/workspace.store'
-import { Badge } from '@/shared/components/ui/badge'
+import { Badge, type BadgeVariant } from '@/shared/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { toast } from '@/shared/components/ui/toast'
 import { DataTable } from '@/shared/components/ui/data-table'
@@ -57,7 +57,7 @@ export default function DealsListPage() {
       key: 'stage',
       label: t('deals.stage'),
       render: (d) => (
-        <Badge variant={(STAGE_VARIANT[d.stage] ?? 'secondary') as any}>
+        <Badge variant={(STAGE_VARIANT[d.stage] ?? 'secondary') as BadgeVariant}>
           {DEAL_STAGES.find((s) => s.value === d.stage)?.label ?? d.stage}
         </Badge>
       ),

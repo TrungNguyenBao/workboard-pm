@@ -72,8 +72,6 @@ export function useDeleteAttachment(workspaceId: string) {
   return useMutation({
     mutationFn: ({
       attachmentId,
-      entityType: _entityType,
-      entityId: _entityId,
     }: {
       attachmentId: string
       entityType: string

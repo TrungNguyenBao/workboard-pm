@@ -66,7 +66,7 @@ export function useCreateQuotation(workspaceId: string, dealId: string) {
 export function useUpdateQuotation(workspaceId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: ({ quotationId, dealId, ...data }: { quotationId: string; dealId: string } & Record<string, unknown>) =>
+    mutationFn: ({ quotationId, ...data }: { quotationId: string; dealId: string } & Record<string, unknown>) =>
       api.patch(`${quotationBase(workspaceId)}/quotations/${quotationId}`, data).then((r) => r.data),
     onSuccess: (_data, vars) =>
       qc.invalidateQueries({ queryKey: ['crm-quotations', workspaceId, vars.dealId] }),
@@ -76,7 +76,7 @@ export function useUpdateQuotation(workspaceId: string) {
 export function useSendQuotation(workspaceId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: ({ quotationId, dealId: _dealId }: { quotationId: string; dealId: string }) =>
+    mutationFn: ({ quotationId }: { quotationId: string; dealId: string }) =>
       api.post(`${quotationBase(workspaceId)}/quotations/${quotationId}/send`).then((r) => r.data),
     onSuccess: (_data, vars) =>
       qc.invalidateQueries({ queryKey: ['crm-quotations', workspaceId, vars.dealId] }),
@@ -86,7 +86,7 @@ export function useSendQuotation(workspaceId: string) {
 export function useAcceptQuotation(workspaceId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: ({ quotationId, dealId: _dealId }: { quotationId: string; dealId: string }) =>
+    mutationFn: ({ quotationId }: { quotationId: string; dealId: string }) =>
       api.post(`${quotationBase(workspaceId)}/quotations/${quotationId}/accept`).then((r) => r.data),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ['crm-quotations', workspaceId, vars.dealId] })
@@ -98,7 +98,7 @@ export function useAcceptQuotation(workspaceId: string) {
 export function useRejectQuotation(workspaceId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: ({ quotationId, dealId: _dealId }: { quotationId: string; dealId: string }) =>
+    mutationFn: ({ quotationId }: { quotationId: string; dealId: string }) =>
       api.post(`${quotationBase(workspaceId)}/quotations/${quotationId}/reject`).then((r) => r.data),
     onSuccess: (_data, vars) =>
       qc.invalidateQueries({ queryKey: ['crm-quotations', workspaceId, vars.dealId] }),

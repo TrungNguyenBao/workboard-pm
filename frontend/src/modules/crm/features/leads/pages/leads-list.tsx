@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { Pencil, Trash2, ArrowRightCircle } from 'lucide-react'
 import { useWorkspaceStore } from '@/stores/workspace.store'
 import { useAuthStore } from '@/stores/auth.store'
-import { Badge } from '@/shared/components/ui/badge'
+import { Badge, type BadgeVariant } from '@/shared/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { toast } from '@/shared/components/ui/toast'
 import { DataTable } from '@/shared/components/ui/data-table'
@@ -49,7 +49,7 @@ export default function LeadsListPage() {
   function toggleSelect(id: string) {
     setSelectedIds((prev) => {
       const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
+      if (next.has(id)) { next.delete(id) } else { next.add(id) }
       return next
     })
   }
@@ -91,7 +91,7 @@ export default function LeadsListPage() {
       key: 'status', label: 'Status', render: (l) => {
         const st = l.status
         const variant = st === 'new' ? 'info' : st === 'contacted' ? 'secondary' : st === 'qualified' ? 'success' : st === 'lost' ? 'danger' : 'secondary'
-        return <Badge variant={variant as any}>{LEAD_STATUSES.find((s) => s.value === l.status)?.label ?? l.status}</Badge>
+        return <Badge variant={variant as BadgeVariant}>{LEAD_STATUSES.find((s) => s.value === l.status)?.label ?? l.status}</Badge>
       },
     },
     {
@@ -106,7 +106,7 @@ export default function LeadsListPage() {
             <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
               <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${score}%` }} />
             </div>
-            <Badge variant={levelVariant as any} className="text-xs px-1.5 py-0">{levelLabel}</Badge>
+            <Badge variant={levelVariant as BadgeVariant} className="text-xs px-1.5 py-0">{levelLabel}</Badge>
           </div>
         )
       },
