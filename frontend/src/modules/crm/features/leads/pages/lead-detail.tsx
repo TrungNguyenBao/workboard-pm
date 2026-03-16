@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { useWorkspaceStore } from '@/stores/workspace.store'
-import { Badge } from '@/shared/components/ui/badge'
+import { Badge, type BadgeVariant } from '@/shared/components/ui/badge'
 import { Button } from '@/shared/components/ui/button'
 import { useLeads, LEAD_STATUSES, LEAD_SOURCES, type BantValues } from '../hooks/use-leads'
 import { LeadBantChecklist } from '../components/lead-bant-checklist'
@@ -74,7 +74,7 @@ export default function CrmLeadDetailPage() {
         </Button>
         <div className="flex items-center gap-2 flex-wrap">
           <h2 className="text-xl font-semibold text-foreground">{lead.name}</h2>
-          <Badge variant={statusVariant as any}>{statusLabel}</Badge>
+          <Badge variant={statusVariant as BadgeVariant}>{statusLabel}</Badge>
         </div>
       </div>
 

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useWorkspaceStore } from '@/stores/workspace.store'
-import { Badge } from '@/shared/components/ui/badge'
+import { Badge, type BadgeVariant } from '@/shared/components/ui/badge'
 import { toast } from '@/shared/components/ui/toast'
 import { DataTable } from '@/shared/components/ui/data-table'
 import { toColumnDefs, type SimpleColumn } from '@/shared/components/ui/data-table-types'
@@ -42,7 +42,7 @@ export default function InsuranceListPage() {
       <span className="font-mono text-xs text-muted-foreground">{r.employee_id.slice(0, 8)}…</span>
     )},
     { key: 'insurance_type', label: 'Type', render: (r) => (
-      <Badge variant={(TYPE_VARIANT[r.insurance_type] ?? 'secondary') as any}>
+      <Badge variant={(TYPE_VARIANT[r.insurance_type] ?? 'secondary') as BadgeVariant}>
         {TYPE_LABELS[r.insurance_type] ?? r.insurance_type.toUpperCase()}
       </Badge>
     )},

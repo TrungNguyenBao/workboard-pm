@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Check, X } from 'lucide-react'
 import { useWorkspaceStore } from '@/stores/workspace.store'
-import { Badge } from '@/shared/components/ui/badge'
+import { Badge, type BadgeVariant } from '@/shared/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { toast } from '@/shared/components/ui/toast'
 import { DataTable } from '@/shared/components/ui/data-table'
@@ -50,7 +50,7 @@ export default function OffboardingListPage() {
     { key: 'resignation_date', label: 'Resignation Date', render: (r) => r.resignation_date },
     { key: 'last_working_day', label: 'Last Working Day', render: (r) => r.last_working_day },
     { key: 'status', label: 'Status', render: (r) => (
-      <Badge variant={(STATUS_VARIANT[r.status] ?? 'secondary') as any}>{r.status}</Badge>
+      <Badge variant={(STATUS_VARIANT[r.status] ?? 'secondary') as BadgeVariant}>{r.status}</Badge>
     )},
     { key: 'actions', label: '', className: 'w-20', render: (r) => (
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>

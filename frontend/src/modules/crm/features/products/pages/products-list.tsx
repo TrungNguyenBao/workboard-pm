@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useWorkspaceStore } from '@/stores/workspace.store'
-import { Badge } from '@/shared/components/ui/badge'
+import { Badge, type BadgeVariant } from '@/shared/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { toast } from '@/shared/components/ui/toast'
 import { DataTable } from '@/shared/components/ui/data-table'
@@ -53,7 +53,7 @@ export default function ProductsListPage() {
       key: 'is_active',
       label: 'Status',
       render: (p) => (
-        <Badge variant={(p.is_active ? 'success' : 'secondary') as any}>
+        <Badge variant={(p.is_active ? 'success' : 'secondary') as BadgeVariant}>
           {p.is_active ? 'Active' : 'Inactive'}
         </Badge>
       ),

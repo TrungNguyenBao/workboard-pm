@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useWorkspaceStore } from '@/stores/workspace.store'
-import { Badge } from '@/shared/components/ui/badge'
+import { Badge, type BadgeVariant } from '@/shared/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { toast } from '@/shared/components/ui/toast'
 import { DataTable } from '@/shared/components/ui/data-table'
@@ -48,7 +48,7 @@ export default function TicketsListPage() {
     },
     {
       key: 'status', label: 'Status', render: (t) => (
-        <Badge variant={(t.status === 'open' ? 'success' : t.status === 'in_progress' ? 'warning' : t.status === 'closed' ? 'secondary' : 'danger') as any}>
+        <Badge variant={(t.status === 'open' ? 'success' : t.status === 'in_progress' ? 'warning' : t.status === 'closed' ? 'secondary' : 'danger') as BadgeVariant}>
           {TICKET_STATUSES.find((s) => s.value === t.status)?.label ?? t.status}
         </Badge>
       ),

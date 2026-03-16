@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Pencil, Trash2, UserPlus } from 'lucide-react'
 import { useWorkspaceStore } from '@/stores/workspace.store'
-import { Badge } from '@/shared/components/ui/badge'
+import { Badge, type BadgeVariant } from '@/shared/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { toast } from '@/shared/components/ui/toast'
 import { DataTable } from '@/shared/components/ui/data-table'
@@ -49,7 +49,7 @@ export default function AssetsListPage() {
     { key: 'serial_number', label: 'Serial #', render: (a) => a.serial_number ?? '—' },
     { key: 'purchase_value', label: 'Value', render: (a) => formatCurrency(a.purchase_value) },
     { key: 'status', label: 'Status', render: (a) => (
-      <Badge variant={(STATUS_VARIANT[a.status] ?? 'secondary') as any}>{a.status}</Badge>
+      <Badge variant={(STATUS_VARIANT[a.status] ?? 'secondary') as BadgeVariant}>{a.status}</Badge>
     )},
     { key: 'actions', label: '', className: 'w-24', render: (a) => (
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>

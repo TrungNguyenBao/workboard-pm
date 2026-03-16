@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Clock, Pencil, Trash2 } from 'lucide-react'
 import { useWorkspaceStore } from '@/stores/workspace.store'
-import { Badge } from '@/shared/components/ui/badge'
+import { Badge, type BadgeVariant } from '@/shared/components/ui/badge'
 import { Input } from '@/shared/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { toast } from '@/shared/components/ui/toast'
@@ -55,7 +55,7 @@ export default function AttendanceListPage() {
     { key: 'check_in', label: 'Check In', render: (r) => r.check_in ?? '—' },
     { key: 'check_out', label: 'Check Out', render: (r) => r.check_out ?? '—' },
     { key: 'status', label: 'Status', render: (r) => (
-      <Badge variant={(STATUS_VARIANT[r.status] ?? 'secondary') as any}>
+      <Badge variant={(STATUS_VARIANT[r.status] ?? 'secondary') as BadgeVariant}>
         {r.status.replace('_', ' ')}
       </Badge>
     )},

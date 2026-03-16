@@ -42,7 +42,7 @@ function LeadFormContent({ workspaceId, lead, onOpenChange }: Omit<Props, 'open'
 
   const [duplicateState, setDuplicateState] = useState<{
     duplicates: Lead[]
-    newLeadPreview: { name: string; email: string | null; phone: string | null; source: string; status: string }
+    newLeadPreview: { name: string; email: string | null; phone: string | null; source: string; status: string; custom_field_values: Record<string, string> | null }
     newLeadId: string
   } | null>(null)
 
@@ -71,7 +71,7 @@ function LeadFormContent({ workspaceId, lead, onOpenChange }: Omit<Props, 'open'
         if (result.duplicates && result.duplicates.length > 0) {
           setDuplicateState({
             duplicates: result.duplicates,
-            newLeadPreview: { name: name.trim(), email: email.trim() || null, phone: phone.trim() || null, source, status },
+            newLeadPreview: { name: name.trim(), email: email.trim() || null, phone: phone.trim() || null, source, status, custom_field_values: null },
             newLeadId: result.lead.id,
           })
         } else {

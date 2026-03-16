@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Check, Pencil, Trash2, X } from 'lucide-react'
 import { useWorkspaceStore } from '@/stores/workspace.store'
-import { Badge } from '@/shared/components/ui/badge'
+import { Badge, type BadgeVariant } from '@/shared/components/ui/badge'
 import { Button } from '@/shared/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { toast } from '@/shared/components/ui/toast'
@@ -63,7 +63,7 @@ export default function LeaveRequestsListPage() {
       key: 'status',
       label: t('common:common.status'),
       render: (r) => (
-        <Badge variant={(STATUS_VARIANT[r.status] ?? 'secondary') as any}>
+        <Badge variant={(STATUS_VARIANT[r.status] ?? 'secondary') as BadgeVariant}>
           {r.status}
         </Badge>
       ),
