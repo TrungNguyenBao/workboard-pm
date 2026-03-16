@@ -59,23 +59,23 @@ export default function RecruitmentDetailPage() {
   return (
     <div className="flex flex-col h-full overflow-y-auto">
       {/* Header */}
-      <div className="flex items-center gap-3 px-6 py-4 border-b border-border">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 px-4 sm:px-6 py-3 sm:py-4 border-b border-border">
         <button onClick={() => navigate('/hrm/recruitment')} className="text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" />
         </button>
-        <div className="flex-1">
-          <h1 className="text-base font-semibold">{request.title}</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">{request.reason}</p>
+        <div className="flex-1 min-w-0">
+          <h1 className="text-base font-semibold truncate">{request.title}</h1>
+          <p className="text-xs text-muted-foreground mt-0.5 truncate">{request.reason}</p>
         </div>
         <Badge variant="outline">{request.status}</Badge>
-        <span className="text-xs text-muted-foreground">Qty: {request.quantity}</span>
+        <span className="text-xs text-muted-foreground hidden sm:inline">Qty: {request.quantity}</span>
         <Button size="sm" variant="ghost" className="h-7 px-2" onClick={() => setCandidateDialogOpen(true)}>
-          <Plus className="h-3.5 w-3.5 mr-1" /> Add Candidate
+          <Plus className="h-3.5 w-3.5 mr-1" /> Add
         </Button>
       </div>
 
       {/* Tab bar */}
-      <div className="flex gap-1 px-6 pt-3 border-b border-border">
+      <div className="flex gap-1 px-4 sm:px-6 pt-3 border-b border-border">
         {(['pipeline', 'candidates'] as ViewMode[]).map((mode) => (
           <button
             key={mode}
@@ -93,7 +93,7 @@ export default function RecruitmentDetailPage() {
 
       {/* Pipeline board view */}
       {viewMode === 'pipeline' && (
-        <div className="flex-1 overflow-x-auto p-6">
+        <div className="flex-1 overflow-x-auto p-4 sm:p-6">
           <CandidatePipelineBoard
             workspaceId={workspaceId}
             candidates={candidates}
@@ -104,9 +104,9 @@ export default function RecruitmentDetailPage() {
 
       {/* Candidate list + detail view */}
       {viewMode === 'candidates' && (
-        <div className="flex flex-1 overflow-hidden">
+        <div className="flex flex-col sm:flex-row flex-1 overflow-hidden">
           {/* Candidates panel */}
-          <div className="w-72 border-r border-border flex flex-col">
+          <div className="w-full sm:w-72 border-b sm:border-b-0 sm:border-r border-border flex flex-col max-h-[40vh] sm:max-h-none">
             <div className="flex items-center justify-between px-4 py-3 border-b border-border">
               <span className="text-sm font-medium">Candidates</span>
             </div>
@@ -130,7 +130,7 @@ export default function RecruitmentDetailPage() {
           </div>
 
           {/* Detail panel */}
-          <div className="flex-1 p-6 overflow-y-auto">
+          <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
             {!selectedCandidateId ? (
               <div className="text-sm text-muted-foreground">Select a candidate to view details</div>
             ) : (

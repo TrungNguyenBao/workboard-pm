@@ -23,7 +23,7 @@ export default function SprintsPage() {
       <div className="flex flex-col h-full">
         <ProjectHeader activeView="sprints" />
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
           {isLoading && (
             <p className="text-center text-sm text-muted-foreground py-8">Loading...</p>
           )}

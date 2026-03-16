@@ -25,7 +25,7 @@ export function PipelineStageColumn({ stageValue, stageLabel, color, deals, cont
   const weightedValue = deals.reduce((sum, d) => sum + d.value * (d.probability / 100), 0)
 
   return (
-    <div className="flex-shrink-0 w-64 flex flex-col">
+    <div className="min-w-[280px] shrink-0 flex flex-col">
       {/* Column header */}
       <div className="flex items-center justify-between mb-2 px-1">
         <div className="flex items-center gap-2 min-w-0">

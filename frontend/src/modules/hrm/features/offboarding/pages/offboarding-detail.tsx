@@ -52,12 +52,12 @@ export default function OffboardingDetailPage() {
   return (
     <div className="flex flex-col h-full overflow-y-auto">
       {/* Header */}
-      <div className="flex items-center gap-3 px-6 py-4 border-b border-border">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 px-4 sm:px-6 py-3 sm:py-4 border-b border-border">
         <button onClick={() => navigate('/hrm/offboarding')} className="text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" />
         </button>
-        <div className="flex-1">
-          <h1 className="text-base font-semibold">
+        <div className="flex-1 min-w-0">
+          <h1 className="text-base font-semibold truncate">
             {empMap.get(resignation.employee_id) ?? 'Unknown Employee'}
           </h1>
           <p className="text-xs text-muted-foreground mt-0.5">
@@ -69,7 +69,7 @@ export default function OffboardingDetailPage() {
         </Badge>
       </div>
 
-      <div className="flex-1 p-6 space-y-6">
+      <div className="flex-1 p-4 sm:p-6 space-y-6">
         {/* Reason */}
         {resignation.reason && (
           <div>

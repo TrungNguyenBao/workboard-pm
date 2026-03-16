@@ -34,7 +34,7 @@ export default function CrmDashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6 space-y-6">
+      <div className="p-4 sm:p-6 space-y-6">
         <div className="h-7 w-40 bg-muted animate-pulse rounded" />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
@@ -47,7 +47,7 @@ export default function CrmDashboardPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-6">
       <h2 className="text-xl font-semibold text-foreground">Dashboard</h2>
 
       {/* KPI Cards */}
@@ -132,7 +132,7 @@ export default function CrmDashboardPage() {
       {(stats.totalCampaignBudget > 0 || stats.totalCampaignCost > 0) && (
         <div className="border border-border rounded-lg p-4 bg-card">
           <p className="text-sm font-medium text-foreground mb-2">Campaign Summary</p>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <p className="text-xs text-muted-foreground">Total Budget</p>
               <p className="text-lg font-semibold">{formatCurrency(stats.totalCampaignBudget)}</p>

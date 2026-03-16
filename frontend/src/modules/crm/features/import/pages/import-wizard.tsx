@@ -43,7 +43,7 @@ export default function ImportWizardPage() {
   }
 
   return (
-    <div className="p-6 space-y-6 max-w-2xl">
+    <div className="p-4 sm:p-6 space-y-6 max-w-2xl">
       <h2 className="text-xl font-semibold text-foreground">Import CSV</h2>
 
       {/* Step indicator */}
@@ -64,7 +64,7 @@ export default function ImportWizardPage() {
 
       {/* Step 1: Upload */}
       {step === 'upload' && (
-        <div className="border border-border rounded-lg p-6 bg-card space-y-4">
+        <div className="border border-border rounded-lg p-4 sm:p-6 bg-card space-y-4">
           <div>
             <label className="text-sm font-medium text-foreground">Entity Type</label>
             <div className="flex gap-3 mt-2">
@@ -124,7 +124,7 @@ export default function ImportWizardPage() {
 
       {/* Step 2: Confirm */}
       {step === 'confirm' && (
-        <div className="border border-border rounded-lg p-6 bg-card space-y-4">
+        <div className="border border-border rounded-lg p-4 sm:p-6 bg-card space-y-4">
           <p className="text-sm text-foreground">
             Ready to import <strong>{selectedFile?.name}</strong> as{' '}
             <strong>{entityType}s</strong>.
@@ -152,7 +152,7 @@ export default function ImportWizardPage() {
 
       {/* Step 3: Result */}
       {step === 'result' && result && (
-        <div className="border border-border rounded-lg p-6 bg-card space-y-4">
+        <div className="border border-border rounded-lg p-4 sm:p-6 bg-card space-y-4">
           <div className="flex items-center gap-2">
             {result.status === 'completed' ? (
               <CheckCircle className="h-5 w-5 text-green-500" />
@@ -161,7 +161,7 @@ export default function ImportWizardPage() {
             )}
             <p className="text-sm font-medium text-foreground capitalize">{result.status}</p>
           </div>
-          <div className="grid grid-cols-3 gap-4 text-center">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
             <div>
               <p className="text-2xl font-bold text-foreground">{result.total_rows}</p>
               <p className="text-xs text-muted-foreground">Total Rows</p>

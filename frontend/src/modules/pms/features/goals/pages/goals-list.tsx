@@ -39,7 +39,7 @@ export default function GoalsListPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between px-8 py-5 border-b border-border">
+      <div className="flex items-center justify-between px-4 sm:px-8 py-5 border-b border-border flex-wrap gap-3">
         <div>
           <h1 className="text-xl font-semibold text-foreground">{t('goal.title')}</h1>
           <p className="text-sm text-muted-foreground mt-0.5">{t('goal.description')}</p>
@@ -62,7 +62,7 @@ export default function GoalsListPage() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-8 py-6">
+      <div className="flex-1 overflow-y-auto px-4 sm:px-8 py-6">
         {!workspaceId ? (
           <EmptyState icon={<Target className="h-10 w-10" />} title={t('goal.noWorkspace')} />
         ) : isLoading ? (

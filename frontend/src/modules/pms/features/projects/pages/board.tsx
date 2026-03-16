@@ -190,7 +190,7 @@ export default function BoardPage() {
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           >
-            <div className="flex gap-4 h-full">
+            <div className="flex gap-4 h-full min-w-max">
               {sortedSections.map((section) => (
                 <BoardKanbanColumn
                   key={section.id}

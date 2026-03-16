@@ -93,7 +93,7 @@ export default function ProjectsListPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6 space-y-4">
+      <div className="p-4 sm:p-6 space-y-4">
         <div className="h-10 w-48 bg-muted animate-pulse rounded" />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -142,7 +142,7 @@ export default function ProjectsListPage() {
         filters={filters}
       />
 
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         {filtered.length === 0 ? (
           <EmptyState
             icon={<FolderKanban className="h-7 w-7" />}

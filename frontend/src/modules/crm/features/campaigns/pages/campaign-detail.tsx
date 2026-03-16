@@ -20,7 +20,7 @@ export default function CampaignDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6 space-y-4">
+      <div className="p-4 sm:p-6 space-y-4">
         <div className="h-6 w-32 bg-muted animate-pulse rounded" />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
@@ -33,7 +33,7 @@ export default function CampaignDetailPage() {
 
   if (isError || !data) {
     return (
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         <Link to="/crm/campaigns" className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4">
           <ArrowLeft className="h-4 w-4" /> Back to campaigns
         </Link>
@@ -47,7 +47,7 @@ export default function CampaignDetailPage() {
   const statusLabel = CAMPAIGN_STATUSES.find((s) => s.value === c.status)?.label ?? c.status
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-6">
       {/* Header */}
       <div className="flex items-start gap-4">
         <Link to="/crm/campaigns" className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mt-0.5">

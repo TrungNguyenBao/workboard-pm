@@ -22,7 +22,7 @@ export default function ForecastListPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-foreground">Sales Forecasts</h2>
         <div className="flex items-center gap-2">

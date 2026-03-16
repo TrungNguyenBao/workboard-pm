@@ -152,7 +152,7 @@ export default function TagManagementPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
+    <div className="max-w-2xl mx-auto p-4 sm:p-6">
       <h1 className="text-xl font-semibold mb-1">Tags</h1>
       <p className="text-sm text-muted-foreground mb-6">Manage workspace-level tags used across all projects.</p>
 

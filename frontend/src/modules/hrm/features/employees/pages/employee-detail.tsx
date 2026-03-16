@@ -35,7 +35,7 @@ export default function EmployeeDetailPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="border-b border-border px-6 py-4">
+      <div className="border-b border-border px-4 sm:px-6 py-3 sm:py-4">
         <button
           className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-3"
           onClick={() => navigate('/hrm/employees')}
@@ -43,7 +43,7 @@ export default function EmployeeDetailPage() {
           <ArrowLeft className="h-3.5 w-3.5" />
           Back to Employees
         </button>
-        <div className="flex items-start justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
           <div>
             <h1 className="text-xl font-semibold text-foreground">{employee.name}</h1>
             <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
@@ -57,7 +57,7 @@ export default function EmployeeDetailPage() {
         </div>
       </div>
 
-      <div className="border-b border-border px-6">
+      <div className="border-b border-border px-4 sm:px-6 overflow-x-auto">
         <nav className="flex gap-0">
           {TABS.map((tab) => (
             <button
@@ -76,7 +76,7 @@ export default function EmployeeDetailPage() {
         </nav>
       </div>
 
-      <div className="flex-1 overflow-auto p-6">
+      <div className="flex-1 overflow-auto p-4 sm:p-6">
         {activeTab === 'Info' && <InfoTab employee={employee} />}
         {activeTab === 'Contracts' && <EmployeeContractsTab workspaceId={workspaceId} employeeId={employeeId} />}
         {activeTab === 'Salary History' && <EmployeeSalaryTab workspaceId={workspaceId} employeeId={employeeId} />}

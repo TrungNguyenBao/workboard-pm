@@ -16,9 +16,9 @@ export function PaginationControls({ page, pageSize, total, onPageChange }: Pagi
   if (total <= pageSize) return null
 
   return (
-    <div className="flex items-center justify-between border-t border-border px-6 py-3">
-      <span className="text-sm text-muted-foreground">
-        Showing {from}–{to} of {total}
+    <div className="flex items-center justify-between border-t border-border px-4 sm:px-6 py-3 gap-2">
+      <span className="text-xs sm:text-sm text-muted-foreground">
+        {from}–{to} of {total}
       </span>
       <div className="flex items-center gap-1">
         <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>

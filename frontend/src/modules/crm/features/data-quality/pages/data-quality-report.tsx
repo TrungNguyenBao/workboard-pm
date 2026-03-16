@@ -124,7 +124,7 @@ export default function DataQualityReportPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6 space-y-6">
+      <div className="p-4 sm:p-6 space-y-6">
         <div className="h-7 w-48 bg-muted animate-pulse rounded" />
         <div className="h-40 bg-muted animate-pulse rounded-lg" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -136,7 +136,7 @@ export default function DataQualityReportPage() {
 
   if (isError || !data) {
     return (
-      <div className="p-6 flex items-center gap-2 text-sm text-destructive">
+      <div className="p-4 sm:p-6 flex items-center gap-2 text-sm text-destructive">
         <AlertCircle className="h-4 w-4" />
         Failed to load data quality report. Admin access required.
       </div>
@@ -144,7 +144,7 @@ export default function DataQualityReportPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-6">
       <div className="flex items-center gap-3">
         <ShieldCheck className="h-6 w-6 text-primary" />
         <div>
@@ -157,9 +157,9 @@ export default function DataQualityReportPage() {
       {overallScore && <OverallScoreBanner {...overallScore} />}
 
       {/* Score card */}
-      <div className="border border-border rounded-lg p-6 bg-card flex items-center gap-8">
+      <div className="border border-border rounded-lg p-4 sm:p-6 bg-card flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
         <QualityGauge score={data.quality_score} />
-        <div className="space-y-1">
+        <div className="space-y-1 w-full">
           <p className="text-sm font-medium text-foreground">Overall Quality Score</p>
           <p className="text-xs text-muted-foreground">
             Score is reduced by 2 points per identified issue across all categories.

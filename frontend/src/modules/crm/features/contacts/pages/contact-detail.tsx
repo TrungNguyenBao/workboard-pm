@@ -17,14 +17,14 @@ export default function ContactDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6 space-y-4">
+      <div className="p-4 sm:p-6 space-y-4">
         <div className="h-7 w-48 bg-muted animate-pulse rounded" />
         <div className="h-32 bg-muted animate-pulse rounded-lg" />
       </div>
     )
   }
 
-  if (!data) return <div className="p-6 text-muted-foreground">Contact not found</div>
+  if (!data) return <div className="p-4 sm:p-6 text-muted-foreground">Contact not found</div>
 
   const { contact, deals, activities, emails, tickets } = data
   const tabs: { key: Tab; label: string; count: number }[] = [
@@ -36,7 +36,7 @@ export default function ContactDetailPage() {
   ]
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-6">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="sm" onClick={() => navigate('/crm/contacts')}>
           <ArrowLeft className="h-4 w-4 mr-1" /> Back

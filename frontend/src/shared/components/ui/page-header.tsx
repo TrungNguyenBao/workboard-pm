@@ -28,13 +28,13 @@ export function PageHeader({
   children,
 }: PageHeaderProps) {
   return (
-    <div className="border-b border-border px-6 py-4">
-      <div className="flex items-center justify-between mb-3">
-        <div>
-          <h1 className="text-xl font-bold text-foreground">{title}</h1>
+    <div className="border-b border-border px-4 sm:px-6 py-3 sm:py-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 mb-3">
+        <div className="min-w-0">
+          <h1 className="text-lg sm:text-xl font-bold text-foreground truncate">{title}</h1>
           {description && <p className="text-sm text-muted-foreground mt-0.5">{description}</p>}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           {actions}
           {onCreateClick && (
             <Button size="sm" onClick={onCreateClick}>
@@ -47,7 +47,7 @@ export function PageHeader({
       {(onSearchChange ?? filters ?? children) && (
         <div className="flex items-center gap-3 flex-wrap">
           {onSearchChange && (
-            <div className="relative flex-1 max-w-xs">
+            <div className="relative w-full sm:flex-1 sm:max-w-xs">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder={searchPlaceholder}

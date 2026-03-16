@@ -77,7 +77,7 @@ export default function OverviewPage() {
     <div className="flex flex-col h-full">
       <ProjectHeader activeView="overview" />
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-3xl mx-auto w-full pt-6 px-6 pb-12 space-y-6">
+        <div className="max-w-3xl mx-auto w-full pt-6 px-4 sm:px-6 pb-12 space-y-6">
           {isLoading && <StatsSkeleton />}
 
           {isError && (

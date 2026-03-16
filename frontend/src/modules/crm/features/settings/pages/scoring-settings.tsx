@@ -69,7 +69,7 @@ export default function ScoringSettingsPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6 space-y-3">
+      <div className="p-4 sm:p-6 space-y-3">
         {[0, 1, 2, 3].map((i) => <div key={i} className="h-10 bg-muted animate-pulse rounded" />)}
       </div>
     )
@@ -77,7 +77,7 @@ export default function ScoringSettingsPage() {
 
   if (isError) {
     return (
-      <div className="p-6 flex items-center gap-2 text-sm text-destructive">
+      <div className="p-4 sm:p-6 flex items-center gap-2 text-sm text-destructive">
         <AlertCircle className="h-4 w-4" />
         Failed to load scoring config. Admin access required.
       </div>
@@ -85,7 +85,7 @@ export default function ScoringSettingsPage() {
   }
 
   return (
-    <div className="p-6 space-y-6 max-w-2xl">
+    <div className="p-4 sm:p-6 space-y-6 max-w-2xl">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Star className="h-6 w-6 text-primary" />

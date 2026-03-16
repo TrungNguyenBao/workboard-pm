@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Outlet } from 'react-router-dom'
-import { Sidebar } from './sidebar'
+import { Sidebar, MobileSidebar } from './sidebar'
 import { Header } from './header'
 import { KeyboardShortcutsDialog } from './keyboard-shortcuts-dialog'
 import { useWorkspaceStore } from '@/stores/workspace.store'
@@ -71,6 +71,7 @@ export function AppShell() {
       <SSEMount />
       <div className="flex h-screen overflow-hidden bg-background">
         <Sidebar />
+        <MobileSidebar />
         <div className="flex flex-1 flex-col overflow-hidden min-w-0">
           <Header />
           <main id="main-content" className="flex-1 overflow-y-auto" tabIndex={-1}>

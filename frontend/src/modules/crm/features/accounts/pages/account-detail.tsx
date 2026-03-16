@@ -20,19 +20,19 @@ export default function AccountDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6 space-y-4">
+      <div className="p-4 sm:p-6 space-y-4">
         <div className="h-7 w-40 bg-muted animate-pulse rounded" />
         <div className="h-32 bg-muted animate-pulse rounded-lg" />
       </div>
     )
   }
 
-  if (!data) return <div className="p-6 text-muted-foreground">Account not found</div>
+  if (!data) return <div className="p-4 sm:p-6 text-muted-foreground">Account not found</div>
 
   const { account, contacts, deals, activities, tickets } = data
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-6">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="sm" onClick={() => navigate('/crm/accounts')}>
           <ArrowLeft className="h-4 w-4 mr-1" /> Back

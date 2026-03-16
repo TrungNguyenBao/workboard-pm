@@ -53,8 +53,8 @@ export function DataTable<T>({
   }
 
   return (
-    <div className={cn('flex-1 overflow-auto', className)}>
-      <table className="w-full">
+    <div className={cn('flex-1 overflow-x-auto', className)}>
+      <table className="w-full min-w-[600px]">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id} className="border-b border-border bg-muted/50">

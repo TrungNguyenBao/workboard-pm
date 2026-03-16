@@ -32,7 +32,7 @@ function TemplateForm({ initial, onSubmit, onCancel, isPending }: TemplateFormPr
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-1">
           <label className="text-xs font-medium text-muted-foreground">Name</label>
           <input required className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
@@ -87,19 +87,19 @@ export default function EmailTemplatesListPage() {
   const [editing, setEditing] = useState<EmailTemplate | null>(null)
 
   if (isLoading) return (
-    <div className="p-6 space-y-3">
+    <div className="p-4 sm:p-6 space-y-3">
       {[0, 1, 2].map((i) => <div key={i} className="h-16 bg-muted animate-pulse rounded-lg" />)}
     </div>
   )
 
   if (isError) return (
-    <div className="p-6 flex items-center gap-2 text-sm text-destructive">
+    <div className="p-4 sm:p-6 flex items-center gap-2 text-sm text-destructive">
       <AlertCircle className="h-4 w-4" /> Failed to load email templates.
     </div>
   )
 
   return (
-    <div className="p-6 space-y-6 max-w-4xl">
+    <div className="p-4 sm:p-6 space-y-6 max-w-4xl">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Mail className="h-6 w-6 text-primary" />

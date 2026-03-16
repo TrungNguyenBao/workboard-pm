@@ -35,17 +35,17 @@ export default function DealDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6 space-y-4">
+      <div className="p-4 sm:p-6 space-y-4">
         <div className="h-7 w-48 bg-muted animate-pulse rounded" />
         <div className="h-40 bg-muted animate-pulse rounded-lg" />
       </div>
     )
   }
 
-  if (!deal) return <div className="p-6 text-muted-foreground">Deal not found</div>
+  if (!deal) return <div className="p-4 sm:p-6 text-muted-foreground">Deal not found</div>
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="sm" onClick={() => navigate('/crm/deals')}>

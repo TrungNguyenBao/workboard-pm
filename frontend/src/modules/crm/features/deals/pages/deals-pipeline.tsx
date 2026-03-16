@@ -128,9 +128,9 @@ export default function DealsPipelinePage() {
 
   if (isLoading) {
     return (
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         <div className="h-7 w-40 bg-muted animate-pulse rounded mb-4" />
-        <div className="flex gap-4">
+        <div className="flex gap-4 overflow-x-auto">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="w-64 h-96 bg-muted animate-pulse rounded-lg" />
           ))}
@@ -140,7 +140,7 @@ export default function DealsPipelinePage() {
   }
 
   return (
-    <div className="p-6 h-full flex flex-col">
+    <div className="p-4 sm:p-6 h-full flex flex-col">
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
         <h2 className="text-xl font-semibold text-foreground mr-2">Pipeline</h2>
@@ -223,7 +223,7 @@ export default function DealsPipelinePage() {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex gap-3 overflow-x-auto flex-1 pb-4">
+        <div className="flex gap-3 overflow-x-auto flex-1 pb-4 min-w-0">
           {DEAL_STAGES.map((stage) => (
             <PipelineStageColumn
               key={stage.value}
